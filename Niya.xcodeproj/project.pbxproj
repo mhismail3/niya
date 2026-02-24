@@ -1,0 +1,555 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9CF474B2A2EA461789DC79A9 /* NiyaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C677D4976B4562BF671E2D /* NiyaApp.swift */; };
+		46177F4C7CDF414A91CE9E5C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD81DA0E60F9438F890F97C7 /* ContentView.swift */; };
+		DCA19A20E02841C6BC8B04AF /* QuranScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349E82BFC8B6490D838E0FA1 /* QuranScript.swift */; };
+		56230301E0A14B2AB3968A37 /* Surah.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD64F8DE8861445EB8E01012 /* Surah.swift */; };
+		ABA249230DA846C3BEF4F74B /* Verse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83EB559A20924A2EA9FD5712 /* Verse.swift */; };
+		B1F430DC4C52437C9500A5A5 /* AudioDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F2BC9E9ABFD407280EA99A5 /* AudioDownload.swift */; };
+		4A6173F0F5934E74B6A05333 /* QuranDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA93D28577AA4DC99BD921B8 /* QuranDataService.swift */; };
+		BA52B83C29CC40C8B9EB4D8C /* AudioService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D9A658CCA54D9685B1105E /* AudioService.swift */; };
+		473D44004965486DB23742E0 /* DownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BD0DB63AFF34672AB9E4AA2 /* DownloadStore.swift */; };
+		C7EE1FD8E48B4F4097375A79 /* SurahListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F894BE28443A47BFA1E66663 /* SurahListViewModel.swift */; };
+		473E3F1B2DF741DC88620CBE /* ReaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE7634DE1FE4683AB10CD79 /* ReaderViewModel.swift */; };
+		D2BD2C310ABA42889D62A938 /* AudioPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7171A9F41E499E9EDF5F5C /* AudioPlayerViewModel.swift */; };
+		4654508FE9F5499BBED9B1B9 /* SurahListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11B9BA60038146CAAFD70154 /* SurahListView.swift */; };
+		D35211FD8278440CA14C9E4B /* SurahRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DD9624DB0AF44FCA95791F4 /* SurahRowView.swift */; };
+		F77FEF147FC94B25906E95B9 /* SurahSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FAA7ECDB97E448890810869 /* SurahSearchView.swift */; };
+		3FB96C6F076B457E8B0DAEC6 /* ReaderContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C042F318D7F240F09A7E2D37 /* ReaderContainerView.swift */; };
+		89EC96578CD643618071692E /* ScrollReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A481968E95C444EAD2EFAF6 /* ScrollReaderView.swift */; };
+		3DDFB41A5FBD4F6EA3A69713 /* PageReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 525882683954408889B4ADAD /* PageReaderView.swift */; };
+		8FCFDF8B2DF44F90BE9EC821 /* VerseRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE4690B59EF4492E84C399FD /* VerseRowView.swift */; };
+		0D7A5F475E344DDBBBDCA5BB /* MushaPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 999B4990BB924C7198294689 /* MushaPageView.swift */; };
+		BA8B0C1B4ED348608AAB24E7 /* AudioPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA222725CBCC4F59954F720E /* AudioPlayerBar.swift */; };
+		C2EB5C207EEC4F99B0BD4B20 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF04BE8661A842008F8A3583 /* SettingsView.swift */; };
+		8F709DD2179D47E5B99A27A7 /* NiyaColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD193B8797DB40EE83025198 /* NiyaColors.swift */; };
+		5369990594F74C9785CC5EF4 /* NiyaFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8C6FC3BB60146338C0D4C31 /* NiyaFonts.swift */; };
+		E90EAF86C56E48ED977014B0 /* NiyaTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98500A1EFE4A47B8B15539F2 /* NiyaTheme.swift */; };
+		649F5730CCC049A0B074090E /* surahs.json in Resources */ = {isa = PBXBuildFile; fileRef = 78DADC4FFC8D4DF6BD4D5E03 /* surahs.json */; };
+		6BA1A3790AB54AE7A9A7A01C /* verses_hafs.json in Resources */ = {isa = PBXBuildFile; fileRef = DBB5CB1A79514179992DB4E8 /* verses_hafs.json */; };
+		46E966FD10F048A88592AD24 /* verses_indopak.json in Resources */ = {isa = PBXBuildFile; fileRef = 2AF77B0DE9FC465C845E2739 /* verses_indopak.json */; };
+		71995DA862004160B8D2DFA2 /* KFGQPC Uthmanic Script HAFS Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 871CD3D886EE4441B01AD4AD /* KFGQPC Uthmanic Script HAFS Regular.otf */; };
+		4990ADB800744E70AB694C3B /* ScheherazadeNew-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 194BFD33B59F4522BBD26118 /* ScheherazadeNew-Regular.ttf */; };
+		D2357698E40842458DC8E86A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19867D2B510C4D14A2863EFF /* Assets.xcassets */; };
+		BA7A910D47674D4981B03515 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC98BE9A4E6E48F7A809D373 /* SwiftData.framework */; };
+		E6076CA5A69B4366BE46B613 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F17A80DCF3464892B5E2C2A0 /* AVFoundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		70C677D4976B4562BF671E2D /* NiyaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaApp.swift; sourceTree = "<group>"; };
+		AD81DA0E60F9438F890F97C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		349E82BFC8B6490D838E0FA1 /* QuranScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranScript.swift; sourceTree = "<group>"; };
+		CD64F8DE8861445EB8E01012 /* Surah.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surah.swift; sourceTree = "<group>"; };
+		83EB559A20924A2EA9FD5712 /* Verse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Verse.swift; sourceTree = "<group>"; };
+		0F2BC9E9ABFD407280EA99A5 /* AudioDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioDownload.swift; sourceTree = "<group>"; };
+		AA93D28577AA4DC99BD921B8 /* QuranDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranDataService.swift; sourceTree = "<group>"; };
+		94D9A658CCA54D9685B1105E /* AudioService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioService.swift; sourceTree = "<group>"; };
+		2BD0DB63AFF34672AB9E4AA2 /* DownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadStore.swift; sourceTree = "<group>"; };
+		F894BE28443A47BFA1E66663 /* SurahListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurahListViewModel.swift; sourceTree = "<group>"; };
+		DBE7634DE1FE4683AB10CD79 /* ReaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderViewModel.swift; sourceTree = "<group>"; };
+		AB7171A9F41E499E9EDF5F5C /* AudioPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerViewModel.swift; sourceTree = "<group>"; };
+		11B9BA60038146CAAFD70154 /* SurahListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurahListView.swift; sourceTree = "<group>"; };
+		0DD9624DB0AF44FCA95791F4 /* SurahRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurahRowView.swift; sourceTree = "<group>"; };
+		6FAA7ECDB97E448890810869 /* SurahSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurahSearchView.swift; sourceTree = "<group>"; };
+		C042F318D7F240F09A7E2D37 /* ReaderContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderContainerView.swift; sourceTree = "<group>"; };
+		2A481968E95C444EAD2EFAF6 /* ScrollReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollReaderView.swift; sourceTree = "<group>"; };
+		525882683954408889B4ADAD /* PageReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PageReaderView.swift; sourceTree = "<group>"; };
+		BE4690B59EF4492E84C399FD /* VerseRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseRowView.swift; sourceTree = "<group>"; };
+		999B4990BB924C7198294689 /* MushaPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushaPageView.swift; sourceTree = "<group>"; };
+		EA222725CBCC4F59954F720E /* AudioPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerBar.swift; sourceTree = "<group>"; };
+		AF04BE8661A842008F8A3583 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		BD193B8797DB40EE83025198 /* NiyaColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaColors.swift; sourceTree = "<group>"; };
+		E8C6FC3BB60146338C0D4C31 /* NiyaFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaFonts.swift; sourceTree = "<group>"; };
+		98500A1EFE4A47B8B15539F2 /* NiyaTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaTheme.swift; sourceTree = "<group>"; };
+		78DADC4FFC8D4DF6BD4D5E03 /* surahs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = surahs.json; sourceTree = "<group>"; };
+		DBB5CB1A79514179992DB4E8 /* verses_hafs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = verses_hafs.json; sourceTree = "<group>"; };
+		2AF77B0DE9FC465C845E2739 /* verses_indopak.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = verses_indopak.json; sourceTree = "<group>"; };
+		871CD3D886EE4441B01AD4AD /* KFGQPC Uthmanic Script HAFS Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file.font; path = "KFGQPC Uthmanic Script HAFS Regular.otf"; sourceTree = "<group>"; };
+		194BFD33B59F4522BBD26118 /* ScheherazadeNew-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.font; path = ScheherazadeNew-Regular.ttf; sourceTree = "<group>"; };
+		19867D2B510C4D14A2863EFF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BC98BE9A4E6E48F7A809D373 /* SwiftData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftData.framework; path = System/Library/Frameworks/SwiftData.framework; sourceTree = SDKROOT; };
+		F17A80DCF3464892B5E2C2A0 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		4AA1DBCB644B47CB8F566084 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E9BEB4D7A24049C3AA5D501E /* Niya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Niya.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0A1E7B22DFEF44068B3C56B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BA7A910D47674D4981B03515 /* SwiftData.framework in Frameworks */,
+				E6076CA5A69B4366BE46B613 /* AVFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D351E381AC93477491555176 = {
+			isa = PBXGroup;
+			children = (
+				FEB8D951EFED4237B28317E3 /* Niya */,
+				AFC7880339BC4522B3169B5E /* Frameworks */,
+				E9FC323BC1FC498F8953893C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E9FC323BC1FC498F8953893C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E9BEB4D7A24049C3AA5D501E /* Niya.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AFC7880339BC4522B3169B5E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BC98BE9A4E6E48F7A809D373 /* SwiftData.framework */,
+				F17A80DCF3464892B5E2C2A0 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FEB8D951EFED4237B28317E3 /* Niya */ = {
+			isa = PBXGroup;
+			children = (
+				70C677D4976B4562BF671E2D /* NiyaApp.swift */,
+				AD81DA0E60F9438F890F97C7 /* ContentView.swift */,
+				4AA1DBCB644B47CB8F566084 /* Info.plist */,
+				F23788F257EB445A82959A46 /* Models */,
+				4FE1536670E4400D9E9B5E27 /* Services */,
+				1A69C3F76636474D9E732BCA /* ViewModels */,
+				0309F1493E8A40C8B20AAE9C /* Views */,
+				4D4D358C2D174F6C8E01A70E /* Design */,
+				60D9A32302114F4CADDF7BED /* Resources */,
+			);
+			name = Niya;
+			path = Niya;
+			sourceTree = "<group>";
+		};
+		F23788F257EB445A82959A46 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				349E82BFC8B6490D838E0FA1 /* QuranScript.swift */,
+				CD64F8DE8861445EB8E01012 /* Surah.swift */,
+				83EB559A20924A2EA9FD5712 /* Verse.swift */,
+				0F2BC9E9ABFD407280EA99A5 /* AudioDownload.swift */,
+			);
+			name = Models;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		4FE1536670E4400D9E9B5E27 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				AA93D28577AA4DC99BD921B8 /* QuranDataService.swift */,
+				94D9A658CCA54D9685B1105E /* AudioService.swift */,
+				2BD0DB63AFF34672AB9E4AA2 /* DownloadStore.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		1A69C3F76636474D9E732BCA /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F894BE28443A47BFA1E66663 /* SurahListViewModel.swift */,
+				DBE7634DE1FE4683AB10CD79 /* ReaderViewModel.swift */,
+				AB7171A9F41E499E9EDF5F5C /* AudioPlayerViewModel.swift */,
+			);
+			name = ViewModels;
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		0309F1493E8A40C8B20AAE9C /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8EF7179F0B3F4647AD520B49 /* SurahList */,
+				F2446C3054EA448697ED6753 /* Reader */,
+				CA5E3166C24340C9A7D94237 /* Audio */,
+				52CD84BC437E4F62891B909E /* Settings */,
+			);
+			name = Views;
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8EF7179F0B3F4647AD520B49 /* SurahList */ = {
+			isa = PBXGroup;
+			children = (
+				11B9BA60038146CAAFD70154 /* SurahListView.swift */,
+				0DD9624DB0AF44FCA95791F4 /* SurahRowView.swift */,
+				6FAA7ECDB97E448890810869 /* SurahSearchView.swift */,
+			);
+			name = SurahList;
+			path = SurahList;
+			sourceTree = "<group>";
+		};
+		F2446C3054EA448697ED6753 /* Reader */ = {
+			isa = PBXGroup;
+			children = (
+				C042F318D7F240F09A7E2D37 /* ReaderContainerView.swift */,
+				2A481968E95C444EAD2EFAF6 /* ScrollReaderView.swift */,
+				525882683954408889B4ADAD /* PageReaderView.swift */,
+				BE4690B59EF4492E84C399FD /* VerseRowView.swift */,
+				999B4990BB924C7198294689 /* MushaPageView.swift */,
+			);
+			name = Reader;
+			path = Reader;
+			sourceTree = "<group>";
+		};
+		CA5E3166C24340C9A7D94237 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				EA222725CBCC4F59954F720E /* AudioPlayerBar.swift */,
+			);
+			name = Audio;
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		52CD84BC437E4F62891B909E /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				AF04BE8661A842008F8A3583 /* SettingsView.swift */,
+			);
+			name = Settings;
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		4D4D358C2D174F6C8E01A70E /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				BD193B8797DB40EE83025198 /* NiyaColors.swift */,
+				E8C6FC3BB60146338C0D4C31 /* NiyaFonts.swift */,
+				98500A1EFE4A47B8B15539F2 /* NiyaTheme.swift */,
+			);
+			name = Design;
+			path = Design;
+			sourceTree = "<group>";
+		};
+		60D9A32302114F4CADDF7BED /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				94E44187982B421B90C35B70 /* Data */,
+				74C7199C29E04BCA8A85B926 /* Fonts */,
+				19867D2B510C4D14A2863EFF /* Assets.xcassets */,
+			);
+			name = Resources;
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		94E44187982B421B90C35B70 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				78DADC4FFC8D4DF6BD4D5E03 /* surahs.json */,
+				DBB5CB1A79514179992DB4E8 /* verses_hafs.json */,
+				2AF77B0DE9FC465C845E2739 /* verses_indopak.json */,
+			);
+			name = Data;
+			path = Data;
+			sourceTree = "<group>";
+		};
+		74C7199C29E04BCA8A85B926 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				871CD3D886EE4441B01AD4AD /* KFGQPC Uthmanic Script HAFS Regular.otf */,
+				194BFD33B59F4522BBD26118 /* ScheherazadeNew-Regular.ttf */,
+			);
+			name = Fonts;
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0FA3865FC16D4B79A4D05842 /* Niya */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E5A9711357B847A38407CC88 /* Build configuration list for PBXNativeTarget "Niya" */;
+			buildPhases = (
+				67E3051687F2450ABFB349FC /* Sources */,
+				042A31E8E10F4EBB8AB724A3 /* Resources */,
+				0A1E7B22DFEF44068B3C56B7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Niya;
+			productName = Niya;
+			productReference = E9BEB4D7A24049C3AA5D501E /* Niya.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3AEC41037EF14879BF4C6E4F /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 8D2D16C671AD4AEC8B30C3CE /* Build configuration list for PBXProject "Niya" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D351E381AC93477491555176;
+			productRefGroup = E9FC323BC1FC498F8953893C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0FA3865FC16D4B79A4D05842 /* Niya */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		042A31E8E10F4EBB8AB724A3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				649F5730CCC049A0B074090E /* surahs.json in Resources */,
+				6BA1A3790AB54AE7A9A7A01C /* verses_hafs.json in Resources */,
+				46E966FD10F048A88592AD24 /* verses_indopak.json in Resources */,
+				71995DA862004160B8D2DFA2 /* KFGQPC Uthmanic Script HAFS Regular.otf in Resources */,
+				4990ADB800744E70AB694C3B /* ScheherazadeNew-Regular.ttf in Resources */,
+				D2357698E40842458DC8E86A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		67E3051687F2450ABFB349FC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CF474B2A2EA461789DC79A9 /* NiyaApp.swift in Sources */,
+				46177F4C7CDF414A91CE9E5C /* ContentView.swift in Sources */,
+				DCA19A20E02841C6BC8B04AF /* QuranScript.swift in Sources */,
+				56230301E0A14B2AB3968A37 /* Surah.swift in Sources */,
+				ABA249230DA846C3BEF4F74B /* Verse.swift in Sources */,
+				B1F430DC4C52437C9500A5A5 /* AudioDownload.swift in Sources */,
+				4A6173F0F5934E74B6A05333 /* QuranDataService.swift in Sources */,
+				BA52B83C29CC40C8B9EB4D8C /* AudioService.swift in Sources */,
+				473D44004965486DB23742E0 /* DownloadStore.swift in Sources */,
+				C7EE1FD8E48B4F4097375A79 /* SurahListViewModel.swift in Sources */,
+				473E3F1B2DF741DC88620CBE /* ReaderViewModel.swift in Sources */,
+				D2BD2C310ABA42889D62A938 /* AudioPlayerViewModel.swift in Sources */,
+				4654508FE9F5499BBED9B1B9 /* SurahListView.swift in Sources */,
+				D35211FD8278440CA14C9E4B /* SurahRowView.swift in Sources */,
+				F77FEF147FC94B25906E95B9 /* SurahSearchView.swift in Sources */,
+				3FB96C6F076B457E8B0DAEC6 /* ReaderContainerView.swift in Sources */,
+				89EC96578CD643618071692E /* ScrollReaderView.swift in Sources */,
+				3DDFB41A5FBD4F6EA3A69713 /* PageReaderView.swift in Sources */,
+				8FCFDF8B2DF44F90BE9EC821 /* VerseRowView.swift in Sources */,
+				0D7A5F475E344DDBBBDCA5BB /* MushaPageView.swift in Sources */,
+				BA8B0C1B4ED348608AAB24E7 /* AudioPlayerBar.swift in Sources */,
+				C2EB5C207EEC4F99B0BD4B20 /* SettingsView.swift in Sources */,
+				8F709DD2179D47E5B99A27A7 /* NiyaColors.swift in Sources */,
+				5369990594F74C9785CC5EF4 /* NiyaFonts.swift in Sources */,
+				E90EAF86C56E48ED977014B0 /* NiyaTheme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		11009F214C804078A00AF34F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VALIDATE_PRODUCT = NO;
+			};
+			name = Debug;
+		};
+		6A4686FAAE5C425A938E99FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSET_CATALOG_COMPILER_OPTIMIZATION = space;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLE = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = NO;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A710353FDEBA4D57AA039530 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = com.niya.app;
+				INFOPLIST_FILE = Niya/Info.plist;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.2;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		431BC30B2F8D4C4E8475DE7B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_BUNDLE_IDENTIFIER = com.niya.app;
+				INFOPLIST_FILE = Niya/Info.plist;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.2;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8D2D16C671AD4AEC8B30C3CE /* Build configuration list for PBXProject "Niya" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11009F214C804078A00AF34F /* Debug */,
+				6A4686FAAE5C425A938E99FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E5A9711357B847A38407CC88 /* Build configuration list for PBXNativeTarget "Niya" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A710353FDEBA4D57AA039530 /* Debug */,
+				431BC30B2F8D4C4E8475DE7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 3AEC41037EF14879BF4C6E4F /* Project object */;
+}
