@@ -43,13 +43,24 @@ struct AudioPlayerBar: View {
             .glassEffect()
             .padding(.horizontal, 12)
             .padding(.bottom, 4)
+        } else {
+            HStack(spacing: 8) {
+                Image(systemName: "music.note")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.niyaSecondary.opacity(0.45))
+                Text("Tap a verse to play")
+                    .font(.niyaCaption)
+                    .foregroundStyle(Color.niyaSecondary.opacity(0.45))
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
         }
     }
 
     private var currentTitle: String {
         if let vid = vm.currentVerseID {
-            let surahName = dataService.surahs.first(where: { $0.id == vid.surahId })?.transliteration ?? ""
-            return "\(surahName) · Verse \(vid.ayahId)"
+            let name = dataService.surahs.first(where: { $0.id == vid.surahId })?.transliteration ?? ""
+            return "\(name) · Verse \(vid.ayahId)"
         } else if let sid = vm.currentSurahId {
             return dataService.surahs.first(where: { $0.id == sid })?.transliteration ?? "Playing"
         }
