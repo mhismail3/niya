@@ -31,7 +31,9 @@ struct ScrollReaderView: View {
             .onAppear {
                 if let target = vm.initialAyahId, target > 1 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        proxy.scrollTo(target, anchor: .top)
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            proxy.scrollTo(target, anchor: .top)
+                        }
                     }
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
