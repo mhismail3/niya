@@ -69,6 +69,7 @@ struct SurahSearchView: View {
                             searchQuery = recent.query
                         } label: {
                             Label(recent.query, systemImage: "magnifyingglass")
+                                .font(.niyaBody)
                                 .foregroundStyle(Color.niyaText)
                                 .padding(.horizontal)
                                 .padding(.vertical, 12)

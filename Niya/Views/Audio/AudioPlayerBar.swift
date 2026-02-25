@@ -8,7 +8,7 @@ struct AudioPlayerBar: View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(currentTitle)
-                    .font(.system(.subheadline, weight: .medium))
+                    .font(.niyaSubheadline)
                     .foregroundStyle(Color.niyaText)
                     .lineLimit(1)
                 Text(currentSubtitle)

@@ -13,7 +13,7 @@ struct ContinueReadingCard: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
 
             Text(surah.transliteration)
-                .font(.headline)
+                .font(.niyaHeadline)
                 .foregroundStyle(Color.niyaText)
 
             Text("Verse \(position.lastAyahId) of \(surah.totalVerses)")
@@ -24,7 +24,7 @@ struct ContinueReadingCard: View {
                 .tint(Color.niyaTeal)
 
             Text(position.lastReadAt.relativeFormatted)
-                .font(.caption2)
+                .font(.niyaCaption2)
                 .foregroundStyle(Color.niyaSecondary)
         }
         .padding(12)

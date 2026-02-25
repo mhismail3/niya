@@ -32,7 +32,7 @@ struct VerseRowView: View {
 
             if showTranslation, !verse.translation.isEmpty {
                 Text(verse.translation)
-                    .font(.system(.subheadline))
+                    .font(.system(.subheadline, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)

@@ -16,7 +16,7 @@ struct SurahRowView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(surah.transliteration)
-                    .font(.system(.body, weight: .medium))
+                    .font(.niyaBody)
                     .foregroundStyle(Color.niyaText)
                 HStack(spacing: 6) {
                     Text(surah.translation)
