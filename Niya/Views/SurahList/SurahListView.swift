@@ -44,15 +44,19 @@ struct SurahListView: View {
 
     @ViewBuilder
     private var surahList: some View {
-        List(dataService.surahs) { surah in
-            NavigationLink(destination: readerView(for: surah)) {
-                SurahRowView(surah: surah)
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(dataService.surahs) { surah in
+                    NavigationLink(destination: readerView(for: surah)) {
+                        SurahRowView(surah: surah)
+                            .padding(.horizontal)
+                            .padding(.vertical, 4)
+                    }
+                    .buttonStyle(.plain)
+                    Divider().padding(.horizontal)
+                }
             }
-            .listRowBackground(Color.niyaBackground)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-        .background(Color.niyaBackground)
     }
 
     private func readerView(for surah: Surah) -> some View {

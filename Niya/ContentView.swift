@@ -17,6 +17,7 @@ struct ContentView: View {
                 SurahSearchView()
             }
         }
+        .tint(Color.niyaTeal)
         .tabBarMinimizeBehavior(.onScrollDown)
         .overlay(alignment: .bottom) {
             if audioPlayerVM.isPlaying || audioPlayerVM.isLoading {

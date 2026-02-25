@@ -42,6 +42,6 @@ struct SurahRowView: View {
                 .foregroundStyle(Color.niyaGold)
                 .environment(\.layoutDirection, .rightToLeft)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 2)
     }
 }

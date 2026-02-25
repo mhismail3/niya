@@ -31,7 +31,6 @@ struct MushaPageView: View {
             .padding(.bottom, 100)
         }
         .environment(\.layoutDirection, .leftToRight)
-        .background(Color.niyaBackground)
     }
 
     private var bismillahHeader: some View {

@@ -6,6 +6,7 @@ struct ReaderContainerView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
     @State private var showSettings = false
 
     var body: some View {
@@ -37,6 +38,7 @@ struct ReaderContainerView: View {
         }
         .background(Color.niyaBackground)
         .onAppear {
+            vm.mode = storedMode
             vm.load()
         }
         .onChange(of: storedScript) { _, newScript in
@@ -44,6 +46,9 @@ struct ReaderContainerView: View {
         }
         .onChange(of: showTranslation) { _, show in
             vm.showTranslation = show
+        }
+        .onChange(of: vm.mode) { _, newMode in
+            storedMode = newMode
         }
         .onDisappear {
             guard vm.hasUserScrolled else { return }

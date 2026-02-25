@@ -32,12 +32,6 @@ struct ReaderSettingsSheet: View {
                     LabeledContent("Reciter", value: "Mishary Rashid Al-Afasy")
                     downloadRow
                 }
-
-                Section("About") {
-                    LabeledContent("Quran Text", value: "quran-json (MIT)")
-                    LabeledContent("Simple Arabic", value: "alquran.cloud (CC-BY)")
-                    LabeledContent("Font", value: "Scheherazade New (OFL)")
-                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
