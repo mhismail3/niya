@@ -9,5 +9,5 @@ struct Surah: Codable, Identifiable, Hashable, Sendable {
     let totalVerses: Int
     let startPage: Int
 
-    var isMeccan: Bool { type.lowercased() == "meccan" }
+    var isMakkan: Bool { type.lowercased() == "meccan" }
 }

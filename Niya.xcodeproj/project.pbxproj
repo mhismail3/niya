@@ -30,6 +30,8 @@
 		8FCFDF8B2DF44F90BE9EC821 /* VerseRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE4690B59EF4492E84C399FD /* VerseRowView.swift */; };
 		9CF474B2A2EA461789DC79A9 /* NiyaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C677D4976B4562BF671E2D /* NiyaApp.swift */; };
 		A1A2A3A4A5A6A7A8A9B0B1B2 /* ReaderSettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C2C3C4C5C6C7C8C9D0D1D2 /* ReaderSettingsSheet.swift */; };
+		A0B1C2D3E4F5061728394A5B /* RecentSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C1D2E3F4051627384A5B6C /* RecentSearch.swift */; };
+		A0B1C2D3E4F5061728394A5C /* RecentSearchStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0C1D2E3F4051627384A5B6D /* RecentSearchStore.swift */; };
 		AA11BB22CC33DD44EE55FF66 /* ReadingPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60123456789AB /* ReadingPosition.swift */; };
 		ABA249230DA846C3BEF4F74B /* Verse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83EB559A20924A2EA9FD5712 /* Verse.swift */; };
 		B1F430DC4C52437C9500A5A5 /* AudioDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F2BC9E9ABFD407280EA99A5 /* AudioDownload.swift */; };
@@ -86,6 +88,8 @@
 		98500A1EFE4A47B8B15539F2 /* NiyaTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaTheme.swift; sourceTree = "<group>"; };
 		999B4990BB924C7198294689 /* MushaPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushaPageView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F60123456789AB /* ReadingPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingPosition.swift; sourceTree = "<group>"; };
+		B0C1D2E3F4051627384A5B6C /* RecentSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearch.swift; sourceTree = "<group>"; };
+		B0C1D2E3F4051627384A5B6D /* RecentSearchStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentSearchStore.swift; sourceTree = "<group>"; };
 		AA93D28577AA4DC99BD921B8 /* QuranDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranDataService.swift; sourceTree = "<group>"; };
 		AB7171A9F41E499E9EDF5F5C /* AudioPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerViewModel.swift; sourceTree = "<group>"; };
 		AD81DA0E60F9438F890F97C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -171,6 +175,7 @@
 				94D9A658CCA54D9685B1105E /* AudioService.swift */,
 				2BD0DB63AFF34672AB9E4AA2 /* DownloadStore.swift */,
 				B2C3D4E5F6012345678A9ABC /* ReadingPositionStore.swift */,
+				B0C1D2E3F4051627384A5B6D /* RecentSearchStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -286,6 +291,7 @@
 				83EB559A20924A2EA9FD5712 /* Verse.swift */,
 				0F2BC9E9ABFD407280EA99A5 /* AudioDownload.swift */,
 				A1B2C3D4E5F60123456789AB /* ReadingPosition.swift */,
+				B0C1D2E3F4051627384A5B6C /* RecentSearch.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -429,7 +435,9 @@
 				5369990594F74C9785CC5EF4 /* NiyaFonts.swift in Sources */,
 				E90EAF86C56E48ED977014B0 /* NiyaTheme.swift in Sources */,
 				AA11BB22CC33DD44EE55FF66 /* ReadingPosition.swift in Sources */,
+				A0B1C2D3E4F5061728394A5B /* RecentSearch.swift in Sources */,
 				BB22CC33DD44EE55FF661122 /* ReadingPositionStore.swift in Sources */,
+				A0B1C2D3E4F5061728394A5C /* RecentSearchStore.swift in Sources */,
 				CC33DD44EE55FF6611223344 /* NiyaExtensions.swift in Sources */,
 				DD44EE55FF66112233445566 /* ContinueReadingCard.swift in Sources */,
 				EE55FF66112233445566AA77 /* HomeView.swift in Sources */,

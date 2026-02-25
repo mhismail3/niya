@@ -29,7 +29,7 @@ struct SurahRowView: View {
                         .foregroundStyle(Color.niyaSecondary)
                     Text("·")
                         .foregroundStyle(Color.niyaSecondary)
-                    Text(surah.isMeccan ? "Meccan" : "Medinan")
+                    Text(surah.isMakkan ? "Makkan" : "Madinan")
                         .font(.niyaCaption)
                         .foregroundStyle(Color.niyaSecondary)
                 }
