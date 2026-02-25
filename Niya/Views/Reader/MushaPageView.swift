@@ -7,9 +7,14 @@ struct MushaPageView: View {
     let surahId: Int
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
 
+    let showBismillah: Bool
+
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
+                if showBismillah, verses.first?.id == 1 {
+                    bismillahHeader
+                }
                 ForEach(verses) { verse in
                     VerseRowView(
                         verse: verse,
@@ -25,6 +30,16 @@ struct MushaPageView: View {
             .padding(.horizontal, 16)
             .padding(.bottom, 100)
         }
+        .environment(\.layoutDirection, .leftToRight)
         .background(Color.niyaBackground)
+    }
+
+    private var bismillahHeader: some View {
+        Text("بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ")
+            .font(.custom(QuranScript.hafs.fontName, size: 26))
+            .foregroundStyle(Color.niyaGold)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .environment(\.layoutDirection, .rightToLeft)
+            .padding(.vertical, 20)
     }
 }

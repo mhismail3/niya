@@ -27,14 +27,9 @@ struct ReaderContainerView: View {
                     Image(systemName: "gearshape")
                 }
             }
-            ToolbarItem(placement: .topBarLeading) {
-                if vm.mode == .page {
-                    Text(vm.pageLabel)
-                        .font(.niyaCaption)
-                        .foregroundStyle(Color.niyaSecondary)
-                }
-            }
         }
+        .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+        .toolbarBackgroundVisibility(.hidden, for: .bottomBar)
         .sheet(isPresented: $showSettings) {
             ReaderSettingsSheet(vm: vm)
                 .presentationDetents([.medium, .large])

@@ -10,12 +10,14 @@ struct PageReaderView: View {
                     verses: pageVerses,
                     script: vm.script,
                     showTranslation: vm.showTranslation,
-                    surahId: vm.surah.id
+                    surahId: vm.surah.id,
+                    showBismillah: vm.showBismillah
                 )
                 .tag(idx)
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
+        .environment(\.layoutDirection, .rightToLeft)
         .background(Color.niyaBackground)
         .onAppear {
             vm.isSettled = true
