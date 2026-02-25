@@ -8,6 +8,7 @@ struct ReaderContainerView: View {
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
     @State private var showSettings = false
+    @State private var showBookmarks = false
 
     var body: some View {
         Group {
@@ -21,16 +22,24 @@ struct ReaderContainerView: View {
         .navigationTitle(vm.surah.transliteration)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { showBookmarks = true } label: {
+                    Image(systemName: "bookmark")
+                }
+            }
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showSettings = true
-                } label: {
+                Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
                 }
             }
         }
         .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
         .toolbarBackgroundVisibility(.hidden, for: .bottomBar)
+        .sheet(isPresented: $showBookmarks) {
+            BookmarksView()
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showSettings) {
             ReaderSettingsSheet(vm: vm)
                 .presentationDetents([.medium, .large])

@@ -7,7 +7,6 @@ struct HomeView: View {
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @State private var positions: [ReadingPosition] = []
-    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
@@ -24,18 +23,7 @@ struct HomeView: View {
             .background(Color.niyaBackground)
             .navigationTitle("Niya")
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showSettings = true } label: {
-                        Image(systemName: "gearshape")
-                    }
-                }
-            }
-            .sheet(isPresented: $showSettings) {
-                SettingsView()
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.hidden)
-            }
+            .niyaToolbar()
         }
         .onAppear {
             positions = ReadingPositionStore(modelContext: modelContext).recentPositions()

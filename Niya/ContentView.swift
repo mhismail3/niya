@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(QuranDataService.self) private var dataService
+    @Environment(HadithDataService.self) private var hadithDataService
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(\.modelContext) private var modelContext
 
@@ -12,6 +13,9 @@ struct ContentView: View {
             }
             Tab("Quran", systemImage: "book.pages") {
                 SurahListView()
+            }
+            Tab("Hadith", systemImage: "text.book.closed") {
+                HadithTabView()
             }
             Tab(role: .search) {
                 SurahSearchView()
@@ -29,6 +33,9 @@ struct ContentView: View {
         .animation(.spring(duration: 0.35), value: audioPlayerVM.hasActiveSession)
         .task {
             await dataService.load()
+        }
+        .task {
+            await hadithDataService.load()
         }
         .onAppear {
             audioPlayerVM.setDownloadStore(DownloadStore(modelContext: modelContext))

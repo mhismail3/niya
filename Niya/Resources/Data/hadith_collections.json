@@ -1,0 +1,155 @@
+[
+  {
+    "id": "bukhari",
+    "name": "Sahih al-Bukhari",
+    "nameArabic": "صحيح البخاري",
+    "author": "Imam al-Bukhari",
+    "totalHadiths": 7277,
+    "totalChapters": 97,
+    "hasGrades": true
+  },
+  {
+    "id": "muslim",
+    "name": "Sahih Muslim",
+    "nameArabic": "صحيح مسلم",
+    "author": "Imam Muslim",
+    "totalHadiths": 7459,
+    "totalChapters": 57,
+    "hasGrades": true
+  },
+  {
+    "id": "abudawud",
+    "name": "Sunan Abu Dawud",
+    "nameArabic": "سنن أبي داود",
+    "author": "Imam Abu Dawud",
+    "totalHadiths": 5276,
+    "totalChapters": 43,
+    "hasGrades": true
+  },
+  {
+    "id": "tirmidhi",
+    "name": "Jami' al-Tirmidhi",
+    "nameArabic": "جامع الترمذي",
+    "author": "Imam al-Tirmidhi",
+    "totalHadiths": 4053,
+    "totalChapters": 49,
+    "hasGrades": true
+  },
+  {
+    "id": "nasai",
+    "name": "Sunan an-Nasa'i",
+    "nameArabic": "سنن النسائي",
+    "author": "Imam an-Nasa'i",
+    "totalHadiths": 5768,
+    "totalChapters": 52,
+    "hasGrades": true
+  },
+  {
+    "id": "ibnmajah",
+    "name": "Sunan Ibn Majah",
+    "nameArabic": "سنن ابن ماجه",
+    "author": "Imam Ibn Majah",
+    "totalHadiths": 4345,
+    "totalChapters": 38,
+    "hasGrades": true
+  },
+  {
+    "id": "malik",
+    "name": "Muwatta Malik",
+    "nameArabic": "موطأ مالك",
+    "author": "Imam Malik",
+    "totalHadiths": 1985,
+    "totalChapters": 61,
+    "hasGrades": true
+  },
+  {
+    "id": "ahmed",
+    "name": "Musnad Ahmad",
+    "nameArabic": "مسند أحمد",
+    "author": "Imam Ahmad ibn Hanbal",
+    "totalHadiths": 1374,
+    "totalChapters": 8,
+    "hasGrades": false
+  },
+  {
+    "id": "darimi",
+    "name": "Sunan al-Darimi",
+    "nameArabic": "سنن الدارمي",
+    "author": "Imam al-Darimi",
+    "totalHadiths": 3406,
+    "totalChapters": 24,
+    "hasGrades": false
+  },
+  {
+    "id": "nawawi",
+    "name": "40 Hadith Nawawi",
+    "nameArabic": "الأربعون النووية",
+    "author": "Imam al-Nawawi",
+    "totalHadiths": 42,
+    "totalChapters": 1,
+    "hasGrades": true
+  },
+  {
+    "id": "qudsi",
+    "name": "40 Hadith Qudsi",
+    "nameArabic": "الأحاديث القدسية",
+    "author": "",
+    "totalHadiths": 40,
+    "totalChapters": 1,
+    "hasGrades": true
+  },
+  {
+    "id": "dehlawi",
+    "name": "40 Hadith Shah Waliullah",
+    "nameArabic": "الأربعون الولية",
+    "author": "Shah Waliullah Dehlawi",
+    "totalHadiths": 40,
+    "totalChapters": 1,
+    "hasGrades": true
+  },
+  {
+    "id": "aladab",
+    "name": "Al-Adab Al-Mufrad",
+    "nameArabic": "الأدب المفرد",
+    "author": "Imam al-Bukhari",
+    "totalHadiths": 1326,
+    "totalChapters": 57,
+    "hasGrades": false
+  },
+  {
+    "id": "bulugh",
+    "name": "Bulugh al-Maram",
+    "nameArabic": "بلوغ المرام",
+    "author": "Ibn Hajar al-Asqalani",
+    "totalHadiths": 1767,
+    "totalChapters": 16,
+    "hasGrades": false
+  },
+  {
+    "id": "mishkat",
+    "name": "Mishkat al-Masabih",
+    "nameArabic": "مشكاة المصابيح",
+    "author": "Al-Tabrizi",
+    "totalHadiths": 4428,
+    "totalChapters": 25,
+    "hasGrades": false
+  },
+  {
+    "id": "riyad",
+    "name": "Riyad as-Salihin",
+    "nameArabic": "رياض الصالحين",
+    "author": "Imam al-Nawawi",
+    "totalHadiths": 1896,
+    "totalChapters": 20,
+    "hasGrades": false
+  },
+  {
+    "id": "shamail",
+    "name": "Shamail Muhammadiyah",
+    "nameArabic": "الشمائل المحمدية",
+    "author": "Imam al-Tirmidhi",
+    "totalHadiths": 402,
+    "totalChapters": 57,
+    "hasGrades": false
+  }
+]

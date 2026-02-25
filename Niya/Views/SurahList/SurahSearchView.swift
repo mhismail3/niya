@@ -1,14 +1,20 @@
 import SwiftUI
 
+enum SearchScope: String, CaseIterable {
+    case quran = "Quran"
+    case hadith = "Hadith"
+}
+
 struct SurahSearchView: View {
     @Environment(QuranDataService.self) private var dataService
+    @Environment(HadithDataService.self) private var hadithDataService
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @State private var searchQuery = ""
+    @State private var searchScope: SearchScope = .quran
     @State private var recentQueries: [RecentSearch] = []
     @State private var recentSurahs: [RecentSearch] = []
-    @State private var showSettings = false
 
     private var isSearching: Bool {
         !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
@@ -18,7 +24,12 @@ struct SurahSearchView: View {
         NavigationStack {
             Group {
                 if isSearching {
-                    searchResults
+                    switch searchScope {
+                    case .quran:
+                        quranSearchResults
+                    case .hadith:
+                        hadithSearchResults
+                    }
                 } else {
                     recentsList
                 }
@@ -26,34 +37,69 @@ struct SurahSearchView: View {
             .background(Color.niyaBackground)
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showSettings = true } label: {
-                        Image(systemName: "gearshape")
-                    }
-                }
-            }
-            .sheet(isPresented: $showSettings) {
-                SettingsView()
-                    .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.hidden)
+            .niyaToolbar()
+        }
+        .searchable(text: $searchQuery, prompt: searchScope == .quran ? "Surah name or number" : "Search hadiths")
+        .searchScopes($searchScope) {
+            ForEach(SearchScope.allCases, id: \.self) { scope in
+                Text(scope.rawValue).tag(scope)
             }
         }
-        .searchable(text: $searchQuery, prompt: "Surah name or number")
         .onSubmit(of: .search) {
-            let store = RecentSearchStore(modelContext: modelContext)
-            store.saveQuery(searchQuery)
-            reloadRecents()
+            if searchScope == .quran {
+                let store = RecentSearchStore(modelContext: modelContext)
+                store.saveQuery(searchQuery)
+                reloadRecents()
+            }
         }
         .onAppear { reloadRecents() }
     }
 
-    private var searchResults: some View {
+    private var quranSearchResults: some View {
         List(dataService.searchSurahs(query: searchQuery)) { surah in
             NavigationLink(destination: readerView(for: surah)) {
                 SurahRowView(surah: surah)
             }
             .listRowBackground(Color.niyaBackground)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+    }
+
+    private var hadithSearchResults: some View {
+        let results = hadithDataService.searchHadiths(query: searchQuery)
+        return List {
+            if hadithDataService.loadedCollectionCount > 0 {
+                Section {
+                    ForEach(Array(results.enumerated()), id: \.offset) { _, result in
+                        let collection = hadithDataService.collections.first { $0.id == result.collectionId }
+                        NavigationLink {
+                            HadithDetailView(
+                                hadith: result.hadith,
+                                collectionId: result.collectionId,
+                                hasGrades: collection?.hasGrades ?? false
+                            )
+                        } label: {
+                            HadithSearchResultRow(
+                                collectionId: result.collectionId,
+                                hadith: result.hadith,
+                                collectionName: collection?.name ?? result.collectionId,
+                                hasGrades: collection?.hasGrades ?? false
+                            )
+                        }
+                        .listRowBackground(Color.niyaBackground)
+                    }
+                } header: {
+                    Text("Searching \(hadithDataService.loadedCollectionCount) loaded collections")
+                        .font(.niyaCaption2)
+                }
+            } else {
+                ContentUnavailableView(
+                    "No Collections Loaded",
+                    systemImage: "text.book.closed",
+                    description: Text("Open a hadith collection first to search its contents")
+                )
+            }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)

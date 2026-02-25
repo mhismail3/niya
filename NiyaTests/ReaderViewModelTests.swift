@@ -40,6 +40,7 @@ struct ReaderViewModelTests {
 
     @Test func updateVisibleAyah() {
         let vm = makeVM()
+        vm.isSettled = true
         vm.updateVisibleAyah(25)
         #expect(vm.visibleAyahId == 25)
     }
