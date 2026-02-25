@@ -13,9 +13,6 @@ struct ContentView: View {
             Tab("Quran", systemImage: "book.pages") {
                 SurahListView()
             }
-            Tab("Settings", systemImage: "gear") {
-                SettingsView()
-            }
             Tab(role: .search) {
                 SurahSearchView()
             }
