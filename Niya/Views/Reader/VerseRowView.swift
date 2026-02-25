@@ -42,8 +42,12 @@ struct VerseRowView: View {
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 4)
-        .background(isPlaying ? Color.niyaGold.opacity(0.06) : Color.clear)
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background {
+            if isPlaying {
+                Color.niyaGold.opacity(0.06)
+                    .padding(.horizontal, -16)
+            }
+        }
     }
 
     private var verseNumberBadge: some View {

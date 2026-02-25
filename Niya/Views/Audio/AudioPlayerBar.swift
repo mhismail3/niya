@@ -5,7 +5,7 @@ struct AudioPlayerBar: View {
     @Environment(QuranDataService.self) private var dataService
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 4) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(currentTitle)
                     .font(.niyaSubheadline)
@@ -22,24 +22,30 @@ struct AudioPlayerBar: View {
                 ProgressView()
                     .tint(Color.niyaGold)
             } else {
-                Button(action: vm.togglePause) {
-                    Image(systemName: "pause.fill")
+                Button {
+                    vm.togglePause()
+                } label: {
+                    Image(systemName: vm.isPlaying ? "pause.fill" : "play.fill")
                         .font(.title3)
                         .foregroundStyle(Color.niyaGold)
+                        .frame(width: 44, height: 44)
+                        .contentShape(.rect)
                 }
-                .buttonStyle(.plain)
             }
 
-            Button(action: vm.stop) {
+            Button {
+                vm.stop()
+            } label: {
                 Image(systemName: "xmark")
                     .font(.subheadline)
                     .foregroundStyle(Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(.rect)
             }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .glassEffect()
+        .padding(.vertical, 4)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
         .padding(.horizontal, 12)
     }
 

@@ -107,5 +107,6 @@ final class AudioService {
     @objc private func playerDidFinish() {
         isPlaying = false
         currentVerseID = nil
+        currentSurahId = nil
     }
 }

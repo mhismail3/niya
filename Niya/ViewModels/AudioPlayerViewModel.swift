@@ -24,6 +24,7 @@ final class AudioPlayerViewModel {
     var currentVerseID: VerseID? { audioService.currentVerseID }
     var currentSurahId: Int? { audioService.currentSurahId }
     var downloadProgress: Double { audioService.downloadProgress }
+    var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil }
 
     func playVerse(surahId: Int, ayahId: Int) {
         let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
