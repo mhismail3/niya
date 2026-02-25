@@ -6,6 +6,8 @@ struct VerseRowView: View {
     let showTranslation: Bool
     let isPlaying: Bool
     let onPlay: () -> Void
+    @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
+    @AppStorage("translationFontSize") private var translationFontSize: Double = 16
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
@@ -23,7 +25,7 @@ struct VerseRowView: View {
             }
 
             Text(verse.text)
-                .font(.quranText(script: script))
+                .font(.quranText(script: script, size: arabicFontSize))
                 .foregroundStyle(Color.niyaText)
                 .environment(\.layoutDirection, .rightToLeft)
                 .multilineTextAlignment(.trailing)
@@ -32,7 +34,7 @@ struct VerseRowView: View {
 
             if showTranslation, !verse.translation.isEmpty {
                 Text(verse.translation)
-                    .font(.system(.subheadline, design: .serif))
+                    .font(.system(size: translationFontSize, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
