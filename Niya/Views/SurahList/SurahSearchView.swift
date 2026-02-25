@@ -8,6 +8,7 @@ struct SurahSearchView: View {
     @State private var searchQuery = ""
     @State private var recentQueries: [RecentSearch] = []
     @State private var recentSurahs: [RecentSearch] = []
+    @State private var showSettings = false
 
     private var isSearching: Bool {
         !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
@@ -25,6 +26,18 @@ struct SurahSearchView: View {
             .background(Color.niyaBackground)
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
+            }
         }
         .searchable(text: $searchQuery, prompt: "Surah name or number")
         .onSubmit(of: .search) {

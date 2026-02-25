@@ -24,6 +24,9 @@ struct ContentView: View {
                     .padding(.bottom, 80)
             }
         }
+        .task {
+            await dataService.load()
+        }
         .onAppear {
             audioPlayerVM.setDownloadStore(DownloadStore(modelContext: modelContext))
         }

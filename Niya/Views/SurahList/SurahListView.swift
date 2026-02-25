@@ -6,6 +6,7 @@ struct SurahListView: View {
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @State private var isLoaded = false
     @State private var loadError: String?
+    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
@@ -20,6 +21,18 @@ struct SurahListView: View {
             }
             .navigationTitle("Qur'an")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { showSettings = true } label: {
+                        Image(systemName: "gearshape")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
+            }
             .background(Color.niyaBackground)
         }
         .task {

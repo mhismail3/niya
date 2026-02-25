@@ -39,10 +39,9 @@ struct ReaderSettingsSheet: View {
                     LabeledContent("Font", value: "Scheherazade New (OFL)")
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.niyaBackground)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
         }
     }
 

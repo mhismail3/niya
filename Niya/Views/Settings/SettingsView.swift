@@ -30,9 +30,9 @@ struct SettingsView: View {
                         .foregroundStyle(Color.niyaTeal)
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.niyaBackground)
             .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
         }
     }
 }

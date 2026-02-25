@@ -38,7 +38,7 @@ struct ReaderContainerView: View {
         .sheet(isPresented: $showSettings) {
             ReaderSettingsSheet(vm: vm)
                 .presentationDetents([.medium, .large])
-                .presentationBackground(Color.niyaBackground)
+                .presentationDragIndicator(.hidden)
         }
         .background(Color.niyaBackground)
         .onAppear {
