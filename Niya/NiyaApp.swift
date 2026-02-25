@@ -26,6 +26,8 @@ struct NiyaApp: App {
         as_.configureSession()
     }
 
+    @AppStorage("appearanceMode") private var appearanceMode: Int = 0
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -33,6 +35,7 @@ struct NiyaApp: App {
                 .environment(audioService)
                 .environment(audioPlayerVM)
                 .modelContainer(container)
+                .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
         }
     }
 }

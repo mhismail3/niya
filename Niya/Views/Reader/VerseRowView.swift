@@ -27,7 +27,6 @@ struct VerseRowView: View {
             Text(verse.text)
                 .font(.quranText(script: script, size: arabicFontSize))
                 .foregroundStyle(Color.niyaText)
-                .environment(\.layoutDirection, .rightToLeft)
                 .multilineTextAlignment(.trailing)
                 .lineSpacing(12)
                 .frame(maxWidth: .infinity, alignment: .trailing)

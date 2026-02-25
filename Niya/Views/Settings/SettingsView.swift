@@ -6,6 +6,7 @@ struct SettingsView: View {
     @AppStorage("readerMode") private var mode: ReaderMode = .scroll
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @AppStorage("appearanceMode") private var appearanceMode: Int = 0
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
 
     var body: some View {
@@ -41,6 +42,15 @@ struct SettingsView: View {
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
                     }
+                }
+
+                Section("Appearance") {
+                    Picker("Mode", selection: $appearanceMode) {
+                        Text("Auto").tag(0)
+                        Text("Light").tag(1)
+                        Text("Dark").tag(2)
+                    }
+                    .pickerStyle(.segmented)
                 }
 
                 Section("Audio") {
