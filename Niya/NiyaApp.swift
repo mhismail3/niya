@@ -18,7 +18,7 @@ struct NiyaApp: App {
         _audioPlayerVM = State(wrappedValue: avm)
 
         do {
-            container = try ModelContainer(for: AudioDownload.self)
+            container = try ModelContainer(for: AudioDownload.self, ReadingPosition.self)
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }

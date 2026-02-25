@@ -13,6 +13,8 @@ final class ReaderViewModel {
     var script: QuranScript
     var showTranslation: Bool
     var currentPage: Int = 0
+    var initialAyahId: Int?
+    var visibleAyahId: Int = 1
 
     let surah: Surah
     private let dataService: QuranDataService
@@ -20,17 +22,35 @@ final class ReaderViewModel {
     var verses: [Verse] = []
     var pages: [[Verse]] = []
 
-    init(surah: Surah, dataService: QuranDataService, script: QuranScript, showTranslation: Bool) {
+    init(surah: Surah, dataService: QuranDataService, script: QuranScript, showTranslation: Bool, initialAyahId: Int? = nil) {
         self.surah = surah
         self.dataService = dataService
         self.script = script
         self.showTranslation = showTranslation
+        self.initialAyahId = initialAyahId
     }
 
     func load() {
         verses = dataService.verses(for: surah.id, script: script)
         pages = dataService.pages(for: surah.id, script: script)
-        currentPage = 0
+
+        if let target = initialAyahId {
+            visibleAyahId = target
+            if let pageIndex = pages.firstIndex(where: { page in
+                page.contains { $0.id == target }
+            }) {
+                currentPage = pageIndex
+            } else {
+                currentPage = 0
+            }
+        } else {
+            currentPage = 0
+            visibleAyahId = verses.first?.id ?? 1
+        }
+    }
+
+    func updateVisibleAyah(_ ayahId: Int) {
+        visibleAyahId = ayahId
     }
 
     func reloadForScript(_ newScript: QuranScript) {

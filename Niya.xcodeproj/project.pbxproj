@@ -40,7 +40,26 @@
 		D2357698E40842458DC8E86A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19867D2B510C4D14A2863EFF /* Assets.xcassets */; };
 		BA7A910D47674D4981B03515 /* SwiftData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC98BE9A4E6E48F7A809D373 /* SwiftData.framework */; };
 		E6076CA5A69B4366BE46B613 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F17A80DCF3464892B5E2C2A0 /* AVFoundation.framework */; };
+		AA11BB22CC33DD44EE55FF66 /* ReadingPosition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60123456789AB /* ReadingPosition.swift */; };
+		BB22CC33DD44EE55FF661122 /* ReadingPositionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6012345678A9ABC /* ReadingPositionStore.swift */; };
+		CC33DD44EE55FF6611223344 /* NiyaExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60123456789ABCDE1 /* NiyaExtensions.swift */; };
+		DD44EE55FF66112233445566 /* ContinueReadingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E5F60123456789ABCDE1F2 /* ContinueReadingCard.swift */; };
+		EE55FF66112233445566AA77 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F60123456789ABCDE1F2A3 /* HomeView.swift */; };
+		FF66112233445566AA778899 /* ReadingPositionModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F60123456789ABCDE1F2A3B4 /* ReadingPositionModelTests.swift */; };
+		1122334455667788AABB99CC /* ReadingPositionStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0123456789ABCDE1F2A3B4C5 /* ReadingPositionStoreTests.swift */; };
+		2233445566778899AABBCCDD /* ReaderViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 123456789ABCDE1F2A3B4C5D /* ReaderViewModelTests.swift */; };
+		334455667788AABB99CCDDEE /* ContinueReadingCardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23456789ABCDE1F2A3B4C5D6 /* ContinueReadingCardTests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		33DD001122334455667788FF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3AEC41037EF14879BF4C6E4F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0FA3865FC16D4B79A4D05842;
+			remoteInfo = Niya;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		70C677D4976B4562BF671E2D /* NiyaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaApp.swift; sourceTree = "<group>"; };
@@ -78,6 +97,16 @@
 		F17A80DCF3464892B5E2C2A0 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		4AA1DBCB644B47CB8F566084 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9BEB4D7A24049C3AA5D501E /* Niya.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Niya.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F60123456789AB /* ReadingPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingPosition.swift; sourceTree = "<group>"; };
+		B2C3D4E5F6012345678A9ABC /* ReadingPositionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingPositionStore.swift; sourceTree = "<group>"; };
+		C3D4E5F60123456789ABCDE1 /* NiyaExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NiyaExtensions.swift; sourceTree = "<group>"; };
+		D4E5F60123456789ABCDE1F2 /* ContinueReadingCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinueReadingCard.swift; sourceTree = "<group>"; };
+		E5F60123456789ABCDE1F2A3 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		F60123456789ABCDE1F2A3B4 /* ReadingPositionModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingPositionModelTests.swift; sourceTree = "<group>"; };
+		0123456789ABCDE1F2A3B4C5 /* ReadingPositionStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingPositionStoreTests.swift; sourceTree = "<group>"; };
+		123456789ABCDE1F2A3B4C5D /* ReaderViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReaderViewModelTests.swift; sourceTree = "<group>"; };
+		23456789ABCDE1F2A3B4C5D6 /* ContinueReadingCardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinueReadingCardTests.swift; sourceTree = "<group>"; };
+		DDEE44556677889900112233 /* NiyaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NiyaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +119,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FF00667788990011223344BB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -97,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				FEB8D951EFED4237B28317E3 /* Niya */,
+				BBCC22334455667788990011 /* NiyaTests */,
 				AFC7880339BC4522B3169B5E /* Frameworks */,
 				E9FC323BC1FC498F8953893C /* Products */,
 			);
@@ -106,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				E9BEB4D7A24049C3AA5D501E /* Niya.app */,
+				DDEE44556677889900112233 /* NiyaTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -136,6 +174,18 @@
 			path = Niya;
 			sourceTree = "<group>";
 		};
+		BBCC22334455667788990011 /* NiyaTests */ = {
+			isa = PBXGroup;
+			children = (
+				F60123456789ABCDE1F2A3B4 /* ReadingPositionModelTests.swift */,
+				0123456789ABCDE1F2A3B4C5 /* ReadingPositionStoreTests.swift */,
+				123456789ABCDE1F2A3B4C5D /* ReaderViewModelTests.swift */,
+				23456789ABCDE1F2A3B4C5D6 /* ContinueReadingCardTests.swift */,
+			);
+			name = NiyaTests;
+			path = NiyaTests;
+			sourceTree = "<group>";
+		};
 		F23788F257EB445A82959A46 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -143,6 +193,7 @@
 				CD64F8DE8861445EB8E01012 /* Surah.swift */,
 				83EB559A20924A2EA9FD5712 /* Verse.swift */,
 				0F2BC9E9ABFD407280EA99A5 /* AudioDownload.swift */,
+				A1B2C3D4E5F60123456789AB /* ReadingPosition.swift */,
 			);
 			name = Models;
 			path = Models;
@@ -154,6 +205,7 @@
 				AA93D28577AA4DC99BD921B8 /* QuranDataService.swift */,
 				94D9A658CCA54D9685B1105E /* AudioService.swift */,
 				2BD0DB63AFF34672AB9E4AA2 /* DownloadStore.swift */,
+				B2C3D4E5F6012345678A9ABC /* ReadingPositionStore.swift */,
 			);
 			name = Services;
 			path = Services;
@@ -173,6 +225,7 @@
 		0309F1493E8A40C8B20AAE9C /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AABB11223344556677889900 /* Home */,
 				8EF7179F0B3F4647AD520B49 /* SurahList */,
 				F2446C3054EA448697ED6753 /* Reader */,
 				CA5E3166C24340C9A7D94237 /* Audio */,
@@ -180,6 +233,16 @@
 			);
 			name = Views;
 			path = Views;
+			sourceTree = "<group>";
+		};
+		AABB11223344556677889900 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				E5F60123456789ABCDE1F2A3 /* HomeView.swift */,
+				D4E5F60123456789ABCDE1F2 /* ContinueReadingCard.swift */,
+			);
+			name = Home;
+			path = Home;
 			sourceTree = "<group>";
 		};
 		8EF7179F0B3F4647AD520B49 /* SurahList */ = {
@@ -230,6 +293,7 @@
 				BD193B8797DB40EE83025198 /* NiyaColors.swift */,
 				E8C6FC3BB60146338C0D4C31 /* NiyaFonts.swift */,
 				98500A1EFE4A47B8B15539F2 /* NiyaTheme.swift */,
+				C3D4E5F60123456789ABCDE1 /* NiyaExtensions.swift */,
 			);
 			name = Design;
 			path = Design;
@@ -287,6 +351,23 @@
 			productReference = E9BEB4D7A24049C3AA5D501E /* Niya.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CCDD33445566778899001122 /* NiyaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00AA778899001122334455CC /* Build configuration list for PBXNativeTarget "NiyaTests" */;
+			buildPhases = (
+				EEFF55667788990011223344 /* Sources */,
+				FF00667788990011223344BB /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				44EE112233445566778899AA /* PBXTargetDependency */,
+			);
+			name = NiyaTests;
+			productName = NiyaTests;
+			productReference = DDEE44556677889900112233 /* NiyaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -306,6 +387,7 @@
 			projectRoot = "";
 			targets = (
 				0FA3865FC16D4B79A4D05842 /* Niya */,
+				CCDD33445566778899001122 /* NiyaTests */,
 			);
 		};
 /* End PBXProject section */
@@ -356,10 +438,34 @@
 				8F709DD2179D47E5B99A27A7 /* NiyaColors.swift in Sources */,
 				5369990594F74C9785CC5EF4 /* NiyaFonts.swift in Sources */,
 				E90EAF86C56E48ED977014B0 /* NiyaTheme.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* ReadingPosition.swift in Sources */,
+				BB22CC33DD44EE55FF661122 /* ReadingPositionStore.swift in Sources */,
+				CC33DD44EE55FF6611223344 /* NiyaExtensions.swift in Sources */,
+				DD44EE55FF66112233445566 /* ContinueReadingCard.swift in Sources */,
+				EE55FF66112233445566AA77 /* HomeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EEFF55667788990011223344 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FF66112233445566AA778899 /* ReadingPositionModelTests.swift in Sources */,
+				1122334455667788AABB99CC /* ReadingPositionStoreTests.swift in Sources */,
+				2233445566778899AABBCCDD /* ReaderViewModelTests.swift in Sources */,
+				334455667788AABB99CCDDEE /* ContinueReadingCardTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		44EE112233445566778899AA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0FA3865FC16D4B79A4D05842 /* Niya */;
+			targetProxy = 33DD001122334455667788FF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		11009F214C804078A00AF34F /* Debug */ = {
@@ -527,6 +633,44 @@
 			};
 			name = Release;
 		};
+		11BB889900112233445566DD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.niya.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.2;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Niya.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Niya";
+			};
+			name = Debug;
+		};
+		22CC990011223344556677EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.niya.app.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.2;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Niya.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Niya";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -544,6 +688,15 @@
 			buildConfigurations = (
 				A710353FDEBA4D57AA039530 /* Debug */,
 				431BC30B2F8D4C4E8475DE7B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00AA778899001122334455CC /* Build configuration list for PBXNativeTarget "NiyaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11BB889900112233445566DD /* Debug */,
+				22CC990011223344556677EE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

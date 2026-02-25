@@ -3,6 +3,7 @@ import SwiftUI
 struct ReaderContainerView: View {
     @State var vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
 
@@ -38,6 +39,10 @@ struct ReaderContainerView: View {
         }
         .onChange(of: showTranslation) { _, show in
             vm.showTranslation = show
+        }
+        .onDisappear {
+            ReadingPositionStore(modelContext: modelContext)
+                .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
         }
         .safeAreaInset(edge: .bottom) {
             downloadButton

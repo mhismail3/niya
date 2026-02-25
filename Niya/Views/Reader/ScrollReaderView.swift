@@ -5,25 +5,36 @@ struct ScrollReaderView: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                if vm.showBismillah {
-                    bismillahHeader
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    if vm.showBismillah {
+                        bismillahHeader
+                    }
+                    ForEach(vm.verses) { verse in
+                        VerseRowView(
+                            verse: verse,
+                            script: vm.script,
+                            showTranslation: vm.showTranslation,
+                            isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
+                            onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) }
+                        )
+                        .id(verse.id)
+                        .onAppear { vm.updateVisibleAyah(verse.id) }
+                        Divider()
+                            .padding(.horizontal)
+                    }
                 }
-                ForEach(vm.verses) { verse in
-                    VerseRowView(
-                        verse: verse,
-                        script: vm.script,
-                        showTranslation: vm.showTranslation,
-                        isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
-                        onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) }
-                    )
-                    Divider()
-                        .padding(.horizontal)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 100)
+            }
+            .onAppear {
+                if let target = vm.initialAyahId {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        proxy.scrollTo(target, anchor: .top)
+                    }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 100)
         }
         .background(Color.niyaBackground)
     }

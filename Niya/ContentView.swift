@@ -7,6 +7,9 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
+            Tab("Home", systemImage: "house") {
+                HomeView()
+            }
             Tab("Quran", systemImage: "book.pages") {
                 SurahListView()
             }
@@ -18,9 +21,10 @@ struct ContentView: View {
             }
         }
         .tabBarMinimizeBehavior(.onScrollDown)
-        .tabViewBottomAccessory {
+        .overlay(alignment: .bottom) {
             if audioPlayerVM.isPlaying || audioPlayerVM.isLoading {
                 AudioPlayerBar()
+                    .padding(.bottom, 80)
             }
         }
         .onAppear {
