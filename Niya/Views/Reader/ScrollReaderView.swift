@@ -29,10 +29,13 @@ struct ScrollReaderView: View {
                 .padding(.bottom, 100)
             }
             .onAppear {
-                if let target = vm.initialAyahId {
+                if let target = vm.initialAyahId, target > 1 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         proxy.scrollTo(target, anchor: .top)
                     }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    vm.isSettled = true
                 }
             }
         }

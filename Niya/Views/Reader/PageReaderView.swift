@@ -17,6 +17,9 @@ struct PageReaderView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
         .background(Color.niyaBackground)
+        .onAppear {
+            vm.isSettled = true
+        }
         .onChange(of: vm.currentPage) { _, newPage in
             guard newPage >= 0, newPage < vm.pages.count,
                   let firstVerse = vm.pages[newPage].first else { return }

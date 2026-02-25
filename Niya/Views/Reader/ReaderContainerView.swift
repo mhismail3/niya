@@ -51,6 +51,7 @@ struct ReaderContainerView: View {
             vm.showTranslation = show
         }
         .onDisappear {
+            guard vm.hasUserScrolled else { return }
             ReadingPositionStore(modelContext: modelContext)
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
         }

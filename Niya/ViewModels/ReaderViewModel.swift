@@ -15,6 +15,8 @@ final class ReaderViewModel {
     var currentPage: Int = 0
     var initialAyahId: Int?
     var visibleAyahId: Int = 1
+    var isSettled = false
+    var hasUserScrolled = false
 
     let surah: Surah
     private let dataService: QuranDataService
@@ -50,6 +52,8 @@ final class ReaderViewModel {
     }
 
     func updateVisibleAyah(_ ayahId: Int) {
+        guard isSettled else { return }
+        hasUserScrolled = true
         visibleAyahId = ayahId
     }
 
