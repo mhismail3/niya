@@ -46,6 +46,10 @@ final class DuaDataService {
         categories.first { $0.id == id }
     }
 
+    func totalDuas(for sectionId: String) -> Int {
+        categories(for: sectionId).reduce(0) { $0 + $1.totalDuas }
+    }
+
     func searchDuas(query: String) -> [(categoryId: Int, dua: Dua)] {
         let q = query.trimmingCharacters(in: .whitespaces).lowercased()
         guard !q.isEmpty else { return [] }

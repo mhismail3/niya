@@ -59,6 +59,9 @@ SWIFT_FILES = [
     "Niya/Models/DuaBookmark.swift",
     "Niya/Models/RecentHadith.swift",
     "Niya/Models/RecentDua.swift",
+    "Niya/Models/TajweedRule.swift",
+    "Niya/Models/TajweedAnnotation.swift",
+    "Niya/Models/TajweedVerse.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -72,6 +75,7 @@ SWIFT_FILES = [
     "Niya/Services/DuaBookmarkStore.swift",
     "Niya/Services/RecentHadithStore.swift",
     "Niya/Services/RecentDuaStore.swift",
+    "Niya/Services/TajweedService.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -87,6 +91,7 @@ SWIFT_FILES = [
     "Niya/Views/Reader/VerseRowView.swift",
     "Niya/Views/Reader/MushaPageView.swift",
     "Niya/Views/Reader/ReaderSettingsSheet.swift",
+    "Niya/Views/Reader/TajweedTextView.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
     # Views/Home
@@ -110,8 +115,7 @@ SWIFT_FILES = [
     "Niya/Views/Hadith/HadithSearchResultRow.swift",
     # Views/Dua
     "Niya/Views/Dua/DuaTabView.swift",
-    "Niya/Views/Dua/DuaCategoryRow.swift",
-    "Niya/Views/Dua/DuaCategoryView.swift",
+    "Niya/Views/Dua/DuaSectionView.swift",
     "Niya/Views/Dua/DuaRowView.swift",
     "Niya/Views/Dua/DuaDetailView.swift",
     "Niya/Views/Dua/DuaSearchResultRow.swift",
@@ -487,6 +491,9 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/DuaBookmark.swift"], "DuaBookmark.swift"),
         (swift_file_ids["Niya/Models/RecentHadith.swift"], "RecentHadith.swift"),
         (swift_file_ids["Niya/Models/RecentDua.swift"], "RecentDua.swift"),
+        (swift_file_ids["Niya/Models/TajweedRule.swift"], "TajweedRule.swift"),
+        (swift_file_ids["Niya/Models/TajweedAnnotation.swift"], "TajweedAnnotation.swift"),
+        (swift_file_ids["Niya/Models/TajweedVerse.swift"], "TajweedVerse.swift"),
     ], path_str="Models")
 
     # Services
@@ -503,6 +510,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/DuaBookmarkStore.swift"], "DuaBookmarkStore.swift"),
         (swift_file_ids["Niya/Services/RecentHadithStore.swift"], "RecentHadithStore.swift"),
         (swift_file_ids["Niya/Services/RecentDuaStore.swift"], "RecentDuaStore.swift"),
+        (swift_file_ids["Niya/Services/TajweedService.swift"], "TajweedService.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -539,6 +547,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/VerseRowView.swift"],        "VerseRowView.swift"),
         (swift_file_ids["Niya/Views/Reader/MushaPageView.swift"],       "MushaPageView.swift"),
         (swift_file_ids["Niya/Views/Reader/ReaderSettingsSheet.swift"], "ReaderSettingsSheet.swift"),
+        (swift_file_ids["Niya/Views/Reader/TajweedTextView.swift"], "TajweedTextView.swift"),
     ], path_str="Reader")
 
     # Views/Audio
@@ -575,8 +584,7 @@ def section_pbx_group():
     # Views/Dua
     emit_subgroup(SUBGROUP_IDS["Views/Dua"], "Dua", "Views/Dua", [
         (swift_file_ids["Niya/Views/Dua/DuaTabView.swift"], "DuaTabView.swift"),
-        (swift_file_ids["Niya/Views/Dua/DuaCategoryRow.swift"], "DuaCategoryRow.swift"),
-        (swift_file_ids["Niya/Views/Dua/DuaCategoryView.swift"], "DuaCategoryView.swift"),
+        (swift_file_ids["Niya/Views/Dua/DuaSectionView.swift"], "DuaSectionView.swift"),
         (swift_file_ids["Niya/Views/Dua/DuaRowView.swift"], "DuaRowView.swift"),
         (swift_file_ids["Niya/Views/Dua/DuaDetailView.swift"], "DuaDetailView.swift"),
         (swift_file_ids["Niya/Views/Dua/DuaSearchResultRow.swift"], "DuaSearchResultRow.swift"),

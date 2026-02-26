@@ -6,7 +6,6 @@ struct DuaTabView: View {
     @State private var isLoaded = false
     @State private var loadError: String?
     @State private var path = NavigationPath()
-    @State private var expandedSections: Set<String> = []
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -23,8 +22,8 @@ struct DuaTabView: View {
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
             .background(Color.niyaBackground)
-            .navigationDestination(for: DuaCategory.self) { category in
-                DuaCategoryView(category: category)
+            .navigationDestination(for: DuaSection.self) { section in
+                DuaSectionView(section: section)
             }
             .navigationDestination(for: DuaNavDestination.self) { dest in
                 if let dua = dataService.dua(categoryId: dest.categoryId, duaId: dest.duaId) {
@@ -51,12 +50,18 @@ struct DuaTabView: View {
     @ViewBuilder
     private var sectionList: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
+            LazyVStack(spacing: 0) {
                 ForEach(dataService.sections) { section in
-                    sectionView(section)
+                    NavigationLink(value: section) {
+                        DuaSectionRow(section: section, totalDuas: dataService.totalDuas(for: section.id))
+                            .padding(.horizontal)
+                            .padding(.vertical, 10)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    Divider().padding(.horizontal)
                 }
             }
-            .padding(.top, 8)
         }
     }
 
@@ -79,55 +84,31 @@ struct DuaTabView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.niyaBackground)
     }
+}
 
-    private func sectionView(_ section: DuaSection) -> some View {
-        let isExpanded = expandedSections.contains(section.id)
-        let cats = dataService.categories(for: section.id)
+private struct DuaSectionRow: View {
+    let section: DuaSection
+    let totalDuas: Int
 
-        return VStack(alignment: .leading, spacing: 0) {
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    if isExpanded {
-                        expandedSections.remove(section.id)
-                    } else {
-                        expandedSections.insert(section.id)
-                    }
-                }
-            } label: {
-                HStack {
-                    Text(section.name)
-                        .font(.niyaBody)
-                        .foregroundStyle(Color.niyaText)
+    var body: some View {
+        HStack {
+            Text(section.name)
+                .font(.niyaBody)
+                .foregroundStyle(Color.niyaText)
 
-                    Spacer()
+            Spacer()
 
-                    Text("\(cats.count)")
-                        .font(.niyaCaption2)
-                        .foregroundStyle(Color.niyaSecondary)
+            Text("\(totalDuas)")
+                .font(.system(.caption2, design: .rounded, weight: .semibold))
+                .foregroundStyle(Color.niyaTeal)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(Color.niyaTeal.opacity(0.12))
+                .clipShape(Capsule())
 
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundStyle(Color.niyaSecondary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            if isExpanded {
-                ForEach(cats) { category in
-                    NavigationLink(value: category) {
-                        DuaCategoryRow(category: category)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    Divider().padding(.leading, 32)
-                }
-            }
-
-            Divider().padding(.horizontal)
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(Color.niyaSecondary)
         }
     }
 }
