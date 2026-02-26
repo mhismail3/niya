@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(HadithDataService.self) private var hadithDataService
+    @Environment(DuaDataService.self) private var duaDataService
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
@@ -18,6 +19,9 @@ struct ContentView: View {
             }
             Tab("Hadith", systemImage: "text.book.closed", value: "hadith") {
                 HadithTabView()
+            }
+            Tab("Dua", systemImage: "hands.and.sparkles", value: "dua") {
+                DuaTabView()
             }
             Tab("Search", systemImage: "magnifyingglass", value: "search", role: .search) {
                 SurahSearchView()
@@ -38,6 +42,9 @@ struct ContentView: View {
         }
         .task {
             await hadithDataService.load()
+        }
+        .task {
+            await duaDataService.load()
         }
         .onAppear {
             audioPlayerVM.setDownloadStore(DownloadStore(modelContext: modelContext))

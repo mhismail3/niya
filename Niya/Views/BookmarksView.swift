@@ -3,14 +3,16 @@ import SwiftUI
 struct BookmarksView: View {
     @Environment(QuranDataService.self) private var quranDataService
     @Environment(HadithDataService.self) private var hadithDataService
+    @Environment(DuaDataService.self) private var duaDataService
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var quranBookmarks: [QuranBookmark] = []
     @State private var hadithBookmarks: [HadithBookmark] = []
+    @State private var duaBookmarks: [DuaBookmark] = []
 
     private var hasAny: Bool {
-        !quranBookmarks.isEmpty || !hadithBookmarks.isEmpty
+        !quranBookmarks.isEmpty || !hadithBookmarks.isEmpty || !duaBookmarks.isEmpty
     }
 
     private var hadithGrouped: [(collection: HadithCollection, bookmarks: [HadithBookmark])] {
@@ -31,7 +33,7 @@ struct BookmarksView: View {
                     ContentUnavailableView(
                         "No Bookmarks",
                         systemImage: "bookmark",
-                        description: Text("Bookmark ayahs or hadiths to save them here")
+                        description: Text("Bookmark ayahs, hadiths, or duas to save them here")
                     )
                 } else {
                     list
@@ -42,6 +44,7 @@ struct BookmarksView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .task { await loadHadithCollections() }
+        .task { await loadDuaData() }
         .onAppear { reload() }
     }
 
@@ -53,6 +56,9 @@ struct BookmarksView: View {
                 }
                 if !hadithBookmarks.isEmpty {
                     hadithSection
+                }
+                if !duaBookmarks.isEmpty {
+                    duaSection
                 }
             }
         }
@@ -152,6 +158,57 @@ struct BookmarksView: View {
         }
     }
 
+    // MARK: - Dua
+
+    private var duaSection: some View {
+        Group {
+            sectionHeader("Dua")
+
+            ForEach(duaBookmarks, id: \.duaKey) { bookmark in
+                if let dua = duaDataService.dua(categoryId: bookmark.categoryId, duaId: bookmark.duaId) {
+                    let categoryName = duaDataService.category(id: bookmark.categoryId)?.name ?? "Dua"
+
+                    Button {
+                        coordinator.navigateToDua(categoryId: bookmark.categoryId, duaId: bookmark.duaId)
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 12) {
+                            ZStack {
+                                Image(systemName: "diamond")
+                                    .font(.system(size: 32))
+                                    .foregroundStyle(Color.niyaTeal.opacity(0.15))
+                                Text("\(dua.id)")
+                                    .font(.system(.caption2, design: .rounded, weight: .semibold))
+                                    .foregroundStyle(Color.niyaTeal)
+                            }
+                            .frame(width: 40)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(categoryName)
+                                    .font(.niyaCaption)
+                                    .foregroundStyle(Color.niyaGold)
+                                Text(dua.translation)
+                                    .font(.niyaCaption)
+                                    .foregroundStyle(Color.niyaText)
+                                    .lineLimit(2)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(Color.niyaSecondary)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                    }
+                    .buttonStyle(.plain)
+
+                    Divider().padding(.horizontal)
+                }
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     private func sectionHeader(_ title: String) -> some View {
@@ -166,6 +223,7 @@ struct BookmarksView: View {
     private func reload() {
         quranBookmarks = QuranBookmarkStore(modelContext: modelContext).allBookmarks()
         hadithBookmarks = HadithBookmarkStore(modelContext: modelContext).allBookmarks()
+        duaBookmarks = DuaBookmarkStore(modelContext: modelContext).allBookmarks()
     }
 
     private func loadHadithCollections() async {
@@ -173,6 +231,11 @@ struct BookmarksView: View {
         for id in Set(bookmarks.map(\.collectionId)) {
             await hadithDataService.loadCollection(id)
         }
+        reload()
+    }
+
+    private func loadDuaData() async {
+        await duaDataService.load()
         reload()
     }
 }

@@ -3,11 +3,13 @@ import SwiftUI
 enum SearchScope: String, CaseIterable {
     case quran = "Quran"
     case hadith = "Hadith"
+    case dua = "Dua"
 }
 
 struct SurahSearchView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(HadithDataService.self) private var hadithDataService
+    @Environment(DuaDataService.self) private var duaDataService
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
@@ -29,6 +31,8 @@ struct SurahSearchView: View {
                         quranSearchResults
                     case .hadith:
                         hadithSearchResults
+                    case .dua:
+                        duaSearchResults
                     }
                 } else {
                     recentsList
@@ -39,7 +43,7 @@ struct SurahSearchView: View {
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
         }
-        .searchable(text: $searchQuery, prompt: searchScope == .quran ? "Surah name or number" : "Search hadiths")
+        .searchable(text: $searchQuery, prompt: searchScope == .quran ? "Surah name or number" : searchScope == .hadith ? "Search hadiths" : "Search duas")
         .searchScopes($searchScope) {
             ForEach(SearchScope.allCases, id: \.self) { scope in
                 Text(scope.rawValue).tag(scope)
@@ -99,6 +103,37 @@ struct SurahSearchView: View {
                     systemImage: "text.book.closed",
                     description: Text("Open a hadith collection first to search its contents")
                 )
+            }
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+    }
+
+    private var duaSearchResults: some View {
+        let results = duaDataService.searchDuas(query: searchQuery)
+        return List {
+            if duaDataService.isLoaded {
+                Section {
+                    ForEach(Array(results.enumerated()), id: \.offset) { _, result in
+                        let category = duaDataService.category(id: result.categoryId)
+                        NavigationLink {
+                            DuaDetailView(dua: result.dua, categoryId: result.categoryId)
+                        } label: {
+                            DuaSearchResultRow(
+                                categoryName: category?.name ?? "Dua",
+                                dua: result.dua
+                            )
+                        }
+                        .listRowBackground(Color.niyaBackground)
+                    }
+                } header: {
+                    if results.isEmpty && !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                        Text("No results")
+                            .font(.niyaCaption2)
+                    }
+                }
+            } else {
+                ProgressView()
             }
         }
         .listStyle(.plain)

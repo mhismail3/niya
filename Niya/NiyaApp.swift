@@ -5,6 +5,7 @@ import SwiftData
 struct NiyaApp: App {
     @State private var dataService = QuranDataService()
     @State private var hadithDataService = HadithDataService()
+    @State private var duaDataService = DuaDataService()
     @State private var audioService = AudioService()
     @State private var audioPlayerVM: AudioPlayerViewModel
     @State private var navigationCoordinator = NavigationCoordinator()
@@ -14,15 +15,17 @@ struct NiyaApp: App {
     init() {
         let ds = QuranDataService()
         let hds = HadithDataService()
+        let dds = DuaDataService()
         let as_ = AudioService()
         let avm = AudioPlayerViewModel(audioService: as_, dataService: ds)
         _dataService = State(wrappedValue: ds)
         _hadithDataService = State(wrappedValue: hds)
+        _duaDataService = State(wrappedValue: dds)
         _audioService = State(wrappedValue: as_)
         _audioPlayerVM = State(wrappedValue: avm)
 
         do {
-            container = try ModelContainer(for: AudioDownload.self, ReadingPosition.self, RecentSearch.self, HadithBookmark.self, QuranBookmark.self)
+            container = try ModelContainer(for: AudioDownload.self, ReadingPosition.self, RecentSearch.self, HadithBookmark.self, QuranBookmark.self, DuaBookmark.self)
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
@@ -37,6 +40,7 @@ struct NiyaApp: App {
             ContentView()
                 .environment(dataService)
                 .environment(hadithDataService)
+                .environment(duaDataService)
                 .environment(audioService)
                 .environment(audioPlayerVM)
                 .environment(navigationCoordinator)
@@ -62,12 +66,18 @@ struct HadithNavDestination: Hashable {
     let hasGrades: Bool
 }
 
+struct DuaNavDestination: Hashable {
+    let categoryId: Int
+    let duaId: Int
+}
+
 @Observable
 @MainActor
 final class NavigationCoordinator {
     var selectedTab: String = "home"
     var pendingQuranDestination: QuranNavDestination?
     var pendingHadithDestination: HadithNavDestination?
+    var pendingDuaDestination: DuaNavDestination?
 
     func navigateToAyah(surahId: Int, ayahId: Int) {
         pendingQuranDestination = QuranNavDestination(surahId: surahId, ayahId: ayahId)
@@ -77,5 +87,10 @@ final class NavigationCoordinator {
     func navigateToHadith(collectionId: String, hadithId: Int, hasGrades: Bool) {
         pendingHadithDestination = HadithNavDestination(collectionId: collectionId, hadithId: hadithId, hasGrades: hasGrades)
         selectedTab = "hadith"
+    }
+
+    func navigateToDua(categoryId: Int, duaId: Int) {
+        pendingDuaDestination = DuaNavDestination(categoryId: categoryId, duaId: duaId)
+        selectedTab = "dua"
     }
 }

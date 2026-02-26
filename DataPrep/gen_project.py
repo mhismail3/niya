@@ -53,6 +53,10 @@ SWIFT_FILES = [
     "Niya/Models/HadithGrade.swift",
     "Niya/Models/HadithBookmark.swift",
     "Niya/Models/QuranBookmark.swift",
+    "Niya/Models/DuaSection.swift",
+    "Niya/Models/DuaCategory.swift",
+    "Niya/Models/Dua.swift",
+    "Niya/Models/DuaBookmark.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -62,6 +66,8 @@ SWIFT_FILES = [
     "Niya/Services/HadithDataService.swift",
     "Niya/Services/HadithBookmarkStore.swift",
     "Niya/Services/QuranBookmarkStore.swift",
+    "Niya/Services/DuaDataService.swift",
+    "Niya/Services/DuaBookmarkStore.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -96,6 +102,13 @@ SWIFT_FILES = [
     "Niya/Views/Hadith/HadithDetailView.swift",
     "Niya/Views/Hadith/HadithBookmarksView.swift",
     "Niya/Views/Hadith/HadithSearchResultRow.swift",
+    # Views/Dua
+    "Niya/Views/Dua/DuaTabView.swift",
+    "Niya/Views/Dua/DuaCategoryRow.swift",
+    "Niya/Views/Dua/DuaCategoryView.swift",
+    "Niya/Views/Dua/DuaRowView.swift",
+    "Niya/Views/Dua/DuaDetailView.swift",
+    "Niya/Views/Dua/DuaSearchResultRow.swift",
     # Design
     "Niya/Design/NiyaColors.swift",
     "Niya/Design/NiyaFonts.swift",
@@ -127,6 +140,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/hadith_mishkat.json",
     "Niya/Resources/Data/hadith_riyad.json",
     "Niya/Resources/Data/hadith_shamail.json",
+    "Niya/Resources/Data/dua_all.json",
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -203,6 +217,7 @@ SUBGROUP_IDS = {
     "Views/Home":         new_id(),
     "Views/Settings":     new_id(),
     "Views/Hadith":       new_id(),
+    "Views/Dua":          new_id(),
     "Design":             new_id(),
     "Resources":          new_id(),
     "Resources/Data":     new_id(),
@@ -460,6 +475,10 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/HadithGrade.swift"],  "HadithGrade.swift"),
         (swift_file_ids["Niya/Models/HadithBookmark.swift"], "HadithBookmark.swift"),
         (swift_file_ids["Niya/Models/QuranBookmark.swift"], "QuranBookmark.swift"),
+        (swift_file_ids["Niya/Models/DuaSection.swift"], "DuaSection.swift"),
+        (swift_file_ids["Niya/Models/DuaCategory.swift"], "DuaCategory.swift"),
+        (swift_file_ids["Niya/Models/Dua.swift"], "Dua.swift"),
+        (swift_file_ids["Niya/Models/DuaBookmark.swift"], "DuaBookmark.swift"),
     ], path_str="Models")
 
     # Services
@@ -472,6 +491,8 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/HadithDataService.swift"], "HadithDataService.swift"),
         (swift_file_ids["Niya/Services/HadithBookmarkStore.swift"], "HadithBookmarkStore.swift"),
         (swift_file_ids["Niya/Services/QuranBookmarkStore.swift"], "QuranBookmarkStore.swift"),
+        (swift_file_ids["Niya/Services/DuaDataService.swift"], "DuaDataService.swift"),
+        (swift_file_ids["Niya/Services/DuaBookmarkStore.swift"], "DuaBookmarkStore.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -490,6 +511,7 @@ def section_pbx_group():
         (SUBGROUP_IDS["Views/Home"],      "Home"),
         (SUBGROUP_IDS["Views/Settings"],  "Settings"),
         (SUBGROUP_IDS["Views/Hadith"],    "Hadith"),
+        (SUBGROUP_IDS["Views/Dua"],       "Dua"),
     ], path_str="Views")
 
     # Views/SurahList
@@ -538,6 +560,16 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Hadith/HadithSearchResultRow.swift"], "HadithSearchResultRow.swift"),
     ], path_str="Hadith")
 
+    # Views/Dua
+    emit_subgroup(SUBGROUP_IDS["Views/Dua"], "Dua", "Views/Dua", [
+        (swift_file_ids["Niya/Views/Dua/DuaTabView.swift"], "DuaTabView.swift"),
+        (swift_file_ids["Niya/Views/Dua/DuaCategoryRow.swift"], "DuaCategoryRow.swift"),
+        (swift_file_ids["Niya/Views/Dua/DuaCategoryView.swift"], "DuaCategoryView.swift"),
+        (swift_file_ids["Niya/Views/Dua/DuaRowView.swift"], "DuaRowView.swift"),
+        (swift_file_ids["Niya/Views/Dua/DuaDetailView.swift"], "DuaDetailView.swift"),
+        (swift_file_ids["Niya/Views/Dua/DuaSearchResultRow.swift"], "DuaSearchResultRow.swift"),
+    ], path_str="Dua")
+
     # Design
     emit_subgroup(SUBGROUP_IDS["Design"], "Design", "Design", [
         (swift_file_ids["Niya/Design/NiyaColors.swift"], "NiyaColors.swift"),
@@ -560,6 +592,7 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Data/verses_hafs.json"],   "verses_hafs.json"),
         (resource_file_ids["Niya/Resources/Data/verses_indopak.json"],"verses_indopak.json"),
         (resource_file_ids["Niya/Resources/Data/hadith_collections.json"], "hadith_collections.json"),
+        (resource_file_ids["Niya/Resources/Data/dua_all.json"], "dua_all.json"),
     ]
     for coll_id in ["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
                      "malik", "ahmed", "darimi", "nawawi", "qudsi", "dehlawi",
