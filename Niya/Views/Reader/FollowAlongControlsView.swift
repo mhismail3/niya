@@ -30,18 +30,15 @@ struct FollowAlongControlsView: View {
 
             loopMenu
 
-            Button {
-                vm.autoAdvance.toggle()
-            } label: {
-                Image(systemName: vm.autoAdvance ? "arrow.right.circle.fill" : "arrow.right.circle")
-                    .font(.body)
-                    .foregroundStyle(vm.autoAdvance ? Color.niyaGold : Color.niyaSecondary)
+            Button(action: { vm.stopTracking() }) {
+                Image(systemName: "xmark")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.niyaSecondary)
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
-        .frame(maxWidth: .infinity)
         .glassEffect()
     }
 
