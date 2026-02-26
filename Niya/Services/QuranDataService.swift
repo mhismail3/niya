@@ -34,6 +34,10 @@ final class QuranDataService {
         return dict?[String(surahId)] ?? []
     }
 
+    func verse(surahId: Int, ayahId: Int) -> Verse? {
+        verses(for: surahId, script: .hafs).first { $0.id == ayahId }
+    }
+
     func pages(for surahId: Int, script: QuranScript) -> [[Verse]] {
         let all = verses(for: surahId, script: script)
         var grouped: [Int: [Verse]] = [:]

@@ -4,20 +4,22 @@ struct ContentView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(HadithDataService.self) private var hadithDataService
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
-        TabView {
-            Tab("Home", systemImage: "house") {
+        @Bindable var coordinator = coordinator
+        TabView(selection: $coordinator.selectedTab) {
+            Tab("Home", systemImage: "house", value: "home") {
                 HomeView()
             }
-            Tab("Quran", systemImage: "book.pages") {
+            Tab("Quran", systemImage: "book.pages", value: "quran") {
                 SurahListView()
             }
-            Tab("Hadith", systemImage: "text.book.closed") {
+            Tab("Hadith", systemImage: "text.book.closed", value: "hadith") {
                 HadithTabView()
             }
-            Tab(role: .search) {
+            Tab("Search", systemImage: "magnifyingglass", value: "search", role: .search) {
                 SurahSearchView()
             }
         }

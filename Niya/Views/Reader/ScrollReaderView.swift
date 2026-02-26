@@ -3,6 +3,8 @@ import SwiftUI
 struct ScrollReaderView: View {
     let vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(\.modelContext) private var modelContext
+    @State private var bookmarkedAyahs: Set<Int> = []
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -17,7 +19,9 @@ struct ScrollReaderView: View {
                             script: vm.script,
                             showTranslation: vm.showTranslation,
                             isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
-                            onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) }
+                            isBookmarked: bookmarkedAyahs.contains(verse.id),
+                            onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) },
+                            onBookmark: { toggleBookmark(verse.id) }
                         )
                         .id(verse.id)
                         .onAppear { vm.updateVisibleAyah(verse.id) }
@@ -29,6 +33,7 @@ struct ScrollReaderView: View {
                 .padding(.bottom, 100)
             }
             .onAppear {
+                loadBookmarks()
                 if let target = vm.initialAyahId, target > 1 {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         withAnimation(.easeInOut(duration: 0.4)) {
@@ -42,6 +47,22 @@ struct ScrollReaderView: View {
             }
         }
         .background(Color.niyaBackground)
+    }
+
+    private func loadBookmarks() {
+        let store = QuranBookmarkStore(modelContext: modelContext)
+        let all = store.allBookmarks().filter { $0.surahId == vm.surah.id }
+        bookmarkedAyahs = Set(all.map(\.ayahId))
+    }
+
+    private func toggleBookmark(_ ayahId: Int) {
+        let store = QuranBookmarkStore(modelContext: modelContext)
+        store.toggle(surahId: vm.surah.id, ayahId: ayahId)
+        if bookmarkedAyahs.contains(ayahId) {
+            bookmarkedAyahs.remove(ayahId)
+        } else {
+            bookmarkedAyahs.insert(ayahId)
+        }
     }
 
     private var bismillahHeader: some View {

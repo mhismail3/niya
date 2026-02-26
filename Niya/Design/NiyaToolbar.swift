@@ -21,7 +21,7 @@ struct NiyaToolbar: ViewModifier {
             .sheet(isPresented: $showBookmarks) {
                 BookmarksView()
                     .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
+                    .presentationDragIndicator(.hidden)
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()

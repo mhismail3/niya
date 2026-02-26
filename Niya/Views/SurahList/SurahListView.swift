@@ -2,13 +2,15 @@ import SwiftUI
 
 struct SurahListView: View {
     @Environment(QuranDataService.self) private var dataService
+    @Environment(NavigationCoordinator.self) private var coordinator
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @State private var isLoaded = false
     @State private var loadError: String?
+    @State private var path = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Group {
                 if !isLoaded {
                     loadingView
@@ -22,6 +24,28 @@ struct SurahListView: View {
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
             .background(Color.niyaBackground)
+            .navigationDestination(for: QuranNavDestination.self) { dest in
+                if let surah = dataService.surahs.first(where: { $0.id == dest.surahId }) {
+                    ReaderContainerView(
+                        vm: ReaderViewModel(
+                            surah: surah,
+                            dataService: dataService,
+                            script: script,
+                            showTranslation: showTranslation,
+                            initialAyahId: dest.ayahId
+                        )
+                    )
+                }
+            }
+        }
+        .onChange(of: coordinator.pendingQuranDestination, initial: true) { _, newDest in
+            if let dest = newDest {
+                coordinator.pendingQuranDestination = nil
+                path = NavigationPath()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    path.append(dest)
+                }
+            }
         }
         .task {
             await dataService.load()
@@ -35,7 +59,7 @@ struct SurahListView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(dataService.surahs) { surah in
-                    NavigationLink(destination: readerView(for: surah)) {
+                    NavigationLink(value: QuranNavDestination(surahId: surah.id)) {
                         SurahRowView(surah: surah)
                             .padding(.horizontal)
                             .padding(.vertical, 4)
@@ -45,17 +69,6 @@ struct SurahListView: View {
                 }
             }
         }
-    }
-
-    private func readerView(for surah: Surah) -> some View {
-        ReaderContainerView(
-            vm: ReaderViewModel(
-                surah: surah,
-                dataService: dataService,
-                script: script,
-                showTranslation: showTranslation
-            )
-        )
     }
 
     private var loadingView: some View {

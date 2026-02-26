@@ -5,7 +5,9 @@ struct VerseRowView: View {
     let script: QuranScript
     let showTranslation: Bool
     let isPlaying: Bool
+    let isBookmarked: Bool
     let onPlay: () -> Void
+    let onBookmark: () -> Void
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
 
@@ -16,6 +18,13 @@ struct VerseRowView: View {
                     Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle")
                         .font(.title3)
                         .foregroundStyle(isPlaying ? Color.niyaGold : Color.niyaSecondary)
+                }
+                .buttonStyle(.plain)
+
+                Button(action: onBookmark) {
+                    Image(systemName: isBookmarked ? "heart.fill" : "heart")
+                        .font(.title3)
+                        .foregroundStyle(isBookmarked ? .red : Color.niyaSecondary)
                 }
                 .buttonStyle(.plain)
 

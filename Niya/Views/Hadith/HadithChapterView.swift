@@ -10,9 +10,7 @@ struct HadithChapterView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(dataService.hadiths(for: collectionId, chapterId: chapter.id)) { hadith in
-                    NavigationLink {
-                        HadithDetailView(hadith: hadith, collectionId: collectionId, hasGrades: hasGrades)
-                    } label: {
+                    NavigationLink(value: HadithNavDestination(collectionId: collectionId, hadithId: hadith.id, hasGrades: hasGrades)) {
                         HadithRowView(hadith: hadith, hasGrades: hasGrades)
                             .padding(.horizontal)
                             .padding(.vertical, 10)

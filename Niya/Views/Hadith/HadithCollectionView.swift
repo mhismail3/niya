@@ -14,7 +14,7 @@ struct HadithCollectionView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(dataService.chapters(for: collection.id)) { chapter in
-                            NavigationLink(value: ChapterDestination(collectionId: collection.id, chapter: chapter)) {
+                            NavigationLink(value: ChapterDestination(collectionId: collection.id, chapter: chapter, hasGrades: collection.hasGrades)) {
                                 HadithChapterRow(chapter: chapter)
                                     .padding(.horizontal)
                                     .padding(.vertical, 8)
@@ -30,9 +30,6 @@ struct HadithCollectionView: View {
         .navigationTitle(collection.name)
         .navigationBarTitleDisplayMode(.large)
         .niyaToolbar()
-        .navigationDestination(for: ChapterDestination.self) { dest in
-            HadithChapterView(collectionId: dest.collectionId, chapter: dest.chapter, hasGrades: collection.hasGrades)
-        }
         .task {
             await dataService.loadCollection(collection.id)
             isLoading = false
@@ -43,4 +40,5 @@ struct HadithCollectionView: View {
 struct ChapterDestination: Hashable, Sendable {
     let collectionId: String
     let chapter: HadithChapter
+    let hasGrades: Bool
 }

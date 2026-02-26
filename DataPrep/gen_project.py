@@ -52,6 +52,7 @@ SWIFT_FILES = [
     "Niya/Models/Hadith.swift",
     "Niya/Models/HadithGrade.swift",
     "Niya/Models/HadithBookmark.swift",
+    "Niya/Models/QuranBookmark.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -60,6 +61,7 @@ SWIFT_FILES = [
     "Niya/Services/RecentSearchStore.swift",
     "Niya/Services/HadithDataService.swift",
     "Niya/Services/HadithBookmarkStore.swift",
+    "Niya/Services/QuranBookmarkStore.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -457,6 +459,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/Hadith.swift"],       "Hadith.swift"),
         (swift_file_ids["Niya/Models/HadithGrade.swift"],  "HadithGrade.swift"),
         (swift_file_ids["Niya/Models/HadithBookmark.swift"], "HadithBookmark.swift"),
+        (swift_file_ids["Niya/Models/QuranBookmark.swift"], "QuranBookmark.swift"),
     ], path_str="Models")
 
     # Services
@@ -468,6 +471,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/RecentSearchStore.swift"], "RecentSearchStore.swift"),
         (swift_file_ids["Niya/Services/HadithDataService.swift"], "HadithDataService.swift"),
         (swift_file_ids["Niya/Services/HadithBookmarkStore.swift"], "HadithBookmarkStore.swift"),
+        (swift_file_ids["Niya/Services/QuranBookmarkStore.swift"], "QuranBookmarkStore.swift"),
     ], path_str="Services")
 
     # ViewModels
