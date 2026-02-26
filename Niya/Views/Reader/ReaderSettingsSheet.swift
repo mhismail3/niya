@@ -5,8 +5,10 @@ struct ReaderSettingsSheet: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @AppStorage("showTajweed") private var showTajweed: Bool = false
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @AppStorage("appearanceMode") private var appearanceMode: Int = 0
 
     var body: some View {
         NavigationStack {
@@ -28,6 +30,14 @@ struct ReaderSettingsSheet: View {
                     }
                     Toggle("Show Translation", isOn: $showTranslation)
                         .tint(Color.niyaTeal)
+                    Toggle("Tajweed Colors", isOn: $showTajweed)
+                        .tint(Color.niyaTeal)
+                        .disabled(script != .hafs)
+                    if script != .hafs {
+                        Text("Available for Uthmanic Hafs only")
+                            .font(.caption)
+                            .foregroundStyle(Color.niyaSecondary)
+                    }
                 }
 
                 Section("Font Size") {
@@ -41,6 +51,15 @@ struct ReaderSettingsSheet: View {
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
                     }
+                }
+
+                Section("Appearance") {
+                    Picker("Mode", selection: $appearanceMode) {
+                        Text("Auto").tag(0)
+                        Text("Light").tag(1)
+                        Text("Dark").tag(2)
+                    }
+                    .pickerStyle(.segmented)
                 }
 
                 Section("Audio") {
