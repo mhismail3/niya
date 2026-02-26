@@ -63,6 +63,7 @@ struct SurahListView: View {
                         SurahRowView(surah: surah)
                             .padding(.horizontal)
                             .padding(.vertical, 4)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     Divider().padding(.horizontal)

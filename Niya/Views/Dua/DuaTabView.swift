@@ -112,6 +112,7 @@ struct DuaTabView: View {
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
@@ -119,6 +120,7 @@ struct DuaTabView: View {
                 ForEach(cats) { category in
                     NavigationLink(value: category) {
                         DuaCategoryRow(category: category)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     Divider().padding(.leading, 32)

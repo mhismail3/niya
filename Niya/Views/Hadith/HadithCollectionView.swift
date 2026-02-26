@@ -18,6 +18,7 @@ struct HadithCollectionView: View {
                                 HadithChapterRow(chapter: chapter)
                                     .padding(.horizontal)
                                     .padding(.vertical, 8)
+                                    .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                             Divider().padding(.horizontal)

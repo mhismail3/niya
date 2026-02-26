@@ -14,6 +14,7 @@ struct HadithChapterView: View {
                         HadithRowView(hadith: hadith, hasGrades: hasGrades)
                             .padding(.horizontal)
                             .padding(.vertical, 10)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
                     Divider().padding(.horizontal)
