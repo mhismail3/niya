@@ -31,6 +31,37 @@ SECTION_MAP = [
     ("waking-dress", "Waking Up & Getting Dressed", list(range(1, 8))),
 ]
 
+LOWERCASE_WORDS = {
+    'a', 'an', 'the', 'and', 'or', 'but', 'nor', 'for', 'so', 'yet',
+    'in', 'on', 'at', 'to', 'of', 'by', 'from', 'with', 'as', 'is',
+    'if', 'up', 'his', 'her', 'its',
+}
+
+
+def smart_title(text):
+    """Title-case that keeps prepositions/articles lowercase and fixes possessives."""
+    words = text.split()
+    result = []
+    for i, word in enumerate(words):
+        lower = word.lower()
+        if i == 0 or lower not in LOWERCASE_WORDS:
+            titled = word.capitalize()
+        else:
+            titled = lower
+        # Fix possessive 'S → 's (e.g. "Allah'S" → "Allah's")
+        titled = re.sub(r"'S\b", "'s", titled)
+        result.append(titled)
+    return ' '.join(result)
+
+
+def clean_text(text):
+    """Clean up common text formatting issues."""
+    text = re.sub(r' {2,}', ' ', text)  # collapse double spaces
+    text = re.sub(r'(?i)\bpbuh\b', '(PBUH)', text)  # normalize PBUH
+    text = text.strip()
+    return text
+
+
 DIACRITICS_RE = re.compile(
     r'[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC'
     r'\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED\u08D3-\u08FF]'
@@ -64,7 +95,7 @@ def load_hisn_muslim():
 
     for ch in chapters:
         cat_id = ch['ID']
-        cat_title = ch['TITLE'].strip().title()
+        cat_title = smart_title(ch['TITLE'].strip())
 
         duas = []
         for d in ch['TEXT']:
@@ -74,8 +105,8 @@ def load_hisn_muslim():
             repeat = d.get('REPEAT')
 
             arabic = arabic.strip()
-            transliteration = transliteration.strip()
-            translation = translation.strip()
+            transliteration = clean_text(transliteration)
+            translation = clean_text(translation)
 
             # Use transliteration as translation fallback for empty translations
             if not translation and transliteration:
@@ -123,11 +154,11 @@ def load_fitrahive():
         for entry in entries:
             item = {
                 'arabic': entry.get('arabic', '').strip(),
-                'translation': entry.get('translation', '').strip(),
-                'transliteration': entry.get('latin', '').strip(),
-                'source': entry.get('source', '').strip() if entry.get('source') else None,
-                'benefits': (entry.get('benefits') or entry.get('fawaid') or '').strip() or None,
-                'notes': entry.get('notes', '').strip() if entry.get('notes') else None,
+                'translation': clean_text(entry.get('translation', '')),
+                'transliteration': clean_text(entry.get('latin', '')),
+                'source': clean_text(entry.get('source', '')) if entry.get('source') else None,
+                'benefits': clean_text(entry.get('benefits') or entry.get('fawaid') or '') or None,
+                'notes': clean_text(entry.get('notes', '')) if entry.get('notes') else None,
                 'title': entry.get('title', '').strip(),
             }
             all_entries.append(item)

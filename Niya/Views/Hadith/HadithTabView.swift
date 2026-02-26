@@ -3,6 +3,8 @@ import SwiftUI
 struct HadithTabView: View {
     @Environment(HadithDataService.self) private var dataService
     @Environment(NavigationCoordinator.self) private var coordinator
+    @State private var isLoaded = false
+    @State private var loadError: String?
     @State private var path = NavigationPath()
 
     private let columns = [
@@ -12,34 +14,19 @@ struct HadithTabView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                if dataService.isLoaded {
-                    LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(dataService.collections) { collection in
-                            NavigationLink(value: collection) {
-                                HadithCollectionCard(collection: collection)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 8)
-                } else if let error = dataService.loadError {
-                    ContentUnavailableView(
-                        "Failed to Load",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text(error)
-                    )
+            Group {
+                if !isLoaded {
+                    loadingView
+                } else if let error = loadError {
+                    errorView(error)
                 } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 60)
+                    collectionGrid
                 }
             }
-            .background(Color.niyaBackground)
             .navigationTitle("Hadith")
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
+            .background(Color.niyaBackground)
             .navigationDestination(for: HadithCollection.self) { collection in
                 HadithCollectionView(collection: collection)
             }
@@ -61,5 +48,46 @@ struct HadithTabView: View {
                 }
             }
         }
+        .task {
+            await dataService.load()
+            isLoaded = dataService.isLoaded
+            loadError = dataService.loadError
+        }
+    }
+
+    @ViewBuilder
+    private var collectionGrid: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 12) {
+                ForEach(dataService.collections) { collection in
+                    NavigationLink(value: collection) {
+                        HadithCollectionCard(collection: collection)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+        }
+    }
+
+    private var loadingView: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.niyaBackground)
+    }
+
+    private func errorView(_ message: String) -> some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundStyle(Color.niyaGold)
+            Text("Failed to load: \(message)")
+                .multilineTextAlignment(.center)
+                .foregroundStyle(Color.niyaText)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.niyaBackground)
     }
 }

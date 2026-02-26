@@ -3,35 +3,26 @@ import SwiftUI
 struct DuaTabView: View {
     @Environment(DuaDataService.self) private var dataService
     @Environment(NavigationCoordinator.self) private var coordinator
+    @State private var isLoaded = false
+    @State private var loadError: String?
     @State private var path = NavigationPath()
     @State private var expandedSections: Set<String> = []
 
     var body: some View {
         NavigationStack(path: $path) {
-            ScrollView {
-                if dataService.isLoaded {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(dataService.sections) { section in
-                            sectionView(section)
-                        }
-                    }
-                    .padding(.top, 8)
-                } else if let error = dataService.loadError {
-                    ContentUnavailableView(
-                        "Failed to Load",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text(error)
-                    )
+            Group {
+                if !isLoaded {
+                    loadingView
+                } else if let error = loadError {
+                    errorView(error)
                 } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding(.top, 60)
+                    sectionList
                 }
             }
-            .background(Color.niyaBackground)
             .navigationTitle("Dua")
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
+            .background(Color.niyaBackground)
             .navigationDestination(for: DuaCategory.self) { category in
                 DuaCategoryView(category: category)
             }
@@ -50,6 +41,43 @@ struct DuaTabView: View {
                 }
             }
         }
+        .task {
+            await dataService.load()
+            isLoaded = dataService.isLoaded
+            loadError = dataService.loadError
+        }
+    }
+
+    @ViewBuilder
+    private var sectionList: some View {
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(dataService.sections) { section in
+                    sectionView(section)
+                }
+            }
+            .padding(.top, 8)
+        }
+    }
+
+    private var loadingView: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.niyaBackground)
+    }
+
+    private func errorView(_ message: String) -> some View {
+        VStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.largeTitle)
+                .foregroundStyle(Color.niyaGold)
+            Text("Failed to load: \(message)")
+                .multilineTextAlignment(.center)
+                .foregroundStyle(Color.niyaText)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.niyaBackground)
     }
 
     private func sectionView(_ section: DuaSection) -> some View {
