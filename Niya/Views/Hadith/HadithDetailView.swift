@@ -67,6 +67,8 @@ struct HadithDetailView: View {
         .onAppear {
             let store = HadithBookmarkStore(modelContext: modelContext)
             isBookmarked = store.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
+            RecentHadithStore(modelContext: modelContext)
+                .record(collectionId: collectionId, hadithId: hadith.id, hasGrades: hasGrades)
         }
     }
 

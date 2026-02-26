@@ -88,6 +88,8 @@ struct DuaDetailView: View {
         .onAppear {
             let store = DuaBookmarkStore(modelContext: modelContext)
             isBookmarked = store.isBookmarked(categoryId: categoryId, duaId: dua.id)
+            RecentDuaStore(modelContext: modelContext)
+                .record(categoryId: categoryId, duaId: dua.id)
         }
     }
 

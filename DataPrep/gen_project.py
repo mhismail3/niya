@@ -31,7 +31,7 @@ def pbx_string(s):
 PROJECT_ROOT = "/Users/moose/Downloads/projects/niya"
 PBXPROJ_PATH = os.path.join(PROJECT_ROOT, "Niya.xcodeproj", "project.pbxproj")
 
-BUNDLE_ID    = "com.niya.app"
+BUNDLE_ID    = "com.niya.mobile"
 PRODUCT_NAME = "Niya"
 DEPLOYMENT   = "26.0"
 SWIFT_VER    = "6.2"
@@ -57,6 +57,8 @@ SWIFT_FILES = [
     "Niya/Models/DuaCategory.swift",
     "Niya/Models/Dua.swift",
     "Niya/Models/DuaBookmark.swift",
+    "Niya/Models/RecentHadith.swift",
+    "Niya/Models/RecentDua.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -68,6 +70,8 @@ SWIFT_FILES = [
     "Niya/Services/QuranBookmarkStore.swift",
     "Niya/Services/DuaDataService.swift",
     "Niya/Services/DuaBookmarkStore.swift",
+    "Niya/Services/RecentHadithStore.swift",
+    "Niya/Services/RecentDuaStore.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -88,6 +92,8 @@ SWIFT_FILES = [
     # Views/Home
     "Niya/Views/Home/HomeView.swift",
     "Niya/Views/Home/ContinueReadingCard.swift",
+    "Niya/Views/Home/RecentHadithCard.swift",
+    "Niya/Views/Home/RecentDuaCard.swift",
     # Views/Shared
     "Niya/Views/BookmarksView.swift",
     # Views/Settings
@@ -479,6 +485,8 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/DuaCategory.swift"], "DuaCategory.swift"),
         (swift_file_ids["Niya/Models/Dua.swift"], "Dua.swift"),
         (swift_file_ids["Niya/Models/DuaBookmark.swift"], "DuaBookmark.swift"),
+        (swift_file_ids["Niya/Models/RecentHadith.swift"], "RecentHadith.swift"),
+        (swift_file_ids["Niya/Models/RecentDua.swift"], "RecentDua.swift"),
     ], path_str="Models")
 
     # Services
@@ -493,6 +501,8 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/QuranBookmarkStore.swift"], "QuranBookmarkStore.swift"),
         (swift_file_ids["Niya/Services/DuaDataService.swift"], "DuaDataService.swift"),
         (swift_file_ids["Niya/Services/DuaBookmarkStore.swift"], "DuaBookmarkStore.swift"),
+        (swift_file_ids["Niya/Services/RecentHadithStore.swift"], "RecentHadithStore.swift"),
+        (swift_file_ids["Niya/Services/RecentDuaStore.swift"], "RecentDuaStore.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -540,6 +550,8 @@ def section_pbx_group():
     emit_subgroup(SUBGROUP_IDS["Views/Home"], "Home", "Views/Home", [
         (swift_file_ids["Niya/Views/Home/HomeView.swift"], "HomeView.swift"),
         (swift_file_ids["Niya/Views/Home/ContinueReadingCard.swift"], "ContinueReadingCard.swift"),
+        (swift_file_ids["Niya/Views/Home/RecentHadithCard.swift"], "RecentHadithCard.swift"),
+        (swift_file_ids["Niya/Views/Home/RecentDuaCard.swift"], "RecentDuaCard.swift"),
     ], path_str="Home")
 
     # Views/Settings
@@ -883,7 +895,7 @@ def build_settings_test_target(config):
         f"\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = {DEPLOYMENT};",
         "\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"@executable_path/Frameworks\",\n\t\t\t\t\t\"@loader_path/Frameworks\",\n\t\t\t\t);",
         f"\t\t\t\tMARKETING_VERSION = 1.0;",
-        f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.niya.app.tests;",
+        f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = com.niya.mobile.tests;",
         f"\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";",
         f"\t\t\t\tSDKROOT = iphoneos;",
         f"\t\t\t\tSWIFT_VERSION = {SWIFT_VER};",
