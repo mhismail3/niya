@@ -16,6 +16,7 @@ struct ScrollReaderView: View {
                     ForEach(vm.verses) { verse in
                         VerseRowView(
                             verse: verse,
+                            surahId: vm.surah.id,
                             script: vm.script,
                             showTranslation: vm.showTranslation,
                             isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),

@@ -35,10 +35,5 @@ struct DuaSectionView: View {
         .navigationTitle(section.name)
         .navigationBarTitleDisplayMode(.large)
         .niyaToolbar()
-        .navigationDestination(for: DuaNavDestination.self) { dest in
-            if let dua = dataService.dua(categoryId: dest.categoryId, duaId: dest.duaId) {
-                DuaDetailView(dua: dua, categoryId: dest.categoryId)
-            }
-        }
     }
 }

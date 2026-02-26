@@ -20,6 +20,7 @@ struct MushaPageView: View {
                 ForEach(verses) { verse in
                     VerseRowView(
                         verse: verse,
+                        surahId: surahId,
                         script: script,
                         showTranslation: showTranslation,
                         isPlaying: audioPlayerVM.isPlayingVerse(surahId: surahId, ayahId: verse.id),

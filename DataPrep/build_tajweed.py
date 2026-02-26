@@ -67,8 +67,16 @@ def detect_basmala(tanzil_verses):
     return basmala
 
 
+# The ending of every basmala: ٱلرَّحِيمِ
+BASMALA_ENDING = "\u0671\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650"
+
+
 def strip_basmala(text, basmala):
-    """Strip basmala prefix + trailing space from text. Returns (stripped_text, chars_removed)."""
+    """Strip basmala prefix + trailing space from text. Returns (stripped_text, chars_removed).
+
+    Some surahs have tajweed-modified basmalas (e.g. extra shadda on ba).
+    We handle this by also searching for the basmala ending pattern.
+    """
     # Try exact basmala + space
     prefix = basmala + " "
     if text.startswith(prefix):
@@ -81,17 +89,22 @@ def strip_basmala(text, basmala):
 
     # Try just basmala (no trailing space — edge case)
     if text.startswith(basmala) and len(text) > len(basmala):
-        # Check if char after basmala is whitespace
         next_char = text[len(basmala)]
         if next_char in (" ", "\u2009", "\u200b", "\u00a0"):
             offset = len(basmala) + 1
             return text[offset:], offset
 
-    # Fallback: try matching just the basmala with no separator
+    # Fallback: find the basmala ending pattern and strip up to it + separator
+    idx = text.find(BASMALA_ENDING)
+    if idx != -1 and idx < 60:
+        end = idx + len(BASMALA_ENDING)
+        if end < len(text) and text[end] in (" ", "\u2009", "\u200b", "\u00a0"):
+            end += 1
+        return text[end:], end
+
     if text.startswith(basmala):
         return text[len(basmala):], len(basmala)
 
-    # Could not strip — warn and return original
     print(f"WARNING: Could not strip basmala from text starting with: {text[:50]!r}")
     return text, 0
 

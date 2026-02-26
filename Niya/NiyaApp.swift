@@ -8,6 +8,7 @@ struct NiyaApp: App {
     @State private var duaDataService = DuaDataService()
     @State private var audioService = AudioService()
     @State private var audioPlayerVM: AudioPlayerViewModel
+    @State private var tajweedService = TajweedService()
     @State private var navigationCoordinator = NavigationCoordinator()
 
     private let container: ModelContainer
@@ -43,6 +44,7 @@ struct NiyaApp: App {
                 .environment(duaDataService)
                 .environment(audioService)
                 .environment(audioPlayerVM)
+                .environment(tajweedService)
                 .environment(navigationCoordinator)
                 .modelContainer(container)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
