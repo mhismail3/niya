@@ -141,7 +141,7 @@ struct HomeView: View {
 
     private var recentDuaSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Recent Dua")
+            Text("Recent Duas")
                 .font(.niyaTitle)
                 .foregroundStyle(Color.niyaText)
                 .padding(.horizontal)

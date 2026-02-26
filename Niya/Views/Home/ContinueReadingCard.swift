@@ -5,31 +5,46 @@ struct ContinueReadingCard: View {
     let position: ReadingPosition
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(surah.name)
-                .font(.custom(QuranScript.hafs.fontName, size: 22))
-                .foregroundStyle(Color.niyaGold)
-                .environment(\.layoutDirection, .rightToLeft)
-                .frame(maxWidth: .infinity, alignment: .trailing)
+        HStack(spacing: 0) {
+            Color.niyaTeal
+                .frame(width: 5)
 
-            Text(surah.transliteration)
-                .font(.niyaHeadline)
-                .foregroundStyle(Color.niyaText)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(surah.name)
+                    .font(.custom(QuranScript.hafs.fontName, size: 22))
+                    .foregroundStyle(Color.niyaGold)
+                    .environment(\.layoutDirection, .rightToLeft)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text("Verse \(position.lastAyahId) of \(surah.totalVerses)")
-                .font(.niyaCaption)
-                .foregroundStyle(Color.niyaSecondary)
+                Text(surah.transliteration)
+                    .font(.niyaHeadline)
+                    .foregroundStyle(Color.niyaText)
 
-            ProgressView(value: progress)
-                .tint(Color.niyaTeal)
+                Spacer(minLength: 0)
 
-            Text(position.lastReadAt.relativeFormatted)
-                .font(.niyaCaption2)
-                .foregroundStyle(Color.niyaSecondary)
+                Text("Verse \(position.lastAyahId) of \(surah.totalVerses)")
+                    .font(.niyaCaption)
+                    .foregroundStyle(Color.niyaSecondary)
+
+                ProgressView(value: progress)
+                    .tint(Color.niyaTeal)
+
+                Text(position.lastReadAt.relativeFormatted)
+                    .font(.niyaCaption2)
+                    .foregroundStyle(Color.niyaSecondary)
+            }
+            .padding(12)
         }
-        .padding(12)
         .frame(width: 150)
-        .niyaCard()
+        .frame(minHeight: 170)
+        .background(Color.niyaSurface)
+        .clipShape(
+            UnevenRoundedRectangle(
+                topLeadingRadius: 4, bottomLeadingRadius: 4,
+                bottomTrailingRadius: 10, topTrailingRadius: 10
+            )
+        )
+        .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
     }
 
     var progress: Double {
