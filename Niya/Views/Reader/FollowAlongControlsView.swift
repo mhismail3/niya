@@ -41,8 +41,8 @@ struct FollowAlongControlsView: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity)
+        .glassEffect()
     }
 
     private var speedMenu: some View {

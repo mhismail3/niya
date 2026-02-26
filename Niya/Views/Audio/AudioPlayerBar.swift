@@ -45,8 +45,8 @@ struct AudioPlayerBar: View {
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .padding(.horizontal, 12)
+        .frame(maxWidth: .infinity)
+        .glassEffect()
     }
 
     private var currentTitle: String {
