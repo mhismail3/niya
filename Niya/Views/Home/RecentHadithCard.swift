@@ -28,7 +28,7 @@ struct RecentHadithCard: View {
                 .foregroundStyle(Color.niyaSecondary)
         }
         .padding(12)
-        .frame(width: 200)
+        .frame(width: 170)
         .niyaCard()
     }
 }
