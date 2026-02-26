@@ -3,9 +3,11 @@ import SwiftUI
 struct ReaderContainerView: View {
     @State var vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(TajweedService.self) private var tajweedService
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @AppStorage("showTajweed") private var showTajweed: Bool = false
     @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
     @State private var showSettings = false
     @State private var showBookmarks = false
@@ -49,6 +51,9 @@ struct ReaderContainerView: View {
         .onAppear {
             vm.mode = storedMode
             vm.load()
+            if showTajweed && storedScript == .hafs {
+                tajweedService.fetch(surahId: vm.surah.id)
+            }
         }
         .onChange(of: storedScript) { _, newScript in
             vm.reloadForScript(newScript)
@@ -58,6 +63,11 @@ struct ReaderContainerView: View {
         }
         .onChange(of: vm.mode) { _, newMode in
             storedMode = newMode
+        }
+        .onChange(of: showTajweed) { _, on in
+            if on && storedScript == .hafs {
+                tajweedService.fetch(surahId: vm.surah.id)
+            }
         }
         .onDisappear {
             guard vm.hasUserScrolled else { return }
