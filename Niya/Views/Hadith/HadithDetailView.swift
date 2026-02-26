@@ -34,7 +34,6 @@ struct HadithDetailView: View {
                     .multilineTextAlignment(.trailing)
                     .lineSpacing(12)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .environment(\.layoutDirection, .rightToLeft)
 
                 Divider()
 
