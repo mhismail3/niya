@@ -29,6 +29,7 @@ struct ReaderContainerView: View {
         .safeAreaInset(edge: .bottom) {
             if followAlong && followAlongVM.currentVerseId != nil {
                 FollowAlongControlsView()
+                    .padding(.bottom, 8)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
         }

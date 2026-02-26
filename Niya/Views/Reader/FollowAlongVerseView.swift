@@ -43,7 +43,7 @@ struct FollowAlongVerseView: View {
                 verseNumberBadge
             }
 
-            FlowLayout(spacing: 6) {
+            FlowLayout(spacing: 6, rightToLeft: true) {
                 ForEach(verseData.w) { word in
                     WordView(
                         word: word,
@@ -54,7 +54,6 @@ struct FollowAlongVerseView: View {
                     )
                 }
             }
-            .environment(\.layoutDirection, .rightToLeft)
 
             if !verse.translation.isEmpty {
                 Text(verse.translation)
