@@ -7,7 +7,7 @@ struct DuaCategoryRow: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text(category.name)
-                    .font(.niyaBody)
+                    .font(.niyaSubheadline)
                     .foregroundStyle(Color.niyaText)
                     .lineLimit(2)
             }

@@ -96,7 +96,7 @@ struct DuaTabView: View {
             } label: {
                 HStack {
                     Text(section.name)
-                        .font(.niyaSubheadline)
+                        .font(.niyaBody)
                         .foregroundStyle(Color.niyaText)
 
                     Spacer()
