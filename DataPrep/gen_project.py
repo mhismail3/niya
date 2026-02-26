@@ -62,6 +62,7 @@ SWIFT_FILES = [
     "Niya/Models/TajweedRule.swift",
     "Niya/Models/TajweedAnnotation.swift",
     "Niya/Models/TajweedVerse.swift",
+    "Niya/Models/Word.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -76,10 +77,12 @@ SWIFT_FILES = [
     "Niya/Services/RecentHadithStore.swift",
     "Niya/Services/RecentDuaStore.swift",
     "Niya/Services/TajweedService.swift",
+    "Niya/Services/WordDataService.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
     "Niya/ViewModels/AudioPlayerViewModel.swift",
+    "Niya/ViewModels/FollowAlongViewModel.swift",
     # Views/SurahList
     "Niya/Views/SurahList/SurahListView.swift",
     "Niya/Views/SurahList/SurahRowView.swift",
@@ -92,6 +95,10 @@ SWIFT_FILES = [
     "Niya/Views/Reader/MushaPageView.swift",
     "Niya/Views/Reader/ReaderSettingsSheet.swift",
     "Niya/Views/Reader/TajweedTextView.swift",
+    "Niya/Views/Reader/FollowAlongVerseView.swift",
+    "Niya/Views/Reader/FollowAlongControlsView.swift",
+    "Niya/Views/Reader/WordView.swift",
+    "Niya/Views/Reader/VerseCellView.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
     # Views/Home
@@ -125,6 +132,7 @@ SWIFT_FILES = [
     "Niya/Design/NiyaTheme.swift",
     "Niya/Design/NiyaExtensions.swift",
     "Niya/Design/NiyaToolbar.swift",
+    "Niya/Design/FlowLayout.swift",
 ]
 
 # Resource files — paths relative to project root
@@ -151,6 +159,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/hadith_riyad.json",
     "Niya/Resources/Data/hadith_shamail.json",
     "Niya/Resources/Data/dua_all.json",
+    "Niya/Resources/Data/word_data.json",
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -165,6 +174,10 @@ TEST_FILES = [
     "NiyaTests/HadithModelTests.swift",
     "NiyaTests/HadithDataServiceTests.swift",
     "NiyaTests/HadithBookmarkStoreTests.swift",
+    "NiyaTests/WordModelTests.swift",
+    "NiyaTests/WordDataServiceTests.swift",
+    "NiyaTests/AudioServiceTests.swift",
+    "NiyaTests/FollowAlongViewModelTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -494,6 +507,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/TajweedRule.swift"], "TajweedRule.swift"),
         (swift_file_ids["Niya/Models/TajweedAnnotation.swift"], "TajweedAnnotation.swift"),
         (swift_file_ids["Niya/Models/TajweedVerse.swift"], "TajweedVerse.swift"),
+        (swift_file_ids["Niya/Models/Word.swift"], "Word.swift"),
     ], path_str="Models")
 
     # Services
@@ -511,6 +525,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/RecentHadithStore.swift"], "RecentHadithStore.swift"),
         (swift_file_ids["Niya/Services/RecentDuaStore.swift"], "RecentDuaStore.swift"),
         (swift_file_ids["Niya/Services/TajweedService.swift"], "TajweedService.swift"),
+        (swift_file_ids["Niya/Services/WordDataService.swift"], "WordDataService.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -518,6 +533,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/ViewModels/SurahListViewModel.swift"],  "SurahListViewModel.swift"),
         (swift_file_ids["Niya/ViewModels/ReaderViewModel.swift"],     "ReaderViewModel.swift"),
         (swift_file_ids["Niya/ViewModels/AudioPlayerViewModel.swift"], "AudioPlayerViewModel.swift"),
+        (swift_file_ids["Niya/ViewModels/FollowAlongViewModel.swift"], "FollowAlongViewModel.swift"),
     ], path_str="ViewModels")
 
     # Views (parent)
@@ -548,6 +564,10 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/MushaPageView.swift"],       "MushaPageView.swift"),
         (swift_file_ids["Niya/Views/Reader/ReaderSettingsSheet.swift"], "ReaderSettingsSheet.swift"),
         (swift_file_ids["Niya/Views/Reader/TajweedTextView.swift"], "TajweedTextView.swift"),
+        (swift_file_ids["Niya/Views/Reader/FollowAlongVerseView.swift"], "FollowAlongVerseView.swift"),
+        (swift_file_ids["Niya/Views/Reader/FollowAlongControlsView.swift"], "FollowAlongControlsView.swift"),
+        (swift_file_ids["Niya/Views/Reader/WordView.swift"], "WordView.swift"),
+        (swift_file_ids["Niya/Views/Reader/VerseCellView.swift"], "VerseCellView.swift"),
     ], path_str="Reader")
 
     # Views/Audio
@@ -597,6 +617,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Design/NiyaTheme.swift"],  "NiyaTheme.swift"),
         (swift_file_ids["Niya/Design/NiyaExtensions.swift"], "NiyaExtensions.swift"),
         (swift_file_ids["Niya/Design/NiyaToolbar.swift"], "NiyaToolbar.swift"),
+        (swift_file_ids["Niya/Design/FlowLayout.swift"], "FlowLayout.swift"),
     ], path_str="Design")
 
     # Resources (parent)
@@ -613,6 +634,7 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Data/verses_indopak.json"],"verses_indopak.json"),
         (resource_file_ids["Niya/Resources/Data/hadith_collections.json"], "hadith_collections.json"),
         (resource_file_ids["Niya/Resources/Data/dua_all.json"], "dua_all.json"),
+        (resource_file_ids["Niya/Resources/Data/word_data.json"], "word_data.json"),
     ]
     for coll_id in ["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
                      "malik", "ahmed", "darimi", "nawawi", "qudsi", "dehlawi",

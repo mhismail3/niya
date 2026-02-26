@@ -4,10 +4,15 @@ struct ReaderContainerView: View {
     @State var vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(TajweedService.self) private var tajweedService
+    @Environment(WordDataService.self) private var wordDataService
+    @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @AppStorage("showTajweed") private var showTajweed: Bool = false
+    @AppStorage("followAlong") private var followAlong: Bool = false
+    @AppStorage("followAlongAutoAdvance") private var followAlongAutoAdvance: Bool = true
+    @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
     @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
     @State private var showSettings = false
     @State private var showBookmarks = false
@@ -21,6 +26,11 @@ struct ReaderContainerView: View {
                 PageReaderView(vm: vm)
             }
         }
+        .safeAreaInset(edge: .bottom) {
+            if followAlong && followAlongVM.isPlaying {
+                FollowAlongControlsView()
+            }
+        }
         .navigationTitle(vm.surah.transliteration)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -29,7 +39,20 @@ struct ReaderContainerView: View {
                     Image(systemName: "bookmark")
                 }
             }
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                if storedScript == .hafs {
+                    Button {
+                        followAlong.toggle()
+                        if followAlong {
+                            Task { await wordDataService.load() }
+                        } else {
+                            followAlongVM.stopTracking()
+                        }
+                    } label: {
+                        Image(systemName: "text.word.spacing")
+                            .foregroundStyle(followAlong ? Color.niyaGold : Color.niyaSecondary)
+                    }
+                }
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
                 }
@@ -54,9 +77,16 @@ struct ReaderContainerView: View {
             if showTajweed && storedScript == .hafs {
                 tajweedService.fetch(surahId: vm.surah.id)
             }
+            if followAlong && storedScript == .hafs {
+                Task { await wordDataService.load() }
+            }
         }
         .onChange(of: storedScript) { _, newScript in
             vm.reloadForScript(newScript)
+            if newScript != .hafs && followAlong {
+                followAlong = false
+                followAlongVM.stopTracking()
+            }
         }
         .onChange(of: showTranslation) { _, show in
             vm.showTranslation = show
@@ -69,7 +99,14 @@ struct ReaderContainerView: View {
                 tajweedService.fetch(surahId: vm.surah.id)
             }
         }
+        .onChange(of: followAlongAutoAdvance) { _, on in
+            followAlongVM.autoAdvance = on
+        }
+        .onChange(of: followAlongLoopCount) { _, count in
+            followAlongVM.loopCount = count
+        }
         .onDisappear {
+            followAlongVM.stopTracking()
             guard vm.hasUserScrolled else { return }
             ReadingPositionStore(modelContext: modelContext)
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)

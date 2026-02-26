@@ -14,7 +14,7 @@ struct ScrollReaderView: View {
                         bismillahHeader
                     }
                     ForEach(vm.verses) { verse in
-                        VerseRowView(
+                        VerseCellView(
                             verse: verse,
                             surahId: vm.surah.id,
                             script: vm.script,

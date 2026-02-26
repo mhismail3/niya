@@ -6,6 +6,11 @@ struct ReaderSettingsSheet: View {
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @AppStorage("showTajweed") private var showTajweed: Bool = false
+    @AppStorage("followAlong") private var followAlong: Bool = false
+    @AppStorage("followAlongTransliteration") private var followAlongTransliteration: Bool = true
+    @AppStorage("followAlongMeaning") private var followAlongMeaning: Bool = true
+    @AppStorage("followAlongAutoAdvance") private var followAlongAutoAdvance: Bool = true
+    @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
@@ -33,6 +38,31 @@ struct ReaderSettingsSheet: View {
                     Toggle("Tajweed Colors", isOn: $showTajweed)
                         .tint(Color.niyaTeal)
                         .disabled(script != .hafs)
+                    if script != .hafs {
+                        Text("Available for Uthmanic Hafs only")
+                            .font(.caption)
+                            .foregroundStyle(Color.niyaSecondary)
+                    }
+                }
+
+                Section("Follow Along") {
+                    Toggle("Follow Along Mode", isOn: $followAlong)
+                        .tint(Color.niyaTeal)
+                        .disabled(script != .hafs)
+                    if followAlong && script == .hafs {
+                        Toggle("Transliteration", isOn: $followAlongTransliteration)
+                            .tint(Color.niyaTeal)
+                        Toggle("Word Meanings", isOn: $followAlongMeaning)
+                            .tint(Color.niyaTeal)
+                        Toggle("Auto-advance", isOn: $followAlongAutoAdvance)
+                            .tint(Color.niyaTeal)
+                        Picker("Repeat", selection: $followAlongLoopCount) {
+                            Text("1x").tag(1)
+                            Text("2x").tag(2)
+                            Text("3x").tag(3)
+                            Text("5x").tag(5)
+                        }
+                    }
                     if script != .hafs {
                         Text("Available for Uthmanic Hafs only")
                             .font(.caption)

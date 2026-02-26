@@ -14,9 +14,17 @@ final class AudioService {
     var currentVerseID: VerseID?
     var currentSurahId: Int?
     var downloadProgress: Double = 0
+    var isFollowAlongActive = false
 
     private var player: AVPlayer?
     private var timeObserver: Any?
+
+    var currentTimeMs: Int {
+        guard let player else { return 0 }
+        let seconds = CMTimeGetSeconds(player.currentTime())
+        guard seconds.isFinite else { return 0 }
+        return Int(seconds * 1000)
+    }
 
     func configureSession() {
         do {
@@ -48,10 +56,47 @@ final class AudioService {
         isLoading = false
     }
 
+    func playWithSeek(url: URL, seekMs: Int, rate: Float) {
+        stop()
+        isFollowAlongActive = true
+        isLoading = true
+
+        let item = AVPlayerItem(url: url)
+        player = AVPlayer(playerItem: item)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerDidFinish),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: item
+        )
+
+        let seekTime = CMTime(value: Int64(seekMs), timescale: 1000)
+        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.player?.rate = rate
+                self.isPlaying = true
+                self.isLoading = false
+            }
+        }
+    }
+
+    func seekTo(ms: Int) {
+        let time = CMTime(value: Int64(ms), timescale: 1000)
+        player?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
+    }
+
+    func setRate(_ rate: Float) {
+        player?.rate = rate
+        if rate > 0 { isPlaying = true }
+    }
+
     func stop() {
         player?.pause()
         player = nil
         isPlaying = false
+        isFollowAlongActive = false
         currentVerseID = nil
         currentSurahId = nil
     }
@@ -105,8 +150,10 @@ final class AudioService {
     }
 
     @objc private func playerDidFinish() {
-        isPlaying = false
-        currentVerseID = nil
-        currentSurahId = nil
+        if !isFollowAlongActive {
+            isPlaying = false
+            currentVerseID = nil
+            currentSurahId = nil
+        }
     }
 }

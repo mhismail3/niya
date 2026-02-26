@@ -8,6 +8,8 @@ struct NiyaApp: App {
     @State private var duaDataService = DuaDataService()
     @State private var audioService = AudioService()
     @State private var audioPlayerVM: AudioPlayerViewModel
+    @State private var wordDataService = WordDataService()
+    @State private var followAlongVM: FollowAlongViewModel
     @State private var tajweedService = TajweedService()
     @State private var navigationCoordinator = NavigationCoordinator()
 
@@ -19,11 +21,15 @@ struct NiyaApp: App {
         let dds = DuaDataService()
         let as_ = AudioService()
         let avm = AudioPlayerViewModel(audioService: as_, dataService: ds)
+        let wds = WordDataService()
+        let favm = FollowAlongViewModel(audioService: as_, wordDataService: wds, dataService: ds)
         _dataService = State(wrappedValue: ds)
         _hadithDataService = State(wrappedValue: hds)
         _duaDataService = State(wrappedValue: dds)
         _audioService = State(wrappedValue: as_)
         _audioPlayerVM = State(wrappedValue: avm)
+        _wordDataService = State(wrappedValue: wds)
+        _followAlongVM = State(wrappedValue: favm)
 
         do {
             container = try ModelContainer(for: AudioDownload.self, ReadingPosition.self, RecentSearch.self, HadithBookmark.self, QuranBookmark.self, DuaBookmark.self, RecentHadith.self, RecentDua.self)
@@ -44,6 +50,8 @@ struct NiyaApp: App {
                 .environment(duaDataService)
                 .environment(audioService)
                 .environment(audioPlayerVM)
+                .environment(wordDataService)
+                .environment(followAlongVM)
                 .environment(tajweedService)
                 .environment(navigationCoordinator)
                 .modelContainer(container)

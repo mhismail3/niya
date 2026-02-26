@@ -18,7 +18,7 @@ struct MushaPageView: View {
                     bismillahHeader
                 }
                 ForEach(verses) { verse in
-                    VerseRowView(
+                    VerseCellView(
                         verse: verse,
                         surahId: surahId,
                         script: script,

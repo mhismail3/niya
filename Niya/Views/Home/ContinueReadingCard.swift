@@ -3,10 +3,15 @@ import SwiftUI
 struct ContinueReadingCard: View {
     let surah: Surah
     let position: ReadingPosition
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var accentColor: Color {
+        colorScheme == .light ? Color.niyaTeal.opacity(0.45) : Color.niyaTeal
+    }
 
     var body: some View {
         HStack(spacing: 0) {
-            Color.niyaTeal
+            accentColor
                 .frame(width: 5)
 
             VStack(alignment: .leading, spacing: 8) {
@@ -27,7 +32,7 @@ struct ContinueReadingCard: View {
                     .foregroundStyle(Color.niyaSecondary)
 
                 ProgressView(value: progress)
-                    .tint(Color.niyaTeal)
+                    .tint(accentColor)
 
                 Text(position.lastReadAt.relativeFormatted)
                     .font(.niyaCaption2)
