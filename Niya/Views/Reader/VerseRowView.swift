@@ -22,7 +22,7 @@ struct VerseRowView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 Button(action: onPlay) {
                     Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle")
                         .font(.title3)
@@ -163,7 +163,7 @@ struct VerseRowView: View {
     private var verseNumberBadge: some View {
         ZStack {
             Image(systemName: "diamond")
-                .font(.system(size: 32))
+                .font(.system(size: 24))
                 .foregroundStyle(Color.niyaTeal.opacity(0.15))
             Text("\(verse.id)")
                 .font(.system(.caption2, design: .rounded, weight: .semibold))

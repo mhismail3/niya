@@ -17,7 +17,7 @@ struct FollowAlongVerseView: View {
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
-            HStack(alignment: .top) {
+            HStack(alignment: .center) {
                 Button {
                     if isActiveVerse {
                         followAlongVM.togglePlayPause()
@@ -76,7 +76,7 @@ struct FollowAlongVerseView: View {
     private var verseNumberBadge: some View {
         ZStack {
             Image(systemName: "diamond")
-                .font(.system(size: 32))
+                .font(.system(size: 24))
                 .foregroundStyle(Color.niyaTeal.opacity(0.15))
             Text("\(verse.id)")
                 .font(.system(.caption2, design: .rounded, weight: .semibold))
