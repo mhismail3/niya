@@ -5,7 +5,7 @@ struct ReaderSettingsSheet: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
-    @AppStorage("showTajweed") private var showTajweed: Bool = false
+    @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("followAlong") private var followAlong: Bool = false
     @AppStorage("followAlongTransliteration") private var followAlongTransliteration: Bool = true
     @AppStorage("followAlongMeaning") private var followAlongMeaning: Bool = true

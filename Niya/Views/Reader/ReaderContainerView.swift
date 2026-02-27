@@ -9,7 +9,7 @@ struct ReaderContainerView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
-    @AppStorage("showTajweed") private var showTajweed: Bool = false
+    @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("followAlong") private var followAlong: Bool = false
     @AppStorage("followAlongAutoAdvance") private var followAlongAutoAdvance: Bool = true
     @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1

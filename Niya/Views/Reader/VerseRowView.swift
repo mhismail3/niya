@@ -10,7 +10,7 @@ struct VerseRowView: View {
     let onPlay: () -> Void
     let onBookmark: () -> Void
     @Environment(TajweedService.self) private var tajweedService
-    @AppStorage("showTajweed") private var showTajweed: Bool = false
+    @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
     @State private var tajweedActive = false
@@ -18,7 +18,7 @@ struct VerseRowView: View {
     @State private var tooltipWidth: CGFloat = 160
     @State private var dismissTask: Task<Void, Never>?
 
-    private var tajweedAvailable: Bool { showTajweed && script == .hafs }
+    private var tajweedAvailable: Bool { script == .hafs }
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
@@ -42,7 +42,7 @@ struct VerseRowView: View {
                 verseNumberBadge
             }
 
-            if tajweedActive, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
+            if (tajweedActive || showTajweed) && script == .hafs, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
                 TajweedTextView(verse: tv, fontSize: arabicFontSize) { tap in
                     handleTajweedTap(tap)
                 }

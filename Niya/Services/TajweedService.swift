@@ -47,6 +47,7 @@ final class TajweedService {
                 surahCache[ayah.numberInSurah] = parsed
             }
             cache[surahId] = surahCache
+            loadingSurahs.remove(surahId)
         } catch {
             loadingSurahs.remove(surahId)
             failedSurahs[surahId] = Date()
@@ -55,7 +56,7 @@ final class TajweedService {
 
     // MARK: - Markup Parser (operates on Unicode scalars to avoid grapheme cluster issues)
 
-    private func parseTajweedMarkup(_ markup: String, ayahId: Int) -> TajweedVerse {
+    func parseTajweedMarkup(_ markup: String, ayahId: Int) -> TajweedVerse {
         let scalars = Array(markup.unicodeScalars)
         var plainText = ""
         var annotations: [TajweedAnnotation] = []
