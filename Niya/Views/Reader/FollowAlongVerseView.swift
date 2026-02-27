@@ -50,7 +50,7 @@ struct FollowAlongVerseView: View {
                         highlightState: followAlongVM.highlightState(for: word, verseId: verse.id),
                         showTransliteration: showTransliteration,
                         showMeaning: showMeaning,
-                        onTap: { followAlongVM.tapWord(word, verseId: verse.id) }
+                        onTap: { if !followAlongVM.isPlaying { followAlongVM.tapWord(word, verseId: verse.id) } }
                     )
                 }
             }

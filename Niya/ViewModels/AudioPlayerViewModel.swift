@@ -6,6 +6,7 @@ final class AudioPlayerViewModel {
     var downloadingSurahId: Int?
     var downloadError: String?
     var selectedReciter: Reciter
+    var playbackSpeed: Float = 1.0
 
     private let audioService: AudioService
     private let dataService: QuranDataService
@@ -59,6 +60,34 @@ final class AudioPlayerViewModel {
 
     func togglePause() {
         audioService.togglePause()
+    }
+
+    func setSpeed(_ speed: Float) {
+        playbackSpeed = min(max(speed, 0.5), 1.25)
+        audioService.setRate(playbackSpeed)
+    }
+
+    func previousVerse() {
+        guard let vid = currentVerseID else { return }
+        let prevAyah = vid.ayahId - 1
+        if prevAyah >= 1 {
+            playVerse(surahId: vid.surahId, ayahId: prevAyah)
+        }
+        if playbackSpeed != 1.0 {
+            audioService.setRate(playbackSpeed)
+        }
+    }
+
+    func nextVerse() {
+        guard let vid = currentVerseID else { return }
+        let surah = dataService.surahs.first { $0.id == vid.surahId }
+        let nextAyah = vid.ayahId + 1
+        if let surah, nextAyah <= surah.totalVerses {
+            playVerse(surahId: vid.surahId, ayahId: nextAyah)
+        }
+        if playbackSpeed != 1.0 {
+            audioService.setRate(playbackSpeed)
+        }
     }
 
     func isPlayingVerse(surahId: Int, ayahId: Int) -> Bool {

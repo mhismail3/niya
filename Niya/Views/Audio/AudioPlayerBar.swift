@@ -3,67 +3,93 @@ import SwiftUI
 struct AudioPlayerBar: View {
     @Environment(AudioPlayerViewModel.self) private var vm
     @Environment(QuranDataService.self) private var dataService
-    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
+
+    private var isVerseMode: Bool { vm.currentVerseID != nil }
 
     var body: some View {
-        HStack(spacing: 4) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(currentTitle)
-                    .font(.niyaSubheadline)
-                    .foregroundStyle(Color.niyaText)
-                    .lineLimit(1)
-                Text(currentSubtitle)
-                    .font(.niyaCaption)
-                    .foregroundStyle(Color.niyaSecondary)
-            }
+        HStack(spacing: 16) {
+            speedMenu
 
-            Spacer()
+            Button(action: { vm.previousVerse() }) {
+                Image(systemName: "backward.fill")
+                    .font(.body)
+                    .foregroundStyle(Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!isVerseMode)
+            .opacity(isVerseMode ? 1 : 0.3)
 
             if vm.isLoading {
                 ProgressView()
                     .tint(Color.niyaGold)
+                    .frame(width: 44, height: 44)
             } else {
-                Button {
-                    vm.togglePause()
-                } label: {
-                    Image(systemName: vm.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.title3)
+                Button(action: { vm.togglePause() }) {
+                    Image(systemName: vm.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                        .font(.system(size: 40))
                         .foregroundStyle(Color.niyaGold)
                         .frame(width: 44, height: 44)
-                        .contentShape(.rect)
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
 
-            Button {
-                vm.stop()
-            } label: {
+            Button(action: { vm.nextVerse() }) {
+                Image(systemName: "forward.fill")
+                    .font(.body)
+                    .foregroundStyle(Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!isVerseMode)
+            .opacity(isVerseMode ? 1 : 0.3)
+
+            Button(action: { vm.stop() }) {
                 Image(systemName: "xmark")
                     .font(.subheadline)
                     .foregroundStyle(Color.niyaSecondary)
                     .frame(width: 44, height: 44)
-                    .contentShape(.rect)
+                    .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 4)
-        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .contentShape(Rectangle())
         .glassEffect()
     }
 
-    private var currentTitle: String {
-        if let vid = vm.currentVerseID {
-            let name = dataService.surahs.first(where: { $0.id == vid.surahId })?.transliteration ?? ""
-            return "\(name) · Verse \(vid.ayahId)"
-        } else if let sid = vm.currentSurahId {
-            return dataService.surahs.first(where: { $0.id == sid })?.transliteration ?? "Playing"
+    private var speedMenu: some View {
+        Menu {
+            ForEach([Float(0.5), 0.75, 1.0, 1.25], id: \.self) { speed in
+                Button {
+                    vm.setSpeed(speed)
+                } label: {
+                    HStack {
+                        Text(speedLabel(speed))
+                        if vm.playbackSpeed == speed {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        } label: {
+            Text(speedLabel(vm.playbackSpeed))
+                .font(.caption.weight(.semibold))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.niyaSecondary.opacity(0.15), in: .capsule)
+                .foregroundStyle(Color.niyaText)
         }
-        return "Playing"
     }
 
-    private var currentSubtitle: String {
-        if let vid = vm.currentVerseID {
-            return dataService.surahs.first(where: { $0.id == vid.surahId })?.name ?? ""
-        }
-        return selectedReciter.displayName
+    private func speedLabel(_ speed: Float) -> String {
+        if speed == 1.0 { return "1x" }
+        if speed == 0.5 { return "0.5x" }
+        if speed == 0.75 { return "0.75x" }
+        return "1.25x"
     }
 }
