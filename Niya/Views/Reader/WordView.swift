@@ -11,7 +11,7 @@ struct WordView: View {
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 4) {
-                Text(word.t)
+                Text(word.displayText)
                     .font(.custom(QuranScript.hafs.fontName, size: arabicFontSize))
                     .fontWeight(highlightState == .current ? .bold : .regular)
                     .foregroundStyle(arabicColor)

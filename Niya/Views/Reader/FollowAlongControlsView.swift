@@ -11,6 +11,8 @@ struct FollowAlongControlsView: View {
                 Image(systemName: "backward.fill")
                     .font(.body)
                     .foregroundStyle(Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
@@ -18,6 +20,8 @@ struct FollowAlongControlsView: View {
                 Image(systemName: vm.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                     .font(.system(size: 40))
                     .foregroundStyle(Color.niyaGold)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
@@ -25,6 +29,8 @@ struct FollowAlongControlsView: View {
                 Image(systemName: "forward.fill")
                     .font(.body)
                     .foregroundStyle(Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
@@ -34,11 +40,14 @@ struct FollowAlongControlsView: View {
                 Image(systemName: "xmark")
                     .font(.subheadline)
                     .foregroundStyle(Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
+        .contentShape(Rectangle())
         .glassEffect()
     }
 
@@ -84,6 +93,8 @@ struct FollowAlongControlsView: View {
             Image(systemName: vm.loopCount > 1 ? "repeat.circle.fill" : "repeat")
                 .font(.body)
                 .foregroundStyle(vm.loopCount > 1 ? Color.niyaGold : Color.niyaSecondary)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
         }
     }
 
