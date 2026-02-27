@@ -79,6 +79,7 @@ struct ReaderContainerView: View {
             vm.mode = storedMode
             vm.load()
             audioPlayerVM.autoAdvance = followAlongAutoAdvance
+            audioPlayerVM.loopCount = followAlongLoopCount
             if showTajweed && storedScript == .hafs {
                 tajweedService.fetch(surahId: vm.surah.id)
             }
@@ -110,6 +111,7 @@ struct ReaderContainerView: View {
         }
         .onChange(of: followAlongLoopCount) { _, count in
             followAlongVM.loopCount = count
+            audioPlayerVM.loopCount = count
         }
         .onDisappear {
             followAlongVM.stopTracking()

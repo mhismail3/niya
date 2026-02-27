@@ -93,7 +93,16 @@ final class AudioService {
                     forTimes: [NSValue(time: endTime)],
                     queue: .main
                 ) { [weak self] in
-                    Task { @MainActor in self?.fadeOutAndStop() }
+                    Task { @MainActor in
+                        guard let self else { return }
+                        let playerBefore = self.player
+                        if let vid = self.currentVerseID {
+                            self.onVerseDidFinish?(vid)
+                        }
+                        if self.player === playerBefore {
+                            self.fadeOutAndStop()
+                        }
+                    }
                 }
                 player.play()
                 self.isPlaying = true

@@ -55,12 +55,6 @@ struct ReaderSettingsSheet: View {
                             .tint(Color.niyaTeal)
                         Toggle("Word Meanings", isOn: $followAlongMeaning)
                             .tint(Color.niyaTeal)
-                        Picker("Repeat", selection: $followAlongLoopCount) {
-                            Text("1x").tag(1)
-                            Text("2x").tag(2)
-                            Text("3x").tag(3)
-                            Text("5x").tag(5)
-                        }
                     }
                     if script != .hafs {
                         Text("Available for Uthmanic Hafs only")
@@ -99,6 +93,12 @@ struct ReaderSettingsSheet: View {
                     }
                     Toggle("Auto-advance", isOn: $followAlongAutoAdvance)
                         .tint(Color.niyaTeal)
+                    Picker("Repeat", selection: $followAlongLoopCount) {
+                        Text("1x").tag(1)
+                        Text("2x").tag(2)
+                        Text("3x").tag(3)
+                        Text("5x").tag(5)
+                    }
                     downloadRow
                 }
             }

@@ -5,6 +5,7 @@ struct FollowAlongControlsView: View {
 
     var body: some View {
         HStack(spacing: 16) {
+            loopMenu
             speedMenu
 
             Button(action: { vm.previousVerse() }) {
@@ -34,14 +35,12 @@ struct FollowAlongControlsView: View {
             }
             .buttonStyle(.plain)
 
-            loopMenu
-
             Button(action: { vm.stopTracking() }) {
                 Image(systemName: "xmark")
-                    .font(.subheadline)
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(Color.niyaSecondary)
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
+                    .padding(8)
+                    .background(Color.niyaSecondary.opacity(0.15), in: .circle)
             }
             .buttonStyle(.plain)
         }
@@ -49,6 +48,29 @@ struct FollowAlongControlsView: View {
         .padding(.vertical, 8)
         .contentShape(Rectangle())
         .glassEffect()
+    }
+
+    private var loopMenu: some View {
+        Menu {
+            ForEach([1, 2, 3, 5, 10], id: \.self) { count in
+                Button {
+                    vm.loopCount = count
+                } label: {
+                    HStack {
+                        Text(count == 1 ? "No Repeat" : "\(count)x")
+                        if vm.loopCount == count {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        } label: {
+            Image(systemName: vm.loopCount > 1 ? "repeat.circle.fill" : "repeat")
+                .font(.body)
+                .foregroundStyle(vm.loopCount > 1 ? Color.niyaGold : Color.niyaSecondary)
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
+        }
     }
 
     private var speedMenu: some View {
@@ -72,29 +94,6 @@ struct FollowAlongControlsView: View {
                 .padding(.vertical, 4)
                 .background(Color.niyaSecondary.opacity(0.15), in: .capsule)
                 .foregroundStyle(Color.niyaText)
-        }
-    }
-
-    private var loopMenu: some View {
-        Menu {
-            ForEach([1, 2, 3, 5, 10], id: \.self) { count in
-                Button {
-                    vm.loopCount = count
-                } label: {
-                    HStack {
-                        Text(count == 1 ? "No Repeat" : "\(count)x")
-                        if vm.loopCount == count {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
-            }
-        } label: {
-            Image(systemName: vm.loopCount > 1 ? "repeat.circle.fill" : "repeat")
-                .font(.body)
-                .foregroundStyle(vm.loopCount > 1 ? Color.niyaGold : Color.niyaSecondary)
-                .frame(width: 44, height: 44)
-                .contentShape(Rectangle())
         }
     }
 

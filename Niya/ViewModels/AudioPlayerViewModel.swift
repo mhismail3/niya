@@ -8,6 +8,8 @@ final class AudioPlayerViewModel {
     var selectedReciter: Reciter
     var playbackSpeed: Float = 1.0
     var autoAdvance = true
+    var loopCount: Int = 1
+    private var currentLoop = 0
 
     private let audioService: AudioService
     private let dataService: QuranDataService
@@ -21,13 +23,16 @@ final class AudioPlayerViewModel {
         self.selectedReciter = reciter
 
         audioService.onVerseDidFinish = { [weak self] vid in
-            guard let self, self.autoAdvance else { return }
-            let surah = self.dataService.surahs.first { $0.id == vid.surahId }
-            let nextAyah = vid.ayahId + 1
-            if let surah, nextAyah <= surah.totalVerses {
-                self.playVerse(surahId: vid.surahId, ayahId: nextAyah)
-                if self.playbackSpeed != 1.0 {
-                    self.audioService.setRate(self.playbackSpeed)
+            guard let self else { return }
+            self.currentLoop += 1
+            if self.currentLoop < self.loopCount {
+                self.startPlayback(surahId: vid.surahId, ayahId: vid.ayahId)
+            } else if self.autoAdvance {
+                self.currentLoop = 0
+                let surah = self.dataService.surahs.first { $0.id == vid.surahId }
+                let nextAyah = vid.ayahId + 1
+                if let surah, nextAyah <= surah.totalVerses {
+                    self.startPlayback(surahId: vid.surahId, ayahId: nextAyah)
                 }
             }
         }
@@ -45,12 +50,13 @@ final class AudioPlayerViewModel {
     var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil }
 
     func playVerse(surahId: Int, ayahId: Int) {
+        currentLoop = 0
         let verseID = VerseID(surahId: surahId, ayahId: ayahId)
         if selectedReciter.hasPerVerseAudio {
             let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
             guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
             audioService.play(url: url, verseID: verseID, surahId: surahId)
-        } else if autoAdvance {
+        } else if autoAdvance && loopCount <= 1 {
             guard let allVerses = wordDataService.allVerseData(surahId: surahId) else { return }
             let boundaries = allVerses
                 .filter { $0.ayahId >= ayahId }
@@ -146,5 +152,22 @@ final class AudioPlayerViewModel {
 
     func isDownloaded(_ surahId: Int) -> Bool {
         audioService.localSurahURL(surahId: surahId, reciter: selectedReciter) != nil
+    }
+
+    private func startPlayback(surahId: Int, ayahId: Int) {
+        let verseID = VerseID(surahId: surahId, ayahId: ayahId)
+        if selectedReciter.hasPerVerseAudio {
+            let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
+            guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
+            audioService.play(url: url, verseID: verseID, surahId: surahId)
+        } else {
+            guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return }
+            let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
+                ?? selectedReciter.surahStreamURL(surahId: surahId)
+            audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)
+        }
+        if playbackSpeed != 1.0 {
+            audioService.setRate(playbackSpeed)
+        }
     }
 }
