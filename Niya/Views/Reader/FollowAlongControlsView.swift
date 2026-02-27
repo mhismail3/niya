@@ -2,6 +2,8 @@ import SwiftUI
 
 struct FollowAlongControlsView: View {
     @Environment(FollowAlongViewModel.self) private var vm
+    @Environment(\.modelContext) private var modelContext
+    @State private var isBookmarked = false
 
     var body: some View {
         HStack(spacing: 16) {
@@ -35,6 +37,20 @@ struct FollowAlongControlsView: View {
             }
             .buttonStyle(.plain)
 
+            Button {
+                guard let surahId = vm.currentSurahId, let ayahId = vm.currentVerseId else { return }
+                let store = QuranBookmarkStore(modelContext: modelContext)
+                store.toggle(surahId: surahId, ayahId: ayahId)
+                isBookmarked.toggle()
+            } label: {
+                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                    .font(.body)
+                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
             Button(action: { vm.stopTracking() }) {
                 Image(systemName: "xmark")
                     .font(.caption.weight(.semibold))
@@ -48,6 +64,11 @@ struct FollowAlongControlsView: View {
         .padding(.vertical, 8)
         .contentShape(Rectangle())
         .glassEffect()
+        .onChange(of: vm.currentVerseId) { _, ayahId in
+            guard let surahId = vm.currentSurahId, let ayahId else { isBookmarked = false; return }
+            isBookmarked = QuranBookmarkStore(modelContext: modelContext)
+                .isBookmarked(surahId: surahId, ayahId: ayahId)
+        }
     }
 
     private var loopMenu: some View {

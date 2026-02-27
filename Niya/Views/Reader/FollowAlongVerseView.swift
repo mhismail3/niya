@@ -32,9 +32,9 @@ struct FollowAlongVerseView: View {
                 .buttonStyle(.plain)
 
                 Button(action: onBookmark) {
-                    Image(systemName: isBookmarked ? "heart.fill" : "heart")
+                    Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .font(.title3)
-                        .foregroundStyle(isBookmarked ? .red : Color.niyaSecondary)
+                        .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
                 }
                 .buttonStyle(.plain)
 

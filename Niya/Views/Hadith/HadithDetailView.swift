@@ -114,9 +114,9 @@ struct HadithDetailView: View {
                 store.toggle(collectionId: collectionId, hadithId: hadith.id)
                 isBookmarked.toggle()
             } label: {
-                Image(systemName: isBookmarked ? "heart.fill" : "heart")
+                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.title3)
-                    .foregroundStyle(isBookmarked ? .red : Color.niyaSecondary)
+                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
             }
 
             ShareLink(item: shareText) {

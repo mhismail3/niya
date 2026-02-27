@@ -124,9 +124,9 @@ struct DuaDetailView: View {
                 store.toggle(categoryId: categoryId, duaId: dua.id)
                 isBookmarked.toggle()
             } label: {
-                Image(systemName: isBookmarked ? "heart.fill" : "heart")
+                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.title3)
-                    .foregroundStyle(isBookmarked ? .red : Color.niyaSecondary)
+                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
             }
 
             ShareLink(item: shareText) {

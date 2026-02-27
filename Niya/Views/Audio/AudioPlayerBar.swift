@@ -2,6 +2,8 @@ import SwiftUI
 
 struct AudioPlayerBar: View {
     @Environment(AudioPlayerViewModel.self) private var vm
+    @Environment(\.modelContext) private var modelContext
+    @State private var isBookmarked = false
 
     private var isVerseMode: Bool { vm.currentVerseID != nil }
 
@@ -47,6 +49,22 @@ struct AudioPlayerBar: View {
             .disabled(!isVerseMode)
             .opacity(isVerseMode ? 1 : 0.3)
 
+            Button {
+                guard let vid = vm.currentVerseID else { return }
+                let store = QuranBookmarkStore(modelContext: modelContext)
+                store.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
+                isBookmarked.toggle()
+            } label: {
+                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                    .font(.body)
+                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!isVerseMode)
+            .opacity(isVerseMode ? 1 : 0.3)
+
             Button(action: { vm.stop() }) {
                 Image(systemName: "xmark")
                     .font(.caption.weight(.semibold))
@@ -60,6 +78,11 @@ struct AudioPlayerBar: View {
         .padding(.vertical, 8)
         .contentShape(Rectangle())
         .glassEffect()
+        .onChange(of: vm.currentVerseID) { _, vid in
+            guard let vid else { isBookmarked = false; return }
+            isBookmarked = QuranBookmarkStore(modelContext: modelContext)
+                .isBookmarked(surahId: vid.surahId, ayahId: vid.ayahId)
+        }
     }
 
     private var repeatMenu: some View {
