@@ -11,10 +11,13 @@ final class FollowAlongViewModel {
     var playbackSpeed: Float = 1.0
     var loopCount: Int = 1
     var autoAdvance = true
+    private(set) var tappedWordPosition: Int?
+    private(set) var tappedVerseId: Int?
 
     private var currentLoop = 0
     private var trackingTask: Task<Void, Never>?
     private var wordPlayer: AVPlayer?
+    private var tapObserver: NSObjectProtocol?
     private let audioService: AudioService
     private let wordDataService: WordDataService
     private let dataService: QuranDataService
@@ -67,6 +70,12 @@ final class FollowAlongViewModel {
         currentSurahId = nil
         currentVerseId = nil
         currentLoop = 0
+        tappedWordPosition = nil
+        tappedVerseId = nil
+        if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
+        tapObserver = nil
+        wordPlayer?.pause()
+        wordPlayer = nil
         audioService.stop()
     }
 
@@ -84,15 +93,36 @@ final class FollowAlongViewModel {
         }
     }
 
-    func tapWord(_ word: QuranWord) {
+    func tapWord(_ word: QuranWord, verseId: Int) {
+        if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
         wordPlayer?.pause()
         wordPlayer = nil
-        let player = AVPlayer(url: word.audioURL)
+
+        tappedWordPosition = word.p
+        tappedVerseId = verseId
+
+        let item = AVPlayerItem(url: word.audioURL)
+        let player = AVPlayer(playerItem: item)
         wordPlayer = player
+
+        tapObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: item,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.tappedWordPosition = nil
+                self?.tappedVerseId = nil
+            }
+        }
+
         player.play()
     }
 
     func highlightState(for word: QuranWord, verseId: Int) -> WordHighlightState {
+        if tappedWordPosition == word.p && tappedVerseId == verseId {
+            return .current
+        }
         guard currentVerseId == verseId, let idx = currentWordIndex else { return .upcoming }
         let wordIdx = word.p - 1
         if wordIdx == idx { return .current }

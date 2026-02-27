@@ -100,11 +100,17 @@ private class GlyphBoundsLabel: UIView {
 
     private var line: CTLine?
     private var cachedGlyphBounds: CGRect = .zero
+    private var cachedAdvanceWidth: CGFloat = 0
+    private var cachedFontAscent: CGFloat = 0
+    private var cachedFontDescent: CGFloat = 0
 
     private func rebuildLine() {
         guard !text.isEmpty else {
             line = nil
             cachedGlyphBounds = .zero
+            cachedAdvanceWidth = 0
+            cachedFontAscent = 0
+            cachedFontDescent = 0
             invalidateIntrinsicContentSize()
             setNeedsDisplay()
             return
@@ -124,15 +130,18 @@ private class GlyphBoundsLabel: UIView {
         let ctLine = CTLineCreateWithAttributedString(attrStr)
         line = ctLine
         cachedGlyphBounds = CTLineGetBoundsWithOptions(ctLine, .useGlyphPathBounds)
+        cachedAdvanceWidth = CGFloat(CTLineGetTypographicBounds(ctLine, nil, nil, nil))
+        cachedFontAscent = CTFontGetAscent(font)
+        cachedFontDescent = CTFontGetDescent(font)
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
     }
 
     override var intrinsicContentSize: CGSize {
-        guard !cachedGlyphBounds.isEmpty else { return .zero }
+        guard line != nil else { return .zero }
         return CGSize(
-            width: ceil(cachedGlyphBounds.width) + 2,
-            height: ceil(cachedGlyphBounds.height) + 2
+            width: ceil(max(cachedAdvanceWidth, cachedGlyphBounds.width)) + 2,
+            height: ceil(cachedFontAscent + cachedFontDescent)
         )
     }
 
@@ -145,7 +154,7 @@ private class GlyphBoundsLabel: UIView {
 
         let gb = cachedGlyphBounds
         let x = (rect.width - gb.width) / 2 - gb.origin.x
-        let y = (rect.height - gb.height) / 2 - gb.origin.y
+        let y = cachedFontDescent
 
         ctx.textPosition = CGPoint(x: x, y: y)
         CTLineDraw(line, ctx)
