@@ -7,6 +7,7 @@ final class AudioPlayerViewModel {
     var downloadError: String?
     var selectedReciter: Reciter
     var playbackSpeed: Float = 1.0
+    var autoAdvance = true
 
     private let audioService: AudioService
     private let dataService: QuranDataService
@@ -18,6 +19,18 @@ final class AudioPlayerViewModel {
         self.dataService = dataService
         self.wordDataService = wordDataService
         self.selectedReciter = reciter
+
+        audioService.onVerseDidFinish = { [weak self] vid in
+            guard let self, self.autoAdvance else { return }
+            let surah = self.dataService.surahs.first { $0.id == vid.surahId }
+            let nextAyah = vid.ayahId + 1
+            if let surah, nextAyah <= surah.totalVerses {
+                self.playVerse(surahId: vid.surahId, ayahId: nextAyah)
+                if self.playbackSpeed != 1.0 {
+                    self.audioService.setRate(self.playbackSpeed)
+                }
+            }
+        }
     }
 
     func setDownloadStore(_ store: DownloadStore) {

@@ -78,6 +78,7 @@ struct ReaderContainerView: View {
         .onAppear {
             vm.mode = storedMode
             vm.load()
+            audioPlayerVM.autoAdvance = followAlongAutoAdvance
             if showTajweed && storedScript == .hafs {
                 tajweedService.fetch(surahId: vm.surah.id)
             }
@@ -105,6 +106,7 @@ struct ReaderContainerView: View {
         }
         .onChange(of: followAlongAutoAdvance) { _, on in
             followAlongVM.autoAdvance = on
+            audioPlayerVM.autoAdvance = on
         }
         .onChange(of: followAlongLoopCount) { _, count in
             followAlongVM.loopCount = count

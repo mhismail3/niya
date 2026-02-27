@@ -15,6 +15,7 @@ final class AudioService {
     var currentSurahId: Int?
     var downloadProgress: Double = 0
     var isFollowAlongActive = false
+    var onVerseDidFinish: ((VerseID) -> Void)?
 
     private var player: AVPlayer?
     private var timeObserver: Any?
@@ -83,7 +84,16 @@ final class AudioService {
                     forTimes: [NSValue(time: endTime)],
                     queue: .main
                 ) { [weak self] in
-                    Task { @MainActor in self?.stop() }
+                    Task { @MainActor in
+                        guard let self else { return }
+                        let playerBefore = self.player
+                        if let vid = self.currentVerseID {
+                            self.onVerseDidFinish?(vid)
+                        }
+                        if self.player === playerBefore {
+                            self.stop()
+                        }
+                    }
                 }
                 player.play()
                 self.isPlaying = true
@@ -187,9 +197,15 @@ final class AudioService {
 
     @objc private func playerDidFinish() {
         if !isFollowAlongActive {
-            isPlaying = false
-            currentVerseID = nil
-            currentSurahId = nil
+            let playerBefore = player
+            if let vid = currentVerseID {
+                onVerseDidFinish?(vid)
+            }
+            if player === playerBefore {
+                isPlaying = false
+                currentVerseID = nil
+                currentSurahId = nil
+            }
         }
     }
 }
