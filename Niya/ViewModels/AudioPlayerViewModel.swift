@@ -93,6 +93,14 @@ final class AudioPlayerViewModel {
         audioService.togglePause()
     }
 
+    func setLoopCount(_ count: Int) {
+        loopCount = count
+        currentLoop = 0
+        if let vid = currentVerseID, audioService.isPlaying {
+            playVerse(surahId: vid.surahId, ayahId: vid.ayahId)
+        }
+    }
+
     func setSpeed(_ speed: Float) {
         playbackSpeed = min(max(speed, 0.5), 1.25)
         audioService.setRate(playbackSpeed)

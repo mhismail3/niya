@@ -90,7 +90,7 @@ struct AudioPlayerBar: View {
         Menu {
             ForEach([1, 2, 3, 5, 10], id: \.self) { count in
                 Button {
-                    vm.loopCount = count
+                    vm.setLoopCount(count)
                 } label: {
                     HStack {
                         Text(count == 1 ? "No Repeat" : "\(count)x")
