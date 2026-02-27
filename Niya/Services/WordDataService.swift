@@ -4,11 +4,13 @@ import Foundation
 @MainActor
 final class WordDataService {
     private(set) var isLoaded = false
+    private(set) var currentReciter: Reciter?
     private var cache: [Int: [Int: VerseWordData]]?
 
-    func load() async {
-        guard !isLoaded else { return }
-        guard let url = Bundle.main.url(forResource: "word_data", withExtension: "json") else { return }
+    func load(reciter: Reciter = .alAfasy) async {
+        if isLoaded && currentReciter == reciter { return }
+        let filename = reciter.wordDataFilename
+        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else { return }
         do {
             let data = try Data(contentsOf: url)
             let raw = try JSONDecoder().decode([String: [String: VerseWordData]].self, from: data)
@@ -23,6 +25,7 @@ final class WordDataService {
                 result[surahId] = verseMap
             }
             cache = result
+            currentReciter = reciter
             isLoaded = true
         } catch {
             print("[WordDataService] Failed to load word data: \(error)")

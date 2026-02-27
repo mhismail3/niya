@@ -90,6 +90,16 @@ struct HomeView: View {
                                 ContinueReadingCard(surah: surah, position: position)
                             }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    modelContext.delete(position)
+                                    try? modelContext.save()
+                                    reload()
+                                } label: {
+                                    Label("Remove", systemImage: "trash")
+                                }
+                                .tint(.red)
+                            }
                         }
                     }
                 }
@@ -129,6 +139,16 @@ struct HomeView: View {
                                 )
                             }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    modelContext.delete(recent)
+                                    try? modelContext.save()
+                                    reload()
+                                } label: {
+                                    Label("Remove", systemImage: "trash")
+                                }
+                                .tint(.red)
+                            }
                         }
                     }
                 }
@@ -166,6 +186,16 @@ struct HomeView: View {
                                 )
                             }
                             .buttonStyle(.plain)
+                            .contextMenu {
+                                Button(role: .destructive) {
+                                    modelContext.delete(recent)
+                                    try? modelContext.save()
+                                    reload()
+                                } label: {
+                                    Label("Remove", systemImage: "trash")
+                                }
+                                .tint(.red)
+                            }
                         }
                     }
                 }

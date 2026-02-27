@@ -5,14 +5,18 @@ import Foundation
 final class AudioPlayerViewModel {
     var downloadingSurahId: Int?
     var downloadError: String?
+    var selectedReciter: Reciter
 
     private let audioService: AudioService
     private let dataService: QuranDataService
+    private let wordDataService: WordDataService
     private var downloadStore: DownloadStore?
 
-    init(audioService: AudioService, dataService: QuranDataService) {
+    init(audioService: AudioService, dataService: QuranDataService, wordDataService: WordDataService, reciter: Reciter = .alAfasy) {
         self.audioService = audioService
         self.dataService = dataService
+        self.wordDataService = wordDataService
+        self.selectedReciter = reciter
     }
 
     func setDownloadStore(_ store: DownloadStore) {
@@ -27,17 +31,24 @@ final class AudioPlayerViewModel {
     var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil }
 
     func playVerse(surahId: Int, ayahId: Int) {
-        let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
-        let url = audioService.streamURL(absoluteVerseNumber: absNum)
         let verseID = VerseID(surahId: surahId, ayahId: ayahId)
-        audioService.play(url: url, verseID: verseID, surahId: surahId)
+        if selectedReciter.hasPerVerseAudio {
+            let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
+            guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
+            audioService.play(url: url, verseID: verseID, surahId: surahId)
+        } else {
+            guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return }
+            let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
+                ?? selectedReciter.surahStreamURL(surahId: surahId)
+            audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)
+        }
     }
 
     func playSurah(_ surahId: Int) {
-        if let localURL = audioService.localSurahURL(surahId: surahId) {
+        if let localURL = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter) {
             audioService.play(url: localURL, surahId: surahId)
         } else {
-            let url = audioService.surahStreamURL(surahId: surahId)
+            let url = audioService.surahStreamURL(surahId: surahId, reciter: selectedReciter)
             audioService.play(url: url, surahId: surahId)
         }
     }
@@ -63,8 +74,8 @@ final class AudioPlayerViewModel {
         downloadingSurahId = surahId
         downloadError = nil
         do {
-            let localURL = try await audioService.downloadSurah(surahId: surahId)
-            try downloadStore?.save(surahId: surahId, filename: localURL.lastPathComponent)
+            let localURL = try await audioService.downloadSurah(surahId: surahId, reciter: selectedReciter)
+            try downloadStore?.save(surahId: surahId, filename: localURL.lastPathComponent, reciterId: selectedReciter.rawValue)
         } catch {
             downloadError = error.localizedDescription
         }
@@ -72,6 +83,6 @@ final class AudioPlayerViewModel {
     }
 
     func isDownloaded(_ surahId: Int) -> Bool {
-        audioService.localSurahURL(surahId: surahId) != nil
+        audioService.localSurahURL(surahId: surahId, reciter: selectedReciter) != nil
     }
 }

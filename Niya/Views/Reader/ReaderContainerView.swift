@@ -14,6 +14,7 @@ struct ReaderContainerView: View {
     @AppStorage("followAlongAutoAdvance") private var followAlongAutoAdvance: Bool = true
     @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
     @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
+    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
     @State private var showSettings = false
     @State private var showBookmarks = false
 
@@ -47,7 +48,7 @@ struct ReaderContainerView: View {
                     Button {
                         followAlong.toggle()
                         if followAlong {
-                            Task { await wordDataService.load() }
+                            Task { await wordDataService.load(reciter: selectedReciter) }
                         } else {
                             followAlongVM.stopTracking()
                         }
@@ -80,8 +81,8 @@ struct ReaderContainerView: View {
             if showTajweed && storedScript == .hafs {
                 tajweedService.fetch(surahId: vm.surah.id)
             }
-            if followAlong && storedScript == .hafs {
-                Task { await wordDataService.load() }
+            if followAlong && storedScript == .hafs || !selectedReciter.hasPerVerseAudio {
+                Task { await wordDataService.load(reciter: selectedReciter) }
             }
         }
         .onChange(of: storedScript) { _, newScript in

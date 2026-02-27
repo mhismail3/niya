@@ -63,6 +63,7 @@ SWIFT_FILES = [
     "Niya/Models/TajweedAnnotation.swift",
     "Niya/Models/TajweedVerse.swift",
     "Niya/Models/Word.swift",
+    "Niya/Models/Reciter.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -160,6 +161,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/hadith_shamail.json",
     "Niya/Resources/Data/dua_all.json",
     "Niya/Resources/Data/word_data.json",
+    "Niya/Resources/Data/noreen_word_data.json",
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -180,6 +182,7 @@ TEST_FILES = [
     "NiyaTests/FollowAlongViewModelTests.swift",
     "NiyaTests/WordDataIntegrityTests.swift",
     "NiyaTests/TajweedServiceTests.swift",
+    "NiyaTests/ReciterTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -510,6 +513,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/TajweedAnnotation.swift"], "TajweedAnnotation.swift"),
         (swift_file_ids["Niya/Models/TajweedVerse.swift"], "TajweedVerse.swift"),
         (swift_file_ids["Niya/Models/Word.swift"], "Word.swift"),
+        (swift_file_ids["Niya/Models/Reciter.swift"], "Reciter.swift"),
     ], path_str="Models")
 
     # Services
@@ -637,6 +641,7 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Data/hadith_collections.json"], "hadith_collections.json"),
         (resource_file_ids["Niya/Resources/Data/dua_all.json"], "dua_all.json"),
         (resource_file_ids["Niya/Resources/Data/word_data.json"], "word_data.json"),
+        (resource_file_ids["Niya/Resources/Data/noreen_word_data.json"], "noreen_word_data.json"),
     ]
     for coll_id in ["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
                      "malik", "ahmed", "darimi", "nawawi", "qudsi", "dehlawi",

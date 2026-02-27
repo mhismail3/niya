@@ -20,8 +20,9 @@ struct NiyaApp: App {
         let hds = HadithDataService()
         let dds = DuaDataService()
         let as_ = AudioService()
-        let avm = AudioPlayerViewModel(audioService: as_, dataService: ds)
         let wds = WordDataService()
+        let storedReciter = Reciter(rawValue: UserDefaults.standard.string(forKey: "selectedReciter") ?? "") ?? .alAfasy
+        let avm = AudioPlayerViewModel(audioService: as_, dataService: ds, wordDataService: wds, reciter: storedReciter)
         let favm = FollowAlongViewModel(audioService: as_, wordDataService: wds, dataService: ds)
         _dataService = State(wrappedValue: ds)
         _hadithDataService = State(wrappedValue: hds)
@@ -38,9 +39,11 @@ struct NiyaApp: App {
         }
 
         as_.configureSession()
+        Self.migrateAudioFilenames()
     }
 
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
+    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
 
     var body: some Scene {
         WindowGroup {
@@ -56,7 +59,29 @@ struct NiyaApp: App {
                 .environment(navigationCoordinator)
                 .modelContainer(container)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
+                .task {
+                    await wordDataService.load(reciter: selectedReciter)
+                }
+                .onChange(of: selectedReciter) { _, newReciter in
+                    audioPlayerVM.stop()
+                    audioPlayerVM.selectedReciter = newReciter
+                    Task { await wordDataService.load(reciter: newReciter) }
+                }
         }
+    }
+
+    private static func migrateAudioFilenames() {
+        guard !UserDefaults.standard.bool(forKey: "audioFilenameMigrated") else { return }
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fm = FileManager.default
+        for surahId in 1...114 {
+            let old = docs.appendingPathComponent("audio_surah_\(surahId).mp3")
+            let new = docs.appendingPathComponent("audio_alafasy_surah_\(surahId).mp3")
+            if fm.fileExists(atPath: old.path) && !fm.fileExists(atPath: new.path) {
+                try? fm.moveItem(at: old, to: new)
+            }
+        }
+        UserDefaults.standard.set(true, forKey: "audioFilenameMigrated")
     }
 }
 

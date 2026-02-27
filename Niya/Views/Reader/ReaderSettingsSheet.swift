@@ -14,6 +14,7 @@ struct ReaderSettingsSheet: View {
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
+    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
 
     var body: some View {
         NavigationStack {
@@ -93,7 +94,11 @@ struct ReaderSettingsSheet: View {
                 }
 
                 Section("Audio") {
-                    LabeledContent("Reciter", value: "Mishary Rashid Al-Afasy")
+                    Picker("Reciter", selection: $selectedReciter) {
+                        ForEach(Reciter.allCases) { r in
+                            Text(r.displayName).tag(r)
+                        }
+                    }
                     downloadRow
                 }
             }

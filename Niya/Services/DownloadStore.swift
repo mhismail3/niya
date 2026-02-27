@@ -10,25 +10,20 @@ final class DownloadStore {
         self.modelContext = modelContext
     }
 
-    func isDownloaded(surahId: Int) -> Bool {
-        let descriptor = FetchDescriptor<AudioDownload>(
-            predicate: #Predicate { $0.surahId == surahId }
-        )
-        return (try? modelContext.fetchCount(descriptor)) ?? 0 > 0
+    func isDownloaded(surahId: Int, reciterId: String = "alAfasy") -> Bool {
+        let all = (try? modelContext.fetch(FetchDescriptor<AudioDownload>())) ?? []
+        return all.contains { $0.surahId == surahId && $0.reciterId == reciterId }
     }
 
-    func save(surahId: Int, filename: String) throws {
-        let download = AudioDownload(surahId: surahId, localFileName: filename)
+    func save(surahId: Int, filename: String, reciterId: String = "alAfasy") throws {
+        let download = AudioDownload(surahId: surahId, localFileName: filename, reciterId: reciterId)
         modelContext.insert(download)
         try modelContext.save()
     }
 
-    func delete(surahId: Int) throws {
-        let descriptor = FetchDescriptor<AudioDownload>(
-            predicate: #Predicate { $0.surahId == surahId }
-        )
-        let results = try modelContext.fetch(descriptor)
-        for item in results {
+    func delete(surahId: Int, reciterId: String = "alAfasy") throws {
+        let all = try modelContext.fetch(FetchDescriptor<AudioDownload>())
+        for item in all where item.surahId == surahId && item.reciterId == reciterId {
             modelContext.delete(item)
         }
         try modelContext.save()

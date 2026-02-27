@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
     @AppStorage("hadithArabicFontSize") private var hadithArabicFontSize: Double = 22
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
+    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
 
     var body: some View {
@@ -63,7 +64,11 @@ struct SettingsView: View {
                 }
 
                 Section("Audio") {
-                    LabeledContent("Reciter", value: "Mishary Rashid Al-Afasy")
+                    Picker("Reciter", selection: $selectedReciter) {
+                        ForEach(Reciter.allCases) { r in
+                            Text(r.displayName).tag(r)
+                        }
+                    }
                 }
             }
             .navigationTitle("Settings")

@@ -3,6 +3,7 @@ import SwiftUI
 struct AudioPlayerBar: View {
     @Environment(AudioPlayerViewModel.self) private var vm
     @Environment(QuranDataService.self) private var dataService
+    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
 
     var body: some View {
         HStack(spacing: 4) {
@@ -63,6 +64,6 @@ struct AudioPlayerBar: View {
         if let vid = vm.currentVerseID {
             return dataService.surahs.first(where: { $0.id == vid.surahId })?.name ?? ""
         }
-        return "Mishary Rashid Al-Afasy"
+        return selectedReciter.displayName
     }
 }
