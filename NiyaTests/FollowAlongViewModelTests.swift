@@ -132,6 +132,53 @@ struct FollowAlongViewModelTests {
         #expect(vm.highlightState(for: word, verseId: 1) == .upcoming)
     }
 
+    // MARK: - Tap highlight state
+
+    @Test func tapWord_setsTappedState() {
+        let vm = makeVM()
+        let word = QuranWord(p: 3, t: "وَأُو۟لَـٰٓئِكَ", tr: "wa-ulāika", en: "And those", a: "wbw/002_005_005.mp3", s: 2000, e: 2500)
+        vm.tapWord(word, verseId: 5)
+        #expect(vm.tappedWordPosition == 3)
+        #expect(vm.tappedVerseId == 5)
+    }
+
+    @Test func highlightState_tappedWord() {
+        let vm = makeVM()
+        let word = QuranWord(p: 2, t: "ٱللَّهِ", tr: "allāhi", en: "(of) Allah", a: "test.mp3", s: 500, e: 1000)
+        vm.tapWord(word, verseId: 7)
+        #expect(vm.highlightState(for: word, verseId: 7) == .current)
+    }
+
+    @Test func highlightState_tappedDifferentVerse() {
+        let vm = makeVM()
+        vm.currentVerseId = 1
+        vm.currentWordIndex = 0
+        let word = QuranWord(p: 2, t: "ٱللَّهِ", tr: "allāhi", en: "(of) Allah", a: "test.mp3", s: 500, e: 1000)
+        vm.tapWord(word, verseId: 3)
+        #expect(vm.highlightState(for: word, verseId: 3) == .current)
+    }
+
+    @Test func stopTracking_clearsTapState() {
+        let vm = makeVM()
+        let word = QuranWord(p: 2, t: "ٱللَّهِ", tr: "allāhi", en: "(of) Allah", a: "test.mp3", s: 500, e: 1000)
+        vm.tapWord(word, verseId: 5)
+        #expect(vm.tappedWordPosition == 2)
+        vm.stopTracking()
+        #expect(vm.tappedWordPosition == nil)
+        #expect(vm.tappedVerseId == nil)
+    }
+
+    @Test func tapWord_clearsOldTapState() {
+        let vm = makeVM()
+        let word1 = QuranWord(p: 1, t: "بِسْمِ", tr: "bis'mi", en: "In (the) name", a: "test1.mp3", s: 0, e: 500)
+        let word2 = QuranWord(p: 2, t: "ٱللَّهِ", tr: "allāhi", en: "(of) Allah", a: "test2.mp3", s: 500, e: 1000)
+        vm.tapWord(word1, verseId: 1)
+        #expect(vm.tappedWordPosition == 1)
+        vm.tapWord(word2, verseId: 1)
+        #expect(vm.tappedWordPosition == 2)
+        #expect(vm.tappedVerseId == 1)
+    }
+
     // MARK: - Helpers
 
     private func makeVM() -> FollowAlongViewModel {

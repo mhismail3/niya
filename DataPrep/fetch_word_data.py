@@ -81,26 +81,19 @@ def fetch_timing_for_surah(ch):
     return af
 
 
-def extract_words(verse_data):
+def extract_words(verse_data, chapter, verse):
     """Extract word-only entries (skip verse-end markers) from API response."""
     words = []
+    word_seq = 0
     for w in verse_data.get("words", []):
         if w.get("char_type_name") != "word":
             continue
+        word_seq += 1
         transliteration = w.get("transliteration") or {}
         translation = w.get("translation") or {}
-        audio_url = w.get("audio_url") or ""
-        # Normalize audio_url to relative path (strip CDN prefix)
-        if audio_url.startswith("https://"):
-            # Keep just the path portion after the domain
-            parts = audio_url.split("/")
-            # Find "wbw" segment and keep from there
-            for i, part in enumerate(parts):
-                if part == "wbw":
-                    audio_url = "/".join(parts[i:])
-                    break
+        audio_url = f"wbw/{chapter:03d}_{verse:03d}_{word_seq:03d}.mp3"
         words.append({
-            "p": w.get("position", 0),
+            "p": word_seq,
             "t": w.get("text_uthmani", ""),
             "tr": transliteration.get("text", ""),
             "en": translation.get("text", ""),
@@ -227,7 +220,7 @@ def build_surah_data(ch, surah_info):
         if ":" not in verse_key:
             continue
         verse_num = int(verse_key.split(":")[1])
-        words = extract_words(verse_data)
+        words = extract_words(verse_data, ch, verse_num)
 
         # Get timing
         vt = verse_timings.get(verse_num, {})
