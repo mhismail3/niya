@@ -39,7 +39,6 @@ struct DuaDetailView: View {
                     .multilineTextAlignment(.trailing)
                     .lineSpacing(12)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .environment(\.layoutDirection, .rightToLeft)
 
                 if let transliteration = dua.transliteration {
                     Text(transliteration)
@@ -107,10 +106,11 @@ struct DuaDetailView: View {
     }
 
     private func metadataRow(_ label: String, value: String) -> some View {
-        HStack(spacing: 6) {
+        HStack(alignment: .top, spacing: 6) {
             Text(label)
                 .font(.niyaCaption)
                 .foregroundStyle(Color.niyaSecondary)
+                .frame(width: 64, alignment: .leading)
             Text(value)
                 .font(.niyaCaption)
                 .foregroundStyle(Color.niyaText)

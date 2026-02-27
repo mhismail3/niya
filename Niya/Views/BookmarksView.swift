@@ -177,7 +177,7 @@ struct BookmarksView: View {
                                 Image(systemName: "diamond")
                                     .font(.system(size: 32))
                                     .foregroundStyle(Color.niyaTeal.opacity(0.15))
-                                Text("\(dua.id)")
+                                Text("\(dua.number)")
                                     .font(.system(.caption2, design: .rounded, weight: .semibold))
                                     .foregroundStyle(Color.niyaTeal)
                             }

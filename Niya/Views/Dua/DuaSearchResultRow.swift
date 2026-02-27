@@ -10,7 +10,7 @@ struct DuaSearchResultRow: View {
                 Text(categoryName)
                     .font(.niyaCaption2)
                     .foregroundStyle(Color.niyaTeal)
-                Text("#\(dua.id)")
+                Text("#\(dua.number)")
                     .font(.niyaCaption2)
                     .foregroundStyle(Color.niyaSecondary)
                 Spacer()

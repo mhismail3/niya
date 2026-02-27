@@ -2,6 +2,7 @@ import Foundation
 
 struct Dua: Codable, Identifiable, Hashable, Sendable {
     let id: Int
+    let number: Int
     let arabic: String
     let translation: String
     let transliteration: String?
