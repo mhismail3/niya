@@ -12,6 +12,10 @@ final class HadithDataService {
     var isLoaded = false
     var loadError: String?
 
+    private static let enabledCollections: Set<String> = [
+        "bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah", "ahmed"
+    ]
+
     private var loadedCollections: [String: HadithCollectionData] = [:]
 
     func load() async {
@@ -22,7 +26,8 @@ final class HadithDataService {
                 throw DataError.missingResource("hadith_collections.json")
             }
             let data = try Data(contentsOf: url)
-            collections = try JSONDecoder().decode([HadithCollection].self, from: data)
+            let all = try JSONDecoder().decode([HadithCollection].self, from: data)
+            collections = all.filter { Self.enabledCollections.contains($0.id) }
             isLoaded = true
         } catch {
             loadError = error.localizedDescription
