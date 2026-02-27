@@ -70,6 +70,14 @@ struct SettingsView: View {
                         }
                     }
                 }
+
+                Section {
+                    Text("Dedicated to Hashim Ismail")
+                        .font(.niyaCaption)
+                        .foregroundStyle(Color.niyaSecondary)
+                        .frame(maxWidth: .infinity)
+                        .listRowBackground(Color.clear)
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
