@@ -134,13 +134,31 @@ final class FollowAlongViewModel {
         guard let surahId = currentSurahId, let verseId = currentVerseId else { return }
         let totalVerses = dataService.surahs.first { $0.id == surahId }?.totalVerses ?? 0
         guard verseId < totalVerses else { return }
-        playVerse(surahId: surahId, ayahId: verseId + 1)
+        if !seekToVerseInPlace(surahId: surahId, ayahId: verseId + 1) {
+            playVerse(surahId: surahId, ayahId: verseId + 1)
+        }
     }
 
     func previousVerse() {
         guard let surahId = currentSurahId, let verseId = currentVerseId else { return }
         guard verseId > 1 else { return }
-        playVerse(surahId: surahId, ayahId: verseId - 1)
+        if !seekToVerseInPlace(surahId: surahId, ayahId: verseId - 1) {
+            playVerse(surahId: surahId, ayahId: verseId - 1)
+        }
+    }
+
+    /// Seek within the existing player for per-surah reciters. Returns true if handled.
+    private func seekToVerseInPlace(surahId: Int, ayahId: Int) -> Bool {
+        guard let reciter = wordDataService.currentReciter, !reciter.hasPerVerseAudio,
+              let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return false }
+        trackingTask?.cancel()
+        currentVerseId = ayahId
+        currentWordIndex = 0
+        currentLoop = 0
+        audioService.seekTo(ms: verseData.vs)
+        audioService.setRate(playbackSpeed)
+        startWordTracking()
+        return true
     }
 
     private func startWordTracking() {
@@ -192,7 +210,9 @@ final class FollowAlongViewModel {
         guard let surahId = currentSurahId, let verseId = currentVerseId else { return }
         let totalVerses = dataService.surahs.first { $0.id == surahId }?.totalVerses ?? 0
         if verseId < totalVerses {
-            playVerse(surahId: surahId, ayahId: verseId + 1)
+            if !seekToVerseInPlace(surahId: surahId, ayahId: verseId + 1) {
+                playVerse(surahId: surahId, ayahId: verseId + 1)
+            }
         } else {
             isPlaying = false
             currentWordIndex = nil

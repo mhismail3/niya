@@ -35,4 +35,9 @@ final class WordDataService {
     func words(surahId: Int, ayahId: Int) -> VerseWordData? {
         cache?[surahId]?[ayahId]
     }
+
+    func allVerseData(surahId: Int) -> [(ayahId: Int, data: VerseWordData)]? {
+        guard let verses = cache?[surahId] else { return nil }
+        return verses.sorted(by: { $0.key < $1.key }).map { ($0.key, $0.value) }
+    }
 }

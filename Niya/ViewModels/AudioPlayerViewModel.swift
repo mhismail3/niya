@@ -50,6 +50,18 @@ final class AudioPlayerViewModel {
             let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
             guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
             audioService.play(url: url, verseID: verseID, surahId: surahId)
+        } else if autoAdvance {
+            guard let allVerses = wordDataService.allVerseData(surahId: surahId) else { return }
+            let boundaries = allVerses
+                .filter { $0.ayahId >= ayahId }
+                .map { VerseBoundary(verseID: VerseID(surahId: surahId, ayahId: $0.ayahId), startMs: $0.data.vs, endMs: $0.data.ve) }
+            guard !boundaries.isEmpty else { return }
+            let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
+                ?? selectedReciter.surahStreamURL(surahId: surahId)
+            audioService.playSurahContinuous(url: url, boundaries: boundaries, surahId: surahId)
+            if playbackSpeed != 1.0 {
+                audioService.setRate(playbackSpeed)
+            }
         } else {
             guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return }
             let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
@@ -83,7 +95,11 @@ final class AudioPlayerViewModel {
     func previousVerse() {
         guard let vid = currentVerseID else { return }
         let prevAyah = vid.ayahId - 1
-        if prevAyah >= 1 {
+        guard prevAyah >= 1 else { return }
+        if audioService.isContinuousMode,
+           let verseData = wordDataService.words(surahId: vid.surahId, ayahId: prevAyah) {
+            audioService.seekToVerse(VerseID(surahId: vid.surahId, ayahId: prevAyah), startMs: verseData.vs)
+        } else {
             playVerse(surahId: vid.surahId, ayahId: prevAyah)
         }
         if playbackSpeed != 1.0 {
@@ -95,7 +111,11 @@ final class AudioPlayerViewModel {
         guard let vid = currentVerseID else { return }
         let surah = dataService.surahs.first { $0.id == vid.surahId }
         let nextAyah = vid.ayahId + 1
-        if let surah, nextAyah <= surah.totalVerses {
+        guard let surah, nextAyah <= surah.totalVerses else { return }
+        if audioService.isContinuousMode,
+           let verseData = wordDataService.words(surahId: vid.surahId, ayahId: nextAyah) {
+            audioService.seekToVerse(VerseID(surahId: vid.surahId, ayahId: nextAyah), startMs: verseData.vs)
+        } else {
             playVerse(surahId: vid.surahId, ayahId: nextAyah)
         }
         if playbackSpeed != 1.0 {
