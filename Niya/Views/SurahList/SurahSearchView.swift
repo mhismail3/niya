@@ -1,11 +1,5 @@
 import SwiftUI
 
-enum SearchScope: String, CaseIterable {
-    case quran = "Quran"
-    case hadith = "Hadith"
-    case dua = "Dua"
-}
-
 struct SurahSearchView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(HadithDataService.self) private var hadithDataService
@@ -14,7 +8,6 @@ struct SurahSearchView: View {
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @State private var searchQuery = ""
-    @State private var searchScope: SearchScope = .quran
     @State private var recentQueries: [RecentSearch] = []
     @State private var recentSurahs: [RecentSearch] = []
 
@@ -26,14 +19,7 @@ struct SurahSearchView: View {
         NavigationStack {
             Group {
                 if isSearching {
-                    switch searchScope {
-                    case .quran:
-                        quranSearchResults
-                    case .hadith:
-                        hadithSearchResults
-                    case .dua:
-                        duaSearchResults
-                    }
+                    unifiedSearchResults
                 } else {
                     recentsList
                 }
@@ -43,39 +29,40 @@ struct SurahSearchView: View {
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
         }
-        .searchable(text: $searchQuery, prompt: searchScope == .quran ? "Surah name or number" : searchScope == .hadith ? "Search hadiths" : "Search duas")
-        .searchScopes($searchScope) {
-            ForEach(SearchScope.allCases, id: \.self) { scope in
-                Text(scope.rawValue).tag(scope)
-            }
-        }
+        .searchable(text: $searchQuery, prompt: "Surahs, hadiths, and duas")
         .onSubmit(of: .search) {
-            if searchScope == .quran {
-                let store = RecentSearchStore(modelContext: modelContext)
-                store.saveQuery(searchQuery)
-                reloadRecents()
-            }
+            let store = RecentSearchStore(modelContext: modelContext)
+            store.saveQuery(searchQuery)
+            reloadRecents()
         }
         .onAppear { reloadRecents() }
     }
 
-    private var quranSearchResults: some View {
-        List(dataService.searchSurahs(query: searchQuery)) { surah in
-            NavigationLink(destination: readerView(for: surah)) {
-                SurahRowView(surah: surah)
-            }
-            .listRowBackground(Color.niyaBackground)
-        }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-    }
+    // MARK: - Unified Search
 
-    private var hadithSearchResults: some View {
-        let results = hadithDataService.searchHadiths(query: searchQuery)
+    private var unifiedSearchResults: some View {
+        let surahResults = dataService.searchSurahs(query: searchQuery)
+        let hadithResults = hadithDataService.searchHadiths(query: searchQuery)
+        let duaResults = duaDataService.searchDuas(query: searchQuery)
+        let hasAny = !surahResults.isEmpty || !hadithResults.isEmpty || !duaResults.isEmpty
+
         return List {
-            if hadithDataService.loadedCollectionCount > 0 {
+            if !surahResults.isEmpty {
                 Section {
-                    ForEach(Array(results.enumerated()), id: \.offset) { _, result in
+                    ForEach(surahResults) { surah in
+                        NavigationLink(destination: readerView(for: surah)) {
+                            SurahRowView(surah: surah)
+                        }
+                        .listRowBackground(Color.niyaBackground)
+                    }
+                } header: {
+                    sectionLabel("Quran", count: surahResults.count)
+                }
+            }
+
+            if !hadithResults.isEmpty {
+                Section {
+                    ForEach(Array(hadithResults.enumerated()), id: \.offset) { _, result in
                         let collection = hadithDataService.collections.first { $0.id == result.collectionId }
                         NavigationLink {
                             HadithDetailView(
@@ -94,27 +81,13 @@ struct SurahSearchView: View {
                         .listRowBackground(Color.niyaBackground)
                     }
                 } header: {
-                    Text("Searching \(hadithDataService.loadedCollectionCount) loaded collections")
-                        .font(.niyaCaption2)
+                    sectionLabel("Hadith", count: hadithResults.count)
                 }
-            } else {
-                ContentUnavailableView(
-                    "No Collections Loaded",
-                    systemImage: "text.book.closed",
-                    description: Text("Open a hadith collection first to search its contents")
-                )
             }
-        }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-    }
 
-    private var duaSearchResults: some View {
-        let results = duaDataService.searchDuas(query: searchQuery)
-        return List {
-            if duaDataService.isLoaded {
+            if !duaResults.isEmpty {
                 Section {
-                    ForEach(Array(results.enumerated()), id: \.offset) { _, result in
+                    ForEach(Array(duaResults.enumerated()), id: \.offset) { _, result in
                         let category = duaDataService.category(id: result.categoryId)
                         NavigationLink {
                             DuaDetailView(dua: result.dua, categoryId: result.categoryId)
@@ -127,18 +100,32 @@ struct SurahSearchView: View {
                         .listRowBackground(Color.niyaBackground)
                     }
                 } header: {
-                    if results.isEmpty && !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
-                        Text("No results")
-                            .font(.niyaCaption2)
-                    }
+                    sectionLabel("Dua", count: duaResults.count)
                 }
-            } else {
-                ProgressView()
+            }
+
+            if !hasAny {
+                ContentUnavailableView.search(text: searchQuery)
+                    .listRowBackground(Color.niyaBackground)
             }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
     }
+
+    private func sectionLabel(_ title: String, count: Int) -> some View {
+        HStack {
+            Text(title)
+                .font(.niyaCaption)
+                .foregroundStyle(Color.niyaSecondary)
+            Spacer()
+            Text("\(count)")
+                .font(.niyaCaption2)
+                .foregroundStyle(Color.niyaSecondary)
+        }
+    }
+
+    // MARK: - Recents
 
     private var recentsList: some View {
         ScrollView {
@@ -179,7 +166,7 @@ struct SurahSearchView: View {
                     ContentUnavailableView(
                         "No Recent Searches",
                         systemImage: "magnifyingglass",
-                        description: Text("Search for a surah by name or number")
+                        description: Text("Search across surahs, hadiths, and duas")
                     )
                     .frame(maxWidth: .infinity)
                     .padding(.top, 60)
