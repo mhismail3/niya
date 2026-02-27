@@ -72,7 +72,7 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    Text("Dedicated to Hashim Ismail")
+                    Text("Dedicated to the memory of Hashim Ismail - may Allah (SWT) grant him Jannah")
                         .font(.niyaCaption)
                         .foregroundStyle(Color.niyaSecondary)
                         .frame(maxWidth: .infinity)
