@@ -14,13 +14,13 @@ struct ContentView: View {
             Tab("Home", systemImage: "house", value: "home") {
                 HomeView()
             }
-            Tab("Quran", systemImage: "book.pages", value: "quran") {
+            Tab("Quran", systemImage: "text.book.closed.fill", value: "quran") {
                 SurahListView()
             }
-            Tab("Hadith", systemImage: "text.book.closed", value: "hadith") {
+            Tab("Hadith", systemImage: "books.vertical.fill", value: "hadith") {
                 HadithTabView()
             }
-            Tab("Dua", systemImage: "hands.and.sparkles", value: "dua") {
+            Tab("Dua", systemImage: "quote.bubble.fill", value: "dua") {
                 DuaTabView()
             }
             Tab("Search", systemImage: "magnifyingglass", value: "search", role: .search) {
