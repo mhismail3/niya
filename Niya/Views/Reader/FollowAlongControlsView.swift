@@ -42,6 +42,7 @@ struct FollowAlongControlsView: View {
                 let store = QuranBookmarkStore(modelContext: modelContext)
                 store.toggle(surahId: surahId, ayahId: ayahId)
                 isBookmarked.toggle()
+                NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.body)

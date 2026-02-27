@@ -37,6 +37,9 @@ struct MushaPageView: View {
         }
         .environment(\.layoutDirection, .leftToRight)
         .onAppear { loadBookmarks() }
+        .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
+            loadBookmarks()
+        }
     }
 
     private func loadBookmarks() {

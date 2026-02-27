@@ -48,6 +48,9 @@ struct ScrollReaderView: View {
             }
         }
         .background(Color.niyaBackground)
+        .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
+            loadBookmarks()
+        }
     }
 
     private func loadBookmarks() {

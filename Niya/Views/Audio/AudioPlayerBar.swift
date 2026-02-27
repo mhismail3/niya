@@ -54,6 +54,7 @@ struct AudioPlayerBar: View {
                 let store = QuranBookmarkStore(modelContext: modelContext)
                 store.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
                 isBookmarked.toggle()
+                NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.body)

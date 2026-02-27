@@ -1,6 +1,10 @@
 import Foundation
 import SwiftData
 
+extension Notification.Name {
+    static let bookmarkChanged = Notification.Name("bookmarkChanged")
+}
+
 @MainActor
 final class QuranBookmarkStore {
     private let modelContext: ModelContext
