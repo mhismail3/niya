@@ -10,6 +10,7 @@ struct FollowAlongVerseView: View {
     @AppStorage("followAlongTransliteration") private var showTransliteration = true
     @AppStorage("followAlongMeaning") private var showMeaning = true
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @AppStorage("translationIsRTL") private var translationIsRTL: Bool = false
 
     private var isActiveVerse: Bool {
         followAlongVM.currentVerseId == verse.id && followAlongVM.currentSurahId == surahId
@@ -59,8 +60,9 @@ struct FollowAlongVerseView: View {
                 Text(verse.translation)
                     .font(.system(size: translationFontSize, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(translationIsRTL ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: translationIsRTL ? .trailing : .leading)
+                    .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
             }
         }
         .padding(.vertical, 12)

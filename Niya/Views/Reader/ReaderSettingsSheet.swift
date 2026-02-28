@@ -15,6 +15,7 @@ struct ReaderSettingsSheet: View {
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
     @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
+    @Environment(QuranDataService.self) private var dataService
 
     var body: some View {
         NavigationStack {
@@ -36,6 +37,16 @@ struct ReaderSettingsSheet: View {
                     }
                     Toggle("Show Translation", isOn: $showTranslation)
                         .tint(Color.niyaTeal)
+                    if showTranslation {
+                        NavigationLink {
+                            TranslationPickerView()
+                        } label: {
+                            LabeledContent("Translation") {
+                                Text(dataService.selectedTranslation?.name ?? "Sahih International")
+                                    .foregroundStyle(Color.niyaSecondary)
+                            }
+                        }
+                    }
                     Toggle("Tajweed Colors", isOn: $showTajweed)
                         .tint(Color.niyaTeal)
                         .disabled(script != .hafs)

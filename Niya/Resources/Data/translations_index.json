@@ -1,0 +1,106 @@
+[
+  {
+    "id": "en_sahih",
+    "language": "en",
+    "languageName": "English",
+    "name": "Sahih International",
+    "author": "Saheeh International",
+    "filename": "translation_en_sahih.json"
+  },
+  {
+    "id": "en_clearquran",
+    "language": "en",
+    "languageName": "English",
+    "name": "The Clear Quran",
+    "author": "Talal Itani",
+    "filename": "translation_en_clearquran.json"
+  },
+  {
+    "id": "en_pickthall",
+    "language": "en",
+    "languageName": "English",
+    "name": "Pickthall",
+    "author": "M. M. Pickthall",
+    "filename": "translation_en_pickthall.json"
+  },
+  {
+    "id": "fr_hamidullah",
+    "language": "fr",
+    "languageName": "French",
+    "name": "Muhammad Hamidullah",
+    "author": "Muhammad Hamidullah",
+    "filename": "translation_fr_hamidullah.json"
+  },
+  {
+    "id": "es_cortes",
+    "language": "es",
+    "languageName": "Spanish",
+    "name": "Julio Cortes",
+    "author": "Julio Cortes",
+    "filename": "translation_es_cortes.json"
+  },
+  {
+    "id": "tr_diyanet",
+    "language": "tr",
+    "languageName": "Turkish",
+    "name": "Diyanet Isleri",
+    "author": "Diyanet Isleri Baskanligi",
+    "filename": "translation_tr_diyanet.json"
+  },
+  {
+    "id": "ur_jalandhry",
+    "language": "ur",
+    "languageName": "Urdu",
+    "name": "Fateh Muhammad Jalandhry",
+    "author": "Fateh Muhammad Jalandhry",
+    "filename": "translation_ur_jalandhry.json"
+  },
+  {
+    "id": "id_indonesian",
+    "language": "id",
+    "languageName": "Indonesian",
+    "name": "Kemenag",
+    "author": "Indonesian Ministry of Religious Affairs",
+    "filename": "translation_id_indonesian.json"
+  },
+  {
+    "id": "bn_bengali",
+    "language": "bn",
+    "languageName": "Bengali",
+    "name": "Muhiuddin Khan",
+    "author": "Muhiuddin Khan",
+    "filename": "translation_bn_bengali.json"
+  },
+  {
+    "id": "de_bubenheim",
+    "language": "de",
+    "languageName": "German",
+    "name": "Bubenheim & Elyas",
+    "author": "A. S. F. Bubenheim and N. Elyas",
+    "filename": "translation_de_bubenheim.json"
+  },
+  {
+    "id": "ru_kuliev",
+    "language": "ru",
+    "languageName": "Russian",
+    "name": "Elmir Kuliev",
+    "author": "Elmir Kuliev",
+    "filename": "translation_ru_kuliev.json"
+  },
+  {
+    "id": "ms_basmeih",
+    "language": "ms",
+    "languageName": "Malay",
+    "name": "Abdullah Basmeih",
+    "author": "Abdullah Muhammad Basmeih",
+    "filename": "translation_ms_basmeih.json"
+  },
+  {
+    "id": "zh_jian",
+    "language": "zh",
+    "languageName": "Chinese",
+    "name": "Ma Jian",
+    "author": "Ma Jian",
+    "filename": "translation_zh_jian.json"
+  }
+]

@@ -13,6 +13,7 @@ struct VerseRowView: View {
     @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @AppStorage("translationIsRTL") private var translationIsRTL: Bool = false
     @State private var tajweedActive = false
     @State private var activeTap: TajweedTap?
     @State private var tooltipWidth: CGFloat = 160
@@ -89,8 +90,9 @@ struct VerseRowView: View {
                 Text(verse.translation)
                     .font(.system(size: translationFontSize, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)
-                    .multilineTextAlignment(.leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(translationIsRTL ? .trailing : .leading)
+                    .frame(maxWidth: .infinity, alignment: translationIsRTL ? .trailing : .leading)
+                    .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
             }
         }
         .padding(.vertical, 12)

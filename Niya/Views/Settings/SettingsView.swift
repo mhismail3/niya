@@ -10,6 +10,7 @@ struct SettingsView: View {
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
     @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(QuranDataService.self) private var dataService
 
     var body: some View {
         NavigationStack {
@@ -31,6 +32,16 @@ struct SettingsView: View {
                     }
                     Toggle("Show Translation", isOn: $showTranslation)
                         .tint(Color.niyaTeal)
+                    if showTranslation {
+                        NavigationLink {
+                            TranslationPickerView()
+                        } label: {
+                            LabeledContent("Translation") {
+                                Text(dataService.selectedTranslation?.name ?? "Sahih International")
+                                    .foregroundStyle(Color.niyaSecondary)
+                            }
+                        }
+                    }
                 }
 
                 Section("Quran Font Size") {

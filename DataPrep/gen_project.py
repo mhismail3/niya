@@ -64,6 +64,7 @@ SWIFT_FILES = [
     "Niya/Models/TajweedVerse.swift",
     "Niya/Models/Word.swift",
     "Niya/Models/Reciter.swift",
+    "Niya/Models/TranslationEdition.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -100,6 +101,7 @@ SWIFT_FILES = [
     "Niya/Views/Reader/FollowAlongControlsView.swift",
     "Niya/Views/Reader/WordView.swift",
     "Niya/Views/Reader/VerseCellView.swift",
+    "Niya/Views/Reader/TranslationPickerView.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
     # Views/Home
@@ -162,6 +164,20 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/dua_all.json",
     "Niya/Resources/Data/word_data.json",
     "Niya/Resources/Data/noreen_word_data.json",
+    "Niya/Resources/Data/translations_index.json",
+    "Niya/Resources/Data/translation_en_sahih.json",
+    "Niya/Resources/Data/translation_en_clearquran.json",
+    "Niya/Resources/Data/translation_en_pickthall.json",
+    "Niya/Resources/Data/translation_fr_hamidullah.json",
+    "Niya/Resources/Data/translation_es_cortes.json",
+    "Niya/Resources/Data/translation_tr_diyanet.json",
+    "Niya/Resources/Data/translation_ur_jalandhry.json",
+    "Niya/Resources/Data/translation_id_indonesian.json",
+    "Niya/Resources/Data/translation_bn_bengali.json",
+    "Niya/Resources/Data/translation_de_bubenheim.json",
+    "Niya/Resources/Data/translation_ru_kuliev.json",
+    "Niya/Resources/Data/translation_ms_basmeih.json",
+    "Niya/Resources/Data/translation_zh_jian.json",
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -185,6 +201,7 @@ TEST_FILES = [
     "NiyaTests/ReciterTests.swift",
     "NiyaTests/AudioPlayerViewModelTests.swift",
     "NiyaTests/HadithDataIntegrityTests.swift",
+    "NiyaTests/TranslationTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -516,6 +533,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/TajweedVerse.swift"], "TajweedVerse.swift"),
         (swift_file_ids["Niya/Models/Word.swift"], "Word.swift"),
         (swift_file_ids["Niya/Models/Reciter.swift"], "Reciter.swift"),
+        (swift_file_ids["Niya/Models/TranslationEdition.swift"], "TranslationEdition.swift"),
     ], path_str="Models")
 
     # Services
@@ -576,6 +594,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/FollowAlongControlsView.swift"], "FollowAlongControlsView.swift"),
         (swift_file_ids["Niya/Views/Reader/WordView.swift"], "WordView.swift"),
         (swift_file_ids["Niya/Views/Reader/VerseCellView.swift"], "VerseCellView.swift"),
+        (swift_file_ids["Niya/Views/Reader/TranslationPickerView.swift"], "TranslationPickerView.swift"),
     ], path_str="Reader")
 
     # Views/Audio
@@ -644,7 +663,13 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Data/dua_all.json"], "dua_all.json"),
         (resource_file_ids["Niya/Resources/Data/word_data.json"], "word_data.json"),
         (resource_file_ids["Niya/Resources/Data/noreen_word_data.json"], "noreen_word_data.json"),
+        (resource_file_ids["Niya/Resources/Data/translations_index.json"], "translations_index.json"),
     ]
+    for tid in ["en_sahih", "en_clearquran", "en_pickthall", "fr_hamidullah",
+                 "es_cortes", "tr_diyanet", "ur_jalandhry", "id_indonesian",
+                 "bn_bengali", "de_bubenheim", "ru_kuliev", "ms_basmeih", "zh_jian"]:
+        fname = f"translation_{tid}.json"
+        data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
     for coll_id in ["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
                      "malik", "ahmed", "darimi", "nawawi", "qudsi", "dehlawi",
                      "aladab", "bulugh", "mishkat", "riyad", "shamail"]:

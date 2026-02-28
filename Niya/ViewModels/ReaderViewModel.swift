@@ -62,6 +62,11 @@ final class ReaderViewModel {
         load()
     }
 
+    func reloadTranslation() {
+        verses = dataService.verses(for: surah.id, script: script)
+        pages = dataService.pages(for: surah.id, script: script)
+    }
+
     var showBismillah: Bool {
         surah.id != 9
     }
