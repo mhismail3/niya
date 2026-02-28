@@ -7,6 +7,7 @@ struct VerseCellView: View {
     let showTranslation: Bool
     let isPlaying: Bool
     let isBookmarked: Bool
+    let isFirstVerse: Bool
     let onPlay: () -> Void
     let onBookmark: () -> Void
     let onTafsir: () -> Void
@@ -21,6 +22,7 @@ struct VerseCellView: View {
                 surahId: surahId,
                 verseData: verseData,
                 isBookmarked: isBookmarked,
+                isFirstVerse: isFirstVerse,
                 onBookmark: onBookmark,
                 onTafsir: onTafsir
             )
@@ -32,6 +34,7 @@ struct VerseCellView: View {
                 showTranslation: showTranslation,
                 isPlaying: isPlaying,
                 isBookmarked: isBookmarked,
+                isFirstVerse: isFirstVerse,
                 onPlay: onPlay,
                 onBookmark: onBookmark,
                 onTafsir: onTafsir

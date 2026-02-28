@@ -1,12 +1,18 @@
 import SwiftUI
+import TipKit
 
 struct FollowAlongVerseView: View {
     let verse: Verse
     let surahId: Int
     let verseData: VerseWordData
     let isBookmarked: Bool
+    let isFirstVerse: Bool
     let onBookmark: () -> Void
     let onTafsir: () -> Void
+
+    private let playVerseTip = PlayVerseTip()
+    private let bookmarkVerseTip = BookmarkVerseTip()
+    private let tafsirVerseTip = TafsirVerseTip()
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @AppStorage("followAlongTransliteration") private var showTransliteration = true
     @AppStorage("followAlongMeaning") private var showMeaning = true
@@ -20,32 +26,9 @@ struct FollowAlongVerseView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
             HStack(alignment: .center) {
-                Button {
-                    if isActiveVerse {
-                        followAlongVM.togglePlayPause()
-                    } else {
-                        followAlongVM.playVerse(surahId: surahId, ayahId: verse.id)
-                    }
-                } label: {
-                    Image(systemName: isActiveVerse && followAlongVM.isPlaying ? "pause.circle.fill" : "play.circle")
-                        .font(.title3)
-                        .foregroundStyle(isActiveVerse ? Color.niyaGold : Color.niyaSecondary)
-                }
-                .buttonStyle(.plain)
-
-                Button(action: onBookmark) {
-                    Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                        .font(.title3)
-                        .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
-                }
-                .buttonStyle(.plain)
-
-                Button(action: onTafsir) {
-                    Image(systemName: "text.book.closed")
-                        .font(.title3)
-                        .foregroundStyle(Color.niyaSecondary)
-                }
-                .buttonStyle(.plain)
+                playButton
+                bookmarkButton
+                tafsirButton
 
                 Spacer()
 
@@ -80,6 +63,75 @@ struct FollowAlongVerseView: View {
                 Color.niyaGold.opacity(0.06)
                     .padding(.horizontal, -16)
             }
+        }
+        .task {
+            guard isFirstVerse else { return }
+            for await status in playVerseTip.statusUpdates {
+                if case .invalidated = status {
+                    BookmarkVerseTip.playDismissed = true
+                    break
+                }
+            }
+        }
+        .task {
+            guard isFirstVerse else { return }
+            for await status in bookmarkVerseTip.statusUpdates {
+                if case .invalidated = status {
+                    TafsirVerseTip.bookmarkVerseDismissed = true
+                    break
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var playButton: some View {
+        let btn = Button {
+            if isActiveVerse {
+                followAlongVM.togglePlayPause()
+            } else {
+                followAlongVM.playVerse(surahId: surahId, ayahId: verse.id)
+            }
+        } label: {
+            Image(systemName: isActiveVerse && followAlongVM.isPlaying ? "pause.circle.fill" : "play.circle")
+                .font(.title3)
+                .foregroundStyle(isActiveVerse ? Color.niyaGold : Color.niyaSecondary)
+        }
+        .buttonStyle(.plain)
+        if isFirstVerse {
+            btn.popoverTip(playVerseTip)
+        } else {
+            btn
+        }
+    }
+
+    @ViewBuilder
+    private var bookmarkButton: some View {
+        let btn = Button(action: onBookmark) {
+            Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                .font(.title3)
+                .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+        }
+        .buttonStyle(.plain)
+        if isFirstVerse {
+            btn.popoverTip(bookmarkVerseTip)
+        } else {
+            btn
+        }
+    }
+
+    @ViewBuilder
+    private var tafsirButton: some View {
+        let btn = Button(action: onTafsir) {
+            Image(systemName: "text.book.closed")
+                .font(.title3)
+                .foregroundStyle(Color.niyaSecondary)
+        }
+        .buttonStyle(.plain)
+        if isFirstVerse {
+            btn.popoverTip(tafsirVerseTip)
+        } else {
+            btn
         }
     }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 struct ReaderContainerView: View {
     @State var vm: ReaderViewModel
@@ -18,6 +19,10 @@ struct ReaderContainerView: View {
     @AppStorage("selectedTranslation") private var selectedTranslationId: String = "en_sahih"
     @State private var showSettings = false
     @State private var showBookmarks = false
+
+    private let bookmarkToolbarTip = BookmarkToolbarTip()
+    private let followAlongToolbarTip = FollowAlongToolbarTip()
+    private let settingsToolbarTip = SettingsToolbarTip()
 
     var body: some View {
         Group {
@@ -43,6 +48,7 @@ struct ReaderContainerView: View {
                 Button { showBookmarks = true } label: {
                     Image(systemName: "bookmark")
                 }
+                .popoverTip(bookmarkToolbarTip)
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if storedScript == .hafs {
@@ -57,10 +63,12 @@ struct ReaderContainerView: View {
                         Image(systemName: "text.word.spacing")
                             .foregroundStyle(followAlong ? Color.niyaGold : Color.niyaSecondary)
                     }
+                    .popoverTip(followAlongToolbarTip)
                 }
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
                 }
+                .popoverTip(settingsToolbarTip)
             }
         }
         .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
@@ -122,6 +130,33 @@ struct ReaderContainerView: View {
             guard vm.hasUserScrolled else { return }
             ReadingPositionStore(modelContext: modelContext)
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
+        }
+        .task {
+            for await status in bookmarkToolbarTip.statusUpdates {
+                if case .invalidated = status {
+                    FollowAlongToolbarTip.bookmarkDismissed = true
+                    if storedScript != .hafs {
+                        SettingsToolbarTip.followAlongDismissed = true
+                    }
+                    break
+                }
+            }
+        }
+        .task {
+            for await status in followAlongToolbarTip.statusUpdates {
+                if case .invalidated = status {
+                    SettingsToolbarTip.followAlongDismissed = true
+                    break
+                }
+            }
+        }
+        .task {
+            for await status in settingsToolbarTip.statusUpdates {
+                if case .invalidated = status {
+                    PlayVerseTip.settingsDismissed = true
+                    break
+                }
+            }
         }
     }
 }

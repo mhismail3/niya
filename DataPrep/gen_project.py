@@ -132,6 +132,8 @@ SWIFT_FILES = [
     "Niya/Views/Dua/DuaRowView.swift",
     "Niya/Views/Dua/DuaDetailView.swift",
     "Niya/Views/Dua/DuaSearchResultRow.swift",
+    # Onboarding
+    "Niya/Onboarding/ReaderTips.swift",
     # Design
     "Niya/Design/NiyaColors.swift",
     "Niya/Design/NiyaFonts.swift",
@@ -271,6 +273,7 @@ SUBGROUP_IDS = {
     "Views/Settings":     new_id(),
     "Views/Hadith":       new_id(),
     "Views/Dua":          new_id(),
+    "Onboarding":         new_id(),
     "Design":             new_id(),
     "Resources":          new_id(),
     "Resources/Data":     new_id(),
@@ -481,6 +484,7 @@ def section_pbx_group():
         (SUBGROUP_IDS["Services"],                 "Services"),
         (SUBGROUP_IDS["ViewModels"],               "ViewModels"),
         (SUBGROUP_IDS["Views"],                    "Views"),
+        (SUBGROUP_IDS["Onboarding"],              "Onboarding"),
         (SUBGROUP_IDS["Design"],                   "Design"),
         (SUBGROUP_IDS["Resources"],                "Resources"),
     ]
@@ -645,6 +649,11 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Dua/DuaDetailView.swift"], "DuaDetailView.swift"),
         (swift_file_ids["Niya/Views/Dua/DuaSearchResultRow.swift"], "DuaSearchResultRow.swift"),
     ], path_str="Dua")
+
+    # Onboarding
+    emit_subgroup(SUBGROUP_IDS["Onboarding"], "Onboarding", "Onboarding", [
+        (swift_file_ids["Niya/Onboarding/ReaderTips.swift"], "ReaderTips.swift"),
+    ], path_str="Onboarding")
 
     # Design
     emit_subgroup(SUBGROUP_IDS["Design"], "Design", "Design", [

@@ -24,6 +24,7 @@ struct ScrollReaderView: View {
                             showTranslation: vm.showTranslation,
                             isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
                             isBookmarked: bookmarkedAyahs.contains(verse.id),
+                            isFirstVerse: verse.id == 1,
                             onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) },
                             onBookmark: { toggleBookmark(verse.id) },
                             onTafsir: { tafsirAyahId = verse.id; showTafsir = true }

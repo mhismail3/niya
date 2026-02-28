@@ -28,6 +28,7 @@ struct MushaPageView: View {
                         showTranslation: showTranslation,
                         isPlaying: audioPlayerVM.isPlayingVerse(surahId: surahId, ayahId: verse.id),
                         isBookmarked: bookmarkedAyahs.contains(verse.id),
+                        isFirstVerse: verse.id == 1,
                         onPlay: { audioPlayerVM.playVerse(surahId: surahId, ayahId: verse.id) },
                         onBookmark: { toggleBookmark(verse.id) },
                         onTafsir: { tafsirAyahId = verse.id; showTafsir = true }

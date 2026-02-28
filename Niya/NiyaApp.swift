@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 @main
 struct NiyaApp: App {
@@ -41,6 +42,7 @@ struct NiyaApp: App {
 
         as_.configureSession()
         Self.migrateAudioFilenames()
+        try? Tips.configure([.displayFrequency(.immediate)])
     }
 
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0

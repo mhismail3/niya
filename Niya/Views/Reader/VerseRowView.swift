@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 struct VerseRowView: View {
     let verse: Verse
@@ -7,9 +8,14 @@ struct VerseRowView: View {
     let showTranslation: Bool
     let isPlaying: Bool
     let isBookmarked: Bool
+    let isFirstVerse: Bool
     let onPlay: () -> Void
     let onBookmark: () -> Void
     let onTafsir: () -> Void
+
+    private let playVerseTip = PlayVerseTip()
+    private let bookmarkVerseTip = BookmarkVerseTip()
+    private let tafsirVerseTip = TafsirVerseTip()
     @Environment(TajweedService.self) private var tajweedService
     @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
@@ -25,26 +31,9 @@ struct VerseRowView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
             HStack(alignment: .center) {
-                Button(action: onPlay) {
-                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle")
-                        .font(.title3)
-                        .foregroundStyle(isPlaying ? Color.niyaGold : Color.niyaSecondary)
-                }
-                .buttonStyle(.plain)
-
-                Button(action: onBookmark) {
-                    Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                        .font(.title3)
-                        .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
-                }
-                .buttonStyle(.plain)
-
-                Button(action: onTafsir) {
-                    Image(systemName: "text.book.closed")
-                        .font(.title3)
-                        .foregroundStyle(Color.niyaSecondary)
-                }
-                .buttonStyle(.plain)
+                playButton
+                bookmarkButton
+                tafsirButton
 
                 Spacer()
 
@@ -116,6 +105,69 @@ struct VerseRowView: View {
                 tajweedActive = false
                 dismissTooltip()
             }
+        }
+        .task {
+            guard isFirstVerse else { return }
+            for await status in playVerseTip.statusUpdates {
+                if case .invalidated = status {
+                    BookmarkVerseTip.playDismissed = true
+                    break
+                }
+            }
+        }
+        .task {
+            guard isFirstVerse else { return }
+            for await status in bookmarkVerseTip.statusUpdates {
+                if case .invalidated = status {
+                    TafsirVerseTip.bookmarkVerseDismissed = true
+                    break
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var playButton: some View {
+        let btn = Button(action: onPlay) {
+            Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle")
+                .font(.title3)
+                .foregroundStyle(isPlaying ? Color.niyaGold : Color.niyaSecondary)
+        }
+        .buttonStyle(.plain)
+        if isFirstVerse {
+            btn.popoverTip(playVerseTip)
+        } else {
+            btn
+        }
+    }
+
+    @ViewBuilder
+    private var bookmarkButton: some View {
+        let btn = Button(action: onBookmark) {
+            Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                .font(.title3)
+                .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+        }
+        .buttonStyle(.plain)
+        if isFirstVerse {
+            btn.popoverTip(bookmarkVerseTip)
+        } else {
+            btn
+        }
+    }
+
+    @ViewBuilder
+    private var tafsirButton: some View {
+        let btn = Button(action: onTafsir) {
+            Image(systemName: "text.book.closed")
+                .font(.title3)
+                .foregroundStyle(Color.niyaSecondary)
+        }
+        .buttonStyle(.plain)
+        if isFirstVerse {
+            btn.popoverTip(tafsirVerseTip)
+        } else {
+            btn
         }
     }
 
