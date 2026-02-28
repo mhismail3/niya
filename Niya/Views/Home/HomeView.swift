@@ -12,55 +12,96 @@ struct HomeView: View {
     @State private var positions: [ReadingPosition] = []
     @State private var recentHadiths: [RecentHadith] = []
     @State private var recentDuas: [RecentDua] = []
-
-    private var hasAny: Bool {
-        !positions.isEmpty || !recentHadiths.isEmpty || !recentDuas.isEmpty
-    }
+    @State private var loaded = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                if hasAny {
+                if !loaded {
+                    loadingPlaceholder
+                        .transition(.opacity)
+                } else if !positions.isEmpty || !recentHadiths.isEmpty || !recentDuas.isEmpty {
                     VStack(alignment: .leading, spacing: 20) {
                         if !positions.isEmpty {
                             continueReadingSection
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
                         if !recentHadiths.isEmpty {
                             recentHadithSection
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
                         if !recentDuas.isEmpty {
                             recentDuaSection
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
                     }
                     .padding(.top, 16)
                 } else {
                     emptyState
+                        .transition(.opacity)
                 }
             }
+            .animation(.easeOut(duration: 0.4), value: loaded)
+            .animation(.easeOut(duration: 0.35), value: positions.map(\.surahId))
+            .animation(.easeOut(duration: 0.35), value: recentHadiths.map(\.hadithKey))
+            .animation(.easeOut(duration: 0.35), value: recentDuas.map(\.duaKey))
             .background(Color.niyaBackground)
             .navigationTitle("Niya")
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
         }
-        .onAppear { reload() }
+        .onAppear { loadQuranData() }
         .task {
             await hadithDataService.load()
             let recents = RecentHadithStore(modelContext: modelContext).recentHadiths()
             for id in Set(recents.map(\.collectionId)) {
                 await hadithDataService.loadCollection(id)
             }
-            reload()
+            recentHadiths = RecentHadithStore(modelContext: modelContext).recentHadiths()
         }
         .task {
             await duaDataService.load()
-            reload()
+            recentDuas = RecentDuaStore(modelContext: modelContext).recentDuas()
+            markLoaded()
         }
+    }
+
+    private func loadQuranData() {
+        positions = ReadingPositionStore(modelContext: modelContext).recentPositions()
+    }
+
+    private func markLoaded() {
+        guard !loaded else { return }
+        loaded = true
     }
 
     private func reload() {
         positions = ReadingPositionStore(modelContext: modelContext).recentPositions()
         recentHadiths = RecentHadithStore(modelContext: modelContext).recentHadiths()
         recentDuas = RecentDuaStore(modelContext: modelContext).recentDuas()
+    }
+
+    // MARK: - Loading Placeholder
+
+    private var loadingPlaceholder: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            sectionPlaceholder("Continue Reading")
+            sectionPlaceholder("Recent Hadith")
+            sectionPlaceholder("Recent Duas")
+        }
+        .padding(.top, 16)
+    }
+
+    private func sectionPlaceholder(_ title: String) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.niyaTitle)
+                .foregroundStyle(Color.niyaText)
+                .padding(.horizontal)
+
+            ProgressView()
+                .frame(maxWidth: .infinity, minHeight: 120)
+        }
     }
 
     // MARK: - Continue Reading
