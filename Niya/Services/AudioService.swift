@@ -22,6 +22,7 @@ final class AudioService {
     var downloadProgress: Double = 0
     var isFollowAlongActive = false
     var onVerseDidFinish: ((VerseID) -> Void)?
+    var onVerseDidChange: ((VerseID) -> Void)?
     private(set) var isContinuousMode = false
 
     private var player: AVPlayer?
@@ -66,6 +67,39 @@ final class AudioService {
         isLoading = false
     }
 
+    /// Transition to a new verse without tearing down the player (keeps audio session alive in background).
+    func transitionToVerse(url: URL, verseID: VerseID, surahId: Int) {
+        if let currentItem = player?.currentItem {
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
+        }
+        if let obs = boundaryObserver, let player {
+            player.removeTimeObserver(obs)
+        }
+        boundaryObserver = nil
+
+        currentVerseID = verseID
+        currentSurahId = surahId
+
+        let item = AVPlayerItem(url: url)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(playerDidFinish),
+            name: .AVPlayerItemDidPlayToEndTime,
+            object: item
+        )
+
+        if let player {
+            player.replaceCurrentItem(with: item)
+            player.play()
+        } else {
+            player = AVPlayer(playerItem: item)
+            player?.play()
+        }
+
+        isPlaying = true
+        isLoading = false
+    }
+
     /// Play a single verse segment from a surah file, with fade-out at end.
     func playVerseInSurah(url: URL, startMs: Int, endMs: Int, verseID: VerseID, surahId: Int) {
         stop()
@@ -95,11 +129,11 @@ final class AudioService {
                 ) { [weak self] in
                     Task { @MainActor in
                         guard let self else { return }
-                        let playerBefore = self.player
+                        let itemBefore = self.player?.currentItem
                         if let vid = self.currentVerseID {
                             self.onVerseDidFinish?(vid)
                         }
-                        if self.player === playerBefore {
+                        if self.player?.currentItem === itemBefore || self.player == nil {
                             self.fadeOutAndStop()
                         }
                     }
@@ -149,6 +183,7 @@ final class AudioService {
                             if ms >= b.startMs {
                                 if self.currentVerseID != b.verseID {
                                     self.currentVerseID = b.verseID
+                                    self.onVerseDidChange?(b.verseID)
                                 }
                                 break
                             }
@@ -171,6 +206,7 @@ final class AudioService {
     func seekToVerse(_ verseID: VerseID, startMs: Int) {
         guard isContinuousMode, let player else { return }
         currentVerseID = verseID
+        onVerseDidChange?(verseID)
         let seekTime = CMTime(value: Int64(startMs), timescale: 1000)
         player.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
     }
@@ -294,11 +330,12 @@ final class AudioService {
         if isFollowAlongActive || isContinuousMode {
             stop()
         } else {
-            let playerBefore = player
+            let itemBefore = player?.currentItem
             if let vid = currentVerseID {
                 onVerseDidFinish?(vid)
             }
-            if player === playerBefore {
+            // If the callback started new playback (new item via transitionToVerse or new player via play), don't clean up
+            if player?.currentItem === itemBefore || player == nil {
                 isPlaying = false
                 currentVerseID = nil
                 currentSurahId = nil
