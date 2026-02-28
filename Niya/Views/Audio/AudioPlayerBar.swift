@@ -9,8 +9,8 @@ struct AudioPlayerBar: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            repeatMenu
             speedMenu
+            repeatMenu
 
             Button(action: { vm.previousVerse() }) {
                 Image(systemName: "backward.fill")

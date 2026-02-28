@@ -7,8 +7,8 @@ struct FollowAlongControlsView: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            loopMenu
             speedMenu
+            loopMenu
 
             Button(action: { vm.previousVerse() }) {
                 Image(systemName: "backward.fill")
