@@ -1,5 +1,6 @@
 import Foundation
 import AVFoundation
+import MediaPlayer
 
 @Observable
 @MainActor
@@ -15,6 +16,7 @@ final class FollowAlongViewModel {
     private(set) var tappedVerseId: Int?
 
     private var currentLoop = 0
+    private var seekingToStart = false
     private var trackingTask: Task<Void, Never>?
     private var wordPlayer: AVPlayer?
     private var tapObserver: NSObjectProtocol?
@@ -26,6 +28,23 @@ final class FollowAlongViewModel {
         self.audioService = audioService
         self.wordDataService = wordDataService
         self.dataService = dataService
+    }
+
+    private func updateNowPlaying() {
+        var info = [String: Any]()
+        if let surahId = currentSurahId, let verseId = currentVerseId {
+            let surah = dataService.surahs.first { $0.id == surahId }
+            info[MPMediaItemPropertyTitle] = "Ayah \(verseId) — Word by Word"
+            info[MPMediaItemPropertyAlbumTitle] = surah?.transliteration ?? "Surah \(surahId)"
+        }
+        let reciterName = wordDataService.currentReciter?.displayName ?? "Reciter"
+        info[MPMediaItemPropertyArtist] = reciterName
+        info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(playbackSpeed) : 0.0
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+    }
+
+    private func clearNowPlaying() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
 
     static func wordIndex(for timeMs: Int, in words: [QuranWord]) -> Int? {
@@ -54,11 +73,13 @@ final class FollowAlongViewModel {
         currentVerseId = ayahId
         currentWordIndex = 0
         currentLoop = 0
+        seekingToStart = false
         isPlaying = true
 
         let url = URL(string: verseData.au)!
         audioService.playWithSeek(url: url, seekMs: verseData.vs, rate: playbackSpeed)
 
+        updateNowPlaying()
         startWordTracking()
     }
 
@@ -70,6 +91,7 @@ final class FollowAlongViewModel {
         currentSurahId = nil
         currentVerseId = nil
         currentLoop = 0
+        seekingToStart = false
         tappedWordPosition = nil
         tappedVerseId = nil
         if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
@@ -77,12 +99,19 @@ final class FollowAlongViewModel {
         wordPlayer?.pause()
         wordPlayer = nil
         audioService.stop()
+        clearNowPlaying()
     }
 
     func togglePlayPause() {
         guard isPlaying || currentVerseId != nil else { return }
         audioService.togglePause()
         isPlaying = audioService.isPlaying
+        updateNowPlaying()
+    }
+
+    func setLoopCount(_ count: Int) {
+        loopCount = count
+        currentLoop = 0
     }
 
     func setSpeed(_ speed: Float) {
@@ -155,8 +184,10 @@ final class FollowAlongViewModel {
         currentVerseId = ayahId
         currentWordIndex = 0
         currentLoop = 0
+        seekingToStart = true
         audioService.seekTo(ms: verseData.vs)
         audioService.setRate(playbackSpeed)
+        updateNowPlaying()
         startWordTracking()
         return true
     }
@@ -171,6 +202,15 @@ final class FollowAlongViewModel {
                       let verseId = self.currentVerseId,
                       let verseData = self.wordDataService.words(surahId: surahId, ayahId: verseId) else {
                     return
+                }
+
+                if self.seekingToStart {
+                    if timeMs < verseData.ve {
+                        self.seekingToStart = false
+                    } else {
+                        try? await Task.sleep(for: .milliseconds(10))
+                        continue
+                    }
                 }
 
                 if timeMs >= verseData.ve {
@@ -194,15 +234,23 @@ final class FollowAlongViewModel {
             guard let surahId = currentSurahId, let verseId = currentVerseId,
                   let verseData = wordDataService.words(surahId: surahId, ayahId: verseId) else { return }
             currentWordIndex = 0
+            seekingToStart = true
             audioService.seekTo(ms: verseData.vs)
             audioService.setRate(playbackSpeed)
             startWordTracking()
-        } else if autoAdvance {
-            advanceToNextVerse()
         } else {
-            isPlaying = false
-            currentWordIndex = nil
-            audioService.stop()
+            if loopCount > 1 {
+                loopCount = 1
+                currentLoop = 0
+            }
+            if autoAdvance {
+                advanceToNextVerse()
+            } else {
+                isPlaying = false
+                currentWordIndex = nil
+                audioService.stop()
+                clearNowPlaying()
+            }
         }
     }
 
@@ -217,6 +265,7 @@ final class FollowAlongViewModel {
             isPlaying = false
             currentWordIndex = nil
             audioService.stop()
+            clearNowPlaying()
         }
     }
 }

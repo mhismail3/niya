@@ -44,6 +44,30 @@ final class AudioService {
         } catch {
             print("[AudioService] Session config error: \(error)")
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInterruption),
+            name: AVAudioSession.interruptionNotification,
+            object: nil
+        )
+    }
+
+    @objc private func handleInterruption(_ notification: Notification) {
+        guard let info = notification.userInfo,
+              let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+
+        if type == .began {
+            isPlaying = false
+        } else if type == .ended,
+                  let optionsValue = info[AVAudioSessionInterruptionOptionKey] as? UInt {
+            let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
+            if options.contains(.shouldResume) {
+                player?.play()
+                isPlaying = true
+            }
+        }
     }
 
     func play(url: URL, verseID: VerseID? = nil, surahId: Int? = nil) {
@@ -237,9 +261,15 @@ final class AudioService {
         }
     }
 
-    func seekTo(ms: Int) {
+    func seekTo(ms: Int, completion: (@Sendable () -> Void)? = nil) {
         let time = CMTime(value: Int64(ms), timescale: 1000)
-        player?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
+        if let completion {
+            player?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero) { _ in
+                Task { @MainActor in completion() }
+            }
+        } else {
+            player?.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
+        }
     }
 
     func setRate(_ rate: Float) {
@@ -282,14 +312,24 @@ final class AudioService {
         currentSurahId = nil
     }
 
+    func pause() {
+        guard let player, isPlaying else { return }
+        player.pause()
+        isPlaying = false
+    }
+
+    func resume() {
+        guard let player, !isPlaying else { return }
+        player.play()
+        isPlaying = true
+    }
+
     func togglePause() {
-        guard let player else { return }
+        guard player != nil else { return }
         if isPlaying {
-            player.pause()
-            isPlaying = false
+            pause()
         } else {
-            player.play()
-            isPlaying = true
+            resume()
         }
     }
 
@@ -327,6 +367,10 @@ final class AudioService {
     }
 
     @objc private func playerDidFinish() {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in self?.playerDidFinish() }
+            return
+        }
         if isFollowAlongActive || isContinuousMode {
             stop()
         } else {
@@ -334,7 +378,6 @@ final class AudioService {
             if let vid = currentVerseID {
                 onVerseDidFinish?(vid)
             }
-            // If the callback started new playback (new item via transitionToVerse or new player via play), don't clean up
             if player?.currentItem === itemBefore || player == nil {
                 isPlaying = false
                 currentVerseID = nil

@@ -1,4 +1,5 @@
 import Foundation
+import MediaPlayer
 
 @Observable
 @MainActor
@@ -9,7 +10,7 @@ final class AudioPlayerViewModel {
     var playbackSpeed: Float = 1.0
     var autoAdvance = true
     var loopCount: Int = 1
-    private var currentLoop = 0
+    private(set) var currentLoop = 0
 
     private let audioService: AudioService
     private let dataService: QuranDataService
@@ -22,24 +23,100 @@ final class AudioPlayerViewModel {
         self.wordDataService = wordDataService
         self.selectedReciter = reciter
 
+        setupRemoteCommands()
+
         audioService.onVerseDidFinish = { [weak self] vid in
             guard let self else { return }
             self.currentLoop += 1
             if self.currentLoop < self.loopCount {
                 self.startPlayback(surahId: vid.surahId, ayahId: vid.ayahId)
-            } else if self.autoAdvance {
-                self.currentLoop = 0
-                let surah = self.dataService.surahs.first { $0.id == vid.surahId }
-                let nextAyah = vid.ayahId + 1
-                if let surah, nextAyah <= surah.totalVerses {
-                    self.startPlayback(surahId: vid.surahId, ayahId: nextAyah)
+            } else {
+                if self.loopCount > 1 {
+                    self.loopCount = 1
+                    self.currentLoop = 0
+                }
+                if self.autoAdvance {
+                    let surah = self.dataService.surahs.first { $0.id == vid.surahId }
+                    let nextAyah = vid.ayahId + 1
+                    if let surah, nextAyah <= surah.totalVerses {
+                        self.startPlayback(surahId: vid.surahId, ayahId: nextAyah)
+                    }
+                } else {
+                    self.clearNowPlaying()
                 }
             }
+        }
+
+        audioService.onVerseDidChange = { [weak self] vid in
+            guard let self else { return }
+            self.updateNowPlaying()
         }
     }
 
     func setDownloadStore(_ store: DownloadStore) {
         self.downloadStore = store
+    }
+
+    // MARK: - Remote Commands & Now Playing
+
+    private func setupRemoteCommands() {
+        let center = MPRemoteCommandCenter.shared()
+        center.playCommand.addTarget { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.audioService.resume()
+                self.updateNowPlaying()
+            }
+            return .success
+        }
+        center.pauseCommand.addTarget { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                self.audioService.pause()
+                self.updateNowPlaying()
+            }
+            return .success
+        }
+        center.togglePlayPauseCommand.addTarget { [weak self] _ in
+            Task { @MainActor in
+                self?.togglePause()
+            }
+            return .success
+        }
+        center.nextTrackCommand.addTarget { [weak self] _ in
+            Task { @MainActor in
+                self?.nextVerse()
+            }
+            return .success
+        }
+        center.previousTrackCommand.addTarget { [weak self] _ in
+            Task { @MainActor in
+                self?.previousVerse()
+            }
+            return .success
+        }
+    }
+
+    func updateNowPlaying() {
+        let nowPlayingCenter = MPNowPlayingInfoCenter.default()
+        var info = nowPlayingCenter.nowPlayingInfo ?? [String: Any]()
+        if let vid = audioService.currentVerseID {
+            let surah = dataService.surahs.first { $0.id == vid.surahId }
+            info[MPMediaItemPropertyTitle] = "Ayah \(vid.ayahId)"
+            info[MPMediaItemPropertyAlbumTitle] = surah?.transliteration ?? "Surah \(vid.surahId)"
+        } else if let surahId = audioService.currentSurahId {
+            let surah = dataService.surahs.first { $0.id == surahId }
+            info[MPMediaItemPropertyTitle] = surah?.transliteration ?? "Surah \(surahId)"
+        }
+        info[MPMediaItemPropertyArtist] = selectedReciter.displayName
+        info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(playbackSpeed) : 0.0
+        nowPlayingCenter.nowPlayingInfo = info
+        nowPlayingCenter.playbackState = isPlaying ? .playing : .paused
+    }
+
+    private func clearNowPlaying() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+        MPNowPlayingInfoCenter.default().playbackState = .stopped
     }
 
     var isPlaying: Bool { audioService.isPlaying }
@@ -74,6 +151,7 @@ final class AudioPlayerViewModel {
                 ?? selectedReciter.surahStreamURL(surahId: surahId)
             audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)
         }
+        updateNowPlaying()
     }
 
     func playSurah(_ surahId: Int) {
@@ -83,14 +161,17 @@ final class AudioPlayerViewModel {
             let url = audioService.surahStreamURL(surahId: surahId, reciter: selectedReciter)
             audioService.play(url: url, surahId: surahId)
         }
+        updateNowPlaying()
     }
 
     func stop() {
         audioService.stop()
+        clearNowPlaying()
     }
 
     func togglePause() {
         audioService.togglePause()
+        updateNowPlaying()
     }
 
     func setLoopCount(_ count: Int) {
@@ -104,6 +185,7 @@ final class AudioPlayerViewModel {
     func setSpeed(_ speed: Float) {
         playbackSpeed = min(max(speed, 0.5), 1.25)
         audioService.setRate(playbackSpeed)
+        updateNowPlaying()
     }
 
     func previousVerse() {
@@ -119,6 +201,7 @@ final class AudioPlayerViewModel {
         if playbackSpeed != 1.0 {
             audioService.setRate(playbackSpeed)
         }
+        updateNowPlaying()
     }
 
     func nextVerse() {
@@ -135,6 +218,7 @@ final class AudioPlayerViewModel {
         if playbackSpeed != 1.0 {
             audioService.setRate(playbackSpeed)
         }
+        updateNowPlaying()
     }
 
     func isPlayingVerse(surahId: Int, ayahId: Int) -> Bool {
@@ -177,5 +261,6 @@ final class AudioPlayerViewModel {
         if playbackSpeed != 1.0 {
             audioService.setRate(playbackSpeed)
         }
+        updateNowPlaying()
     }
 }

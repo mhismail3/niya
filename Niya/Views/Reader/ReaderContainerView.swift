@@ -110,7 +110,7 @@ struct ReaderContainerView: View {
             audioPlayerVM.autoAdvance = on
         }
         .onChange(of: followAlongLoopCount) { _, count in
-            followAlongVM.loopCount = count
+            followAlongVM.setLoopCount(count)
             audioPlayerVM.loopCount = count
         }
         .onDisappear {
