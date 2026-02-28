@@ -18,7 +18,7 @@ struct TafsirSheetView: View {
 
                 contentArea
             }
-            .navigationTitle("\(surahName) \(ayahId)")
+            .navigationTitle("Surah \(surahName), Verse \(ayahId)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -87,14 +87,29 @@ struct TafsirSheetView: View {
                             .foregroundStyle(Color.niyaSecondary)
                             .italic()
                     } else {
-                        Text(entry.text)
-                            .font(.system(.body, design: .serif))
-                            .foregroundStyle(Color.niyaText)
-                            .textSelection(.enabled)
-                            .lineSpacing(4)
+                        ForEach(Array(entry.text.components(separatedBy: "\n").enumerated()), id: \.offset) { _, paragraph in
+                            if !paragraph.trimmingCharacters(in: .whitespaces).isEmpty {
+                                let isArabicBlock = paragraph.unicodeScalars.filter(\.properties.isAlphabetic).allSatisfy(isArabicScalar)
+                                if isArabicBlock {
+                                    Text(paragraph)
+                                        .font(.custom("NotoNaskhArabic", size: 20))
+                                        .foregroundStyle(Color.niyaText)
+                                        .multilineTextAlignment(.trailing)
+                                        .lineSpacing(12)
+                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .textSelection(.enabled)
+                                } else {
+                                    Text(styledTafsirText(paragraph))
+                                        .font(.system(.body, design: .serif))
+                                        .foregroundStyle(Color.niyaText)
+                                        .textSelection(.enabled)
+                                        .lineSpacing(4)
+                                }
+                            }
+                        }
                     }
                 }
-                .padding(16)
+                .padding()
             }
         } else if tafsirService.hasFailed(edition: selectedEdition, surahId: surahId, ayahId: ayahId) {
             ContentUnavailableView {
@@ -111,5 +126,41 @@ struct TafsirSheetView: View {
             ProgressView()
             Spacer()
         }
+    }
+
+    private func isArabicScalar(_ s: Unicode.Scalar) -> Bool {
+        (0x0600...0x06FF).contains(s.value) ||  // Arabic
+        (0x0750...0x077F).contains(s.value) ||  // Arabic Supplement
+        (0x08A0...0x08FF).contains(s.value) ||  // Arabic Extended-A
+        (0xFB50...0xFDFF).contains(s.value) ||  // Arabic Presentation Forms-A
+        (0xFE70...0xFEFF).contains(s.value)     // Arabic Presentation Forms-B
+    }
+
+    private func styledTafsirText(_ text: String) -> AttributedString {
+        var result = AttributedString()
+        var current = ""
+        var currentIsArabic = false
+
+        func flush() {
+            guard !current.isEmpty else { return }
+            var segment = AttributedString(current)
+            if currentIsArabic {
+                segment.font = .custom("NotoNaskhArabic", size: 20)
+            }
+            result.append(segment)
+            current = ""
+        }
+
+        for char in text {
+            let scalars = char.unicodeScalars
+            let charIsArabic = scalars.contains { isArabicScalar($0) && $0.properties.isAlphabetic }
+            if charIsArabic != currentIsArabic && !current.isEmpty {
+                flush()
+            }
+            currentIsArabic = charIsArabic
+            current.append(char)
+        }
+        flush()
+        return result
     }
 }
