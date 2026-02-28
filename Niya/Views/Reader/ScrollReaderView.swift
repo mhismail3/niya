@@ -3,6 +3,7 @@ import SwiftUI
 struct ScrollReaderView: View {
     let vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(\.modelContext) private var modelContext
     @State private var bookmarkedAyahs: Set<Int> = []
 
@@ -44,6 +45,18 @@ struct ScrollReaderView: View {
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     vm.isSettled = true
+                }
+            }
+            .onChange(of: audioPlayerVM.currentVerseID) { _, vid in
+                guard let vid, vid.surahId == vm.surah.id else { return }
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    proxy.scrollTo(vid.ayahId, anchor: .top)
+                }
+            }
+            .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
+                guard let ayahId, followAlongVM.currentSurahId == vm.surah.id else { return }
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    proxy.scrollTo(ayahId, anchor: .top)
                 }
             }
         }

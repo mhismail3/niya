@@ -258,8 +258,18 @@ final class FollowAlongViewModel {
         guard let surahId = currentSurahId, let verseId = currentVerseId else { return }
         let totalVerses = dataService.surahs.first { $0.id == surahId }?.totalVerses ?? 0
         if verseId < totalVerses {
-            if !seekToVerseInPlace(surahId: surahId, ayahId: verseId + 1) {
-                playVerse(surahId: surahId, ayahId: verseId + 1)
+            let nextAyah = verseId + 1
+            if let reciter = wordDataService.currentReciter, !reciter.hasPerVerseAudio,
+               wordDataService.words(surahId: surahId, ayahId: nextAyah) != nil {
+                // Per-surah reciter: audio is already playing at the right position,
+                // just transition tracking without seeking.
+                currentVerseId = nextAyah
+                currentWordIndex = 0
+                currentLoop = 0
+                updateNowPlaying()
+                startWordTracking()
+            } else {
+                playVerse(surahId: surahId, ayahId: nextAyah)
             }
         } else {
             isPlaying = false
