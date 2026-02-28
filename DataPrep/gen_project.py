@@ -65,6 +65,7 @@ SWIFT_FILES = [
     "Niya/Models/Word.swift",
     "Niya/Models/Reciter.swift",
     "Niya/Models/TranslationEdition.swift",
+    "Niya/Models/TafsirEdition.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -80,6 +81,7 @@ SWIFT_FILES = [
     "Niya/Services/RecentDuaStore.swift",
     "Niya/Services/TajweedService.swift",
     "Niya/Services/WordDataService.swift",
+    "Niya/Services/TafsirService.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -102,6 +104,7 @@ SWIFT_FILES = [
     "Niya/Views/Reader/WordView.swift",
     "Niya/Views/Reader/VerseCellView.swift",
     "Niya/Views/Reader/TranslationPickerView.swift",
+    "Niya/Views/Reader/TafsirSheetView.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
     # Views/Home
@@ -202,6 +205,9 @@ TEST_FILES = [
     "NiyaTests/AudioPlayerViewModelTests.swift",
     "NiyaTests/HadithDataIntegrityTests.swift",
     "NiyaTests/TranslationTests.swift",
+    "NiyaTests/TafsirEditionTests.swift",
+    "NiyaTests/TafsirServiceTests.swift",
+    "NiyaTests/TafsirSheetViewTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -534,6 +540,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/Word.swift"], "Word.swift"),
         (swift_file_ids["Niya/Models/Reciter.swift"], "Reciter.swift"),
         (swift_file_ids["Niya/Models/TranslationEdition.swift"], "TranslationEdition.swift"),
+        (swift_file_ids["Niya/Models/TafsirEdition.swift"], "TafsirEdition.swift"),
     ], path_str="Models")
 
     # Services
@@ -552,6 +559,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/RecentDuaStore.swift"], "RecentDuaStore.swift"),
         (swift_file_ids["Niya/Services/TajweedService.swift"], "TajweedService.swift"),
         (swift_file_ids["Niya/Services/WordDataService.swift"], "WordDataService.swift"),
+        (swift_file_ids["Niya/Services/TafsirService.swift"], "TafsirService.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -595,6 +603,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/WordView.swift"], "WordView.swift"),
         (swift_file_ids["Niya/Views/Reader/VerseCellView.swift"], "VerseCellView.swift"),
         (swift_file_ids["Niya/Views/Reader/TranslationPickerView.swift"], "TranslationPickerView.swift"),
+        (swift_file_ids["Niya/Views/Reader/TafsirSheetView.swift"], "TafsirSheetView.swift"),
     ], path_str="Reader")
 
     # Views/Audio

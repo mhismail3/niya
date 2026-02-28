@@ -11,6 +11,7 @@ struct NiyaApp: App {
     @State private var wordDataService = WordDataService()
     @State private var followAlongVM: FollowAlongViewModel
     @State private var tajweedService = TajweedService()
+    @State private var tafsirService = TafsirService()
     @State private var navigationCoordinator = NavigationCoordinator()
 
     private let container: ModelContainer
@@ -56,6 +57,7 @@ struct NiyaApp: App {
                 .environment(wordDataService)
                 .environment(followAlongVM)
                 .environment(tajweedService)
+                .environment(tafsirService)
                 .environment(navigationCoordinator)
                 .modelContainer(container)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)

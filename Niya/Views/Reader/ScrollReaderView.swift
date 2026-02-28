@@ -6,6 +6,8 @@ struct ScrollReaderView: View {
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(\.modelContext) private var modelContext
     @State private var bookmarkedAyahs: Set<Int> = []
+    @State private var showTafsir = false
+    @State private var tafsirAyahId: Int = 1
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -23,7 +25,8 @@ struct ScrollReaderView: View {
                             isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
                             isBookmarked: bookmarkedAyahs.contains(verse.id),
                             onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) },
-                            onBookmark: { toggleBookmark(verse.id) }
+                            onBookmark: { toggleBookmark(verse.id) },
+                            onTafsir: { tafsirAyahId = verse.id; showTafsir = true }
                         )
                         .id(verse.id)
                         .onAppear { vm.updateVisibleAyah(verse.id) }
@@ -63,6 +66,11 @@ struct ScrollReaderView: View {
         .background(Color.niyaBackground)
         .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
             loadBookmarks()
+        }
+        .sheet(isPresented: $showTafsir) {
+            TafsirSheetView(surahId: vm.surah.id, ayahId: tafsirAyahId, surahName: vm.surah.transliteration)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
         }
     }
 

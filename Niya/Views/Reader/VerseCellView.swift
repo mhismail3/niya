@@ -9,6 +9,7 @@ struct VerseCellView: View {
     let isBookmarked: Bool
     let onPlay: () -> Void
     let onBookmark: () -> Void
+    let onTafsir: () -> Void
 
     @AppStorage("followAlong") private var followAlong: Bool = false
     @Environment(WordDataService.self) private var wordDataService
@@ -20,7 +21,8 @@ struct VerseCellView: View {
                 surahId: surahId,
                 verseData: verseData,
                 isBookmarked: isBookmarked,
-                onBookmark: onBookmark
+                onBookmark: onBookmark,
+                onTafsir: onTafsir
             )
         } else {
             VerseRowView(
@@ -31,7 +33,8 @@ struct VerseCellView: View {
                 isPlaying: isPlaying,
                 isBookmarked: isBookmarked,
                 onPlay: onPlay,
-                onBookmark: onBookmark
+                onBookmark: onBookmark,
+                onTafsir: onTafsir
             )
         }
     }

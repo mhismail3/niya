@@ -5,9 +5,12 @@ struct MushaPageView: View {
     let script: QuranScript
     let showTranslation: Bool
     let surahId: Int
+    let surahName: String
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(\.modelContext) private var modelContext
     @State private var bookmarkedAyahs: Set<Int> = []
+    @State private var showTafsir = false
+    @State private var tafsirAyahId: Int = 1
 
     let showBismillah: Bool
 
@@ -26,7 +29,8 @@ struct MushaPageView: View {
                         isPlaying: audioPlayerVM.isPlayingVerse(surahId: surahId, ayahId: verse.id),
                         isBookmarked: bookmarkedAyahs.contains(verse.id),
                         onPlay: { audioPlayerVM.playVerse(surahId: surahId, ayahId: verse.id) },
-                        onBookmark: { toggleBookmark(verse.id) }
+                        onBookmark: { toggleBookmark(verse.id) },
+                        onTafsir: { tafsirAyahId = verse.id; showTafsir = true }
                     )
                     Divider()
                         .padding(.horizontal)
@@ -39,6 +43,11 @@ struct MushaPageView: View {
         .onAppear { loadBookmarks() }
         .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
             loadBookmarks()
+        }
+        .sheet(isPresented: $showTafsir) {
+            TafsirSheetView(surahId: surahId, ayahId: tafsirAyahId, surahName: surahName)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
         }
     }
 

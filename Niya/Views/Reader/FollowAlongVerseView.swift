@@ -6,6 +6,7 @@ struct FollowAlongVerseView: View {
     let verseData: VerseWordData
     let isBookmarked: Bool
     let onBookmark: () -> Void
+    let onTafsir: () -> Void
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @AppStorage("followAlongTransliteration") private var showTransliteration = true
     @AppStorage("followAlongMeaning") private var showMeaning = true
@@ -36,6 +37,13 @@ struct FollowAlongVerseView: View {
                     Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                         .font(.title3)
                         .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                }
+                .buttonStyle(.plain)
+
+                Button(action: onTafsir) {
+                    Image(systemName: "text.book.closed")
+                        .font(.title3)
+                        .foregroundStyle(Color.niyaSecondary)
                 }
                 .buttonStyle(.plain)
 

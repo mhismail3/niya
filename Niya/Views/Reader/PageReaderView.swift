@@ -13,6 +13,7 @@ struct PageReaderView: View {
                         script: vm.script,
                         showTranslation: vm.showTranslation,
                         surahId: vm.surah.id,
+                        surahName: vm.surah.transliteration,
                         showBismillah: vm.showBismillah
                     )
                     .containerRelativeFrame(.horizontal)
