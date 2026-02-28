@@ -16,11 +16,16 @@ struct HadithDetailView: View {
     }
 
     private var shareText: String {
-        var parts = [hadith.narrator, "", hadith.text, "", "\(collectionName), Hadith #\(hadith.id)"]
-        if let grade = hadith.grade {
-            parts.append("Grade: \(grade)")
+        var parts: [String] = []
+        if !hadith.narrator.isEmpty { parts.append(hadith.narrator) }
+        if !hadith.text.isEmpty {
+            parts.append(hadith.text)
+        } else {
+            parts.append(hadith.arabic)
         }
-        return parts.joined(separator: "\n")
+        parts.append("\(collectionName), Hadith #\(hadith.id)")
+        if let grade = hadith.grade { parts.append("Grade: \(grade)") }
+        return parts.joined(separator: "\n\n")
     }
 
     var body: some View {
@@ -35,19 +40,21 @@ struct HadithDetailView: View {
                     .lineSpacing(12)
                     .frame(maxWidth: .infinity, alignment: .trailing)
 
-                Divider()
+                if !hadith.text.isEmpty || !hadith.narrator.isEmpty {
+                    Divider()
 
-                if !hadith.narrator.isEmpty {
-                    Text(hadith.narrator)
-                        .font(.system(.subheadline, design: .serif))
-                        .italic()
-                        .foregroundStyle(Color.niyaGold)
+                    if !hadith.narrator.isEmpty {
+                        Text(hadith.narrator)
+                            .font(.system(.subheadline, design: .serif))
+                            .italic()
+                            .foregroundStyle(Color.niyaGold)
+                    }
+
+                    Text(hadith.text)
+                        .font(.system(size: translationFontSize, design: .serif))
+                        .foregroundStyle(Color.niyaText)
+                        .lineSpacing(4)
                 }
-
-                Text(hadith.text)
-                    .font(.system(size: translationFontSize, design: .serif))
-                    .foregroundStyle(Color.niyaText)
-                    .lineSpacing(4)
 
                 Divider()
 

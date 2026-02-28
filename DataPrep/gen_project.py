@@ -184,6 +184,7 @@ TEST_FILES = [
     "NiyaTests/TajweedServiceTests.swift",
     "NiyaTests/ReciterTests.swift",
     "NiyaTests/AudioPlayerViewModelTests.swift",
+    "NiyaTests/HadithDataIntegrityTests.swift",
 ]
 
 # Assets catalog — treated specially

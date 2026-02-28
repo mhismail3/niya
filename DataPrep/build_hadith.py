@@ -84,6 +84,42 @@ def load_grades(ahmedbaset_filename):
     return grades
 
 
+def normalize_chapters(raw_chapters, raw_hadiths):
+    """Assign sequential IDs to chapters and remap hadith chapterIds.
+
+    Fixes source data where some chapters have null IDs (e.g. Nasa'i "The Book
+    of Agriculture") which causes JSONDecoder to fail on the non-optional Int.
+    """
+    id_map = {}
+    null_chapter_new_ids = set()
+    normalized = []
+
+    for i, ch in enumerate(raw_chapters):
+        new_id = i + 1
+        old_id = ch.get("id")
+        if old_id is not None:
+            id_map[old_id] = new_id
+        else:
+            null_chapter_new_ids.add(new_id)
+        normalized.append({
+            **ch,
+            "id": new_id,
+        })
+
+    # Remap hadith chapterIds
+    remapped = []
+    for h in raw_hadiths:
+        cid = h.get("chapterId")
+        if cid is None:
+            # Assign to nearest null-origin chapter (first one)
+            new_cid = min(null_chapter_new_ids) if null_chapter_new_ids else 0
+        else:
+            new_cid = id_map.get(cid, cid)
+        remapped.append({**h, "chapterId": new_cid})
+
+    return normalized, remapped
+
+
 def build_collection(ahmedbaset_filename, output_id, has_grades):
     """Build a single collection's JSON file."""
     text_file = os.path.join(TEXT_DIR, f"{ahmedbaset_filename}.json")
@@ -96,12 +132,13 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
     raw_chapters = raw.get("chapters", [])
     raw_hadiths = raw.get("hadiths", [])
 
+    # Normalize chapter IDs (fix nulls, assign sequential)
+    raw_chapters, raw_hadiths = normalize_chapters(raw_chapters, raw_hadiths)
+
     # Group hadiths by chapterId to compute ranges
     chapter_hadiths = {}
     for h in raw_hadiths:
-        cid = h.get("chapterId")
-        if cid is None:
-            cid = 0
+        cid = h.get("chapterId") or 0
         chapter_hadiths.setdefault(cid, []).append(h)
 
     chapters = []
@@ -136,7 +173,7 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
 
         hadiths.append({
             "id": hadith_num,
-            "chapterId": h.get("chapterId", 0),
+            "chapterId": h.get("chapterId") or 0,
             "arabic": h.get("arabic", ""),
             "narrator": narrator,
             "text": text,

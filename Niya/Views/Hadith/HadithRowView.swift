@@ -17,11 +17,20 @@ struct HadithRowView: View {
                         .lineLimit(1)
                 }
 
-                Text(hadith.text)
-                    .font(.niyaCaption)
-                    .foregroundStyle(Color.niyaText)
-                    .lineLimit(3)
-                    .multilineTextAlignment(.leading)
+                if !hadith.text.isEmpty {
+                    Text(hadith.text)
+                        .font(.niyaCaption)
+                        .foregroundStyle(Color.niyaText)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.leading)
+                } else if !hadith.arabic.isEmpty {
+                    Text(hadith.arabic)
+                        .font(.custom("NotoNaskhArabic-Regular", size: 14))
+                        .foregroundStyle(Color.niyaText)
+                        .lineLimit(3)
+                        .multilineTextAlignment(.trailing)
+                        .environment(\.layoutDirection, .rightToLeft)
+                }
 
                 if hasGrades, let grade = HadithGrade.from(hadith.grade) {
                     Text(grade.displayName)

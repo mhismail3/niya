@@ -22,7 +22,7 @@ struct HadithChapterView: View {
             }
         }
         .background(Color.niyaBackground)
-        .navigationTitle(chapter.title)
+        .navigationTitle(chapter.title.isEmpty ? chapter.titleArabic : chapter.title)
         .navigationBarTitleDisplayMode(.large)
         .niyaToolbar()
     }

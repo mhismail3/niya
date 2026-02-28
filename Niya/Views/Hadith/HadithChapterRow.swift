@@ -15,10 +15,13 @@ struct HadithChapterRow: View {
             }
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(chapter.title)
-                    .font(.niyaBody)
+                Text(chapter.title.isEmpty ? chapter.titleArabic : chapter.title)
+                    .font(chapter.title.isEmpty
+                        ? .custom("NotoNaskhArabic-Regular", size: 16)
+                        : .niyaBody)
                     .foregroundStyle(Color.niyaText)
                     .lineLimit(2)
+                    .environment(\.layoutDirection, chapter.title.isEmpty ? .rightToLeft : .leftToRight)
                 Text("\(chapter.hadithCount) hadiths")
                     .font(.niyaCaption)
                     .foregroundStyle(Color.niyaSecondary)
@@ -26,11 +29,13 @@ struct HadithChapterRow: View {
 
             Spacer()
 
-            Text(chapter.titleArabic)
-                .font(.custom("NotoNaskhArabic-Regular", size: 16))
-                .foregroundStyle(Color.niyaGold)
-                .lineLimit(1)
-                .environment(\.layoutDirection, .rightToLeft)
+            if !chapter.title.isEmpty {
+                Text(chapter.titleArabic)
+                    .font(.custom("NotoNaskhArabic-Regular", size: 16))
+                    .foregroundStyle(Color.niyaGold)
+                    .lineLimit(1)
+                    .environment(\.layoutDirection, .rightToLeft)
+            }
         }
     }
 }

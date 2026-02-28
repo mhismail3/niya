@@ -94,4 +94,31 @@ struct HadithModelTests {
         #expect(a == b)
         #expect(a.hashValue == b.hashValue)
     }
+
+    @Test func hadithDecodingArabicOnly() throws {
+        let json = """
+        {"id":1360,"chapterId":31,"arabic":"حَدَّثَنَا وَكِيعٌ",
+         "narrator":"","text":"","grade":null,"gradeArabic":null}
+        """.data(using: .utf8)!
+        let hadith = try JSONDecoder().decode(Hadith.self, from: json)
+        #expect(hadith.id == 1360)
+        #expect(hadith.narrator.isEmpty)
+        #expect(hadith.text.isEmpty)
+        #expect(!hadith.arabic.isEmpty)
+    }
+
+    @Test func chapterDecodingEmptyTitle() throws {
+        let json = """
+        {"id":31,"title":"","titleArabic":"مسند","hadithRange":[1360,1374]}
+        """.data(using: .utf8)!
+        let chapter = try JSONDecoder().decode(HadithChapter.self, from: json)
+        #expect(chapter.title.isEmpty)
+        #expect(chapter.titleArabic == "مسند")
+        #expect(chapter.hadithCount == 15)
+    }
+
+    @Test func hadithChapterSingleItemRange() {
+        let chapter = HadithChapter(id: 1, title: "Test", titleArabic: "اختبار", hadithRange: [5, 5])
+        #expect(chapter.hadithCount == 1)
+    }
 }
