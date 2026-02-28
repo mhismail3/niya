@@ -9,7 +9,6 @@ struct SurahSearchView: View {
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @State private var searchQuery = ""
     @State private var recentQueries: [RecentSearch] = []
-    @State private var recentSurahs: [RecentSearch] = []
 
     private var isSearching: Bool {
         !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
@@ -125,7 +124,15 @@ struct SurahSearchView: View {
         }
     }
 
-    // MARK: - Recents
+    // MARK: - Recents & Suggestions
+
+    private let suggestedTerms = [
+        "Al-Fatiha", "Al-Baqarah", "Yasin", "Al-Mulk", "Ar-Rahman",
+        "Ayat al-Kursi", "patience", "mercy", "forgiveness", "paradise",
+        "prayer", "fasting", "charity", "repentance", "gratitude",
+        "الفاتحة", "يس", "الملك", "الرحمن", "الكهف",
+        "صبر", "رحمة", "توبة", "دعاء", "جنة",
+    ]
 
     private var recentsList: some View {
         ScrollView {
@@ -147,30 +154,23 @@ struct SurahSearchView: View {
                     }
                 }
 
-                if !recentSurahs.isEmpty {
-                    sectionHeader("Recently Opened")
-                    ForEach(recentSurahs, id: \.id) { recent in
-                        if let surahId = recent.surahId,
-                           let surah = dataService.surahs.first(where: { $0.id == surahId }) {
-                            NavigationLink(destination: readerView(for: surah)) {
-                                SurahRowView(surah: surah)
-                                    .padding(.horizontal)
-                                    .padding(.vertical, 4)
-                            }
-                            Divider().padding(.horizontal)
+                sectionHeader("Suggested")
+                FlowLayout(spacing: 8, rightToLeft: false) {
+                    ForEach(suggestedTerms, id: \.self) { term in
+                        Button {
+                            searchQuery = term
+                        } label: {
+                            Text(term)
+                                .font(.niyaCaption)
+                                .foregroundStyle(Color.niyaText)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.niyaSurface, in: .capsule)
                         }
                     }
                 }
-
-                if recentSurahs.isEmpty && recentQueries.isEmpty {
-                    ContentUnavailableView(
-                        "No Recent Searches",
-                        systemImage: "magnifyingglass",
-                        description: Text("Search across surahs, hadiths, and duas")
-                    )
-                    .frame(maxWidth: .infinity)
-                    .padding(.top, 60)
-                }
+                .padding(.horizontal)
+                .padding(.top, 4)
             }
         }
     }
@@ -185,9 +185,7 @@ struct SurahSearchView: View {
     }
 
     private func readerView(for surah: Surah) -> some View {
-        let store = RecentSearchStore(modelContext: modelContext)
-        store.saveSurah(surah.id, name: surah.transliteration)
-        return ReaderContainerView(
+        ReaderContainerView(
             vm: ReaderViewModel(
                 surah: surah,
                 dataService: dataService,
@@ -200,6 +198,5 @@ struct SurahSearchView: View {
     private func reloadRecents() {
         let store = RecentSearchStore(modelContext: modelContext)
         recentQueries = store.recentQueries()
-        recentSurahs = store.recentSurahs()
     }
 }
