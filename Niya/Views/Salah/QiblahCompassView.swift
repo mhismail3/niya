@@ -12,7 +12,7 @@ struct QiblahCompassView: View {
     }
 
     private var needleRotation: Double {
-        bearing - heading
+        bearing
     }
 
     private var compassSize: CGFloat {
