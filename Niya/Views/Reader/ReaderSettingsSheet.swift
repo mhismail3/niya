@@ -115,7 +115,7 @@ struct ReaderSettingsSheet: View {
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
+            .hiddenNavBarBackground()
         }
     }
 

@@ -33,7 +33,7 @@ PBXPROJ_PATH = os.path.join(PROJECT_ROOT, "Niya.xcodeproj", "project.pbxproj")
 
 BUNDLE_ID    = "com.niya.mobile"
 PRODUCT_NAME = "Niya"
-DEPLOYMENT   = "26.0"
+DEPLOYMENT   = "17.0"
 SWIFT_VER    = "6.2"
 
 # Swift source files — paths relative to project root
@@ -141,6 +141,7 @@ SWIFT_FILES = [
     "Niya/Design/NiyaExtensions.swift",
     "Niya/Design/NiyaToolbar.swift",
     "Niya/Design/FlowLayout.swift",
+    "Niya/Design/ViewCompat.swift",
 ]
 
 # Resource files — paths relative to project root
@@ -210,6 +211,7 @@ TEST_FILES = [
     "NiyaTests/TafsirEditionTests.swift",
     "NiyaTests/TafsirServiceTests.swift",
     "NiyaTests/TafsirSheetViewTests.swift",
+    "NiyaTests/ViewCompatTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -663,6 +665,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Design/NiyaExtensions.swift"], "NiyaExtensions.swift"),
         (swift_file_ids["Niya/Design/NiyaToolbar.swift"], "NiyaToolbar.swift"),
         (swift_file_ids["Niya/Design/FlowLayout.swift"], "FlowLayout.swift"),
+        (swift_file_ids["Niya/Design/ViewCompat.swift"], "ViewCompat.swift"),
     ], path_str="Design")
 
     # Resources (parent)

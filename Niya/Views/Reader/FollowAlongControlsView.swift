@@ -64,7 +64,7 @@ struct FollowAlongControlsView: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-        .glassEffect()
+        .niyaGlass()
         .onChange(of: vm.currentVerseId) { _, ayahId in
             guard let surahId = vm.currentSurahId, let ayahId else { isBookmarked = false; return }
             isBookmarked = QuranBookmarkStore(modelContext: modelContext)

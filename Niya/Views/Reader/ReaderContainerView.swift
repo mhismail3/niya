@@ -71,8 +71,7 @@ struct ReaderContainerView: View {
                 .popoverTip(settingsToolbarTip)
             }
         }
-        .toolbarBackgroundVisibility(.hidden, for: .navigationBar)
-        .toolbarBackgroundVisibility(.hidden, for: .bottomBar)
+        .hiddenAllToolbarBackgrounds()
         .sheet(isPresented: $showBookmarks) {
             BookmarksView()
                 .presentationDetents([.large])

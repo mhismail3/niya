@@ -65,9 +65,7 @@ struct VerseRowView: View {
                     }
                 }
                 .transition(.opacity)
-                .onScrollVisibilityChange { visible in
-                    if !visible { dismissTooltip() }
-                }
+                .onScrollVisibilityDismiss { dismissTooltip() }
             } else {
                 Text(verse.text)
                     .font(.quranText(script: script, size: arabicFontSize))

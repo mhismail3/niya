@@ -78,7 +78,7 @@ struct AudioPlayerBar: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-        .glassEffect()
+        .niyaGlass()
         .onChange(of: vm.currentVerseID) { _, vid in
             guard let vid else { isBookmarked = false; return }
             isBookmarked = QuranBookmarkStore(modelContext: modelContext)
@@ -128,6 +128,7 @@ struct AudioPlayerBar: View {
         } label: {
             Text(speedLabel(vm.playbackSpeed))
                 .font(.caption.weight(.semibold))
+                .fixedSize()
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color.niyaSecondary.opacity(0.15), in: .capsule)
