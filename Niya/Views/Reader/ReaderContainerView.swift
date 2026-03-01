@@ -19,6 +19,7 @@ struct ReaderContainerView: View {
     @AppStorage("selectedTranslation") private var selectedTranslationId: String = "en_sahih"
     @State private var showSettings = false
     @State private var showBookmarks = false
+    @State private var showSalah = false
 
     private let bookmarkToolbarTip = BookmarkToolbarTip()
     private let followAlongToolbarTip = FollowAlongToolbarTip()
@@ -49,6 +50,11 @@ struct ReaderContainerView: View {
                     Image(systemName: "bookmark")
                 }
                 .popoverTip(bookmarkToolbarTip)
+            }
+            ToolbarItem(placement: .topBarLeading) {
+                Button { showSalah = true } label: {
+                    Image(systemName: "moon.stars")
+                }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if storedScript == .hafs {
@@ -81,6 +87,9 @@ struct ReaderContainerView: View {
             ReaderSettingsSheet(vm: vm)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
+        }
+        .sheet(isPresented: $showSalah) {
+            SalahSheetView()
         }
         .background(Color.niyaBackground)
         .onAppear {

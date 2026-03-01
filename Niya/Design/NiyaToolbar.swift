@@ -3,6 +3,7 @@ import SwiftUI
 struct NiyaToolbar: ViewModifier {
     @State private var showSettings = false
     @State private var showBookmarks = false
+    @State private var showSalah = false
 
     func body(content: Content) -> some View {
         content
@@ -10,6 +11,11 @@ struct NiyaToolbar: ViewModifier {
                 ToolbarItem(placement: .topBarLeading) {
                     Button { showBookmarks = true } label: {
                         Image(systemName: "bookmark")
+                    }
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { showSalah = true } label: {
+                        Image(systemName: "moon.stars")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -27,6 +33,9 @@ struct NiyaToolbar: ViewModifier {
                 SettingsView()
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.hidden)
+            }
+            .sheet(isPresented: $showSalah) {
+                SalahSheetView()
             }
     }
 }

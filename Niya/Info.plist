@@ -35,6 +35,8 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Niya uses your location to calculate prayer times and Qiblah direction.</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

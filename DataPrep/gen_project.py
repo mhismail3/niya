@@ -66,6 +66,9 @@ SWIFT_FILES = [
     "Niya/Models/Reciter.swift",
     "Niya/Models/TranslationEdition.swift",
     "Niya/Models/TafsirEdition.swift",
+    "Niya/Models/UserLocation.swift",
+    "Niya/Models/CalculationMethod.swift",
+    "Niya/Models/PrayerTime.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -82,6 +85,9 @@ SWIFT_FILES = [
     "Niya/Services/TajweedService.swift",
     "Niya/Services/WordDataService.swift",
     "Niya/Services/TafsirService.swift",
+    "Niya/Services/PrayerTimeCalculator.swift",
+    "Niya/Services/LocationService.swift",
+    "Niya/Services/PrayerTimeService.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -126,6 +132,11 @@ SWIFT_FILES = [
     "Niya/Views/Hadith/HadithDetailView.swift",
     "Niya/Views/Hadith/HadithBookmarksView.swift",
     "Niya/Views/Hadith/HadithSearchResultRow.swift",
+    # Views/Salah
+    "Niya/Views/Salah/SalahSheetView.swift",
+    "Niya/Views/Salah/QiblahCompassView.swift",
+    "Niya/Views/Salah/PrayerTimesListView.swift",
+    "Niya/Views/Salah/LocationPickerView.swift",
     # Views/Dua
     "Niya/Views/Dua/DuaTabView.swift",
     "Niya/Views/Dua/DuaSectionView.swift",
@@ -212,6 +223,11 @@ TEST_FILES = [
     "NiyaTests/TafsirServiceTests.swift",
     "NiyaTests/TafsirSheetViewTests.swift",
     "NiyaTests/ViewCompatTests.swift",
+    "NiyaTests/UserLocationTests.swift",
+    "NiyaTests/CalculationMethodTests.swift",
+    "NiyaTests/PrayerTimeModelTests.swift",
+    "NiyaTests/PrayerTimeCalculatorTests.swift",
+    "NiyaTests/QiblahBearingTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -275,6 +291,7 @@ SUBGROUP_IDS = {
     "Views/Settings":     new_id(),
     "Views/Hadith":       new_id(),
     "Views/Dua":          new_id(),
+    "Views/Salah":        new_id(),
     "Onboarding":         new_id(),
     "Design":             new_id(),
     "Resources":          new_id(),
@@ -547,6 +564,9 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/Reciter.swift"], "Reciter.swift"),
         (swift_file_ids["Niya/Models/TranslationEdition.swift"], "TranslationEdition.swift"),
         (swift_file_ids["Niya/Models/TafsirEdition.swift"], "TafsirEdition.swift"),
+        (swift_file_ids["Niya/Models/UserLocation.swift"], "UserLocation.swift"),
+        (swift_file_ids["Niya/Models/CalculationMethod.swift"], "CalculationMethod.swift"),
+        (swift_file_ids["Niya/Models/PrayerTime.swift"], "PrayerTime.swift"),
     ], path_str="Models")
 
     # Services
@@ -566,6 +586,9 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/TajweedService.swift"], "TajweedService.swift"),
         (swift_file_ids["Niya/Services/WordDataService.swift"], "WordDataService.swift"),
         (swift_file_ids["Niya/Services/TafsirService.swift"], "TafsirService.swift"),
+        (swift_file_ids["Niya/Services/PrayerTimeCalculator.swift"], "PrayerTimeCalculator.swift"),
+        (swift_file_ids["Niya/Services/LocationService.swift"], "LocationService.swift"),
+        (swift_file_ids["Niya/Services/PrayerTimeService.swift"], "PrayerTimeService.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -586,6 +609,7 @@ def section_pbx_group():
         (SUBGROUP_IDS["Views/Settings"],  "Settings"),
         (SUBGROUP_IDS["Views/Hadith"],    "Hadith"),
         (SUBGROUP_IDS["Views/Dua"],       "Dua"),
+        (SUBGROUP_IDS["Views/Salah"],     "Salah"),
     ], path_str="Views")
 
     # Views/SurahList
@@ -651,6 +675,14 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Dua/DuaDetailView.swift"], "DuaDetailView.swift"),
         (swift_file_ids["Niya/Views/Dua/DuaSearchResultRow.swift"], "DuaSearchResultRow.swift"),
     ], path_str="Dua")
+
+    # Views/Salah
+    emit_subgroup(SUBGROUP_IDS["Views/Salah"], "Salah", "Views/Salah", [
+        (swift_file_ids["Niya/Views/Salah/SalahSheetView.swift"], "SalahSheetView.swift"),
+        (swift_file_ids["Niya/Views/Salah/QiblahCompassView.swift"], "QiblahCompassView.swift"),
+        (swift_file_ids["Niya/Views/Salah/PrayerTimesListView.swift"], "PrayerTimesListView.swift"),
+        (swift_file_ids["Niya/Views/Salah/LocationPickerView.swift"], "LocationPickerView.swift"),
+    ], path_str="Salah")
 
     # Onboarding
     emit_subgroup(SUBGROUP_IDS["Onboarding"], "Onboarding", "Onboarding", [

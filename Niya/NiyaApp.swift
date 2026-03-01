@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import TipKit
+import UserNotifications
 
 @main
 struct NiyaApp: App {
@@ -14,6 +15,8 @@ struct NiyaApp: App {
     @State private var tajweedService = TajweedService()
     @State private var tafsirService = TafsirService()
     @State private var navigationCoordinator = NavigationCoordinator()
+    @State private var locationService = LocationService()
+    @State private var prayerTimeService = PrayerTimeService()
 
     private let container: ModelContainer
 
@@ -43,8 +46,10 @@ struct NiyaApp: App {
         as_.configureSession()
         Self.migrateAudioFilenames()
         try? Tips.configure([.displayFrequency(.immediate)])
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
     @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
 
@@ -61,6 +66,8 @@ struct NiyaApp: App {
                 .environment(tajweedService)
                 .environment(tafsirService)
                 .environment(navigationCoordinator)
+                .environment(locationService)
+                .environment(prayerTimeService)
                 .modelContainer(container)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
@@ -70,6 +77,11 @@ struct NiyaApp: App {
                     audioPlayerVM.stop()
                     audioPlayerVM.selectedReciter = newReciter
                     Task { await wordDataService.load(reciter: newReciter) }
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    if phase == .active {
+                        prayerTimeService.checkDayChange(location: locationService.effectiveLocation)
+                    }
                 }
         }
     }
