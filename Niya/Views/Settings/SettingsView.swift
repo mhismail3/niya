@@ -147,11 +147,14 @@ struct SettingsView: View {
                 prayerTimesSection
 
                 Section {
-                    Text("Dedicated to the memory of Hashim Ismail - may Allah (SWT) grant him Jannah")
-                        .font(.niyaCaption)
-                        .foregroundStyle(Color.niyaSecondary)
-                        .frame(maxWidth: .infinity)
-                        .listRowBackground(Color.clear)
+                    VStack(spacing: 2) {
+                        Text("Dedicated to the memory of Hashim Ismail.")
+                        Text("May Allah (SWT) grant him Jannah.")
+                    }
+                    .font(.niyaCaption)
+                    .foregroundStyle(Color.niyaSecondary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowBackground(Color.clear)
                 }
             }
             .navigationTitle("Settings")
