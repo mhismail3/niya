@@ -9,6 +9,7 @@ struct ScrollReaderView: View {
     @State private var bookmarkedAyahs: Set<Int> = []
     @State private var showTafsir = false
     @State private var tafsirAyahId: Int = 1
+    @State private var uiScrollView: UIScrollView?
     @State private var scrollTask: Task<Void, Never>?
 
     var body: some View {
@@ -39,6 +40,7 @@ struct ScrollReaderView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 100)
+                .background(ScrollViewFinder(scrollView: $uiScrollView))
             }
             .onAppear {
                 loadBookmarks()
@@ -65,24 +67,6 @@ struct ScrollReaderView: View {
                     proxy.scrollTo(ayahId, anchor: .top)
                 }
             }
-            .onChange(of: autoScrollVM.isScrolling) { _, scrolling in
-                if scrolling {
-                    startAutoScroll(proxy: proxy)
-                } else {
-                    stopAutoScroll(proxy: proxy)
-                }
-            }
-            .onChange(of: autoScrollVM.wordsPerMinute) { _, _ in
-                guard autoScrollVM.isScrolling else { return }
-                startAutoScroll(proxy: proxy)
-            }
-            .onChange(of: autoScrollVM.isEnabled) { _, enabled in
-                if !enabled { stopAutoScroll(proxy: proxy) }
-            }
-            .onDisappear {
-                scrollTask?.cancel()
-                scrollTask = nil
-            }
         }
         .background(Color.niyaBackground)
         .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
@@ -93,60 +77,48 @@ struct ScrollReaderView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
-    }
-
-    // MARK: - Auto-Scroll
-
-    private func startAutoScroll(proxy: ScrollViewProxy) {
-        scrollTask?.cancel()
-        scrollTask = Task {
-            await runAutoScroll(proxy: proxy)
+        .onChange(of: autoScrollVM.isScrolling) { _, scrolling in
+            if scrolling {
+                startAutoScroll()
+            } else {
+                scrollTask?.cancel()
+                scrollTask = nil
+            }
+        }
+        .onChange(of: autoScrollVM.isEnabled) { _, enabled in
+            if !enabled {
+                scrollTask?.cancel()
+                scrollTask = nil
+            }
+        }
+        .onDisappear {
+            scrollTask?.cancel()
+            scrollTask = nil
         }
     }
 
-    private func stopAutoScroll(proxy: ScrollViewProxy) {
+    // MARK: - Auto Scroll (direct UIScrollView access)
+
+    private func startAutoScroll() {
+        guard let sv = uiScrollView else { return }
         scrollTask?.cancel()
-        scrollTask = nil
-        freezeScroll(proxy: proxy)
-    }
+        scrollTask = Task { @MainActor in
+            while !Task.isCancelled && autoScrollVM.isScrolling && autoScrollVM.isEnabled {
+                let speed = autoScrollVM.pointsPerSecond
+                let currentY = sv.contentOffset.y
+                let newY = currentY + speed / 30.0
+                let maxY = sv.contentSize.height - sv.bounds.height
 
-    private func freezeScroll(proxy: ScrollViewProxy) {
-        var t = Transaction(animation: nil)
-        t.disablesAnimations = true
-        withTransaction(t) {
-            proxy.scrollTo(vm.visibleAyahId, anchor: .top)
-        }
-    }
+                if maxY > 0 && newY >= maxY {
+                    sv.contentOffset.y = maxY
+                    autoScrollVM.isScrolling = false
+                    return
+                }
 
-    private func runAutoScroll(proxy: ScrollViewProxy) async {
-        let verses = vm.verses
-        guard !verses.isEmpty else { return }
+                sv.contentOffset.y = newY
 
-        var currentIndex = verses.firstIndex(where: { $0.id == vm.visibleAyahId }) ?? 0
-
-        while !Task.isCancelled && autoScrollVM.isScrolling {
-            guard currentIndex < verses.count - 1 else {
-                autoScrollVM.isScrolling = false
-                break
+                try? await Task.sleep(for: .milliseconds(33))
             }
-
-            let verse = verses[currentIndex]
-            let wpm = autoScrollVM.wordsPerMinute
-            let wordCount = max(verse.translation.split(separator: " ").count, 5)
-            let duration = Double(wordCount) / Double(wpm) * 60.0
-
-            let nextId = verses[currentIndex + 1].id
-            withAnimation(.linear(duration: duration)) {
-                proxy.scrollTo(nextId, anchor: .top)
-            }
-
-            let start = ContinuousClock.now
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .milliseconds(50))
-                if ContinuousClock.now - start >= .seconds(duration) { break }
-            }
-            guard !Task.isCancelled else { break }
-            currentIndex += 1
         }
     }
 
@@ -175,5 +147,39 @@ struct ScrollReaderView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .environment(\.layoutDirection, .rightToLeft)
             .padding(.vertical, 20)
+    }
+}
+
+// MARK: - UIScrollView Finder
+
+private struct ScrollViewFinder: UIViewRepresentable {
+    @Binding var scrollView: UIScrollView?
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.isHidden = true
+        view.isUserInteractionEnabled = false
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {
+        DispatchQueue.main.async {
+            if scrollView == nil {
+                scrollView = uiView.findEnclosingScrollView()
+            }
+        }
+    }
+}
+
+private extension UIView {
+    func findEnclosingScrollView() -> UIScrollView? {
+        var current: UIView? = superview
+        while let view = current {
+            if let sv = view as? UIScrollView {
+                return sv
+            }
+            current = view.superview
+        }
+        return nil
     }
 }

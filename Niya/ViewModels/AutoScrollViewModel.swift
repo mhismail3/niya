@@ -28,9 +28,8 @@ final class AutoScrollViewModel {
         isEnabled = false
     }
 
-    /// Points per second based on WPM. Assumes ~10 words per screen-height of content,
-    /// so higher WPM = faster scroll.
+    /// Pixels per second — controls visual scroll speed.
     var pointsPerSecond: Double {
-        Double(wordsPerMinute) / 60.0 * 18.0
+        Double(wordsPerMinute) * 1.5
     }
 }
