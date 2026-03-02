@@ -6,6 +6,7 @@ import SwiftUI
 @MainActor
 final class PrayerTimeService {
     var todayTimes: DailyPrayerTimes?
+    var tomorrowTimes: DailyPrayerTimes?
     var countdown: TimeInterval = 0
 
     @ObservationIgnored
@@ -25,15 +26,31 @@ final class PrayerTimeService {
     @ObservationIgnored private var countdownTimer: Timer?
     @ObservationIgnored private var lastCalculationDate: Date?
 
+    var activeTimes: DailyPrayerTimes? {
+        guard let today = todayTimes else { return nil }
+        if today.nextPrayer(after: Date()) != nil { return today }
+        return tomorrowTimes ?? today
+    }
+
     func recalculate(location: UserLocation) {
+        let now = Date()
         let result = PrayerTimeCalculator.calculate(
-            date: Date(),
+            date: now,
             location: location,
             method: calculationMethod,
             asrFactor: asrJuristic
         )
         todayTimes = result
-        lastCalculationDate = Date()
+
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+        tomorrowTimes = PrayerTimeCalculator.calculate(
+            date: tomorrow,
+            location: location,
+            method: calculationMethod,
+            asrFactor: asrJuristic
+        )
+
+        lastCalculationDate = now
         startCountdown()
 
         if notificationsEnabled {
@@ -57,8 +74,10 @@ final class PrayerTimeService {
         countdownTimer?.invalidate()
         countdownTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
-                guard let self, let times = self.todayTimes else { return }
-                if let interval = times.timeUntilNext(after: Date()) {
+                guard let self else { return }
+                let now = Date()
+                if let interval = self.todayTimes?.timeUntilNext(after: now)
+                    ?? self.tomorrowTimes?.timeUntilNext(after: now) {
                     self.countdown = interval
                 } else {
                     self.countdown = 0

@@ -23,7 +23,7 @@ struct SalahSheetView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    if let loc = location, let times = prayerTimeService.todayTimes {
+                    if let loc = location, let times = prayerTimeService.activeTimes {
                         QiblahCompassView(
                             bearing: bearing,
                             heading: locationService.heading,
@@ -92,7 +92,7 @@ struct SalahSheetView: View {
 
     private var countdownView: some View {
         VStack(spacing: 4) {
-            if let next = prayerTimeService.todayTimes?.nextPrayer(after: Date()) {
+            if let next = prayerTimeService.activeTimes?.nextPrayer(after: Date()) {
                 Text("Next: \(next.prayer.displayName)")
                     .font(.niyaCaption)
                     .foregroundStyle(Color.niyaSecondary)

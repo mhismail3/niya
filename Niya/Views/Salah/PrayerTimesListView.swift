@@ -40,7 +40,9 @@ struct PrayerTimesListView: View {
 
     private var upcomingTimes: [PrayerTime] {
         let next = times.nextPrayer(after: now)
-        guard let nextPrayer = next else { return [] }
+        guard let nextPrayer = next else {
+            return times.times.filter { $0.prayer.isActualPrayer }
+        }
         let nextIdx = times.times.firstIndex(where: { $0.prayer == nextPrayer.prayer }) ?? 0
         if let cur = currentPrayer,
            let curIdx = times.times.firstIndex(where: { $0.prayer == cur }),

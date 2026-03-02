@@ -41,7 +41,7 @@ struct BookmarksView: View {
             }
             .background(Color.niyaBackground)
             .navigationTitle("Bookmarks")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
         }
         .task { await loadHadithCollections() }
         .task { await loadDuaData() }
