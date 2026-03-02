@@ -111,7 +111,7 @@ struct AudioPlayerBar: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
         .contentShape(Rectangle())
-        .niyaGlass()
+        .modifier(StableGlassModifier())
         .onChange(of: vm.currentVerseID) { _, vid in
             guard let vid else {
                 if !isFollowAlong { isBookmarked = false }
@@ -193,5 +193,17 @@ struct AudioPlayerBar: View {
         if speed == 0.5 { return "0.5x" }
         if speed == 0.75 { return "0.75x" }
         return "1.25x"
+    }
+}
+
+private struct StableGlassModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.background {
+                Color.clear.glassEffect()
+            }
+        } else {
+            content.background(.ultraThinMaterial, in: .rect(cornerRadius: 16))
+        }
     }
 }
