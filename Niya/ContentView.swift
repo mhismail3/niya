@@ -13,9 +13,9 @@ struct ContentView: View {
         tabContent(selection: $coordinator.selectedTab)
             .tint(Color.niyaTeal)
             .overlay(alignment: .bottom) {
-                if audioPlayerVM.hasActiveSession && !coordinator.isReaderVisible {
+                if audioPlayerVM.hasActiveSession {
                     AudioPlayerBar()
-                        .padding(.bottom, 80)
+                        .padding(.bottom, 60)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }

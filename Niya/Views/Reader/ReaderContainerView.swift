@@ -36,12 +36,9 @@ struct ReaderContainerView: View {
         }
         .safeAreaInset(edge: .bottom) {
             if audioPlayerVM.hasActiveSession {
-                AudioPlayerBar()
-                    .padding(.bottom, 8)
-                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                Color.clear.frame(height: 80)
             }
         }
-        .animation(.smooth, value: audioPlayerVM.hasActiveSession)
         .navigationTitle(vm.surah.transliteration)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
