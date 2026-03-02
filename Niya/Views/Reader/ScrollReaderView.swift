@@ -9,10 +9,7 @@ struct ScrollReaderView: View {
     @State private var bookmarkedAyahs: Set<Int> = []
     @State private var showTafsir = false
     @State private var tafsirAyahId: Int = 1
-
-    private var autoScrollKey: String {
-        autoScrollVM.isScrolling ? "on-\(autoScrollVM.wordsPerMinute)" : "off"
-    }
+    @State private var scrollTask: Task<Void, Never>?
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -68,9 +65,23 @@ struct ScrollReaderView: View {
                     proxy.scrollTo(ayahId, anchor: .top)
                 }
             }
-            .task(id: autoScrollKey) {
+            .onChange(of: autoScrollVM.isScrolling) { _, scrolling in
+                if scrolling {
+                    startAutoScroll(proxy: proxy)
+                } else {
+                    stopAutoScroll(proxy: proxy)
+                }
+            }
+            .onChange(of: autoScrollVM.wordsPerMinute) { _, _ in
                 guard autoScrollVM.isScrolling else { return }
-                await runAutoScroll(proxy: proxy)
+                startAutoScroll(proxy: proxy)
+            }
+            .onChange(of: autoScrollVM.isEnabled) { _, enabled in
+                if !enabled { stopAutoScroll(proxy: proxy) }
+            }
+            .onDisappear {
+                scrollTask?.cancel()
+                scrollTask = nil
             }
         }
         .background(Color.niyaBackground)
@@ -85,6 +96,27 @@ struct ScrollReaderView: View {
     }
 
     // MARK: - Auto-Scroll
+
+    private func startAutoScroll(proxy: ScrollViewProxy) {
+        scrollTask?.cancel()
+        scrollTask = Task {
+            await runAutoScroll(proxy: proxy)
+        }
+    }
+
+    private func stopAutoScroll(proxy: ScrollViewProxy) {
+        scrollTask?.cancel()
+        scrollTask = nil
+        freezeScroll(proxy: proxy)
+    }
+
+    private func freezeScroll(proxy: ScrollViewProxy) {
+        var t = Transaction(animation: nil)
+        t.disablesAnimations = true
+        withTransaction(t) {
+            proxy.scrollTo(vm.visibleAyahId, anchor: .top)
+        }
+    }
 
     private func runAutoScroll(proxy: ScrollViewProxy) async {
         let verses = vm.verses
@@ -108,7 +140,11 @@ struct ScrollReaderView: View {
                 proxy.scrollTo(nextId, anchor: .top)
             }
 
-            try? await Task.sleep(for: .seconds(duration))
+            let start = ContinuousClock.now
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(50))
+                if ContinuousClock.now - start >= .seconds(duration) { break }
+            }
             guard !Task.isCancelled else { break }
             currentIndex += 1
         }
