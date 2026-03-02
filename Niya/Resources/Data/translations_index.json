@@ -102,5 +102,13 @@
     "name": "Ma Jian",
     "author": "Ma Jian",
     "filename": "translation_zh_jian.json"
+  },
+  {
+    "id": "my_ghazi",
+    "language": "my",
+    "languageName": "Burmese",
+    "name": "Ghazi Muhammed Hashim",
+    "author": "Ghazi Muhammed Hashim",
+    "filename": "translation_my_ghazi.json"
   }
 ]

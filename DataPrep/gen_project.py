@@ -194,6 +194,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/translation_ru_kuliev.json",
     "Niya/Resources/Data/translation_ms_basmeih.json",
     "Niya/Resources/Data/translation_zh_jian.json",
+    "Niya/Resources/Data/translation_my_ghazi.json",
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -718,7 +719,8 @@ def section_pbx_group():
     ]
     for tid in ["en_sahih", "en_clearquran", "en_hilali", "fr_hamidullah",
                  "es_abboud", "tr_diyanet", "ur_maududi", "id_indonesian",
-                 "bn_bengali", "de_bubenheim", "ru_kuliev", "ms_basmeih", "zh_jian"]:
+                 "bn_bengali", "de_bubenheim", "ru_kuliev", "ms_basmeih", "zh_jian",
+                 "my_ghazi"]:
         fname = f"translation_{tid}.json"
         data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
     for coll_id in ["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
