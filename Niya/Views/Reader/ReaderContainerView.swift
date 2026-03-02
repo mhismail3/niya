@@ -62,7 +62,7 @@ struct ReaderContainerView: View {
                             }
                         } label: {
                             Label(
-                                followAlong ? "Disable Follow Along" : "Follow Along",
+                                followAlong ? "Disable Word-by-Word" : "Word-by-Word",
                                 systemImage: "text.word.spacing"
                             )
                         }

@@ -10,7 +10,7 @@ struct FollowAlongToolbarTip: Tip {
     @Parameter
     static var bookmarkDismissed: Bool = false
 
-    var title: Text { Text("Follow Along") }
+    var title: Text { Text("Word-by-Word") }
     var message: Text? { Text("Highlight each word as it's recited") }
     var image: Image? { Image(systemName: "text.word.spacing") }
 

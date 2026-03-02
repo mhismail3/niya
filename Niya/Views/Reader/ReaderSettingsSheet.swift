@@ -28,13 +28,14 @@ struct ReaderSettingsSheet: View {
                             }
                         }
                         .pickerStyle(.segmented)
-                        .fixedSize()
+                        .frame(width: 180)
                     }
                     Picker("Script", selection: $script) {
                         ForEach(QuranScript.allCases) { s in
                             Text(s.displayName).tag(s)
                         }
                     }
+                    .tint(Color.niyaTeal)
                     Toggle("Show Translation", isOn: $showTranslation)
                         .tint(Color.niyaTeal)
                     if showTranslation {
@@ -43,7 +44,7 @@ struct ReaderSettingsSheet: View {
                         } label: {
                             LabeledContent("Translations") {
                                 Text(translationSummary)
-                                    .foregroundStyle(Color.niyaSecondary)
+                                    .foregroundStyle(Color.niyaTeal)
                                     .lineLimit(1)
                             }
                         }
@@ -58,8 +59,8 @@ struct ReaderSettingsSheet: View {
                     }
                 }
 
-                Section("Follow Along") {
-                    Toggle("Follow Along Mode", isOn: $followAlong)
+                Section("Word-by-Word") {
+                    Toggle("Word-by-Word Mode", isOn: $followAlong)
                         .tint(Color.niyaTeal)
                         .disabled(script != .hafs)
                     if followAlong && script == .hafs {
@@ -76,12 +77,22 @@ struct ReaderSettingsSheet: View {
                 }
 
                 Section("Font Size") {
-                    LabeledContent("Arabic — \(Int(arabicFontSize))") {
+                    HStack {
+                        Text("Arabic")
+                        Spacer()
+                        Text("\(Int(arabicFontSize))")
+                            .foregroundStyle(Color.niyaSecondary)
+                            .monospacedDigit()
                         Slider(value: $arabicFontSize, in: 20...40, step: 1)
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
                     }
-                    LabeledContent("Translation — \(Int(translationFontSize))") {
+                    HStack {
+                        Text("Translation")
+                        Spacer()
+                        Text("\(Int(translationFontSize))")
+                            .foregroundStyle(Color.niyaSecondary)
+                            .monospacedDigit()
                         Slider(value: $translationFontSize, in: 12...24, step: 1)
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
@@ -103,6 +114,7 @@ struct ReaderSettingsSheet: View {
                             Text(r.displayName).tag(r)
                         }
                     }
+                    .tint(Color.niyaTeal)
                     Toggle("Auto-advance", isOn: $followAlongAutoAdvance)
                         .tint(Color.niyaTeal)
                     Picker("Repeat", selection: $followAlongLoopCount) {
