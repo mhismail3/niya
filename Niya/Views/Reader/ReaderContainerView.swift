@@ -7,6 +7,7 @@ struct ReaderContainerView: View {
     @Environment(TajweedService.self) private var tajweedService
     @Environment(WordDataService.self) private var wordDataService
     @Environment(FollowAlongViewModel.self) private var followAlongVM
+    @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
@@ -35,7 +36,7 @@ struct ReaderContainerView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if audioPlayerVM.hasActiveSession {
+            if autoScrollVM.isEnabled || audioPlayerVM.hasActiveSession {
                 Color.clear.frame(height: 80)
             }
         }
@@ -54,6 +55,7 @@ struct ReaderContainerView: View {
                         Button {
                             followAlong.toggle()
                             if followAlong {
+                                autoScrollVM.stop()
                                 Task { await wordDataService.load(reciter: selectedReciter) }
                             } else {
                                 followAlongVM.stopTracking()
@@ -61,9 +63,25 @@ struct ReaderContainerView: View {
                         } label: {
                             Label(
                                 followAlong ? "Disable Follow Along" : "Follow Along",
-                                systemImage: followAlong ? "text.word.spacing" : "text.word.spacing"
+                                systemImage: "text.word.spacing"
                             )
                         }
+                    }
+                    Button {
+                        if autoScrollVM.isEnabled {
+                            autoScrollVM.stop()
+                        } else {
+                            followAlongVM.stopTracking()
+                            followAlong = false
+                            audioPlayerVM.stop()
+                            autoScrollVM.isEnabled = true
+                            autoScrollVM.isScrolling = true
+                        }
+                    } label: {
+                        Label(
+                            autoScrollVM.isEnabled ? "Disable Auto-Scroll" : "Auto-Scroll",
+                            systemImage: "arrow.down.circle"
+                        )
                     }
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
@@ -135,6 +153,7 @@ struct ReaderContainerView: View {
         .onDisappear {
             coordinator.isReaderVisible = false
             followAlongVM.pauseTracking()
+            autoScrollVM.stop()
             guard vm.hasUserScrolled else { return }
             ReadingPositionStore(modelContext: modelContext)
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)

@@ -93,6 +93,7 @@ SWIFT_FILES = [
     "Niya/ViewModels/ReaderViewModel.swift",
     "Niya/ViewModels/AudioPlayerViewModel.swift",
     "Niya/ViewModels/FollowAlongViewModel.swift",
+    "Niya/ViewModels/AutoScrollViewModel.swift",
     # Views/SurahList
     "Niya/Views/SurahList/SurahListView.swift",
     "Niya/Views/SurahList/SurahRowView.swift",
@@ -110,6 +111,7 @@ SWIFT_FILES = [
     "Niya/Views/Reader/VerseCellView.swift",
     "Niya/Views/Reader/TranslationPickerView.swift",
     "Niya/Views/Reader/TafsirSheetView.swift",
+    "Niya/Views/Reader/AutoScrollBar.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
     # Views/Home
@@ -597,6 +599,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/ViewModels/ReaderViewModel.swift"],     "ReaderViewModel.swift"),
         (swift_file_ids["Niya/ViewModels/AudioPlayerViewModel.swift"], "AudioPlayerViewModel.swift"),
         (swift_file_ids["Niya/ViewModels/FollowAlongViewModel.swift"], "FollowAlongViewModel.swift"),
+        (swift_file_ids["Niya/ViewModels/AutoScrollViewModel.swift"], "AutoScrollViewModel.swift"),
     ], path_str="ViewModels")
 
     # Views (parent)
@@ -633,6 +636,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/VerseCellView.swift"], "VerseCellView.swift"),
         (swift_file_ids["Niya/Views/Reader/TranslationPickerView.swift"], "TranslationPickerView.swift"),
         (swift_file_ids["Niya/Views/Reader/TafsirSheetView.swift"], "TafsirSheetView.swift"),
+        (swift_file_ids["Niya/Views/Reader/AutoScrollBar.swift"], "AutoScrollBar.swift"),
     ], path_str="Reader")
 
     # Views/Audio

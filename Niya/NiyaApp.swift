@@ -17,6 +17,7 @@ struct NiyaApp: App {
     @State private var navigationCoordinator = NavigationCoordinator()
     @State private var locationService = LocationService()
     @State private var prayerTimeService = PrayerTimeService()
+    @State private var autoScrollVM = AutoScrollViewModel()
 
     private let container: ModelContainer
 
@@ -68,6 +69,7 @@ struct NiyaApp: App {
                 .environment(navigationCoordinator)
                 .environment(locationService)
                 .environment(prayerTimeService)
+                .environment(autoScrollVM)
                 .modelContainer(container)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {

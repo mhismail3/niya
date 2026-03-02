@@ -15,6 +15,7 @@ struct FollowAlongVerseView: View {
     private let tafsirVerseTip = TafsirVerseTip()
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(QuranDataService.self) private var dataService
+    @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @AppStorage("followAlongTransliteration") private var showTransliteration = true
     @AppStorage("followAlongMeaning") private var showMeaning = true
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
@@ -27,7 +28,9 @@ struct FollowAlongVerseView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
             HStack(alignment: .center) {
-                playButton
+                if !autoScrollVM.isEnabled {
+                    playButton
+                }
                 bookmarkButton
                 tafsirButton
 

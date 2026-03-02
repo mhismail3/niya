@@ -5,6 +5,7 @@ struct ContentView: View {
     @Environment(HadithDataService.self) private var hadithDataService
     @Environment(DuaDataService.self) private var duaDataService
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
 
@@ -13,12 +14,17 @@ struct ContentView: View {
         tabContent(selection: $coordinator.selectedTab)
             .tint(Color.niyaTeal)
             .overlay(alignment: .bottom) {
-                if audioPlayerVM.hasActiveSession {
+                if autoScrollVM.isEnabled {
+                    AutoScrollBar()
+                        .padding(.bottom, 60)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                } else if audioPlayerVM.hasActiveSession {
                     AudioPlayerBar()
                         .padding(.bottom, 60)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+            .animation(.spring(duration: 0.35), value: autoScrollVM.isEnabled)
             .animation(.spring(duration: 0.35), value: audioPlayerVM.hasActiveSession)
             .task {
                 await dataService.load()

@@ -18,6 +18,7 @@ struct VerseRowView: View {
     private let tafsirVerseTip = TafsirVerseTip()
     @Environment(TajweedService.self) private var tajweedService
     @Environment(QuranDataService.self) private var dataService
+    @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
@@ -32,7 +33,9 @@ struct VerseRowView: View {
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
             HStack(alignment: .center) {
-                playButton
+                if !autoScrollVM.isEnabled {
+                    playButton
+                }
                 bookmarkButton
                 tafsirButton
 

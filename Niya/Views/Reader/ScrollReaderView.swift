@@ -4,10 +4,15 @@ struct ScrollReaderView: View {
     let vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(FollowAlongViewModel.self) private var followAlongVM
+    @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(\.modelContext) private var modelContext
     @State private var bookmarkedAyahs: Set<Int> = []
     @State private var showTafsir = false
     @State private var tafsirAyahId: Int = 1
+
+    private var autoScrollKey: String {
+        autoScrollVM.isScrolling ? "on-\(autoScrollVM.wordsPerMinute)" : "off"
+    }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -63,6 +68,10 @@ struct ScrollReaderView: View {
                     proxy.scrollTo(ayahId, anchor: .top)
                 }
             }
+            .task(id: autoScrollKey) {
+                guard autoScrollVM.isScrolling else { return }
+                await runAutoScroll(proxy: proxy)
+            }
         }
         .background(Color.niyaBackground)
         .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
@@ -74,6 +83,38 @@ struct ScrollReaderView: View {
                 .presentationDragIndicator(.hidden)
         }
     }
+
+    // MARK: - Auto-Scroll
+
+    private func runAutoScroll(proxy: ScrollViewProxy) async {
+        let verses = vm.verses
+        guard !verses.isEmpty else { return }
+
+        var currentIndex = verses.firstIndex(where: { $0.id == vm.visibleAyahId }) ?? 0
+
+        while !Task.isCancelled && autoScrollVM.isScrolling {
+            guard currentIndex < verses.count - 1 else {
+                autoScrollVM.isScrolling = false
+                break
+            }
+
+            let verse = verses[currentIndex]
+            let wpm = autoScrollVM.wordsPerMinute
+            let wordCount = max(verse.translation.split(separator: " ").count, 5)
+            let duration = Double(wordCount) / Double(wpm) * 60.0
+
+            let nextId = verses[currentIndex + 1].id
+            withAnimation(.linear(duration: duration)) {
+                proxy.scrollTo(nextId, anchor: .top)
+            }
+
+            try? await Task.sleep(for: .seconds(duration))
+            guard !Task.isCancelled else { break }
+            currentIndex += 1
+        }
+    }
+
+    // MARK: - Bookmarks
 
     private func loadBookmarks() {
         let store = QuranBookmarkStore(modelContext: modelContext)
