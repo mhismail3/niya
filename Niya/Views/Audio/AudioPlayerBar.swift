@@ -7,14 +7,16 @@ struct AudioPlayerBar: View {
     @Environment(\.modelContext) private var modelContext
     @State private var isBookmarked = false
 
-    private var isVerseMode: Bool { vm.currentVerseID != nil }
+    private var isFollowAlong: Bool { vm.isFollowAlongActive }
+    private var isVerseMode: Bool { vm.currentVerseID != nil || isFollowAlong }
+    private var isPlaying: Bool { isFollowAlong ? followAlongVM.isPlaying : vm.isPlaying }
 
     var body: some View {
         HStack(spacing: 16) {
             speedMenu
             repeatMenu
 
-            Button(action: { vm.previousVerse() }) {
+            Button(action: { isFollowAlong ? followAlongVM.previousVerse() : vm.previousVerse() }) {
                 Image(systemName: "backward.fill")
                     .font(.body)
                     .foregroundStyle(Color.niyaSecondary)
@@ -30,8 +32,8 @@ struct AudioPlayerBar: View {
                     .tint(Color.niyaGold)
                     .frame(width: 44, height: 44)
             } else {
-                Button(action: { vm.togglePause() }) {
-                    Image(systemName: vm.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                Button(action: { isFollowAlong ? followAlongVM.togglePlayPause() : vm.togglePause() }) {
+                    Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 40))
                         .foregroundStyle(Color.niyaGold)
                         .frame(width: 44, height: 44)
@@ -40,7 +42,7 @@ struct AudioPlayerBar: View {
                 .buttonStyle(.plain)
             }
 
-            Button(action: { vm.nextVerse() }) {
+            Button(action: { isFollowAlong ? followAlongVM.nextVerse() : vm.nextVerse() }) {
                 Image(systemName: "forward.fill")
                     .font(.body)
                     .foregroundStyle(Color.niyaSecondary)
@@ -52,9 +54,16 @@ struct AudioPlayerBar: View {
             .opacity(isVerseMode ? 1 : 0.3)
 
             Button {
-                guard let vid = vm.currentVerseID else { return }
-                let store = QuranBookmarkStore(modelContext: modelContext)
-                store.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
+                if isFollowAlong {
+                    guard let surahId = followAlongVM.currentSurahId,
+                          let ayahId = followAlongVM.currentVerseId else { return }
+                    let store = QuranBookmarkStore(modelContext: modelContext)
+                    store.toggle(surahId: surahId, ayahId: ayahId)
+                } else {
+                    guard let vid = vm.currentVerseID else { return }
+                    let store = QuranBookmarkStore(modelContext: modelContext)
+                    store.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
+                }
                 isBookmarked.toggle()
                 NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
             } label: {
@@ -104,30 +113,49 @@ struct AudioPlayerBar: View {
         .contentShape(Rectangle())
         .niyaGlass()
         .onChange(of: vm.currentVerseID) { _, vid in
-            guard let vid else { isBookmarked = false; return }
+            guard let vid else {
+                if !isFollowAlong { isBookmarked = false }
+                return
+            }
             isBookmarked = QuranBookmarkStore(modelContext: modelContext)
                 .isBookmarked(surahId: vid.surahId, ayahId: vid.ayahId)
         }
+        .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
+            guard let surahId = followAlongVM.currentSurahId, let ayahId else {
+                if isFollowAlong { isBookmarked = false }
+                return
+            }
+            isBookmarked = QuranBookmarkStore(modelContext: modelContext)
+                .isBookmarked(surahId: surahId, ayahId: ayahId)
+        }
+    }
+
+    private var currentLoopCount: Int {
+        isFollowAlong ? followAlongVM.loopCount : vm.loopCount
+    }
+
+    private var currentSpeed: Float {
+        isFollowAlong ? followAlongVM.playbackSpeed : vm.playbackSpeed
     }
 
     private var repeatMenu: some View {
         Menu {
             ForEach([1, 2, 3, 5, 10], id: \.self) { count in
                 Button {
-                    vm.setLoopCount(count)
+                    isFollowAlong ? followAlongVM.setLoopCount(count) : vm.setLoopCount(count)
                 } label: {
                     HStack {
                         Text(count == 1 ? "No Repeat" : "\(count)x")
-                        if vm.loopCount == count {
+                        if currentLoopCount == count {
                             Image(systemName: "checkmark")
                         }
                     }
                 }
             }
         } label: {
-            Image(systemName: vm.loopCount > 1 ? "repeat.circle.fill" : "repeat")
+            Image(systemName: currentLoopCount > 1 ? "repeat.circle.fill" : "repeat")
                 .font(.body)
-                .foregroundStyle(vm.loopCount > 1 ? Color.niyaGold : Color.niyaSecondary)
+                .foregroundStyle(currentLoopCount > 1 ? Color.niyaGold : Color.niyaSecondary)
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())
         }
@@ -139,18 +167,18 @@ struct AudioPlayerBar: View {
         Menu {
             ForEach([Float(0.5), 0.75, 1.0, 1.25], id: \.self) { speed in
                 Button {
-                    vm.setSpeed(speed)
+                    isFollowAlong ? followAlongVM.setSpeed(speed) : vm.setSpeed(speed)
                 } label: {
                     HStack {
                         Text(speedLabel(speed))
-                        if vm.playbackSpeed == speed {
+                        if currentSpeed == speed {
                             Image(systemName: "checkmark")
                         }
                     }
                 }
             }
         } label: {
-            Text(speedLabel(vm.playbackSpeed))
+            Text(speedLabel(currentSpeed))
                 .font(.caption.weight(.semibold))
                 .fixedSize()
                 .padding(.horizontal, 8)

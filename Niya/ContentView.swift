@@ -5,18 +5,15 @@ struct ContentView: View {
     @Environment(HadithDataService.self) private var hadithDataService
     @Environment(DuaDataService.self) private var duaDataService
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
-    @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
-    @AppStorage("followAlong") private var followAlong: Bool = false
 
     var body: some View {
         @Bindable var coordinator = coordinator
         tabContent(selection: $coordinator.selectedTab)
             .tint(Color.niyaTeal)
             .overlay(alignment: .bottom) {
-                let followAlongVisible = coordinator.isReaderVisible && followAlong && followAlongVM.currentVerseId != nil
-                if audioPlayerVM.hasActiveSession && !followAlongVisible {
+                if audioPlayerVM.hasActiveSession && !coordinator.isReaderVisible {
                     AudioPlayerBar()
                         .padding(.bottom, 80)
                         .transition(.move(edge: .bottom).combined(with: .opacity))

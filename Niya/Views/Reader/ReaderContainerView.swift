@@ -35,13 +35,13 @@ struct ReaderContainerView: View {
             }
         }
         .safeAreaInset(edge: .bottom) {
-            if followAlong && followAlongVM.currentVerseId != nil {
-                FollowAlongControlsView()
+            if audioPlayerVM.hasActiveSession {
+                AudioPlayerBar()
                     .padding(.bottom, 8)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
         }
-        .animation(.smooth, value: followAlongVM.currentVerseId != nil)
+        .animation(.smooth, value: audioPlayerVM.hasActiveSession)
         .navigationTitle(vm.surah.transliteration)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
