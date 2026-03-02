@@ -16,12 +16,12 @@
     "filename": "translation_en_clearquran.json"
   },
   {
-    "id": "en_pickthall",
+    "id": "en_hilali",
     "language": "en",
     "languageName": "English",
-    "name": "Pickthall",
-    "author": "M. M. Pickthall",
-    "filename": "translation_en_pickthall.json"
+    "name": "Al-Hilali & Khan",
+    "author": "Muhammad Taqi-ud-Din al-Hilali and Muhammad Muhsin Khan",
+    "filename": "translation_en_hilali.json"
   },
   {
     "id": "fr_hamidullah",

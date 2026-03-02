@@ -50,7 +50,10 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
         }
-        .onAppear { loadQuranData() }
+        .onAppear { reload() }
+        .onChange(of: coordinator.selectedTab) { _, tab in
+            if tab == "home" { reload() }
+        }
         .task {
             await hadithDataService.load()
             let recents = RecentHadithStore(modelContext: modelContext).recentHadiths()

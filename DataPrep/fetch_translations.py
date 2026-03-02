@@ -8,7 +8,7 @@ import urllib.request
 EDITIONS = [
     ("en.sahih",      "en_sahih",      "en", "English",    "Sahih International",        "Saheeh International"),
     ("en.itani",      "en_clearquran", "en", "English",    "The Clear Quran",            "Talal Itani"),
-    ("en.pickthall",  "en_pickthall",  "en", "English",    "Pickthall",                  "M. M. Pickthall"),
+    ("en.hilali",     "en_hilali",     "en", "English",    "Al-Hilali & Khan",           "Muhammad Taqi-ud-Din al-Hilali and Muhammad Muhsin Khan"),
     ("fr.hamidullah", "fr_hamidullah", "fr", "French",     "Muhammad Hamidullah",        "Muhammad Hamidullah"),
     ("es.cortes",     "es_cortes",     "es", "Spanish",    "Julio Cortes",               "Julio Cortes"),
     ("tr.diyanet",    "tr_diyanet",    "tr", "Turkish",    "Diyanet Isleri",             "Diyanet Isleri Baskanligi"),
