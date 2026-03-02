@@ -14,6 +14,7 @@ struct FollowAlongVerseView: View {
     private let bookmarkVerseTip = BookmarkVerseTip()
     private let tafsirVerseTip = TafsirVerseTip()
     @Environment(FollowAlongViewModel.self) private var followAlongVM
+    @Environment(QuranDataService.self) private var dataService
     @AppStorage("followAlongTransliteration") private var showTransliteration = true
     @AppStorage("followAlongMeaning") private var showMeaning = true
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
@@ -48,12 +49,23 @@ struct FollowAlongVerseView: View {
             }
 
             if !verse.translation.isEmpty {
-                Text(verse.translation)
-                    .font(.system(size: translationFontSize, design: .serif))
-                    .foregroundStyle(Color.niyaSecondary)
-                    .multilineTextAlignment(translationIsRTL ? .trailing : .leading)
-                    .frame(maxWidth: .infinity, alignment: translationIsRTL ? .trailing : .leading)
-                    .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
+                let hasMultiple = !verse.extraTranslations.isEmpty
+
+                if hasMultiple, let primary = dataService.selectedTranslations.first {
+                    translationBlock(name: primary.name, text: verse.translation, isRTL: primary.isRTL)
+                } else {
+                    let primaryRTL = dataService.selectedTranslations.first?.isRTL ?? false
+                    Text(verse.translation)
+                        .font(.system(size: translationFontSize, design: .serif))
+                        .foregroundStyle(Color.niyaSecondary)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .environment(\.layoutDirection, primaryRTL ? .rightToLeft : .leftToRight)
+                }
+
+                ForEach(verse.extraTranslations, id: \.name) { t in
+                    translationBlock(name: t.name, text: t.text, isRTL: t.isRTL)
+                }
             }
         }
         .padding(.vertical, 12)
@@ -133,6 +145,23 @@ struct FollowAlongVerseView: View {
         } else {
             btn
         }
+    }
+
+    private func translationBlock(name: String, text: String, isRTL: Bool) -> some View {
+        VStack(spacing: 4) {
+            Text(name)
+                .font(.system(size: translationFontSize - 2, weight: .medium))
+                .foregroundStyle(Color.niyaTeal)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, .leftToRight)
+            Text(text)
+                .font(.system(size: translationFontSize, design: .serif))
+                .foregroundStyle(Color.niyaSecondary)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
+        }
+        .padding(.top, 4)
     }
 
     private var verseNumberBadge: some View {

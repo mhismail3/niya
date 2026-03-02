@@ -7,12 +7,12 @@ final class QuranDataService {
     var isLoaded = false
     var loadError: String?
     var availableTranslations: [TranslationEdition] = []
-    var selectedTranslation: TranslationEdition?
+    var selectedTranslations: [TranslationEdition] = []
 
     private var hafsDictionary: [String: [Verse]]?
     private var indoPakDictionary: [String: [Verse]]?
     private var verseCounts: [Int] = []
-    private var translationOverlay: [String: String]?
+    private var translationOverlays: [(edition: TranslationEdition, overlay: [String: String])] = []
 
     func load() async {
         guard !isLoaded else { return }
@@ -29,9 +29,21 @@ final class QuranDataService {
             verseCounts = buildVerseCounts(from: loadedSurahs)
             availableTranslations = translations
 
-            let savedId = UserDefaults.standard.string(forKey: "selectedTranslation") ?? "en_sahih"
-            if let edition = translations.first(where: { $0.id == savedId }) {
-                try await loadTranslation(edition)
+            // Migrate from old single-translation key
+            let savedRaw: String
+            if let multi = UserDefaults.standard.string(forKey: "selectedTranslations") {
+                savedRaw = multi
+            } else if let single = UserDefaults.standard.string(forKey: "selectedTranslation") {
+                savedRaw = single
+                UserDefaults.standard.removeObject(forKey: "selectedTranslation")
+            } else {
+                savedRaw = "en_sahih"
+            }
+            let savedIds = savedRaw.split(separator: ",").map(String.init)
+            for id in savedIds {
+                if let edition = translations.first(where: { $0.id == id }) {
+                    try await addTranslation(edition)
+                }
             }
 
             isLoaded = true
@@ -43,12 +55,19 @@ final class QuranDataService {
     func verses(for surahId: Int, script: QuranScript) -> [Verse] {
         let dict = script == .hafs ? hafsDictionary : indoPakDictionary
         guard let baseVerses = dict?[String(surahId)] else { return [] }
-        guard let overlay = translationOverlay else { return baseVerses }
+        guard !translationOverlays.isEmpty else { return baseVerses }
+        let primary = translationOverlays[0]
+        let extras = Array(translationOverlays.dropFirst())
         return baseVerses.map { verse in
             let key = "\(surahId):\(verse.id)"
-            guard let translated = overlay[key] else { return verse }
-            return Verse(id: verse.id, text: verse.text, translation: translated,
-                         transliteration: verse.transliteration, page: verse.page)
+            let mainText = primary.overlay[key] ?? verse.translation
+            var v = Verse(id: verse.id, text: verse.text, translation: mainText,
+                          transliteration: verse.transliteration, page: verse.page)
+            v.extraTranslations = extras.compactMap { entry in
+                guard let text = entry.overlay[key] else { return nil }
+                return TranslationText(name: entry.edition.name, text: text, isRTL: entry.edition.isRTL)
+            }
+            return v
         }
     }
 
@@ -84,16 +103,34 @@ final class QuranDataService {
         }
     }
 
-    func loadTranslation(_ edition: TranslationEdition) async throws {
+    func addTranslation(_ edition: TranslationEdition) async throws {
+        guard !selectedTranslations.contains(where: { $0.id == edition.id }) else { return }
         let name = edition.filename.replacingOccurrences(of: ".json", with: "")
         guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
             throw DataError.missingResource(edition.filename)
         }
         let data = try Data(contentsOf: url)
-        translationOverlay = try JSONDecoder().decode([String: String].self, from: data)
-        selectedTranslation = edition
-        UserDefaults.standard.set(edition.id, forKey: "selectedTranslation")
-        UserDefaults.standard.set(edition.isRTL, forKey: "translationIsRTL")
+        let overlay = try JSONDecoder().decode([String: String].self, from: data)
+        translationOverlays.append((edition: edition, overlay: overlay))
+        selectedTranslations.append(edition)
+        saveSelectedIds()
+    }
+
+    func removeTranslation(_ edition: TranslationEdition) {
+        translationOverlays.removeAll { $0.edition.id == edition.id }
+        selectedTranslations.removeAll { $0.id == edition.id }
+        saveSelectedIds()
+    }
+
+    func isTranslationSelected(_ edition: TranslationEdition) -> Bool {
+        selectedTranslations.contains { $0.id == edition.id }
+    }
+
+    private func saveSelectedIds() {
+        let ids = selectedTranslations.map(\.id).joined(separator: ",")
+        UserDefaults.standard.set(ids, forKey: "selectedTranslations")
+        let hasRTL = selectedTranslations.contains { $0.isRTL }
+        UserDefaults.standard.set(hasRTL, forKey: "translationIsRTL")
     }
 
     private func loadTranslationIndex() async throws -> [TranslationEdition] {

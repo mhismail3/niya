@@ -41,9 +41,10 @@ struct SettingsView: View {
                         NavigationLink {
                             TranslationPickerView()
                         } label: {
-                            LabeledContent("Translation") {
-                                Text(dataService.selectedTranslation?.name ?? "Sahih International")
+                            LabeledContent("Translations") {
+                                Text(translationSummary)
                                     .foregroundStyle(Color.niyaSecondary)
+                                    .lineLimit(1)
                             }
                         }
                     }
@@ -101,6 +102,13 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .hiddenNavBarBackground()
         }
+    }
+
+    private var translationSummary: String {
+        let selected = dataService.selectedTranslations
+        if selected.isEmpty { return "None" }
+        if selected.count == 1 { return selected[0].name }
+        return "\(selected[0].name) +\(selected.count - 1)"
     }
 
     @ViewBuilder

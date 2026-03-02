@@ -17,7 +17,7 @@ struct ReaderContainerView: View {
     @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
     @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
     @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
-    @AppStorage("selectedTranslation") private var selectedTranslationId: String = "en_sahih"
+    @AppStorage("selectedTranslations") private var selectedTranslationIds: String = "en_sahih"
     @State private var showSettings = false
     @State private var showBookmarks = false
 
@@ -124,7 +124,7 @@ struct ReaderContainerView: View {
             followAlongVM.setLoopCount(count)
             audioPlayerVM.loopCount = count
         }
-        .onChange(of: selectedTranslationId) { _, _ in
+        .onChange(of: selectedTranslationIds) { _, _ in
             vm.reloadTranslation()
         }
         .onDisappear {

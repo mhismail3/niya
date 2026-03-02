@@ -2,7 +2,6 @@ import SwiftUI
 
 struct TranslationPickerView: View {
     @Environment(QuranDataService.self) private var dataService
-    @AppStorage("selectedTranslation") private var selectedId: String = "en_sahih"
 
     private var grouped: [(language: String, editions: [TranslationEdition])] {
         let byLang = Dictionary(grouping: dataService.availableTranslations, by: \.languageName)
@@ -14,8 +13,15 @@ struct TranslationPickerView: View {
             ForEach(grouped, id: \.language) { group in
                 Section(group.language) {
                     ForEach(group.editions) { edition in
+                        let isSelected = dataService.isTranslationSelected(edition)
                         Button {
-                            Task { try? await dataService.loadTranslation(edition) }
+                            Task {
+                                if isSelected {
+                                    dataService.removeTranslation(edition)
+                                } else {
+                                    try? await dataService.addTranslation(edition)
+                                }
+                            }
                         } label: {
                             HStack {
                                 VStack(alignment: .leading) {
@@ -27,7 +33,7 @@ struct TranslationPickerView: View {
                                         .foregroundStyle(Color.niyaSecondary)
                                 }
                                 Spacer()
-                                if edition.id == selectedId {
+                                if isSelected {
                                     Image(systemName: "checkmark")
                                         .foregroundStyle(Color.niyaTeal)
                                 }
@@ -37,7 +43,7 @@ struct TranslationPickerView: View {
                 }
             }
         }
-        .navigationTitle("Translation")
+        .navigationTitle("Translations")
         .navigationBarTitleDisplayMode(.inline)
     }
 }

@@ -17,6 +17,7 @@ struct VerseRowView: View {
     private let bookmarkVerseTip = BookmarkVerseTip()
     private let tafsirVerseTip = TafsirVerseTip()
     @Environment(TajweedService.self) private var tajweedService
+    @Environment(QuranDataService.self) private var dataService
     @AppStorage("showTajweed") private var showTajweed: Bool = true
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
@@ -82,12 +83,23 @@ struct VerseRowView: View {
             }
 
             if showTranslation, !verse.translation.isEmpty {
-                Text(verse.translation)
-                    .font(.system(size: translationFontSize, design: .serif))
-                    .foregroundStyle(Color.niyaSecondary)
-                    .multilineTextAlignment(translationIsRTL ? .trailing : .leading)
-                    .frame(maxWidth: .infinity, alignment: translationIsRTL ? .trailing : .leading)
-                    .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
+                let hasMultiple = !verse.extraTranslations.isEmpty
+
+                if hasMultiple, let primary = dataService.selectedTranslations.first {
+                    translationBlock(name: primary.name, text: verse.translation, isRTL: primary.isRTL)
+                } else {
+                    let primaryRTL = dataService.selectedTranslations.first?.isRTL ?? false
+                    Text(verse.translation)
+                        .font(.system(size: translationFontSize, design: .serif))
+                        .foregroundStyle(Color.niyaSecondary)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .environment(\.layoutDirection, primaryRTL ? .rightToLeft : .leftToRight)
+                }
+
+                ForEach(verse.extraTranslations, id: \.name) { t in
+                    translationBlock(name: t.name, text: t.text, isRTL: t.isRTL)
+                }
             }
         }
         .padding(.vertical, 12)
@@ -218,6 +230,23 @@ struct VerseRowView: View {
         .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
         .fixedSize()
         .transition(.opacity.combined(with: .scale(scale: 0.8)))
+    }
+
+    private func translationBlock(name: String, text: String, isRTL: Bool) -> some View {
+        VStack(spacing: 4) {
+            Text(name)
+                .font(.system(size: translationFontSize - 2, weight: .medium))
+                .foregroundStyle(Color.niyaTeal)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, .leftToRight)
+            Text(text)
+                .font(.system(size: translationFontSize, design: .serif))
+                .foregroundStyle(Color.niyaSecondary)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
+        }
+        .padding(.top, 4)
     }
 
     private var verseNumberBadge: some View {
