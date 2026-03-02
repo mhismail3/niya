@@ -27,7 +27,7 @@ struct PrayerTimesListView: View {
             }
 
             ForEach(displayTimes, id: \.prayer) { pt in
-                if showAll || isUpcoming(pt) || isNext(pt) {
+                if showAll || isCurrent(pt) || isUpcoming(pt) || isNext(pt) {
                     prayerRow(pt)
                 }
             }
@@ -41,8 +41,13 @@ struct PrayerTimesListView: View {
     private var upcomingTimes: [PrayerTime] {
         let next = times.nextPrayer(after: now)
         guard let nextPrayer = next else { return [] }
-        let idx = times.times.firstIndex(where: { $0.prayer == nextPrayer.prayer }) ?? 0
-        return Array(times.times[idx...])
+        let nextIdx = times.times.firstIndex(where: { $0.prayer == nextPrayer.prayer }) ?? 0
+        if let cur = currentPrayer,
+           let curIdx = times.times.firstIndex(where: { $0.prayer == cur }),
+           curIdx < nextIdx {
+            return Array(times.times[curIdx...])
+        }
+        return Array(times.times[nextIdx...])
     }
 
     private func isNext(_ pt: PrayerTime) -> Bool {

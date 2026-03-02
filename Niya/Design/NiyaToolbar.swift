@@ -15,7 +15,7 @@ struct NiyaToolbar: ViewModifier {
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button { showSalah = true } label: {
-                        Image(systemName: "moon.stars")
+                        Image(systemName: "location.circle")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {

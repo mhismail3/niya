@@ -53,7 +53,7 @@ struct ReaderContainerView: View {
             }
             ToolbarItem(placement: .topBarLeading) {
                 Button { showSalah = true } label: {
-                    Image(systemName: "moon.stars")
+                    Image(systemName: "location.circle")
                 }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {

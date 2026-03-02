@@ -7,13 +7,8 @@ struct QiblahCompassView: View {
     let needsCalibration: Bool
     var compassSize: CGFloat = 260
 
-    private var compassRotation: Double {
-        -heading
-    }
-
-    private var needleRotation: Double {
-        bearing
-    }
+    @State private var continuousRotation: Double = 0
+    @State private var lastHeading: Double?
 
     private var arrowSize: CGFloat {
         compassSize * 0.108
@@ -37,6 +32,14 @@ struct QiblahCompassView: View {
             }
 
             bearingText
+        }
+        .onChange(of: heading) { oldVal, newVal in
+            let prev = lastHeading ?? oldVal
+            var delta = newVal - prev
+            if delta > 180 { delta -= 360 }
+            if delta < -180 { delta += 360 }
+            continuousRotation += delta
+            lastHeading = newVal
         }
     }
 
@@ -72,11 +75,10 @@ struct QiblahCompassView: View {
                     .font(.system(size: kaabaSize))
                     .foregroundStyle(Color.niyaTeal)
             }
-            .rotationEffect(.degrees(needleRotation))
-            .animation(.easeInOut(duration: 0.3), value: needleRotation)
+            .rotationEffect(.degrees(bearing))
         }
-        .rotationEffect(.degrees(compassRotation))
-        .animation(.easeInOut(duration: 0.3), value: compassRotation)
+        .rotationEffect(.degrees(-continuousRotation))
+        .animation(.easeInOut(duration: 0.3), value: continuousRotation)
     }
 
     private var staticCompass: some View {
