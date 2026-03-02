@@ -19,10 +19,10 @@ struct VerseRowView: View {
     @Environment(TajweedService.self) private var tajweedService
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
-    @AppStorage("showTajweed") private var showTajweed: Bool = true
-    @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
-    @AppStorage("translationFontSize") private var translationFontSize: Double = 16
-    @AppStorage("translationIsRTL") private var translationIsRTL: Bool = false
+    @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
+    @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
+    @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
+    @AppStorage(StorageKey.translationIsRTL) private var translationIsRTL: Bool = false
     @State private var tajweedActive = false
     @State private var activeTap: TajweedTap?
     @State private var tooltipWidth: CGFloat = 160
@@ -143,10 +143,11 @@ struct VerseRowView: View {
     private var playButton: some View {
         let btn = Button(action: onPlay) {
             Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle")
-                .font(.title3)
+                .font(.niyaVerseAction)
                 .foregroundStyle(isPlaying ? Color.niyaGold : Color.niyaSecondary)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isPlaying ? "Pause verse \(verse.id)" : "Play verse \(verse.id)")
         if isFirstVerse {
             btn.popoverTip(playVerseTip)
         } else {
@@ -158,10 +159,11 @@ struct VerseRowView: View {
     private var bookmarkButton: some View {
         let btn = Button(action: onBookmark) {
             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                .font(.title3)
+                .font(.niyaVerseAction)
                 .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isBookmarked ? "Remove bookmark, verse \(verse.id)" : "Bookmark verse \(verse.id)")
         if isFirstVerse {
             btn.popoverTip(bookmarkVerseTip)
         } else {
@@ -173,10 +175,11 @@ struct VerseRowView: View {
     private var tafsirButton: some View {
         let btn = Button(action: onTafsir) {
             Image(systemName: "text.book.closed")
-                .font(.title3)
+                .font(.niyaVerseAction)
                 .foregroundStyle(Color.niyaSecondary)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Tafsir, verse \(verse.id)")
         if isFirstVerse {
             btn.popoverTip(tafsirVerseTip)
         } else {
@@ -261,5 +264,6 @@ struct VerseRowView: View {
                 .font(.system(.caption2, design: .rounded, weight: .semibold))
                 .foregroundStyle(Color.niyaTeal)
         }
+        .accessibilityLabel("Verse \(verse.id)")
     }
 }

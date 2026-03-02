@@ -7,7 +7,6 @@ struct ContentView: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         @Bindable var coordinator = coordinator
@@ -34,9 +33,6 @@ struct ContentView: View {
             }
             .task {
                 await duaDataService.load()
-            }
-            .onAppear {
-                audioPlayerVM.setDownloadStore(DownloadStore(modelContext: modelContext))
             }
     }
 

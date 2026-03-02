@@ -3,8 +3,8 @@ import SwiftUI
 struct SurahListView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(NavigationCoordinator.self) private var coordinator
-    @AppStorage("selectedScript") private var script: QuranScript = .hafs
-    @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
+    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @State private var isLoaded = false
     @State private var loadError: String?
     @State private var path = NavigationPath()

@@ -7,7 +7,7 @@ struct WordView: View {
     let showTransliteration: Bool
     let showMeaning: Bool
     let onTap: () -> Void
-    @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
+    @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
 
     var body: some View {
         Button(action: onTap) {
@@ -24,6 +24,7 @@ struct WordView: View {
                     Text(word.tr)
                         .font(.system(size: 12, design: .serif))
                         .foregroundStyle(secondaryColor)
+                        .accessibilityLabel("Transliteration: \(word.tr)")
                 }
 
                 if showMeaning {
@@ -32,6 +33,7 @@ struct WordView: View {
                         .foregroundStyle(secondaryColor)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
+                        .accessibilityLabel("Meaning: \(word.en)")
                 }
             }
             .padding(.horizontal, 6)

@@ -26,18 +26,18 @@ struct TafsirEditionTests {
 
     @Test func urlGeneration() {
         let url = TafsirEdition.ibnKathir.url(surahId: 2, ayahId: 255)
-        #expect(url.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-tafisr-ibn-kathir/2/255.json")
+        #expect(url?.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-tafisr-ibn-kathir/2/255.json")
 
         let url2 = TafsirEdition.maarifUlQuran.url(surahId: 2, ayahId: 255)
-        #expect(url2.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-tafsir-maarif-ul-quran/2/255.json")
+        #expect(url2?.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-tafsir-maarif-ul-quran/2/255.json")
     }
 
     @Test func urlBoundaryValues() {
         let first = TafsirEdition.ibnKathir.url(surahId: 1, ayahId: 1)
-        #expect(first.absoluteString.contains("/1/1.json"))
+        #expect(first?.absoluteString.contains("/1/1.json") == true)
 
         let last = TafsirEdition.ibnKathir.url(surahId: 114, ayahId: 6)
-        #expect(last.absoluteString.contains("/114/6.json"))
+        #expect(last?.absoluteString.contains("/114/6.json") == true)
     }
 
     @Test func ibnKathirSlugHasTypo() {

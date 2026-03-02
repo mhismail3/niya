@@ -7,7 +7,7 @@ struct MushaPageView: View {
     let surahId: Int
     let surahName: String
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.stores) private var stores
     @State private var bookmarkedAyahs: Set<Int> = []
     @State private var showTafsir = false
     @State private var tafsirAyahId: Int = 1
@@ -53,14 +53,12 @@ struct MushaPageView: View {
     }
 
     private func loadBookmarks() {
-        let store = QuranBookmarkStore(modelContext: modelContext)
-        let all = store.allBookmarks().filter { $0.surahId == surahId }
+        let all = stores!.quranBookmarks.allBookmarks().filter { $0.surahId == surahId }
         bookmarkedAyahs = Set(all.map(\.ayahId))
     }
 
     private func toggleBookmark(_ ayahId: Int) {
-        let store = QuranBookmarkStore(modelContext: modelContext)
-        store.toggle(surahId: surahId, ayahId: ayahId)
+        stores!.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
         if bookmarkedAyahs.contains(ayahId) {
             bookmarkedAyahs.remove(ayahId)
         } else {

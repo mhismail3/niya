@@ -5,7 +5,7 @@ struct BookmarksView: View {
     @Environment(HadithDataService.self) private var hadithDataService
     @Environment(DuaDataService.self) private var duaDataService
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.stores) private var stores
     @Environment(\.dismiss) private var dismiss
     @State private var quranBookmarks: [QuranBookmark] = []
     @State private var hadithBookmarks: [HadithBookmark] = []
@@ -221,13 +221,13 @@ struct BookmarksView: View {
     }
 
     private func reload() {
-        quranBookmarks = QuranBookmarkStore(modelContext: modelContext).allBookmarks()
-        hadithBookmarks = HadithBookmarkStore(modelContext: modelContext).allBookmarks()
-        duaBookmarks = DuaBookmarkStore(modelContext: modelContext).allBookmarks()
+        quranBookmarks = stores!.quranBookmarks.allBookmarks()
+        hadithBookmarks = stores!.hadithBookmarks.allBookmarks()
+        duaBookmarks = stores!.duaBookmarks.allBookmarks()
     }
 
     private func loadHadithCollections() async {
-        let bookmarks = HadithBookmarkStore(modelContext: modelContext).allBookmarks()
+        let bookmarks = stores!.hadithBookmarks.allBookmarks()
         for id in Set(bookmarks.map(\.collectionId)) {
             await hadithDataService.loadCollection(id)
         }

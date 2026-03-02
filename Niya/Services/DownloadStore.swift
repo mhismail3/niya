@@ -1,7 +1,6 @@
 import Foundation
 import SwiftData
 
-@Observable
 @MainActor
 final class DownloadStore {
     private var modelContext: ModelContext

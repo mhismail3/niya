@@ -4,7 +4,7 @@ struct AudioPlayerBar: View {
     @Environment(AudioPlayerViewModel.self) private var vm
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.stores) private var stores
     @State private var isBookmarked = false
 
     private var isFollowAlong: Bool { vm.isFollowAlongActive }
@@ -20,36 +20,39 @@ struct AudioPlayerBar: View {
                 Image(systemName: "backward.fill")
                     .font(.body)
                     .foregroundStyle(Color.niyaSecondary)
-                    .frame(width: 44, height: 44)
+                    .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Previous verse")
             .disabled(!isVerseMode)
             .opacity(isVerseMode ? 1 : 0.3)
 
             if vm.isLoading {
                 ProgressView()
                     .tint(Color.niyaGold)
-                    .frame(width: 44, height: 44)
+                    .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
             } else {
                 Button(action: { isFollowAlong ? followAlongVM.togglePlayPause() : vm.togglePause() }) {
                     Image(systemName: isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 40))
                         .foregroundStyle(Color.niyaGold)
-                        .frame(width: 44, height: 44)
+                        .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(isPlaying ? "Pause" : "Play")
             }
 
             Button(action: { isFollowAlong ? followAlongVM.nextVerse() : vm.nextVerse() }) {
                 Image(systemName: "forward.fill")
                     .font(.body)
                     .foregroundStyle(Color.niyaSecondary)
-                    .frame(width: 44, height: 44)
+                    .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Next verse")
             .disabled(!isVerseMode)
             .opacity(isVerseMode ? 1 : 0.3)
 
@@ -57,12 +60,10 @@ struct AudioPlayerBar: View {
                 if isFollowAlong {
                     guard let surahId = followAlongVM.currentSurahId,
                           let ayahId = followAlongVM.currentVerseId else { return }
-                    let store = QuranBookmarkStore(modelContext: modelContext)
-                    store.toggle(surahId: surahId, ayahId: ayahId)
+                    stores!.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
                 } else {
                     guard let vid = vm.currentVerseID else { return }
-                    let store = QuranBookmarkStore(modelContext: modelContext)
-                    store.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
+                    stores!.quranBookmarks.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
                 }
                 isBookmarked.toggle()
                 NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
@@ -70,10 +71,11 @@ struct AudioPlayerBar: View {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.body)
                     .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
-                    .frame(width: 44, height: 44)
+                    .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(isBookmarked ? "Remove bookmark" : "Add bookmark")
             .disabled(!isVerseMode)
             .opacity(isVerseMode ? 1 : 0.3)
 
@@ -89,6 +91,7 @@ struct AudioPlayerBar: View {
                         .background(Color.niyaSecondary.opacity(0.15), in: .circle)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Stop audio")
             } else {
                 Button {
                     let surahId = vm.currentVerseID?.surahId
@@ -106,6 +109,7 @@ struct AudioPlayerBar: View {
                         .background(Color.niyaTeal.opacity(0.15), in: .circle)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Go to verse")
             }
         }
         .padding(.horizontal, 16)
@@ -117,7 +121,7 @@ struct AudioPlayerBar: View {
                 if !isFollowAlong { isBookmarked = false }
                 return
             }
-            isBookmarked = QuranBookmarkStore(modelContext: modelContext)
+            isBookmarked = stores!.quranBookmarks
                 .isBookmarked(surahId: vid.surahId, ayahId: vid.ayahId)
         }
         .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
@@ -125,7 +129,7 @@ struct AudioPlayerBar: View {
                 if isFollowAlong { isBookmarked = false }
                 return
             }
-            isBookmarked = QuranBookmarkStore(modelContext: modelContext)
+            isBookmarked = stores!.quranBookmarks
                 .isBookmarked(surahId: surahId, ayahId: ayahId)
         }
     }
@@ -156,9 +160,10 @@ struct AudioPlayerBar: View {
             Image(systemName: currentLoopCount > 1 ? "repeat.circle.fill" : "repeat")
                 .font(.body)
                 .foregroundStyle(currentLoopCount > 1 ? Color.niyaGold : Color.niyaSecondary)
-                .frame(width: 44, height: 44)
+                .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
                 .contentShape(Rectangle())
         }
+        .accessibilityLabel("Repeat, \(currentLoopCount == 1 ? "off" : "\(currentLoopCount) times")")
         .disabled(!isVerseMode)
         .opacity(isVerseMode ? 1 : 0.3)
     }
@@ -186,6 +191,7 @@ struct AudioPlayerBar: View {
                 .background(Color.niyaSecondary.opacity(0.15), in: .capsule)
                 .foregroundStyle(Color.niyaText)
         }
+        .accessibilityLabel("Playback speed, \(speedLabel(currentSpeed))")
     }
 
     private func speedLabel(_ speed: Float) -> String {

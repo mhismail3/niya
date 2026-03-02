@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HadithBookmarksView: View {
     @Environment(HadithDataService.self) private var dataService
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.stores) private var stores
     @State private var bookmarks: [HadithBookmark] = []
 
     private var grouped: [(collection: HadithCollection, bookmarks: [HadithBookmark])] {
@@ -66,13 +66,11 @@ struct HadithBookmarksView: View {
     }
 
     private func reload() {
-        let store = HadithBookmarkStore(modelContext: modelContext)
-        bookmarks = store.allBookmarks()
+        bookmarks = stores!.hadithBookmarks.allBookmarks()
     }
 
     private func loadBookmarkedCollections() async {
-        let store = HadithBookmarkStore(modelContext: modelContext)
-        let all = store.allBookmarks()
+        let all = stores!.hadithBookmarks.allBookmarks()
         let collectionIds = Set(all.map(\.collectionId))
         for id in collectionIds {
             await dataService.loadCollection(id)

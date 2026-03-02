@@ -12,16 +12,19 @@ struct NiyaToolbar: ViewModifier {
                     Button { showBookmarks = true } label: {
                         Image(systemName: "bookmark")
                     }
+                    .accessibilityLabel("Bookmarks")
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button { showSalah = true } label: {
                         Image(systemName: "location.circle")
                     }
+                    .accessibilityLabel("Qibla and prayer times")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape")
                     }
+                    .accessibilityLabel("Settings")
                 }
             }
             .sheet(isPresented: $showBookmarks) {

@@ -21,7 +21,7 @@ final class HadithBookmarkStore {
         } else {
             modelContext.insert(HadithBookmark(collectionId: collectionId, hadithId: hadithId))
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("HadithBookmarkStore save failed: \(error)") }
     }
 
     func allBookmarks() -> [HadithBookmark] {

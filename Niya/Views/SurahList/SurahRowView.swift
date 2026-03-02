@@ -38,10 +38,12 @@ struct SurahRowView: View {
             Spacer()
 
             Text(surah.name)
-                .font(.custom("KFGQPCUthmanicScriptHAFS-Regular", size: 20))
+                .font(.quranText(script: .hafs, size: 20))
                 .foregroundStyle(Color.niyaGold)
                 .environment(\.layoutDirection, .rightToLeft)
         }
         .padding(.vertical, 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(surah.transliteration), \(surah.translation), \(surah.totalVerses) verses")
     }
 }

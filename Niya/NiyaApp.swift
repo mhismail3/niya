@@ -18,6 +18,7 @@ struct NiyaApp: App {
     @State private var locationService = LocationService()
     @State private var prayerTimeService = PrayerTimeService()
     @State private var autoScrollVM = AutoScrollViewModel()
+    @State private var storeContainer: StoreContainer?
 
     private let container: ModelContainer
 
@@ -27,7 +28,7 @@ struct NiyaApp: App {
         let dds = DuaDataService()
         let as_ = AudioService()
         let wds = WordDataService()
-        let storedReciter = Reciter(rawValue: UserDefaults.standard.string(forKey: "selectedReciter") ?? "") ?? .alAfasy
+        let storedReciter = Reciter(rawValue: UserDefaults.standard.string(forKey: StorageKey.selectedReciter) ?? "") ?? .alAfasy
         let avm = AudioPlayerViewModel(audioService: as_, dataService: ds, wordDataService: wds, reciter: storedReciter)
         let favm = FollowAlongViewModel(audioService: as_, wordDataService: wds, dataService: ds)
         _dataService = State(wrappedValue: ds)
@@ -44,6 +45,10 @@ struct NiyaApp: App {
             fatalError("Failed to create ModelContainer: \(error)")
         }
 
+        let sc = StoreContainer(modelContext: container.mainContext)
+        _storeContainer = State(wrappedValue: sc)
+        avm.setDownloadStore(sc.downloads)
+
         as_.configureSession()
         Self.migrateAudioFilenames()
         try? Tips.configure([.displayFrequency(.immediate)])
@@ -51,8 +56,8 @@ struct NiyaApp: App {
     }
 
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage("appearanceMode") private var appearanceMode: Int = 0
-    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
+    @AppStorage(StorageKey.appearanceMode) private var appearanceMode: Int = 0
+    @AppStorage(StorageKey.selectedReciter) private var selectedReciter: Reciter = .alAfasy
 
     var body: some Scene {
         WindowGroup {
@@ -70,6 +75,7 @@ struct NiyaApp: App {
                 .environment(locationService)
                 .environment(prayerTimeService)
                 .environment(autoScrollVM)
+                .environment(\.stores, storeContainer)
                 .modelContainer(container)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
@@ -83,13 +89,16 @@ struct NiyaApp: App {
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {
                         prayerTimeService.checkDayChange(location: locationService.effectiveLocation)
+                        prayerTimeService.startCountdown()
+                    } else if phase == .background {
+                        prayerTimeService.stopCountdown()
                     }
                 }
         }
     }
 
     private static func migrateAudioFilenames() {
-        guard !UserDefaults.standard.bool(forKey: "audioFilenameMigrated") else { return }
+        guard !UserDefaults.standard.bool(forKey: StorageKey.audioFilenameMigrated) else { return }
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fm = FileManager.default
         for surahId in 1...114 {
@@ -99,52 +108,6 @@ struct NiyaApp: App {
                 try? fm.moveItem(at: old, to: new)
             }
         }
-        UserDefaults.standard.set(true, forKey: "audioFilenameMigrated")
-    }
-}
-
-struct QuranNavDestination: Hashable {
-    let surahId: Int
-    let ayahId: Int?
-
-    init(surahId: Int, ayahId: Int? = nil) {
-        self.surahId = surahId
-        self.ayahId = ayahId
-    }
-}
-
-struct HadithNavDestination: Hashable {
-    let collectionId: String
-    let hadithId: Int
-    let hasGrades: Bool
-}
-
-struct DuaNavDestination: Hashable {
-    let categoryId: Int
-    let duaId: Int
-}
-
-@Observable
-@MainActor
-final class NavigationCoordinator {
-    var selectedTab: String = "home"
-    var isReaderVisible = false
-    var pendingQuranDestination: QuranNavDestination?
-    var pendingHadithDestination: HadithNavDestination?
-    var pendingDuaDestination: DuaNavDestination?
-
-    func navigateToAyah(surahId: Int, ayahId: Int) {
-        pendingQuranDestination = QuranNavDestination(surahId: surahId, ayahId: ayahId)
-        selectedTab = "quran"
-    }
-
-    func navigateToHadith(collectionId: String, hadithId: Int, hasGrades: Bool) {
-        pendingHadithDestination = HadithNavDestination(collectionId: collectionId, hadithId: hadithId, hasGrades: hasGrades)
-        selectedTab = "hadith"
-    }
-
-    func navigateToDua(categoryId: Int, duaId: Int) {
-        pendingDuaDestination = DuaNavDestination(categoryId: categoryId, duaId: duaId)
-        selectedTab = "dua"
+        UserDefaults.standard.set(true, forKey: StorageKey.audioFilenameMigrated)
     }
 }

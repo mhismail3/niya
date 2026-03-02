@@ -12,7 +12,7 @@ struct VerseCellView: View {
     let onBookmark: () -> Void
     let onTafsir: () -> Void
 
-    @AppStorage("followAlong") private var followAlong: Bool = false
+    @AppStorage(StorageKey.followAlong) private var followAlong: Bool = false
     @Environment(WordDataService.self) private var wordDataService
 
     var body: some View {

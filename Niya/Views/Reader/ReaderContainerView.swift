@@ -9,16 +9,16 @@ struct ReaderContainerView: View {
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(\.modelContext) private var modelContext
-    @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
-    @AppStorage("showTranslation") private var showTranslation: Bool = true
-    @AppStorage("showTajweed") private var showTajweed: Bool = true
-    @AppStorage("followAlong") private var followAlong: Bool = false
-    @AppStorage("followAlongAutoAdvance") private var followAlongAutoAdvance: Bool = true
-    @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
-    @AppStorage("readerMode") private var storedMode: ReaderMode = .scroll
-    @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
-    @AppStorage("selectedTranslations") private var selectedTranslationIds: String = "en_sahih"
+    @Environment(\.stores) private var stores
+    @AppStorage(StorageKey.selectedScript) private var storedScript: QuranScript = .hafs
+    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
+    @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
+    @AppStorage(StorageKey.followAlong) private var followAlong: Bool = false
+    @AppStorage(StorageKey.followAlongAutoAdvance) private var followAlongAutoAdvance: Bool = true
+    @AppStorage(StorageKey.followAlongLoopCount) private var followAlongLoopCount: Int = 1
+    @AppStorage(StorageKey.readerMode) private var storedMode: ReaderMode = .scroll
+    @AppStorage(StorageKey.selectedReciter) private var selectedReciter: Reciter = .alAfasy
+    @AppStorage(StorageKey.selectedTranslations) private var selectedTranslationIds: String = "en_sahih"
     @State private var showSettings = false
     @State private var showBookmarks = false
 
@@ -155,7 +155,7 @@ struct ReaderContainerView: View {
             followAlongVM.pauseTracking()
             autoScrollVM.stop()
             guard vm.hasUserScrolled else { return }
-            ReadingPositionStore(modelContext: modelContext)
+            stores!.readingPosition
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
         }
         .task {

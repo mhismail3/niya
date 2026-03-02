@@ -10,13 +10,13 @@ final class PrayerTimeService {
     var countdown: TimeInterval = 0
 
     @ObservationIgnored
-    @AppStorage("calculationMethod") private var storedMethod: String = CalculationMethod.isna.rawValue
+    @AppStorage(StorageKey.calculationMethod) private var storedMethod: String = CalculationMethod.isna.rawValue
 
     @ObservationIgnored
-    @AppStorage("asrJuristic") private var asrJuristic: Int = 1
+    @AppStorage(StorageKey.asrJuristic) private var asrJuristic: Int = 1
 
     @ObservationIgnored
-    @AppStorage("prayerNotificationsEnabled") private var notificationsEnabled: Bool = false
+    @AppStorage(StorageKey.prayerNotificationsEnabled) private var notificationsEnabled: Bool = false
 
     var calculationMethod: CalculationMethod {
         get { CalculationMethod(rawValue: storedMethod) ?? .isna }
@@ -138,7 +138,7 @@ final class PrayerTimeService {
         guard let url = URL(string: urlString) else { return }
 
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, _) = try await NetworkClient.shared.fetchRaw(from: url)
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             guard let dataObj = json?["data"] as? [String: Any],
                   let timings = dataObj["timings"] as? [String: String] else { return }
@@ -161,12 +161,12 @@ final class PrayerTimeService {
                    let localDate = formatter.date(from: localStr) {
                     let diff = abs(apiDate.timeIntervalSince(localDate)) / 60
                     if diff > 2 {
-                        print("Prayer time discrepancy for \(prayer.displayName): local=\(localStr) api=\(apiStr) diff=\(Int(diff))min")
+                        AppLogger.network.warning("Prayer time discrepancy for \(prayer.displayName): local=\(localStr) api=\(apiStr) diff=\(Int(diff))min")
                     }
                 }
             }
         } catch {
-            // Network/parsing errors are expected and silently ignored
+            // Network/parsing errors are expected — validation is best-effort
         }
     }
 

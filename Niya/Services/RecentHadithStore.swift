@@ -17,7 +17,7 @@ final class RecentHadithStore {
         } else {
             modelContext.insert(RecentHadith(collectionId: collectionId, hadithId: hadithId, hasGrades: hasGrades))
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentHadithStore save failed: \(error)") }
     }
 
     func recentHadiths(limit: Int = 20) -> [RecentHadith] {

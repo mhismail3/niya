@@ -4,9 +4,9 @@ struct SurahSearchView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(HadithDataService.self) private var hadithDataService
     @Environment(DuaDataService.self) private var duaDataService
-    @Environment(\.modelContext) private var modelContext
-    @AppStorage("selectedScript") private var script: QuranScript = .hafs
-    @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @Environment(\.stores) private var stores
+    @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
+    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @State private var searchQuery = ""
     @State private var recentQueries: [RecentSearch] = []
 
@@ -30,8 +30,7 @@ struct SurahSearchView: View {
         }
         .searchable(text: $searchQuery, prompt: "Surahs, hadiths, and duas")
         .onSubmit(of: .search) {
-            let store = RecentSearchStore(modelContext: modelContext)
-            store.saveQuery(searchQuery)
+            stores!.recentSearch.saveQuery(searchQuery)
             reloadRecents()
         }
         .onAppear { reloadRecents() }
@@ -196,7 +195,6 @@ struct SurahSearchView: View {
     }
 
     private func reloadRecents() {
-        let store = RecentSearchStore(modelContext: modelContext)
-        recentQueries = store.recentQueries()
+        recentQueries = stores!.recentSearch.recentQueries()
     }
 }

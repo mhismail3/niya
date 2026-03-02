@@ -47,19 +47,17 @@ final class TafsirService {
     }
 
     private func performFetch(edition: TafsirEdition, surahId: Int, ayahId: Int, key: String) async {
-        let url = edition.url(surahId: surahId, ayahId: ayahId)
+        guard let url = edition.url(surahId: surahId, ayahId: ayahId) else {
+            loadingKeys.remove(key)
+            failedKeys[key] = Date()
+            return
+        }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let http = response as? HTTPURLResponse,
-                  (200...299).contains(http.statusCode) else {
-                loadingKeys.remove(key)
-                failedKeys[key] = Date()
-                return
-            }
-            let decoded = try JSONDecoder().decode(TafsirEntry.self, from: data)
+            let decoded = try await NetworkClient.shared.fetch(TafsirEntry.self, from: url)
             cache[key] = decoded
             loadingKeys.remove(key)
         } catch {
+            AppLogger.network.error("Tafsir fetch failed for \(key): \(error)")
             loadingKeys.remove(key)
             failedKeys[key] = Date()
         }

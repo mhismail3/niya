@@ -11,7 +11,7 @@ struct QuranWord: Codable, Identifiable, Sendable, Hashable {
 
     var id: Int { p }
 
-    var audioURL: URL { URL(string: "https://audio.qurancdn.com/\(a)")! }
+    var audioURL: URL? { URL(string: "https://audio.qurancdn.com/\(a)") }
 
     var durationMs: Int { e - s }
 }

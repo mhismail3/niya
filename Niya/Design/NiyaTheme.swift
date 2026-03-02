@@ -22,6 +22,11 @@ struct BismillahHeaderModifier: ViewModifier {
     }
 }
 
+enum NiyaSize {
+    static let touchTarget: CGFloat = 44
+    static let sliderWidth: CGFloat = 160
+}
+
 extension View {
     func niyaCard() -> some View {
         modifier(NiyaCardModifier())

@@ -21,7 +21,7 @@ final class DuaBookmarkStore {
         } else {
             modelContext.insert(DuaBookmark(categoryId: categoryId, duaId: duaId))
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore save failed: \(error)") }
     }
 
     func allBookmarks() -> [DuaBookmark] {

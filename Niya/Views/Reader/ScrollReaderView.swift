@@ -5,7 +5,7 @@ struct ScrollReaderView: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
-    @Environment(\.modelContext) private var modelContext
+    @Environment(\.stores) private var stores
     @State private var bookmarkedAyahs: Set<Int> = []
     @State private var showTafsir = false
     @State private var tafsirAyahId: Int = 1
@@ -125,14 +125,12 @@ struct ScrollReaderView: View {
     // MARK: - Bookmarks
 
     private func loadBookmarks() {
-        let store = QuranBookmarkStore(modelContext: modelContext)
-        let all = store.allBookmarks().filter { $0.surahId == vm.surah.id }
+        let all = stores!.quranBookmarks.allBookmarks().filter { $0.surahId == vm.surah.id }
         bookmarkedAyahs = Set(all.map(\.ayahId))
     }
 
     private func toggleBookmark(_ ayahId: Int) {
-        let store = QuranBookmarkStore(modelContext: modelContext)
-        store.toggle(surahId: vm.surah.id, ayahId: ayahId)
+        stores!.quranBookmarks.toggle(surahId: vm.surah.id, ayahId: ayahId)
         if bookmarkedAyahs.contains(ayahId) {
             bookmarkedAyahs.remove(ayahId)
         } else {

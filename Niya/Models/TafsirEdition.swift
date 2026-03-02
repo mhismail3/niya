@@ -35,8 +35,8 @@ enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
         }
     }
 
-    func url(surahId: Int, ayahId: Int) -> URL {
-        URL(string: "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/\(rawValue)/\(surahId)/\(ayahId).json")!
+    func url(surahId: Int, ayahId: Int) -> URL? {
+        URL(string: "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/\(rawValue)/\(surahId)/\(ayahId).json")
     }
 }
 

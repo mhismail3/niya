@@ -1,0 +1,26 @@
+import Foundation
+
+enum StorageKey {
+    static let selectedScript = "selectedScript"
+    static let showTranslation = "showTranslation"
+    static let showTajweed = "showTajweed"
+    static let followAlong = "followAlong"
+    static let followAlongTransliteration = "followAlongTransliteration"
+    static let followAlongMeaning = "followAlongMeaning"
+    static let followAlongAutoAdvance = "followAlongAutoAdvance"
+    static let followAlongLoopCount = "followAlongLoopCount"
+    static let readerMode = "readerMode"
+    static let arabicFontSize = "arabicFontSize"
+    static let translationFontSize = "translationFontSize"
+    static let hadithArabicFontSize = "hadithArabicFontSize"
+    static let translationIsRTL = "translationIsRTL"
+    static let appearanceMode = "appearanceMode"
+    static let selectedReciter = "selectedReciter"
+    static let selectedTranslations = "selectedTranslations"
+    static let selectedTafsir = "selectedTafsir"
+    static let calculationMethod = "calculationMethod"
+    static let asrJuristic = "asrJuristic"
+    static let manualLocationData = "manualLocationData"
+    static let prayerNotificationsEnabled = "prayerNotificationsEnabled"
+    static let audioFilenameMigrated = "audioFilenameMigrated"
+}

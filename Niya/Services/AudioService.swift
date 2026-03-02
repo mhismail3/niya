@@ -26,9 +26,13 @@ final class AudioService {
     private(set) var isContinuousMode = false
 
     private var player: AVPlayer?
-    private var timeObserver: Any?
+    private var currentItem: AVPlayerItem?
     private var boundaryObserver: Any?
     private var verseTrackingObserver: Any?
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 
     var currentTimeMs: Int {
         guard let player else { return 0 }
@@ -42,7 +46,7 @@ final class AudioService {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print("[AudioService] Session config error: \(error)")
+            AppLogger.audio.error("Session config error: \(error)")
         }
 
         NotificationCenter.default.addObserver(
@@ -77,6 +81,7 @@ final class AudioService {
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
+        currentItem = item
         player = AVPlayer(playerItem: item)
 
         NotificationCenter.default.addObserver(
@@ -93,7 +98,7 @@ final class AudioService {
 
     /// Transition to a new verse without tearing down the player (keeps audio session alive in background).
     func transitionToVerse(url: URL, verseID: VerseID, surahId: Int) {
-        if let currentItem = player?.currentItem {
+        if let currentItem {
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
         }
         if let obs = boundaryObserver, let player {
@@ -105,6 +110,7 @@ final class AudioService {
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
+        currentItem = item
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(playerDidFinish),
@@ -132,6 +138,7 @@ final class AudioService {
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
+        currentItem = item
         player = AVPlayer(playerItem: item)
 
         NotificationCenter.default.addObserver(
@@ -179,6 +186,7 @@ final class AudioService {
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
+        currentItem = item
         player = AVPlayer(playerItem: item)
 
         NotificationCenter.default.addObserver(
@@ -241,6 +249,7 @@ final class AudioService {
         isLoading = true
 
         let item = AVPlayerItem(url: url)
+        currentItem = item
         player = AVPlayer(playerItem: item)
 
         NotificationCenter.default.addObserver(
@@ -302,6 +311,10 @@ final class AudioService {
             player.removeTimeObserver(obs)
         }
         verseTrackingObserver = nil
+        if let currentItem {
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
+        }
+        currentItem = nil
         player?.volume = 1.0
         player?.pause()
         player = nil
@@ -356,7 +369,7 @@ final class AudioService {
         }
 
         downloadProgress = 0
-        let (tempURL, _) = try await URLSession.shared.download(from: remote)
+        let tempURL = try await NetworkClient.shared.download(from: remote)
         try FileManager.default.moveItem(at: tempURL, to: localURL)
         downloadProgress = 1
         return localURL

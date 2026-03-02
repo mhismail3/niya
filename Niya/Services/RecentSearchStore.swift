@@ -18,7 +18,7 @@ final class RecentSearchStore {
             modelContext.delete(existing)
         }
         modelContext.insert(RecentSearch(query: trimmed))
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentSearchStore save failed: \(error)") }
     }
 
     func saveSurah(_ surahId: Int, name: String) {
@@ -27,7 +27,7 @@ final class RecentSearchStore {
             modelContext.delete(existing)
         }
         modelContext.insert(RecentSearch(query: name, surahId: surahId))
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentSearchStore save failed: \(error)") }
     }
 
     func recentQueries() -> [RecentSearch] {
@@ -44,14 +44,14 @@ final class RecentSearchStore {
 
     func delete(_ item: RecentSearch) {
         modelContext.delete(item)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentSearchStore save failed: \(error)") }
     }
 
     func clearAll() {
         for item in fetchAll() {
             modelContext.delete(item)
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentSearchStore save failed: \(error)") }
     }
 
     private func fetchAll() -> [RecentSearch] {

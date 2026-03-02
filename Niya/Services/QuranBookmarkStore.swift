@@ -25,7 +25,7 @@ final class QuranBookmarkStore {
         } else {
             modelContext.insert(QuranBookmark(surahId: surahId, ayahId: ayahId))
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("QuranBookmarkStore save failed: \(error)") }
     }
 
     func allBookmarks() -> [QuranBookmark] {

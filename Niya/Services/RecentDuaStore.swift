@@ -17,7 +17,7 @@ final class RecentDuaStore {
         } else {
             modelContext.insert(RecentDua(categoryId: categoryId, duaId: duaId))
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentDuaStore save failed: \(error)") }
     }
 
     func recentDuas(limit: Int = 20) -> [RecentDua] {

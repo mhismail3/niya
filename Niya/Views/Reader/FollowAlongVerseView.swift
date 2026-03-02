@@ -16,10 +16,10 @@ struct FollowAlongVerseView: View {
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
-    @AppStorage("followAlongTransliteration") private var showTransliteration = true
-    @AppStorage("followAlongMeaning") private var showMeaning = true
-    @AppStorage("translationFontSize") private var translationFontSize: Double = 16
-    @AppStorage("translationIsRTL") private var translationIsRTL: Bool = false
+    @AppStorage(StorageKey.followAlongTransliteration) private var showTransliteration = true
+    @AppStorage(StorageKey.followAlongMeaning) private var showMeaning = true
+    @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
+    @AppStorage(StorageKey.translationIsRTL) private var translationIsRTL: Bool = false
 
     private var isActiveVerse: Bool {
         followAlongVM.currentVerseId == verse.id && followAlongVM.currentSurahId == surahId
@@ -109,10 +109,11 @@ struct FollowAlongVerseView: View {
             }
         } label: {
             Image(systemName: isActiveVerse && followAlongVM.isPlaying ? "pause.circle.fill" : "play.circle")
-                .font(.title3)
+                .font(.niyaVerseAction)
                 .foregroundStyle(isActiveVerse ? Color.niyaGold : Color.niyaSecondary)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isActiveVerse && followAlongVM.isPlaying ? "Pause verse \(verse.id)" : "Play verse \(verse.id)")
         if isFirstVerse {
             btn.popoverTip(playVerseTip)
         } else {
@@ -124,10 +125,11 @@ struct FollowAlongVerseView: View {
     private var bookmarkButton: some View {
         let btn = Button(action: onBookmark) {
             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                .font(.title3)
+                .font(.niyaVerseAction)
                 .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isBookmarked ? "Remove bookmark, verse \(verse.id)" : "Bookmark verse \(verse.id)")
         if isFirstVerse {
             btn.popoverTip(bookmarkVerseTip)
         } else {
@@ -139,10 +141,11 @@ struct FollowAlongVerseView: View {
     private var tafsirButton: some View {
         let btn = Button(action: onTafsir) {
             Image(systemName: "text.book.closed")
-                .font(.title3)
+                .font(.niyaVerseAction)
                 .foregroundStyle(Color.niyaSecondary)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Tafsir, verse \(verse.id)")
         if isFirstVerse {
             btn.popoverTip(tafsirVerseTip)
         } else {
@@ -176,5 +179,6 @@ struct FollowAlongVerseView: View {
                 .font(.system(.caption2, design: .rounded, weight: .semibold))
                 .foregroundStyle(Color.niyaTeal)
         }
+        .accessibilityLabel("Verse \(verse.id)")
     }
 }

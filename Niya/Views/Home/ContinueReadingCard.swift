@@ -50,6 +50,8 @@ struct ContinueReadingCard: View {
             )
         )
         .shadow(color: .black.opacity(0.08), radius: 4, y: 2)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(surah.transliteration), verse \(position.lastAyahId) of \(surah.totalVerses)")
     }
 
     var progress: Double {

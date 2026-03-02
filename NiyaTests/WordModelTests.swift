@@ -27,7 +27,7 @@ struct WordModelTests {
 
     @Test func quranWordAudioURL() {
         let word = QuranWord(p: 1, t: "بِسْمِ", tr: "bis'mi", en: "In (the) name", a: "wbw/001_001_001.mp3", s: 0, e: 580)
-        #expect(word.audioURL.absoluteString == "https://audio.qurancdn.com/wbw/001_001_001.mp3")
+        #expect(word.audioURL?.absoluteString == "https://audio.qurancdn.com/wbw/001_001_001.mp3")
     }
 
     @Test func quranWordDuration() {

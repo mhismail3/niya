@@ -7,8 +7,9 @@ struct HomeView: View {
     @Environment(DuaDataService.self) private var duaDataService
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
-    @AppStorage("selectedScript") private var script: QuranScript = .hafs
-    @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @Environment(\.stores) private var stores
+    @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
+    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @State private var positions: [ReadingPosition] = []
     @State private var recentHadiths: [RecentHadith] = []
     @State private var recentDuas: [RecentDua] = []
@@ -56,21 +57,17 @@ struct HomeView: View {
         }
         .task {
             await hadithDataService.load()
-            let recents = RecentHadithStore(modelContext: modelContext).recentHadiths()
+            let recents = stores!.recentHadith.recentHadiths()
             for id in Set(recents.map(\.collectionId)) {
                 await hadithDataService.loadCollection(id)
             }
-            recentHadiths = RecentHadithStore(modelContext: modelContext).recentHadiths()
+            recentHadiths = stores!.recentHadith.recentHadiths()
         }
         .task {
             await duaDataService.load()
-            recentDuas = RecentDuaStore(modelContext: modelContext).recentDuas()
+            recentDuas = stores!.recentDua.recentDuas()
             markLoaded()
         }
-    }
-
-    private func loadQuranData() {
-        positions = ReadingPositionStore(modelContext: modelContext).recentPositions()
     }
 
     private func markLoaded() {
@@ -79,9 +76,9 @@ struct HomeView: View {
     }
 
     private func reload() {
-        positions = ReadingPositionStore(modelContext: modelContext).recentPositions()
-        recentHadiths = RecentHadithStore(modelContext: modelContext).recentHadiths()
-        recentDuas = RecentDuaStore(modelContext: modelContext).recentDuas()
+        positions = stores!.readingPosition.recentPositions()
+        recentHadiths = stores!.recentHadith.recentHadiths()
+        recentDuas = stores!.recentDua.recentDuas()
     }
 
     // MARK: - Loading Placeholder

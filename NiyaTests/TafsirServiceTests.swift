@@ -72,8 +72,8 @@ struct TafsirServiceTests {
     @Test func allEditionsGenerateValidURLs() {
         for edition in TafsirEdition.allCases {
             let url = edition.url(surahId: 1, ayahId: 1)
-            #expect(url.scheme == "https")
-            #expect(url.absoluteString.contains(edition.rawValue))
+            #expect(url?.scheme == "https")
+            #expect(url?.absoluteString.contains(edition.rawValue) == true)
         }
     }
 

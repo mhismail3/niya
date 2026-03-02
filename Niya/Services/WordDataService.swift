@@ -28,7 +28,7 @@ final class WordDataService {
             currentReciter = reciter
             isLoaded = true
         } catch {
-            print("[WordDataService] Failed to load word data: \(error)")
+            AppLogger.data.error("WordDataService load failed: \(error)")
         }
     }
 

@@ -11,7 +11,7 @@ final class LocationService: NSObject {
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
 
     @ObservationIgnored
-    @AppStorage("manualLocationData") private var manualLocationData: Data?
+    @AppStorage(StorageKey.manualLocationData) private var manualLocationData: Data?
 
     var manualLocation: UserLocation? {
         get {
@@ -41,6 +41,7 @@ final class LocationService: NSObject {
 
     @ObservationIgnored private let manager = CLLocationManager()
     @ObservationIgnored private var isUpdatingHeading = false
+    @ObservationIgnored private var lastGeocodeDate: Date?
 
     override init() {
         super.init()
@@ -103,14 +104,27 @@ extension LocationService: CLLocationManagerDelegate {
         guard let loc = locations.last else { return }
         let coord = loc.coordinate
         Task { @MainActor in
-            let geocoder = CLGeocoder()
-            let name: String
-            if let placemarks = try? await geocoder.reverseGeocodeLocation(loc),
-               let pm = placemarks.first {
-                name = [pm.locality, pm.country].compactMap { $0 }.joined(separator: ", ")
+            let shouldGeocode: Bool
+            if let last = self.lastGeocodeDate {
+                shouldGeocode = Date().timeIntervalSince(last) >= 30
             } else {
-                name = String(format: "%.2f, %.2f", coord.latitude, coord.longitude)
+                shouldGeocode = true
             }
+
+            let name: String
+            if shouldGeocode {
+                self.lastGeocodeDate = Date()
+                let geocoder = CLGeocoder()
+                if let placemarks = try? await geocoder.reverseGeocodeLocation(loc),
+                   let pm = placemarks.first {
+                    name = [pm.locality, pm.country].compactMap { $0 }.joined(separator: ", ")
+                } else {
+                    name = self.currentLocation?.name ?? String(format: "%.2f, %.2f", coord.latitude, coord.longitude)
+                }
+            } else {
+                name = self.currentLocation?.name ?? String(format: "%.2f, %.2f", coord.latitude, coord.longitude)
+            }
+
             let tzId = TimeZone.current.identifier
             self.currentLocation = UserLocation(
                 latitude: coord.latitude,

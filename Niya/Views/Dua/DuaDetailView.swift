@@ -4,9 +4,9 @@ struct DuaDetailView: View {
     let dua: Dua
     let categoryId: Int
     @Environment(DuaDataService.self) private var dataService
-    @Environment(\.modelContext) private var modelContext
-    @AppStorage("hadithArabicFontSize") private var arabicFontSize: Double = 22
-    @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @Environment(\.stores) private var stores
+    @AppStorage(StorageKey.hadithArabicFontSize) private var arabicFontSize: Double = 22
+    @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @State private var isBookmarked = false
 
     private var categoryName: String {
@@ -85,9 +85,8 @@ struct DuaDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .niyaToolbar()
         .onAppear {
-            let store = DuaBookmarkStore(modelContext: modelContext)
-            isBookmarked = store.isBookmarked(categoryId: categoryId, duaId: dua.id)
-            RecentDuaStore(modelContext: modelContext)
+            isBookmarked = stores!.duaBookmarks.isBookmarked(categoryId: categoryId, duaId: dua.id)
+            stores!.recentDua
                 .record(categoryId: categoryId, duaId: dua.id)
         }
     }
@@ -120,18 +119,17 @@ struct DuaDetailView: View {
     private var actionBar: some View {
         HStack(spacing: 24) {
             Button {
-                let store = DuaBookmarkStore(modelContext: modelContext)
-                store.toggle(categoryId: categoryId, duaId: dua.id)
+                stores!.duaBookmarks.toggle(categoryId: categoryId, duaId: dua.id)
                 isBookmarked.toggle()
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                    .font(.title3)
+                    .font(.niyaVerseAction)
                     .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
             }
 
             ShareLink(item: shareText) {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.title3)
+                    .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
 
@@ -139,7 +137,7 @@ struct DuaDetailView: View {
                 UIPasteboard.general.string = shareText
             } label: {
                 Image(systemName: "doc.on.doc")
-                    .font(.title3)
+                    .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
 

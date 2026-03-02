@@ -5,10 +5,10 @@ struct HadithDetailView: View {
     let collectionId: String
     let hasGrades: Bool
     @Environment(HadithDataService.self) private var dataService
-    @Environment(\.modelContext) private var modelContext
-    @AppStorage("selectedScript") private var script: QuranScript = .hafs
-    @AppStorage("hadithArabicFontSize") private var hadithArabicFontSize: Double = 22
-    @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @Environment(\.stores) private var stores
+    @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
+    @AppStorage(StorageKey.hadithArabicFontSize) private var hadithArabicFontSize: Double = 22
+    @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @State private var isBookmarked = false
 
     private var collectionName: String {
@@ -71,9 +71,8 @@ struct HadithDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .niyaToolbar()
         .onAppear {
-            let store = HadithBookmarkStore(modelContext: modelContext)
-            isBookmarked = store.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
-            RecentHadithStore(modelContext: modelContext)
+            isBookmarked = stores!.hadithBookmarks.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
+            stores!.recentHadith
                 .record(collectionId: collectionId, hadithId: hadith.id, hasGrades: hasGrades)
         }
     }
@@ -117,18 +116,17 @@ struct HadithDetailView: View {
     private var actionBar: some View {
         HStack(spacing: 24) {
             Button {
-                let store = HadithBookmarkStore(modelContext: modelContext)
-                store.toggle(collectionId: collectionId, hadithId: hadith.id)
+                stores!.hadithBookmarks.toggle(collectionId: collectionId, hadithId: hadith.id)
                 isBookmarked.toggle()
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                    .font(.title3)
+                    .font(.niyaVerseAction)
                     .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
             }
 
             ShareLink(item: shareText) {
                 Image(systemName: "square.and.arrow.up")
-                    .font(.title3)
+                    .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
 
@@ -136,7 +134,7 @@ struct HadithDetailView: View {
                 UIPasteboard.general.string = shareText
             } label: {
                 Image(systemName: "doc.on.doc")
-                    .font(.title3)
+                    .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
 

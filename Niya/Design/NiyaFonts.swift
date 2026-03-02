@@ -11,4 +11,5 @@ extension Font {
     static let niyaSubheadline = Font.system(.subheadline, design: .serif, weight: .medium)
     static let niyaCaption = Font.system(.caption, design: .serif, weight: .regular)
     static let niyaCaption2 = Font.system(.caption2, design: .serif, weight: .regular)
+    static let niyaVerseAction = Font.title3
 }

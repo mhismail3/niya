@@ -16,7 +16,7 @@ final class ReadingPositionStore {
         } else {
             modelContext.insert(ReadingPosition(surahId: surahId, lastAyahId: ayahId))
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { AppLogger.store.error("ReadingPositionStore save failed: \(error)") }
     }
 
     func recentPositions() -> [ReadingPosition] {

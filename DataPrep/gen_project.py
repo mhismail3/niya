@@ -40,6 +40,8 @@ SWIFT_VER    = "6.2"
 SWIFT_FILES = [
     "Niya/NiyaApp.swift",
     "Niya/ContentView.swift",
+    "Niya/AppStorageKeys.swift",
+    "Niya/NavigationCoordinator.swift",
     # Models
     "Niya/Models/QuranScript.swift",
     "Niya/Models/Surah.swift",
@@ -88,6 +90,9 @@ SWIFT_FILES = [
     "Niya/Services/PrayerTimeCalculator.swift",
     "Niya/Services/LocationService.swift",
     "Niya/Services/PrayerTimeService.swift",
+    "Niya/Services/NetworkClient.swift",
+    "Niya/Services/AppLogger.swift",
+    "Niya/Services/StoreContainer.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -123,6 +128,7 @@ SWIFT_FILES = [
     "Niya/Views/BookmarksView.swift",
     # Views/Settings
     "Niya/Views/Settings/SettingsView.swift",
+    "Niya/Views/Settings/SharedSettingsSections.swift",
     # Views/Hadith
     "Niya/Views/Hadith/HadithTabView.swift",
     "Niya/Views/Hadith/HadithCollectionCard.swift",
@@ -230,6 +236,12 @@ TEST_FILES = [
     "NiyaTests/PrayerTimeModelTests.swift",
     "NiyaTests/PrayerTimeCalculatorTests.swift",
     "NiyaTests/QiblahBearingTests.swift",
+    "NiyaTests/NavigationCoordinatorTests.swift",
+    "NiyaTests/AutoScrollViewModelTests.swift",
+    "NiyaTests/SurahListViewModelTests.swift",
+    "NiyaTests/QuranDataServiceTests.swift",
+    "NiyaTests/DuaDataServiceTests.swift",
+    "NiyaTests/NetworkClientTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -500,6 +512,8 @@ def section_pbx_group():
     niya_top_children = [
         (swift_file_ids["Niya/NiyaApp.swift"],    "NiyaApp.swift"),
         (swift_file_ids["Niya/ContentView.swift"], "ContentView.swift"),
+        (swift_file_ids["Niya/AppStorageKeys.swift"], "AppStorageKeys.swift"),
+        (swift_file_ids["Niya/NavigationCoordinator.swift"], "NavigationCoordinator.swift"),
         (ID_INFOPLIST,                              "Info.plist"),
         (SUBGROUP_IDS["Models"],                   "Models"),
         (SUBGROUP_IDS["Services"],                 "Services"),
@@ -591,6 +605,9 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/PrayerTimeCalculator.swift"], "PrayerTimeCalculator.swift"),
         (swift_file_ids["Niya/Services/LocationService.swift"], "LocationService.swift"),
         (swift_file_ids["Niya/Services/PrayerTimeService.swift"], "PrayerTimeService.swift"),
+        (swift_file_ids["Niya/Services/NetworkClient.swift"], "NetworkClient.swift"),
+        (swift_file_ids["Niya/Services/AppLogger.swift"], "AppLogger.swift"),
+        (swift_file_ids["Niya/Services/StoreContainer.swift"], "StoreContainer.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -655,6 +672,7 @@ def section_pbx_group():
     # Views/Settings
     emit_subgroup(SUBGROUP_IDS["Views/Settings"], "Settings", "Views/Settings", [
         (swift_file_ids["Niya/Views/Settings/SettingsView.swift"], "SettingsView.swift"),
+        (swift_file_ids["Niya/Views/Settings/SharedSettingsSections.swift"], "SharedSettingsSections.swift"),
     ], path_str="Settings")
 
     # Views/Hadith

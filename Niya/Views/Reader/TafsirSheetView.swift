@@ -5,7 +5,7 @@ struct TafsirSheetView: View {
     let ayahId: Int
     let surahName: String
     @Environment(TafsirService.self) private var tafsirService
-    @AppStorage("selectedTafsir") private var selectedEdition: TafsirEdition = .ibnKathir
+    @AppStorage(StorageKey.selectedTafsir) private var selectedEdition: TafsirEdition = .ibnKathir
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

@@ -76,7 +76,7 @@ final class FollowAlongViewModel {
         seekingToStart = false
         isPlaying = true
 
-        let url = URL(string: verseData.au)!
+        guard let url = URL(string: verseData.au) else { return }
         audioService.playWithSeek(url: url, seekMs: verseData.vs, rate: playbackSpeed)
 
         updateNowPlaying()
@@ -149,7 +149,8 @@ final class FollowAlongViewModel {
         tappedWordPosition = word.p
         tappedVerseId = verseId
 
-        let item = AVPlayerItem(url: word.audioURL)
+        guard let audioURL = word.audioURL else { return }
+        let item = AVPlayerItem(url: audioURL)
         let player = AVPlayer(playerItem: item)
         wordPlayer = player
 
@@ -227,7 +228,7 @@ final class FollowAlongViewModel {
                     if timeMs < verseData.ve {
                         self.seekingToStart = false
                     } else {
-                        try? await Task.sleep(for: .milliseconds(10))
+                        try? await Task.sleep(for: .milliseconds(30))
                         continue
                     }
                 }
@@ -242,7 +243,7 @@ final class FollowAlongViewModel {
                     self.currentWordIndex = idx
                 }
 
-                try? await Task.sleep(for: .milliseconds(10))
+                try? await Task.sleep(for: .milliseconds(30))
             }
         }
     }

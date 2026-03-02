@@ -33,13 +33,7 @@ final class TajweedService {
         let urlString = "https://api.qurani.ai/gw/qh/v1/surah/\(surahId)/quran-tajweed"
         guard let url = URL(string: urlString) else { return }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let http = response as? HTTPURLResponse,
-                  (200...299).contains(http.statusCode) else {
-                loadingSurahs.remove(surahId)
-                failedSurahs[surahId] = Date()
-                return
-            }
+            let (data, _) = try await NetworkClient.shared.fetchRaw(from: url)
             let decoded = try JSONDecoder().decode(TajweedSurahResponse.self, from: data)
             var surahCache: [Int: TajweedVerse] = [:]
             for ayah in decoded.data.ayahs {
@@ -49,6 +43,7 @@ final class TajweedService {
             cache[surahId] = surahCache
             loadingSurahs.remove(surahId)
         } catch {
+            AppLogger.network.error("Tajweed fetch failed for surah \(surahId): \(error)")
             loadingSurahs.remove(surahId)
             failedSurahs[surahId] = Date()
         }
