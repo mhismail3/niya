@@ -2,7 +2,6 @@ import Foundation
 
 enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
     case ibnKathir = "en-tafisr-ibn-kathir"
-    case jalalayn = "en-al-jalalayn"
     case maarifUlQuran = "en-tafsir-maarif-ul-quran"
     case ibnAbbas = "en-tafsir-ibn-abbas"
     case tazkirulQuran = "en-tazkirul-quran"
@@ -12,7 +11,6 @@ enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
     var displayName: String {
         switch self {
         case .ibnKathir: return "Ibn Kathir"
-        case .jalalayn: return "Jalalayn"
         case .maarifUlQuran: return "Ma'ariful Quran"
         case .ibnAbbas: return "Ibn Abbas"
         case .tazkirulQuran: return "Tazkirul Quran"
@@ -22,7 +20,6 @@ enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
     var author: String {
         switch self {
         case .ibnKathir: return "Isma'il ibn Kathir"
-        case .jalalayn: return "Al-Mahalli & Al-Suyuti"
         case .maarifUlQuran: return "Mufti Muhammad Shafi"
         case .ibnAbbas: return "Abdullah ibn Abbas"
         case .tazkirulQuran: return "Wahiduddin Khan"
@@ -32,7 +29,6 @@ enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
     var subtitle: String {
         switch self {
         case .ibnKathir: return "Classical comprehensive commentary"
-        case .jalalayn: return "Concise dual-author commentary"
         case .maarifUlQuran: return "Hanafi scholarly commentary"
         case .ibnAbbas: return "Companion-era commentary"
         case .tazkirulQuran: return "Modern reflective commentary"

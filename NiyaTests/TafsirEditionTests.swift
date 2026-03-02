@@ -28,8 +28,8 @@ struct TafsirEditionTests {
         let url = TafsirEdition.ibnKathir.url(surahId: 2, ayahId: 255)
         #expect(url.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-tafisr-ibn-kathir/2/255.json")
 
-        let url2 = TafsirEdition.jalalayn.url(surahId: 2, ayahId: 255)
-        #expect(url2.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-al-jalalayn/2/255.json")
+        let url2 = TafsirEdition.maarifUlQuran.url(surahId: 2, ayahId: 255)
+        #expect(url2.absoluteString == "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/en-tafsir-maarif-ul-quran/2/255.json")
     }
 
     @Test func urlBoundaryValues() {
@@ -56,7 +56,7 @@ struct TafsirEditionTests {
     }
 
     @Test func allCasesCount() {
-        #expect(TafsirEdition.allCases.count == 5)
+        #expect(TafsirEdition.allCases.count == 4)
     }
 
     @Test func rawValuesUnique() {

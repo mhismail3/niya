@@ -31,11 +31,11 @@ struct TafsirServiceTests {
     @Test func differentEditionsSameSurahAyah() {
         let service = TafsirService()
         let entry1 = TafsirEntry(surah: 1, ayah: 1, text: "Ibn Kathir text")
-        let entry2 = TafsirEntry(surah: 1, ayah: 1, text: "Jalalayn text")
+        let entry2 = TafsirEntry(surah: 1, ayah: 1, text: "Ma'ariful Quran text")
         service.insertEntry(entry1, edition: .ibnKathir, surahId: 1, ayahId: 1)
-        service.insertEntry(entry2, edition: .jalalayn, surahId: 1, ayahId: 1)
+        service.insertEntry(entry2, edition: .maarifUlQuran, surahId: 1, ayahId: 1)
         #expect(service.entry(edition: .ibnKathir, surahId: 1, ayahId: 1)?.text == "Ibn Kathir text")
-        #expect(service.entry(edition: .jalalayn, surahId: 1, ayahId: 1)?.text == "Jalalayn text")
+        #expect(service.entry(edition: .maarifUlQuran, surahId: 1, ayahId: 1)?.text == "Ma'ariful Quran text")
     }
 
     @Test func sameSurahDifferentAyah() {
@@ -84,8 +84,8 @@ struct TafsirServiceTests {
 
     @Test func concurrentFetchesSameKey() {
         let service = TafsirService()
-        service.fetch(edition: .jalalayn, surahId: 1, ayahId: 1)
-        service.fetch(edition: .jalalayn, surahId: 1, ayahId: 1)
-        service.fetch(edition: .jalalayn, surahId: 1, ayahId: 1)
+        service.fetch(edition: .ibnAbbas, surahId: 1, ayahId: 1)
+        service.fetch(edition: .ibnAbbas, surahId: 1, ayahId: 1)
+        service.fetch(edition: .ibnAbbas, surahId: 1, ayahId: 1)
     }
 }
