@@ -4,6 +4,12 @@ import UserNotifications
 struct SettingsView: View {
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
+    @AppStorage("showTajweed") private var showTajweed: Bool = true
+    @AppStorage("followAlong") private var followAlong: Bool = false
+    @AppStorage("followAlongTransliteration") private var followAlongTransliteration: Bool = true
+    @AppStorage("followAlongMeaning") private var followAlongMeaning: Bool = true
+    @AppStorage("followAlongAutoAdvance") private var followAlongAutoAdvance: Bool = true
+    @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
     @AppStorage("readerMode") private var mode: ReaderMode = .scroll
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
@@ -28,13 +34,14 @@ struct SettingsView: View {
                             }
                         }
                         .pickerStyle(.segmented)
-                        .fixedSize()
+                        .frame(width: 180)
                     }
                     Picker("Script", selection: $script) {
                         ForEach(QuranScript.allCases) { s in
                             Text(s.displayName).tag(s)
                         }
                     }
+                    .tint(Color.niyaTeal)
                     Toggle("Show Translation", isOn: $showTranslation)
                         .tint(Color.niyaTeal)
                     if showTranslation {
@@ -43,20 +50,55 @@ struct SettingsView: View {
                         } label: {
                             LabeledContent("Translations") {
                                 Text(translationSummary)
-                                    .foregroundStyle(Color.niyaSecondary)
+                                    .foregroundStyle(Color.niyaTeal)
                                     .lineLimit(1)
                             }
                         }
                     }
+                    Toggle("Tajweed Colors", isOn: $showTajweed)
+                        .tint(Color.niyaTeal)
+                        .disabled(script != .hafs)
+                    if script != .hafs {
+                        Text("Available for Uthmanic Hafs only")
+                            .font(.caption)
+                            .foregroundStyle(Color.niyaSecondary)
+                    }
+                }
+
+                Section("Word-by-Word") {
+                    Toggle("Word-by-Word Mode", isOn: $followAlong)
+                        .tint(Color.niyaTeal)
+                        .disabled(script != .hafs)
+                    if followAlong && script == .hafs {
+                        Toggle("Transliteration", isOn: $followAlongTransliteration)
+                            .tint(Color.niyaTeal)
+                        Toggle("Word Meanings", isOn: $followAlongMeaning)
+                            .tint(Color.niyaTeal)
+                    }
+                    if script != .hafs {
+                        Text("Available for Uthmanic Hafs only")
+                            .font(.caption)
+                            .foregroundStyle(Color.niyaSecondary)
+                    }
                 }
 
                 Section("Quran Font Size") {
-                    LabeledContent("Arabic — \(Int(arabicFontSize))") {
+                    HStack {
+                        Text("Arabic")
+                        Spacer()
+                        Text("\(Int(arabicFontSize))")
+                            .foregroundStyle(Color.niyaTeal)
+                            .monospacedDigit()
                         Slider(value: $arabicFontSize, in: 20...40, step: 1)
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
                     }
-                    LabeledContent("Translation — \(Int(translationFontSize))") {
+                    HStack {
+                        Text("Translation")
+                        Spacer()
+                        Text("\(Int(translationFontSize))")
+                            .foregroundStyle(Color.niyaTeal)
+                            .monospacedDigit()
                         Slider(value: $translationFontSize, in: 12...24, step: 1)
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
@@ -64,7 +106,12 @@ struct SettingsView: View {
                 }
 
                 Section("Hadith Font Size") {
-                    LabeledContent("Arabic — \(Int(hadithArabicFontSize))") {
+                    HStack {
+                        Text("Arabic")
+                        Spacer()
+                        Text("\(Int(hadithArabicFontSize))")
+                            .foregroundStyle(Color.niyaTeal)
+                            .monospacedDigit()
                         Slider(value: $hadithArabicFontSize, in: 16...36, step: 1)
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
@@ -85,6 +132,15 @@ struct SettingsView: View {
                         ForEach(Reciter.allCases) { r in
                             Text(r.displayName).tag(r)
                         }
+                    }
+                    .tint(Color.niyaTeal)
+                    Toggle("Auto-advance", isOn: $followAlongAutoAdvance)
+                        .tint(Color.niyaTeal)
+                    Picker("Repeat", selection: $followAlongLoopCount) {
+                        Text("1x").tag(1)
+                        Text("2x").tag(2)
+                        Text("3x").tag(3)
+                        Text("5x").tag(5)
                     }
                 }
 
@@ -147,7 +203,7 @@ struct SettingsView: View {
             } label: {
                 LabeledContent("Location") {
                     Text(locationService.effectiveLocation?.name ?? "Not Set")
-                        .foregroundStyle(Color.niyaSecondary)
+                        .foregroundStyle(Color.niyaTeal)
                 }
             }
 

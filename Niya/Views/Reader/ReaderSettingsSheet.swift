@@ -1,8 +1,12 @@
 import SwiftUI
+import UserNotifications
 
 struct ReaderSettingsSheet: View {
     @Bindable var vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(QuranDataService.self) private var dataService
+    @Environment(LocationService.self) private var locationService
+    @Environment(PrayerTimeService.self) private var prayerTimeService
     @AppStorage("selectedScript") private var script: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
     @AppStorage("showTajweed") private var showTajweed: Bool = true
@@ -13,9 +17,11 @@ struct ReaderSettingsSheet: View {
     @AppStorage("followAlongLoopCount") private var followAlongLoopCount: Int = 1
     @AppStorage("arabicFontSize") private var arabicFontSize: Double = 28
     @AppStorage("translationFontSize") private var translationFontSize: Double = 16
+    @AppStorage("hadithArabicFontSize") private var hadithArabicFontSize: Double = 22
     @AppStorage("appearanceMode") private var appearanceMode: Int = 0
     @AppStorage("selectedReciter") private var selectedReciter: Reciter = .alAfasy
-    @Environment(QuranDataService.self) private var dataService
+    @AppStorage("prayerNotificationsEnabled") private var prayerNotifications: Bool = false
+    @State private var showNotificationDeniedAlert = false
 
     var body: some View {
         NavigationStack {
@@ -76,7 +82,7 @@ struct ReaderSettingsSheet: View {
                     }
                 }
 
-                Section("Font Size") {
+                Section("Quran Font Size") {
                     HStack {
                         Text("Arabic")
                         Spacer()
@@ -94,6 +100,19 @@ struct ReaderSettingsSheet: View {
                             .foregroundStyle(Color.niyaTeal)
                             .monospacedDigit()
                         Slider(value: $translationFontSize, in: 12...24, step: 1)
+                            .frame(width: 160)
+                            .tint(Color.niyaTeal)
+                    }
+                }
+
+                Section("Hadith Font Size") {
+                    HStack {
+                        Text("Arabic")
+                        Spacer()
+                        Text("\(Int(hadithArabicFontSize))")
+                            .foregroundStyle(Color.niyaTeal)
+                            .monospacedDigit()
+                        Slider(value: $hadithArabicFontSize, in: 16...36, step: 1)
                             .frame(width: 160)
                             .tint(Color.niyaTeal)
                     }
@@ -125,6 +144,8 @@ struct ReaderSettingsSheet: View {
                     }
                     downloadRow
                 }
+
+                prayerTimesSection
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -162,6 +183,86 @@ struct ReaderSettingsSheet: View {
                 }
             }
             .disabled(isDownloading)
+        }
+    }
+
+    @ViewBuilder
+    private var prayerTimesSection: some View {
+        Section("Prayer Times") {
+            Picker("Calculation Method", selection: Binding(
+                get: { prayerTimeService.calculationMethod },
+                set: { newMethod in
+                    prayerTimeService.calculationMethod = newMethod
+                    if let loc = locationService.effectiveLocation {
+                        prayerTimeService.recalculate(location: loc)
+                    }
+                }
+            )) {
+                ForEach(CalculationMethod.allCases) { m in
+                    Text(m.displayName).tag(m)
+                }
+            }
+            .pickerStyle(.navigationLink)
+
+            Picker("Asr Juristic Method", selection: Binding(
+                get: { UserDefaults.standard.integer(forKey: "asrJuristic") == 2 ? 2 : 1 },
+                set: { newValue in
+                    UserDefaults.standard.set(newValue, forKey: "asrJuristic")
+                    if let loc = locationService.effectiveLocation {
+                        prayerTimeService.recalculate(location: loc)
+                    }
+                }
+            )) {
+                Text("Shafi'i / Standard").tag(1)
+                Text("Hanafi").tag(2)
+            }
+
+            NavigationLink {
+                LocationPickerView()
+            } label: {
+                LabeledContent("Location") {
+                    Text(locationService.effectiveLocation?.name ?? "Not Set")
+                        .foregroundStyle(Color.niyaTeal)
+                }
+            }
+
+            Toggle("Prayer Notifications", isOn: $prayerNotifications)
+                .tint(Color.niyaTeal)
+                .onChange(of: prayerNotifications) { _, enabled in
+                    if enabled {
+                        Task {
+                            let center = UNUserNotificationCenter.current()
+                            let settings = await center.notificationSettings()
+                            if settings.authorizationStatus == .denied {
+                                prayerNotifications = false
+                                showNotificationDeniedAlert = true
+                            } else if settings.authorizationStatus == .notDetermined {
+                                let granted = try? await center.requestAuthorization(options: [.alert, .sound])
+                                if granted != true {
+                                    prayerNotifications = false
+                                    return
+                                }
+                                if let loc = locationService.effectiveLocation {
+                                    prayerTimeService.recalculate(location: loc)
+                                }
+                            } else {
+                                if let loc = locationService.effectiveLocation {
+                                    prayerTimeService.recalculate(location: loc)
+                                }
+                            }
+                        }
+                    } else {
+                        prayerTimeService.cancelNotifications()
+                    }
+                }
+                .alert("Notifications Disabled", isPresented: $showNotificationDeniedAlert) {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        Link("Open Settings", destination: url)
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Enable notifications in Settings to receive prayer time alerts.")
+                }
         }
     }
 }
