@@ -32,12 +32,12 @@
     "filename": "translation_fr_hamidullah.json"
   },
   {
-    "id": "es_cortes",
+    "id": "es_abboud",
     "language": "es",
     "languageName": "Spanish",
-    "name": "Julio Cortes",
-    "author": "Julio Cortes",
-    "filename": "translation_es_cortes.json"
+    "name": "Abboud & Castellanos",
+    "author": "Ahmad Abboud & Rafael Castellanos",
+    "filename": "translation_es_abboud.json"
   },
   {
     "id": "tr_diyanet",

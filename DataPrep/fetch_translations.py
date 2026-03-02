@@ -10,7 +10,7 @@ EDITIONS = [
     ("en.itani",      "en_clearquran", "en", "English",    "The Clear Quran",            "Talal Itani"),
     ("en.hilali",     "en_hilali",     "en", "English",    "Al-Hilali & Khan",           "Muhammad Taqi-ud-Din al-Hilali and Muhammad Muhsin Khan"),
     ("fr.hamidullah", "fr_hamidullah", "fr", "French",     "Muhammad Hamidullah",        "Muhammad Hamidullah"),
-    ("es.cortes",     "es_cortes",     "es", "Spanish",    "Julio Cortes",               "Julio Cortes"),
+    ("es.abboud",     "es_abboud",     "es", "Spanish",    "Abboud & Castellanos",       "Ahmad Abboud & Rafael Castellanos"),
     ("tr.diyanet",    "tr_diyanet",    "tr", "Turkish",    "Diyanet Isleri",             "Diyanet Isleri Baskanligi"),
     ("ur.maududi",    "ur_maududi",    "ur", "Urdu",       "Syed Abul Aala Maududi",    "Syed Abul Aala Maududi"),
     ("id.indonesian", "id_indonesian", "id", "Indonesian", "Kemenag",                    "Indonesian Ministry of Religious Affairs"),
@@ -19,6 +19,7 @@ EDITIONS = [
     ("ru.kuliev",     "ru_kuliev",     "ru", "Russian",    "Elmir Kuliev",               "Elmir Kuliev"),
     ("ms.basmeih",    "ms_basmeih",    "ms", "Malay",      "Abdullah Basmeih",           "Abdullah Muhammad Basmeih"),
     ("zh.jian",       "zh_jian",       "zh", "Chinese",    "Ma Jian",                    "Ma Jian"),
+    ("my.ghazi",      "my_ghazi",      "my", "Burmese",    "Ghazi Muhammed Hashim",      "Ghazi Muhammed Hashim"),
 ]
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output", "translations")
