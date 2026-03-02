@@ -48,12 +48,12 @@
     "filename": "translation_tr_diyanet.json"
   },
   {
-    "id": "ur_jalandhry",
+    "id": "ur_maududi",
     "language": "ur",
     "languageName": "Urdu",
-    "name": "Fateh Muhammad Jalandhry",
-    "author": "Fateh Muhammad Jalandhry",
-    "filename": "translation_ur_jalandhry.json"
+    "name": "Syed Abul Aala Maududi",
+    "author": "Syed Abul Aala Maududi",
+    "filename": "translation_ur_maududi.json"
   },
   {
     "id": "id_indonesian",

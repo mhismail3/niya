@@ -187,7 +187,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/translation_fr_hamidullah.json",
     "Niya/Resources/Data/translation_es_cortes.json",
     "Niya/Resources/Data/translation_tr_diyanet.json",
-    "Niya/Resources/Data/translation_ur_jalandhry.json",
+    "Niya/Resources/Data/translation_ur_maududi.json",
     "Niya/Resources/Data/translation_id_indonesian.json",
     "Niya/Resources/Data/translation_bn_bengali.json",
     "Niya/Resources/Data/translation_de_bubenheim.json",
@@ -717,7 +717,7 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Data/translations_index.json"], "translations_index.json"),
     ]
     for tid in ["en_sahih", "en_clearquran", "en_hilali", "fr_hamidullah",
-                 "es_cortes", "tr_diyanet", "ur_jalandhry", "id_indonesian",
+                 "es_cortes", "tr_diyanet", "ur_maududi", "id_indonesian",
                  "bn_bengali", "de_bubenheim", "ru_kuliev", "ms_basmeih", "zh_jian"]:
         fname = f"translation_{tid}.json"
         data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))

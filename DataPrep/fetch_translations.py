@@ -12,7 +12,7 @@ EDITIONS = [
     ("fr.hamidullah", "fr_hamidullah", "fr", "French",     "Muhammad Hamidullah",        "Muhammad Hamidullah"),
     ("es.cortes",     "es_cortes",     "es", "Spanish",    "Julio Cortes",               "Julio Cortes"),
     ("tr.diyanet",    "tr_diyanet",    "tr", "Turkish",    "Diyanet Isleri",             "Diyanet Isleri Baskanligi"),
-    ("ur.jalandhry",  "ur_jalandhry",  "ur", "Urdu",       "Fateh Muhammad Jalandhry",   "Fateh Muhammad Jalandhry"),
+    ("ur.maududi",    "ur_maududi",    "ur", "Urdu",       "Syed Abul Aala Maududi",    "Syed Abul Aala Maududi"),
     ("id.indonesian", "id_indonesian", "id", "Indonesian", "Kemenag",                    "Indonesian Ministry of Religious Affairs"),
     ("bn.bengali",    "bn_bengali",    "bn", "Bengali",    "Muhiuddin Khan",             "Muhiuddin Khan"),
     ("de.bubenheim",  "de_bubenheim",  "de", "German",     "Bubenheim & Elyas",          "A. S. F. Bubenheim and N. Elyas"),
