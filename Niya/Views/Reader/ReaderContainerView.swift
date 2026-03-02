@@ -49,19 +49,24 @@ struct ReaderContainerView: View {
                 .popoverTip(bookmarkToolbarTip)
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
-                if storedScript == .hafs {
-                    Button {
-                        followAlong.toggle()
-                        if followAlong {
-                            Task { await wordDataService.load(reciter: selectedReciter) }
-                        } else {
-                            followAlongVM.stopTracking()
+                Menu {
+                    if storedScript == .hafs {
+                        Button {
+                            followAlong.toggle()
+                            if followAlong {
+                                Task { await wordDataService.load(reciter: selectedReciter) }
+                            } else {
+                                followAlongVM.stopTracking()
+                            }
+                        } label: {
+                            Label(
+                                followAlong ? "Disable Follow Along" : "Follow Along",
+                                systemImage: followAlong ? "text.word.spacing" : "text.word.spacing"
+                            )
                         }
-                    } label: {
-                        Image(systemName: "text.word.spacing")
-                            .foregroundStyle(followAlong ? Color.niyaGold : Color.niyaSecondary)
                     }
-                    .popoverTip(followAlongToolbarTip)
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease")
                 }
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
