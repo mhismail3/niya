@@ -126,6 +126,7 @@ struct DuaNavDestination: Hashable {
 @MainActor
 final class NavigationCoordinator {
     var selectedTab: String = "home"
+    var isReaderVisible = false
     var pendingQuranDestination: QuranNavDestination?
     var pendingHadithDestination: HadithNavDestination?
     var pendingDuaDestination: DuaNavDestination?

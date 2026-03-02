@@ -102,6 +102,25 @@ final class FollowAlongViewModel {
         clearNowPlaying()
     }
 
+    func pauseTracking() {
+        trackingTask?.cancel()
+        trackingTask = nil
+        tappedWordPosition = nil
+        tappedVerseId = nil
+        if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
+        tapObserver = nil
+        wordPlayer?.pause()
+        wordPlayer = nil
+    }
+
+    func resumeTracking() {
+        guard audioService.isPlaying || audioService.isFollowAlongActive,
+              currentSurahId != nil, currentVerseId != nil else { return }
+        currentWordIndex = nil
+        isPlaying = audioService.isPlaying
+        startWordTracking()
+    }
+
     func togglePlayPause() {
         guard isPlaying || currentVerseId != nil else { return }
         audioService.togglePause()

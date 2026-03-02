@@ -124,7 +124,8 @@ final class AudioPlayerViewModel {
     var currentVerseID: VerseID? { audioService.currentVerseID }
     var currentSurahId: Int? { audioService.currentSurahId }
     var downloadProgress: Double { audioService.downloadProgress }
-    var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil }
+    var isFollowAlongActive: Bool { audioService.isFollowAlongActive }
+    var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil || audioService.isFollowAlongActive }
 
     func playVerse(surahId: Int, ayahId: Int) {
         currentLoop = 0

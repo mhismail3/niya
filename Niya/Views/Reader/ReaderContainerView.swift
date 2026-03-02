@@ -7,6 +7,7 @@ struct ReaderContainerView: View {
     @Environment(TajweedService.self) private var tajweedService
     @Environment(WordDataService.self) private var wordDataService
     @Environment(FollowAlongViewModel.self) private var followAlongVM
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
     @AppStorage("selectedScript") private var storedScript: QuranScript = .hafs
     @AppStorage("showTranslation") private var showTranslation: Bool = true
@@ -19,7 +20,6 @@ struct ReaderContainerView: View {
     @AppStorage("selectedTranslation") private var selectedTranslationId: String = "en_sahih"
     @State private var showSettings = false
     @State private var showBookmarks = false
-    @State private var showSalah = false
 
     private let bookmarkToolbarTip = BookmarkToolbarTip()
     private let followAlongToolbarTip = FollowAlongToolbarTip()
@@ -50,11 +50,6 @@ struct ReaderContainerView: View {
                     Image(systemName: "bookmark")
                 }
                 .popoverTip(bookmarkToolbarTip)
-            }
-            ToolbarItem(placement: .topBarLeading) {
-                Button { showSalah = true } label: {
-                    Image(systemName: "location.circle")
-                }
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
                 if storedScript == .hafs {
@@ -88,11 +83,9 @@ struct ReaderContainerView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(isPresented: $showSalah) {
-            SalahSheetView()
-        }
         .background(Color.niyaBackground)
         .onAppear {
+            coordinator.isReaderVisible = true
             vm.mode = storedMode
             vm.load()
             audioPlayerVM.autoAdvance = followAlongAutoAdvance
@@ -102,6 +95,10 @@ struct ReaderContainerView: View {
             }
             if followAlong && storedScript == .hafs || !selectedReciter.hasPerVerseAudio {
                 Task { await wordDataService.load(reciter: selectedReciter) }
+            }
+            if followAlong && audioPlayerVM.hasActiveSession,
+               followAlongVM.currentSurahId == vm.surah.id {
+                followAlongVM.resumeTracking()
             }
         }
         .onChange(of: storedScript) { _, newScript in
@@ -134,7 +131,8 @@ struct ReaderContainerView: View {
             vm.reloadTranslation()
         }
         .onDisappear {
-            followAlongVM.stopTracking()
+            coordinator.isReaderVisible = false
+            followAlongVM.pauseTracking()
             guard vm.hasUserScrolled else { return }
             ReadingPositionStore(modelContext: modelContext)
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)

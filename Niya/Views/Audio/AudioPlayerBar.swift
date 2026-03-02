@@ -2,6 +2,8 @@ import SwiftUI
 
 struct AudioPlayerBar: View {
     @Environment(AudioPlayerViewModel.self) private var vm
+    @Environment(FollowAlongViewModel.self) private var followAlongVM
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.modelContext) private var modelContext
     @State private var isBookmarked = false
 
@@ -66,14 +68,36 @@ struct AudioPlayerBar: View {
             .disabled(!isVerseMode)
             .opacity(isVerseMode ? 1 : 0.3)
 
-            Button(action: { vm.stop() }) {
-                Image(systemName: "xmark")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(Color.niyaSecondary)
-                    .padding(8)
-                    .background(Color.niyaSecondary.opacity(0.15), in: .circle)
+            if coordinator.isReaderVisible {
+                Button(action: {
+                    followAlongVM.stopTracking()
+                    vm.stop()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.niyaSecondary)
+                        .padding(8)
+                        .background(Color.niyaSecondary.opacity(0.15), in: .circle)
+                }
+                .buttonStyle(.plain)
+            } else {
+                Button {
+                    let surahId = vm.currentVerseID?.surahId
+                        ?? followAlongVM.currentSurahId
+                        ?? vm.currentSurahId ?? 1
+                    let ayahId = vm.currentVerseID?.ayahId
+                        ?? followAlongVM.currentVerseId
+                        ?? 1
+                    coordinator.navigateToAyah(surahId: surahId, ayahId: ayahId)
+                } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color.niyaTeal)
+                        .padding(8)
+                        .background(Color.niyaTeal.opacity(0.15), in: .circle)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 8)
