@@ -36,12 +36,22 @@ struct SettingsView: View {
                         .pickerStyle(.segmented)
                         .frame(width: 180)
                     }
-                    Picker("Script", selection: $script) {
-                        ForEach(QuranScript.allCases) { s in
-                            Text(s.displayName).tag(s)
+                    LabeledContent("Script") {
+                        Menu {
+                            Picker("Script", selection: $script) {
+                                ForEach(QuranScript.allCases) { s in
+                                    Text(s.displayName).tag(s)
+                                }
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(script.displayName)
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.caption2)
+                            }
+                            .foregroundStyle(Color.niyaTeal)
                         }
                     }
-                    .tint(Color.niyaTeal)
                     Toggle("Show Translation", isOn: $showTranslation)
                         .tint(Color.niyaTeal)
                     if showTranslation {
@@ -187,6 +197,7 @@ struct SettingsView: View {
                 }
             }
             .pickerStyle(.navigationLink)
+            .tint(Color.niyaTeal)
 
             Picker("Asr Juristic Method", selection: Binding(
                 get: { UserDefaults.standard.integer(forKey: "asrJuristic") == 2 ? 2 : 1 },
