@@ -3,15 +3,27 @@ import SwiftUI
 struct PrayerTimesListView: View {
     let times: DailyPrayerTimes
     let timeZone: TimeZone
+    var locationName: String = ""
     var showAll: Bool = true
     var compact: Bool = false
 
     private var now: Date { Date() }
 
+    private var currentPrayer: PrayerName? {
+        let actual = times.times.filter { $0.prayer.isActualPrayer }
+        for (i, pt) in actual.enumerated() {
+            let nextTime = i + 1 < actual.count ? actual[i + 1].time : nil
+            if pt.time <= now && (nextTime == nil || now < nextTime!) {
+                return pt.prayer
+            }
+        }
+        return nil
+    }
+
     var body: some View {
         VStack(spacing: compact ? 6 : 10) {
             if showAll {
-                hijriDateHeader
+                dateLocationHeader
             }
 
             ForEach(displayTimes, id: \.prayer) { pt in
@@ -41,20 +53,31 @@ struct PrayerTimesListView: View {
         pt.time > now
     }
 
+    private func isCurrent(_ pt: PrayerTime) -> Bool {
+        pt.prayer == currentPrayer
+    }
+
     private func hasPassed(_ pt: PrayerTime) -> Bool {
-        pt.time <= now
+        pt.time <= now && !isCurrent(pt)
+    }
+
+    private func rowColor(_ pt: PrayerTime) -> Color {
+        if isCurrent(pt) { return Color.niyaGold }
+        if isNext(pt) { return Color.niyaTeal }
+        if hasPassed(pt) { return Color.niyaSecondary }
+        return Color.niyaText
     }
 
     private func prayerRow(_ pt: PrayerTime) -> some View {
         HStack {
             Image(systemName: pt.prayer.icon)
                 .frame(width: 24)
-                .foregroundStyle(isNext(pt) ? Color.niyaTeal : hasPassed(pt) ? Color.niyaSecondary : Color.niyaText)
+                .foregroundStyle(rowColor(pt))
 
             Text(pt.prayer.displayName)
                 .font(compact ? .niyaCaption : .niyaBody)
-                .fontWeight(isNext(pt) ? .semibold : .regular)
-                .foregroundStyle(isNext(pt) ? Color.niyaTeal : hasPassed(pt) ? Color.niyaSecondary : Color.niyaText)
+                .fontWeight(isCurrent(pt) || isNext(pt) ? .semibold : .regular)
+                .foregroundStyle(rowColor(pt))
 
             Spacer()
 
@@ -62,26 +85,35 @@ struct PrayerTimesListView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.caption)
                     .foregroundStyle(Color.niyaSecondary)
+            } else if isCurrent(pt) {
+                Text("Now")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(Color.niyaGold)
             }
 
             Text(formattedTime(pt.time))
                 .font(compact ? .niyaCaption : .niyaBody)
                 .monospacedDigit()
-                .foregroundStyle(isNext(pt) ? Color.niyaTeal : hasPassed(pt) ? Color.niyaSecondary : Color.niyaText)
+                .foregroundStyle(rowColor(pt))
         }
         .padding(.vertical, compact ? 2 : 4)
     }
 
-    private var hijriDateHeader: some View {
+    private var dateLocationHeader: some View {
         Group {
             let hijriCal = Calendar(identifier: .islamicUmmAlQura)
             let comps = hijriCal.dateComponents([.year, .month, .day], from: now)
-            let formatter = DateFormatter()
-            let _ = { formatter.calendar = hijriCal; formatter.dateFormat = "d MMMM yyyy" }()
             if let y = comps.year, let m = comps.month, let d = comps.day {
-                Text(hijriDateString(year: y, month: m, day: d))
-                    .font(.niyaCaption)
-                    .foregroundStyle(Color.niyaSecondary)
+                HStack {
+                    Text(hijriDateString(year: y, month: m, day: d))
+                    if !locationName.isEmpty {
+                        Spacer()
+                        Text(locationName)
+                    }
+                }
+                .font(.niyaCaption)
+                .foregroundStyle(Color.niyaSecondary)
             }
         }
     }

@@ -5,7 +5,7 @@ struct QiblahCompassView: View {
     let heading: Double
     let headingAvailable: Bool
     let needsCalibration: Bool
-    var compact: Bool = false
+    var compassSize: CGFloat = 260
 
     private var compassRotation: Double {
         -heading
@@ -15,12 +15,16 @@ struct QiblahCompassView: View {
         bearing
     }
 
-    private var compassSize: CGFloat {
-        compact ? 160 : 260
+    private var arrowSize: CGFloat {
+        compassSize * 0.108
+    }
+
+    private var kaabaSize: CGFloat {
+        compassSize * 0.09
     }
 
     var body: some View {
-        VStack(spacing: compact ? 8 : 16) {
+        VStack(spacing: 16) {
             if !headingAvailable {
                 staticCompass
             } else if needsCalibration {
@@ -38,12 +42,10 @@ struct QiblahCompassView: View {
 
     private var compassDial: some View {
         ZStack {
-            // Compass ring
             Circle()
                 .stroke(Color.niyaSecondary.opacity(0.3), lineWidth: 2)
                 .frame(width: compassSize, height: compassSize)
 
-            // Direction markers
             ForEach(0..<36, id: \.self) { i in
                 let angle = Double(i) * 10
                 let isMajor = i % 9 == 0
@@ -54,23 +56,20 @@ struct QiblahCompassView: View {
                     .rotationEffect(.degrees(angle))
             }
 
-            // Cardinal direction labels
             ForEach(cardinalDirections, id: \.label) { dir in
                 Text(dir.label)
-                    .font(.niyaCaption)
-                    .fontWeight(.semibold)
+                    .font(.system(size: compassSize * 0.07, weight: .semibold, design: .serif))
                     .foregroundStyle(dir.label == "N" ? Color.red : Color.niyaText)
-                    .offset(y: -compassSize / 2 + 28)
+                    .offset(y: -compassSize / 2 + 30)
                     .rotationEffect(.degrees(dir.angle))
             }
 
-            // Qiblah needle
-            VStack(spacing: 0) {
+            VStack(spacing: 2) {
                 Image(systemName: "arrow.up")
-                    .font(.system(size: compact ? 20 : 28, weight: .bold))
+                    .font(.system(size: arrowSize, weight: .bold))
                     .foregroundStyle(Color.niyaTeal)
                 Image(systemName: "building.columns")
-                    .font(.system(size: compact ? 10 : 14))
+                    .font(.system(size: kaabaSize))
                     .foregroundStyle(Color.niyaTeal)
             }
             .rotationEffect(.degrees(needleRotation))
@@ -88,12 +87,12 @@ struct QiblahCompassView: View {
                     .frame(width: compassSize, height: compassSize)
 
                 Image(systemName: "building.columns")
-                    .font(.system(size: compact ? 20 : 30))
+                    .font(.system(size: compassSize * 0.115))
                     .foregroundStyle(Color.niyaTeal)
 
                 VStack(spacing: 0) {
                     Image(systemName: "arrow.up")
-                        .font(.system(size: compact ? 16 : 22, weight: .bold))
+                        .font(.system(size: compassSize * 0.085, weight: .bold))
                         .foregroundStyle(Color.niyaTeal)
                 }
                 .offset(y: -compassSize / 2 + 30)
@@ -126,7 +125,7 @@ struct QiblahCompassView: View {
             Image(systemName: "building.columns")
                 .foregroundStyle(Color.niyaTeal)
             Text("\(Int(bearing))° \(cardinalDirection(for: bearing))")
-                .font(compact ? .niyaCaption : .niyaBody)
+                .font(.niyaBody)
                 .foregroundStyle(Color.niyaText)
         }
     }

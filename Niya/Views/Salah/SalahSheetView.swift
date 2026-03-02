@@ -15,20 +15,23 @@ struct SalahSheetView: View {
         return PrayerTimeCalculator.qiblahBearing(from: loc)
     }
 
+    private var compassSize: CGFloat {
+        selectedDetent == .large ? 260 : 160
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     if let loc = location, let times = prayerTimeService.todayTimes {
-                        locationBar(loc)
-
                         QiblahCompassView(
                             bearing: bearing,
                             heading: locationService.heading,
                             headingAvailable: locationService.isHeadingAvailable,
                             needsCalibration: locationService.needsCalibration,
-                            compact: selectedDetent == .medium
+                            compassSize: compassSize
                         )
+                        .animation(.smooth, value: compassSize)
 
                         if !prayerTimeService.formattedCountdown.isEmpty {
                             countdownView
@@ -37,6 +40,7 @@ struct SalahSheetView: View {
                         PrayerTimesListView(
                             times: times,
                             timeZone: loc.timeZone,
+                            locationName: loc.name,
                             showAll: selectedDetent == .large,
                             compact: selectedDetent == .medium
                         )
@@ -64,6 +68,7 @@ struct SalahSheetView: View {
             .sheet(isPresented: $showLocationPicker) {
                 LocationPickerView()
                     .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.hidden)
             }
         }
         .onAppear {
@@ -83,28 +88,6 @@ struct SalahSheetView: View {
         }
         .presentationDetents([.medium, .large], selection: $selectedDetent)
         .presentationDragIndicator(.hidden)
-    }
-
-    private func locationBar(_ loc: UserLocation) -> some View {
-        Button {
-            showLocationPicker = true
-        } label: {
-            HStack {
-                Image(systemName: locationService.manualLocation != nil ? "mappin.circle.fill" : "location.fill")
-                    .foregroundStyle(Color.niyaTeal)
-                Text(loc.name)
-                    .font(.niyaCaption)
-                    .foregroundStyle(Color.niyaText)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption2)
-                    .foregroundStyle(Color.niyaSecondary)
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-            .background(Color.niyaSurface, in: RoundedRectangle(cornerRadius: 10))
-            .padding(.horizontal)
-        }
     }
 
     private var countdownView: some View {
