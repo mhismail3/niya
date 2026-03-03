@@ -80,7 +80,7 @@ struct ReaderContainerView: View {
                     } label: {
                         Label(
                             autoScrollVM.isEnabled ? "Disable Auto-Scroll" : "Auto-Scroll",
-                            systemImage: "arrow.down.circle"
+                            systemImage: "scroll"
                         )
                     }
                 } label: {
