@@ -21,7 +21,6 @@ struct ReaderViewModelTests {
             surah: testSurah,
             dataService: QuranDataService(),
             script: .hafs,
-            showTranslation: true,
             initialAyahId: initialAyahId
         )
     }

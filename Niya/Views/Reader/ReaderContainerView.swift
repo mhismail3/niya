@@ -11,7 +11,6 @@ struct ReaderContainerView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.stores) private var stores
     @AppStorage(StorageKey.selectedScript) private var storedScript: QuranScript = .hafs
-    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
     @AppStorage(StorageKey.followAlong) private var followAlong: Bool = false
     @AppStorage(StorageKey.followAlongAutoAdvance) private var followAlongAutoAdvance: Bool = true
@@ -127,9 +126,6 @@ struct ReaderContainerView: View {
                 followAlong = false
                 followAlongVM.stopTracking()
             }
-        }
-        .onChange(of: showTranslation) { _, show in
-            vm.showTranslation = show
         }
         .onChange(of: vm.mode) { _, newMode in
             storedMode = newMode

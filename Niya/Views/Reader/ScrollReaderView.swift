@@ -24,7 +24,6 @@ struct ScrollReaderView: View {
                             verse: verse,
                             surahId: vm.surah.id,
                             script: vm.script,
-                            showTranslation: vm.showTranslation,
                             isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
                             isBookmarked: bookmarkedAyahs.contains(verse.id),
                             isFirstVerse: verse.id == 1,

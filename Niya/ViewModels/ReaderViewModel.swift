@@ -11,7 +11,6 @@ enum ReaderMode: String, CaseIterable {
 final class ReaderViewModel {
     var mode: ReaderMode = .scroll
     var script: QuranScript
-    var showTranslation: Bool
     var currentPage: Int = 0
     var initialAyahId: Int?
     var visibleAyahId: Int = 1
@@ -24,11 +23,10 @@ final class ReaderViewModel {
     var verses: [Verse] = []
     var pages: [[Verse]] = []
 
-    init(surah: Surah, dataService: QuranDataService, script: QuranScript, showTranslation: Bool, initialAyahId: Int? = nil) {
+    init(surah: Surah, dataService: QuranDataService, script: QuranScript, initialAyahId: Int? = nil) {
         self.surah = surah
         self.dataService = dataService
         self.script = script
-        self.showTranslation = showTranslation
         self.initialAyahId = initialAyahId
     }
 

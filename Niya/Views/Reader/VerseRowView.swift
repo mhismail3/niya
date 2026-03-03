@@ -5,7 +5,6 @@ struct VerseRowView: View {
     let verse: Verse
     let surahId: Int
     let script: QuranScript
-    let showTranslation: Bool
     let isPlaying: Bool
     let isBookmarked: Bool
     let isFirstVerse: Bool
@@ -19,16 +18,14 @@ struct VerseRowView: View {
     @Environment(TajweedService.self) private var tajweedService
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
+    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @AppStorage(StorageKey.translationIsRTL) private var translationIsRTL: Bool = false
-    @State private var tajweedActive = false
     @State private var activeTap: TajweedTap?
     @State private var tooltipWidth: CGFloat = 160
     @State private var dismissTask: Task<Void, Never>?
-
-    private var tajweedAvailable: Bool { script == .hafs }
 
     var body: some View {
         VStack(alignment: .trailing, spacing: 8) {
@@ -44,7 +41,7 @@ struct VerseRowView: View {
                 verseNumberBadge
             }
 
-            if (tajweedActive || showTajweed) && script == .hafs, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
+            if showTajweed && script == .hafs, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
                 TajweedTextView(verse: tv, fontSize: arabicFontSize) { tap in
                     handleTajweedTap(tap)
                 }
@@ -77,12 +74,6 @@ struct VerseRowView: View {
                     .multilineTextAlignment(.trailing)
                     .lineSpacing(12)
                     .frame(maxWidth: .infinity, alignment: .trailing)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        guard tajweedAvailable else { return }
-                        tajweedService.fetch(surahId: surahId)
-                        withAnimation(.easeInOut(duration: 0.3)) { tajweedActive = true }
-                    }
             }
 
             if showTranslation, !verse.translation.isEmpty {
@@ -114,10 +105,7 @@ struct VerseRowView: View {
             }
         }
         .onChange(of: showTajweed) { _, on in
-            if !on {
-                tajweedActive = false
-                dismissTooltip()
-            }
+            if !on { dismissTooltip() }
         }
         .task {
             guard isFirstVerse else { return }

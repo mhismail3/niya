@@ -16,6 +16,7 @@ struct FollowAlongVerseView: View {
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
+    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.followAlongTransliteration) private var showTransliteration = true
     @AppStorage(StorageKey.followAlongMeaning) private var showMeaning = true
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
@@ -51,7 +52,7 @@ struct FollowAlongVerseView: View {
                 }
             }
 
-            if !verse.translation.isEmpty {
+            if showTranslation, !verse.translation.isEmpty {
                 let hasMultiple = !verse.extraTranslations.isEmpty
 
                 if hasMultiple, let primary = dataService.selectedTranslations.first {

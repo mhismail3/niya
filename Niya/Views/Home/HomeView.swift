@@ -9,7 +9,6 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.stores) private var stores
     @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
-    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @State private var positions: [ReadingPosition] = []
     @State private var recentHadiths: [RecentHadith] = []
     @State private var recentDuas: [RecentDua] = []
@@ -123,7 +122,6 @@ struct HomeView: View {
                                         surah: surah,
                                         dataService: dataService,
                                         script: script,
-                                        showTranslation: showTranslation,
                                         initialAyahId: position.lastAyahId
                                     )
                                 )

@@ -6,7 +6,6 @@ struct SurahSearchView: View {
     @Environment(DuaDataService.self) private var duaDataService
     @Environment(\.stores) private var stores
     @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
-    @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @State private var searchQuery = ""
     @State private var recentQueries: [RecentSearch] = []
 
@@ -188,8 +187,7 @@ struct SurahSearchView: View {
             vm: ReaderViewModel(
                 surah: surah,
                 dataService: dataService,
-                script: script,
-                showTranslation: showTranslation
+                script: script
             )
         )
     }

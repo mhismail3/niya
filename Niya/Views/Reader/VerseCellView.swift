@@ -4,7 +4,6 @@ struct VerseCellView: View {
     let verse: Verse
     let surahId: Int
     let script: QuranScript
-    let showTranslation: Bool
     let isPlaying: Bool
     let isBookmarked: Bool
     let isFirstVerse: Bool
@@ -31,7 +30,6 @@ struct VerseCellView: View {
                 verse: verse,
                 surahId: surahId,
                 script: script,
-                showTranslation: showTranslation,
                 isPlaying: isPlaying,
                 isBookmarked: isBookmarked,
                 isFirstVerse: isFirstVerse,

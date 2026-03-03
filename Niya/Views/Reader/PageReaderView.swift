@@ -11,7 +11,6 @@ struct PageReaderView: View {
                     MushaPageView(
                         verses: pageVerses,
                         script: vm.script,
-                        showTranslation: vm.showTranslation,
                         surahId: vm.surah.id,
                         surahName: vm.surah.transliteration,
                         showBismillah: vm.showBismillah

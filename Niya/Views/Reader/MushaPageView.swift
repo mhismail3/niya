@@ -3,7 +3,6 @@ import SwiftUI
 struct MushaPageView: View {
     let verses: [Verse]
     let script: QuranScript
-    let showTranslation: Bool
     let surahId: Int
     let surahName: String
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
@@ -25,7 +24,6 @@ struct MushaPageView: View {
                         verse: verse,
                         surahId: surahId,
                         script: script,
-                        showTranslation: showTranslation,
                         isPlaying: audioPlayerVM.isPlayingVerse(surahId: surahId, ayahId: verse.id),
                         isBookmarked: bookmarkedAyahs.contains(verse.id),
                         isFirstVerse: verse.id == 1,
