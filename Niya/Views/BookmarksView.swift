@@ -7,6 +7,7 @@ struct BookmarksView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.stores) private var stores
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(StorageKey.selectedScript) private var storedScript: QuranScript = .hafs
     @State private var quranBookmarks: [QuranBookmark] = []
     @State private var hadithBookmarks: [HadithBookmark] = []
     @State private var duaBookmarks: [DuaBookmark] = []
@@ -72,7 +73,8 @@ struct BookmarksView: View {
 
             ForEach(quranBookmarks, id: \.verseKey) { bookmark in
                 let surah = quranDataService.surahs.first { $0.id == bookmark.surahId }
-                let verse = quranDataService.verse(surahId: bookmark.surahId, ayahId: bookmark.ayahId)
+                let verse = quranDataService.verses(for: bookmark.surahId, script: storedScript)
+                    .first { $0.id == bookmark.ayahId }
 
                 Button {
                     coordinator.navigateToAyah(surahId: bookmark.surahId, ayahId: bookmark.ayahId)
@@ -89,15 +91,36 @@ struct BookmarksView: View {
                         }
                         .frame(width: 40)
 
-                        VStack(alignment: .leading, spacing: 2) {
+                        VStack(alignment: .leading, spacing: 4) {
                             Text(surah?.transliteration ?? "Surah \(bookmark.surahId)")
                                 .font(.niyaCaption)
                                 .foregroundStyle(Color.niyaGold)
+
                             if let verse {
-                                Text(verse.translation)
-                                    .font(.niyaCaption)
+                                Text(verse.text)
+                                    .font(.quranText(script: storedScript, size: 20))
                                     .foregroundStyle(Color.niyaText)
+                                    .multilineTextAlignment(.trailing)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
                                     .lineLimit(2)
+
+                                let translations = buildTranslations(verse: verse)
+                                let showEditionName = translations.count > 1
+
+                                ForEach(Array(translations.prefix(2).enumerated()), id: \.offset) { _, t in
+                                    VStack(alignment: .leading, spacing: 1) {
+                                        if showEditionName {
+                                            Text(t.name)
+                                                .font(.niyaCaption2)
+                                                .foregroundStyle(Color.niyaTeal)
+                                        }
+                                        Text(t.text)
+                                            .font(.niyaCaption)
+                                            .foregroundStyle(Color.niyaText)
+                                            .lineLimit(2)
+                                            .environment(\.layoutDirection, t.isRTL ? .rightToLeft : .leftToRight)
+                                    }
+                                }
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -210,6 +233,14 @@ struct BookmarksView: View {
     }
 
     // MARK: - Helpers
+
+    private func buildTranslations(verse: Verse) -> [TranslationText] {
+        let primaryRTL = quranDataService.selectedTranslations.first?.isRTL ?? false
+        let primaryName = quranDataService.selectedTranslations.first?.name ?? "Translation"
+        var result = [TranslationText(name: primaryName, text: verse.translation, isRTL: primaryRTL)]
+        result.append(contentsOf: verse.extraTranslations)
+        return result
+    }
 
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
