@@ -24,7 +24,7 @@ struct ReaderContainerView: View {
     @State private var goToAyahText = ""
 
     private let bookmarkToolbarTip = BookmarkToolbarTip()
-    private let followAlongToolbarTip = FollowAlongToolbarTip()
+    private let optionsMenuTip = OptionsMenuTip()
     private let settingsToolbarTip = SettingsToolbarTip()
 
     var body: some View {
@@ -94,6 +94,7 @@ struct ReaderContainerView: View {
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
+                .popoverTip(optionsMenuTip)
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
                 }
@@ -177,18 +178,15 @@ struct ReaderContainerView: View {
         .task {
             for await status in bookmarkToolbarTip.statusUpdates {
                 if case .invalidated = status {
-                    FollowAlongToolbarTip.bookmarkDismissed = true
-                    if storedScript != .hafs {
-                        SettingsToolbarTip.followAlongDismissed = true
-                    }
+                    OptionsMenuTip.bookmarkDismissed = true
                     break
                 }
             }
         }
         .task {
-            for await status in followAlongToolbarTip.statusUpdates {
+            for await status in optionsMenuTip.statusUpdates {
                 if case .invalidated = status {
-                    SettingsToolbarTip.followAlongDismissed = true
+                    SettingsToolbarTip.optionsMenuDismissed = true
                     break
                 }
             }
