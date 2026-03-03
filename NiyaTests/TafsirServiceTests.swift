@@ -6,86 +6,59 @@ import Testing
 @Suite("TafsirService")
 struct TafsirServiceTests {
 
-    @Test func entryReturnsNilBeforeFetch() {
+    @Test func textReturnsNilForInvalidVerse() {
         let service = TafsirService()
-        #expect(service.entry(edition: .ibnKathir, surahId: 1, ayahId: 1) == nil)
+        #expect(service.text(edition: .ibnKathir, surahId: 999, ayahId: 999) == nil)
     }
 
-    @Test func isLoadingFalseInitially() {
+    @Test func textReturnsContentForValidVerse() {
         let service = TafsirService()
-        #expect(service.isLoading(edition: .ibnKathir, surahId: 1, ayahId: 1) == false)
+        let text = service.text(edition: .ibnKathir, surahId: 1, ayahId: 1)
+        #expect(text != nil)
+        #expect(text?.contains("Fatihah") == true)
     }
 
-    @Test func fetchDuplicateIsNoop() {
+    @Test func differentEditionsSameVerse() {
         let service = TafsirService()
-        service.fetch(edition: .ibnKathir, surahId: 999, ayahId: 999)
-        service.fetch(edition: .ibnKathir, surahId: 999, ayahId: 999)
+        let ik = service.text(edition: .ibnKathir, surahId: 1, ayahId: 1)
+        let ia = service.text(edition: .ibnAbbas, surahId: 1, ayahId: 1)
+        #expect(ik != nil)
+        #expect(ia != nil)
+        #expect(ik != ia)
     }
 
-    @Test func cacheKeyFormat() {
+    @Test func allEditionsLoadSuccessfully() {
         let service = TafsirService()
-        let key = service.cacheKey(edition: .ibnKathir, surahId: 2, ayahId: 255)
-        #expect(key == "en-tafisr-ibn-kathir:2:255")
-    }
-
-    @Test func differentEditionsSameSurahAyah() {
-        let service = TafsirService()
-        let entry1 = TafsirEntry(surah: 1, ayah: 1, text: "Ibn Kathir text")
-        let entry2 = TafsirEntry(surah: 1, ayah: 1, text: "Ma'ariful Quran text")
-        service.insertEntry(entry1, edition: .ibnKathir, surahId: 1, ayahId: 1)
-        service.insertEntry(entry2, edition: .maarifUlQuran, surahId: 1, ayahId: 1)
-        #expect(service.entry(edition: .ibnKathir, surahId: 1, ayahId: 1)?.text == "Ibn Kathir text")
-        #expect(service.entry(edition: .maarifUlQuran, surahId: 1, ayahId: 1)?.text == "Ma'ariful Quran text")
+        for edition in TafsirEdition.allCases {
+            let text = service.text(edition: edition, surahId: 2, ayahId: 255)
+            #expect(text != nil, "Edition \(edition.displayName) should have text for Ayatul Kursi")
+        }
     }
 
     @Test func sameSurahDifferentAyah() {
         let service = TafsirService()
-        let entry1 = TafsirEntry(surah: 2, ayah: 1, text: "Ayah 1")
-        let entry2 = TafsirEntry(surah: 2, ayah: 2, text: "Ayah 2")
-        service.insertEntry(entry1, edition: .ibnKathir, surahId: 2, ayahId: 1)
-        service.insertEntry(entry2, edition: .ibnKathir, surahId: 2, ayahId: 2)
-        #expect(service.entry(edition: .ibnKathir, surahId: 2, ayahId: 1)?.text == "Ayah 1")
-        #expect(service.entry(edition: .ibnKathir, surahId: 2, ayahId: 2)?.text == "Ayah 2")
+        let t1 = service.text(edition: .ibnKathir, surahId: 2, ayahId: 1)
+        let t2 = service.text(edition: .ibnKathir, surahId: 2, ayahId: 2)
+        #expect(t1 != nil)
+        #expect(t2 != nil)
+        #expect(t1 != t2)
     }
 
-    @Test func cooldownPreventsImmediateRetry() {
+    @Test func lastSurahLastVerse() {
         let service = TafsirService()
-        // First fetch will start loading
-        service.fetch(edition: .ibnKathir, surahId: 999, ayahId: 999)
-        // The key is now in loadingKeys, so second call is a no-op
-        let isLoading = service.isLoading(edition: .ibnKathir, surahId: 999, ayahId: 999)
-        #expect(isLoading == true)
+        let text = service.text(edition: .ibnKathir, surahId: 114, ayahId: 6)
+        #expect(text != nil)
     }
 
-    @Test func insertAndRetrieve() {
+    @Test func surahZeroReturnsNil() {
         let service = TafsirService()
-        let entry = TafsirEntry(surah: 36, ayah: 1, text: "Ya-Sin commentary")
-        service.insertEntry(entry, edition: .maarifUlQuran, surahId: 36, ayahId: 1)
-        let retrieved = service.entry(edition: .maarifUlQuran, surahId: 36, ayahId: 1)
-        #expect(retrieved?.text == "Ya-Sin commentary")
-        #expect(retrieved?.surah == 36)
-        #expect(retrieved?.ayah == 1)
+        #expect(service.text(edition: .ibnKathir, surahId: 0, ayahId: 0) == nil)
     }
 
-    // MARK: - Edge Cases
-
-    @Test func allEditionsGenerateValidURLs() {
-        for edition in TafsirEdition.allCases {
-            let url = edition.url(surahId: 1, ayahId: 1)
-            #expect(url?.scheme == "https")
-            #expect(url?.absoluteString.contains(edition.rawValue) == true)
-        }
-    }
-
-    @Test func fetchForSurahZeroAyahZero() {
+    @Test func cachedAfterFirstLoad() {
         let service = TafsirService()
-        service.fetch(edition: .ibnKathir, surahId: 0, ayahId: 0)
-    }
-
-    @Test func concurrentFetchesSameKey() {
-        let service = TafsirService()
-        service.fetch(edition: .ibnAbbas, surahId: 1, ayahId: 1)
-        service.fetch(edition: .ibnAbbas, surahId: 1, ayahId: 1)
-        service.fetch(edition: .ibnAbbas, surahId: 1, ayahId: 1)
+        let t1 = service.text(edition: .ibnKathir, surahId: 36, ayahId: 1)
+        let t2 = service.text(edition: .ibnKathir, surahId: 36, ayahId: 1)
+        #expect(t1 == t2)
     }
 }

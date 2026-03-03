@@ -26,12 +26,6 @@ struct TafsirSheetView: View {
                 }
             }
         }
-        .onAppear {
-            tafsirService.fetch(edition: selectedEdition, surahId: surahId, ayahId: ayahId)
-        }
-        .onChange(of: selectedEdition) { _, newEdition in
-            tafsirService.fetch(edition: newEdition, surahId: surahId, ayahId: ayahId)
-        }
     }
 
     private var editionPicker: some View {
@@ -66,11 +60,8 @@ struct TafsirSheetView: View {
 
     @ViewBuilder
     private var contentArea: some View {
-        if tafsirService.isLoading(edition: selectedEdition, surahId: surahId, ayahId: ayahId) {
-            Spacer()
-            ProgressView()
-            Spacer()
-        } else if let entry = tafsirService.entry(edition: selectedEdition, surahId: surahId, ayahId: ayahId) {
+        let tafsirText = tafsirService.text(edition: selectedEdition, surahId: surahId, ayahId: ayahId)
+        if let tafsirText, !tafsirText.isEmpty {
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(selectedEdition.author)
@@ -81,59 +72,44 @@ struct TafsirSheetView: View {
                         .font(.niyaCaption)
                         .foregroundStyle(Color.niyaSecondary.opacity(0.7))
 
-                    if entry.text.isEmpty {
-                        Text("No commentary available for this verse.")
-                            .font(.system(.body, design: .serif))
-                            .foregroundStyle(Color.niyaSecondary)
-                            .italic()
-                    } else {
-                        ForEach(Array(entry.text.components(separatedBy: "\n").enumerated()), id: \.offset) { _, paragraph in
-                            if !paragraph.trimmingCharacters(in: .whitespaces).isEmpty {
-                                let isArabicBlock = paragraph.unicodeScalars.filter(\.properties.isAlphabetic).allSatisfy(isArabicScalar)
-                                if isArabicBlock {
-                                    Text(paragraph)
-                                        .font(.custom("NotoNaskhArabic", size: 20))
-                                        .foregroundStyle(Color.niyaText)
-                                        .multilineTextAlignment(.trailing)
-                                        .lineSpacing(12)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .textSelection(.enabled)
-                                } else {
-                                    Text(styledTafsirText(paragraph))
-                                        .font(.system(.body, design: .serif))
-                                        .foregroundStyle(Color.niyaText)
-                                        .textSelection(.enabled)
-                                        .lineSpacing(4)
-                                }
+                    ForEach(Array(tafsirText.components(separatedBy: "\n").enumerated()), id: \.offset) { _, paragraph in
+                        if !paragraph.trimmingCharacters(in: .whitespaces).isEmpty {
+                            let isArabicBlock = paragraph.unicodeScalars.filter(\.properties.isAlphabetic).allSatisfy(isArabicScalar)
+                            if isArabicBlock {
+                                Text(paragraph)
+                                    .font(.custom("NotoNaskhArabic", size: 20))
+                                    .foregroundStyle(Color.niyaText)
+                                    .multilineTextAlignment(.trailing)
+                                    .lineSpacing(12)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .textSelection(.enabled)
+                            } else {
+                                Text(styledTafsirText(paragraph))
+                                    .font(.system(.body, design: .serif))
+                                    .foregroundStyle(Color.niyaText)
+                                    .textSelection(.enabled)
+                                    .lineSpacing(4)
                             }
                         }
                     }
                 }
                 .padding()
             }
-        } else if tafsirService.hasFailed(edition: selectedEdition, surahId: surahId, ayahId: ayahId) {
-            ContentUnavailableView {
-                Label("Unable to Load", systemImage: "exclamationmark.triangle")
-            } description: {
-                Text("Could not load tafsir. Check your connection and try again.")
-            } actions: {
-                Button("Retry") {
-                    tafsirService.fetch(edition: selectedEdition, surahId: surahId, ayahId: ayahId)
-                }
-            }
         } else {
-            Spacer()
-            ProgressView()
-            Spacer()
+            ContentUnavailableView {
+                Label("No Commentary", systemImage: "text.book.closed")
+            } description: {
+                Text("No commentary available for this verse.")
+            }
         }
     }
 
     private func isArabicScalar(_ s: Unicode.Scalar) -> Bool {
-        (0x0600...0x06FF).contains(s.value) ||  // Arabic
-        (0x0750...0x077F).contains(s.value) ||  // Arabic Supplement
-        (0x08A0...0x08FF).contains(s.value) ||  // Arabic Extended-A
-        (0xFB50...0xFDFF).contains(s.value) ||  // Arabic Presentation Forms-A
-        (0xFE70...0xFEFF).contains(s.value)     // Arabic Presentation Forms-B
+        (0x0600...0x06FF).contains(s.value) ||
+        (0x0750...0x077F).contains(s.value) ||
+        (0x08A0...0x08FF).contains(s.value) ||
+        (0xFB50...0xFDFF).contains(s.value) ||
+        (0xFE70...0xFEFF).contains(s.value)
     }
 
     private func styledTafsirText(_ text: String) -> AttributedString {

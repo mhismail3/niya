@@ -205,6 +205,10 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/translation_ms_basmeih.json",
     "Niya/Resources/Data/translation_zh_jian.json",
     "Niya/Resources/Data/translation_my_ghazi.json",
+    "Niya/Resources/Data/tafsir_ibn_kathir.json",
+    "Niya/Resources/Data/tafsir_maarif_ul_quran.json",
+    "Niya/Resources/Data/tafsir_ibn_abbas.json",
+    "Niya/Resources/Data/tafsir_tazkirul_quran.json",
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -755,6 +759,9 @@ def section_pbx_group():
                      "malik", "ahmed", "darimi", "nawawi", "qudsi", "dehlawi",
                      "aladab", "bulugh", "mishkat", "riyad", "shamail"]:
         fname = f"hadith_{coll_id}.json"
+        data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
+    for taf_id in ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran"]:
+        fname = f"tafsir_{taf_id}.json"
         data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
     emit_subgroup(SUBGROUP_IDS["Resources/Data"], "Data", "Resources/Data", data_children, path_str="Data")
 

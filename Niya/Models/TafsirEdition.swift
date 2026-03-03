@@ -1,10 +1,10 @@
 import Foundation
 
 enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
-    case ibnKathir = "en-tafisr-ibn-kathir"
-    case maarifUlQuran = "en-tafsir-maarif-ul-quran"
-    case ibnAbbas = "en-tafsir-ibn-abbas"
-    case tazkirulQuran = "en-tazkirul-quran"
+    case ibnKathir = "ibn_kathir"
+    case maarifUlQuran = "maarif_ul_quran"
+    case ibnAbbas = "ibn_abbas"
+    case tazkirulQuran = "tazkirul_quran"
 
     var id: String { rawValue }
 
@@ -35,13 +35,7 @@ enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
         }
     }
 
-    func url(surahId: Int, ayahId: Int) -> URL? {
-        URL(string: "https://raw.githubusercontent.com/spa5k/tafsir_api/main/tafsir/\(rawValue)/\(surahId)/\(ayahId).json")
+    var bundleFilename: String {
+        "tafsir_\(rawValue)"
     }
-}
-
-struct TafsirEntry: Decodable {
-    let surah: Int
-    let ayah: Int
-    let text: String
 }
