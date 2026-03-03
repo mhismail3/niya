@@ -11,6 +11,7 @@ struct ScrollReaderView: View {
     @State private var tafsirAyahId: Int = 1
     @State private var uiScrollView: UIScrollView?
     @State private var scrollTask: Task<Void, Never>?
+    @State private var highlightTask: Task<Void, Never>?
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -60,6 +61,21 @@ struct ScrollReaderView: View {
                     proxy.scrollTo(vid.ayahId, anchor: .top)
                 }
             }
+            .onChange(of: vm.goToAyahTarget) { _, target in
+                guard let target else { return }
+                vm.goToAyahTarget = nil
+                withAnimation(.easeInOut(duration: 0.4)) {
+                    proxy.scrollTo(target, anchor: .top)
+                }
+                highlightTask?.cancel()
+                highlightTask = Task {
+                    try? await Task.sleep(for: .seconds(1.5))
+                    guard !Task.isCancelled else { return }
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        vm.clearHighlight()
+                    }
+                }
+            }
             .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
                 guard let ayahId, followAlongVM.currentSurahId == vm.surah.id else { return }
                 withAnimation(.easeInOut(duration: 0.4)) {
@@ -93,6 +109,8 @@ struct ScrollReaderView: View {
         .onDisappear {
             scrollTask?.cancel()
             scrollTask = nil
+            highlightTask?.cancel()
+            highlightTask = nil
         }
     }
 

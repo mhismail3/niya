@@ -3,6 +3,7 @@ import SwiftUI
 struct PageReaderView: View {
     @Bindable var vm: ReaderViewModel
     @State private var scrolledPage: Int?
+    @State private var highlightTask: Task<Void, Never>?
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -32,6 +33,23 @@ struct PageReaderView: View {
         }
         .onDisappear {
             vm.isSettled = false
+            highlightTask?.cancel()
+            highlightTask = nil
+        }
+        .onChange(of: vm.goToAyahTarget) { _, target in
+            guard let target else { return }
+            vm.goToAyahTarget = nil
+            withAnimation(.easeInOut(duration: 0.4)) {
+                scrolledPage = vm.currentPage
+            }
+            highlightTask?.cancel()
+            highlightTask = Task {
+                try? await Task.sleep(for: .seconds(1.5))
+                guard !Task.isCancelled else { return }
+                withAnimation(.easeOut(duration: 0.5)) {
+                    vm.clearHighlight()
+                }
+            }
         }
         .onChange(of: scrolledPage) { _, newPage in
             guard let newPage, newPage >= 0, newPage < vm.pages.count,

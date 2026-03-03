@@ -20,6 +20,8 @@ struct ReaderContainerView: View {
     @AppStorage(StorageKey.selectedTranslations) private var selectedTranslationIds: String = "en_sahih"
     @State private var showSettings = false
     @State private var showBookmarks = false
+    @State private var showGoToAyah = false
+    @State private var goToAyahText = ""
 
     private let bookmarkToolbarTip = BookmarkToolbarTip()
     private let followAlongToolbarTip = FollowAlongToolbarTip()
@@ -34,6 +36,7 @@ struct ReaderContainerView: View {
                 PageReaderView(vm: vm)
             }
         }
+        .environment(\.highlightedAyahId, vm.highlightedAyahId)
         .safeAreaInset(edge: .bottom) {
             if autoScrollVM.isEnabled || audioPlayerVM.hasActiveSession {
                 Color.clear.frame(height: 80)
@@ -65,6 +68,12 @@ struct ReaderContainerView: View {
                                 systemImage: "text.word.spacing"
                             )
                         }
+                    }
+                    Button {
+                        goToAyahText = ""
+                        showGoToAyah = true
+                    } label: {
+                        Label("Go to Ayah", systemImage: "arrow.forward.to.line")
                     }
                     Button {
                         if autoScrollVM.isEnabled {
@@ -101,6 +110,17 @@ struct ReaderContainerView: View {
             ReaderSettingsSheet(vm: vm)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
+        }
+        .alert("Go to Ayah", isPresented: $showGoToAyah) {
+            TextField("1–\(vm.surah.totalVerses)", text: $goToAyahText)
+                .keyboardType(.numberPad)
+            Button("Go") {
+                if let num = Int(goToAyahText), num >= 1, num <= vm.surah.totalVerses {
+                    autoScrollVM.stop()
+                    vm.goToAyah(num)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
         }
         .background(Color.niyaBackground)
         .onAppear {

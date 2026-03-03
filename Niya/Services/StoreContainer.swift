@@ -28,9 +28,18 @@ private struct StoreContainerKey: EnvironmentKey {
     static let defaultValue: StoreContainer? = nil
 }
 
+private struct HighlightedAyahKey: EnvironmentKey {
+    static let defaultValue: Int? = nil
+}
+
 extension EnvironmentValues {
     var stores: StoreContainer? {
         get { self[StoreContainerKey.self] }
         set { self[StoreContainerKey.self] = newValue }
+    }
+
+    var highlightedAyahId: Int? {
+        get { self[HighlightedAyahKey.self] }
+        set { self[HighlightedAyahKey.self] = newValue }
     }
 }

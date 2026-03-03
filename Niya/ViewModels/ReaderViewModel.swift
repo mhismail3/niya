@@ -16,6 +16,8 @@ final class ReaderViewModel {
     var visibleAyahId: Int = 1
     var isSettled = false
     var hasUserScrolled = false
+    var goToAyahTarget: Int?
+    var highlightedAyahId: Int?
 
     let surah: Surah
     private let dataService: QuranDataService
@@ -53,6 +55,23 @@ final class ReaderViewModel {
         guard isSettled else { return }
         hasUserScrolled = true
         visibleAyahId = ayahId
+    }
+
+    func goToAyah(_ ayahId: Int) {
+        let clamped = max(1, min(ayahId, surah.totalVerses))
+
+        if let pageIndex = pages.firstIndex(where: { $0.contains { $0.id == clamped } }) {
+            currentPage = pageIndex
+        }
+
+        visibleAyahId = clamped
+        hasUserScrolled = true
+        goToAyahTarget = clamped
+        highlightedAyahId = clamped
+    }
+
+    func clearHighlight() {
+        highlightedAyahId = nil
     }
 
     func reloadForScript(_ newScript: QuranScript) {
