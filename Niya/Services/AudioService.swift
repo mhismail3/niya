@@ -19,7 +19,6 @@ final class AudioService {
     var isLoading = false
     var currentVerseID: VerseID?
     var currentSurahId: Int?
-    var downloadProgress: Double = 0
     var isFollowAlongActive = false
     var onVerseDidFinish: ((VerseID) -> Void)?
     var onVerseDidChange: ((VerseID) -> Void)?
@@ -356,27 +355,9 @@ final class AudioService {
 
     func localSurahURL(surahId: Int, reciter: Reciter) -> URL? {
         let filename = reciter.localFilename(for: surahId)
-        let url = documentsDirectory.appendingPathComponent(filename)
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let url = docs.appendingPathComponent(filename)
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
-    }
-
-    func downloadSurah(surahId: Int, reciter: Reciter) async throws -> URL {
-        let remote = surahStreamURL(surahId: surahId, reciter: reciter)
-        let localURL = documentsDirectory.appendingPathComponent(reciter.localFilename(for: surahId))
-
-        if FileManager.default.fileExists(atPath: localURL.path) {
-            return localURL
-        }
-
-        downloadProgress = 0
-        let tempURL = try await NetworkClient.shared.download(from: remote)
-        try FileManager.default.moveItem(at: tempURL, to: localURL)
-        downloadProgress = 1
-        return localURL
-    }
-
-    private var documentsDirectory: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
 
     @objc private func playerDidFinish() {

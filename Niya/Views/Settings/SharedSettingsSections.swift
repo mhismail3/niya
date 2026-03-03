@@ -167,6 +167,7 @@ struct AudioSettingsSection<Extra: View>: View {
     @Binding var selectedReciter: Reciter
     @Binding var autoAdvance: Bool
     @Binding var loopCount: Int
+    @Environment(DownloadManager.self) private var downloadManager
     private let extra: Extra
 
     init(selectedReciter: Binding<Reciter>, autoAdvance: Binding<Bool>, loopCount: Binding<Int>, @ViewBuilder extra: () -> Extra) {
@@ -193,6 +194,17 @@ struct AudioSettingsSection<Extra: View>: View {
                 Text("5x").tag(5)
             }
             extra
+            NavigationLink {
+                DownloadManagementView()
+            } label: {
+                LabeledContent("Manage Downloads") {
+                    let totalBytes = downloadManager.totalStorageUsed()
+                    if totalBytes > 0 {
+                        Text(ByteCountFormatter.string(fromByteCount: totalBytes, countStyle: .file))
+                            .foregroundStyle(Color.niyaSecondary)
+                    }
+                }
+            }
         }
     }
 }

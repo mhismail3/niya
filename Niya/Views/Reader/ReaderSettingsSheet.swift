@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ReaderSettingsSheet: View {
     @Bindable var vm: ReaderViewModel
-    @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
+    @Environment(DownloadManager.self) private var downloadManager
     @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
@@ -40,27 +40,68 @@ struct ReaderSettingsSheet: View {
 
     @ViewBuilder
     private var downloadRow: some View {
-        let isDownloaded = audioPlayerVM.isDownloaded(vm.surah.id)
-        let isDownloading = audioPlayerVM.downloadingSurahId == vm.surah.id
+        let surahId = vm.surah.id
+        let downloaded = downloadManager.isDownloaded(surahId, reciter: selectedReciter)
+        let prog = downloadManager.progress(for: surahId, reciter: selectedReciter)
 
-        if isDownloaded {
-            Label("Audio Downloaded", systemImage: "checkmark.circle.fill")
-                .foregroundStyle(Color.niyaTeal)
-        } else {
-            Button {
-                Task { await audioPlayerVM.downloadSurah(vm.surah.id) }
-            } label: {
+        if downloaded {
+            HStack {
+                Label("Audio Downloaded", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(Color.niyaTeal)
+                Spacer()
+                Button(role: .destructive) {
+                    try? downloadManager.deleteSurah(surahId, reciter: selectedReciter)
+                } label: {
+                    Image(systemName: "trash")
+                        .foregroundStyle(.red)
+                }
+                .buttonStyle(.plain)
+            }
+        } else if let prog {
+            VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Label("Download Audio", systemImage: "arrow.down.circle")
-                    Spacer()
-                    if isDownloading {
-                        ProgressView(value: audioPlayerVM.downloadProgress)
-                            .frame(width: 60)
-                            .tint(Color.niyaGold)
+                    if prog.error != nil {
+                        Label("Download Failed", systemImage: "exclamationmark.triangle")
+                            .foregroundStyle(.red)
+                    } else {
+                        Label("Downloading…", systemImage: "arrow.down.circle")
                     }
+                    Spacer()
+                    Button {
+                        downloadManager.cancelDownload(surahId, reciter: selectedReciter)
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(Color.niyaSecondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+                if let errorMsg = prog.error {
+                    Text(errorMsg)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                    HStack(spacing: 12) {
+                        Button("Retry") {
+                            downloadManager.dismissError(surahId, reciter: selectedReciter)
+                            downloadManager.downloadSurah(surahId, reciter: selectedReciter)
+                        }
+                        .font(.caption)
+                        Button("Dismiss") {
+                            downloadManager.dismissError(surahId, reciter: selectedReciter)
+                        }
+                        .font(.caption)
+                        .foregroundStyle(Color.niyaSecondary)
+                    }
+                } else {
+                    ProgressView(value: prog.progress)
+                        .tint(Color.niyaGold)
                 }
             }
-            .disabled(isDownloading)
+        } else {
+            Button {
+                downloadManager.downloadSurah(surahId, reciter: selectedReciter)
+            } label: {
+                Label("Download Audio", systemImage: "arrow.down.circle")
+            }
         }
     }
 }

@@ -93,6 +93,7 @@ SWIFT_FILES = [
     "Niya/Services/NetworkClient.swift",
     "Niya/Services/AppLogger.swift",
     "Niya/Services/StoreContainer.swift",
+    "Niya/Services/DownloadManager.swift",
     # ViewModels
     "Niya/ViewModels/SurahListViewModel.swift",
     "Niya/ViewModels/ReaderViewModel.swift",
@@ -129,6 +130,7 @@ SWIFT_FILES = [
     # Views/Settings
     "Niya/Views/Settings/SettingsView.swift",
     "Niya/Views/Settings/SharedSettingsSections.swift",
+    "Niya/Views/Settings/DownloadManagementView.swift",
     # Views/Hadith
     "Niya/Views/Hadith/HadithTabView.swift",
     "Niya/Views/Hadith/HadithCollectionCard.swift",
@@ -242,6 +244,8 @@ TEST_FILES = [
     "NiyaTests/QuranDataServiceTests.swift",
     "NiyaTests/DuaDataServiceTests.swift",
     "NiyaTests/NetworkClientTests.swift",
+    "NiyaTests/DownloadManagerTests.swift",
+    "NiyaTests/NetworkClientDownloadTests.swift",
 ]
 
 # Assets catalog — treated specially
@@ -608,6 +612,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/NetworkClient.swift"], "NetworkClient.swift"),
         (swift_file_ids["Niya/Services/AppLogger.swift"], "AppLogger.swift"),
         (swift_file_ids["Niya/Services/StoreContainer.swift"], "StoreContainer.swift"),
+        (swift_file_ids["Niya/Services/DownloadManager.swift"], "DownloadManager.swift"),
     ], path_str="Services")
 
     # ViewModels
@@ -673,6 +678,7 @@ def section_pbx_group():
     emit_subgroup(SUBGROUP_IDS["Views/Settings"], "Settings", "Views/Settings", [
         (swift_file_ids["Niya/Views/Settings/SettingsView.swift"], "SettingsView.swift"),
         (swift_file_ids["Niya/Views/Settings/SharedSettingsSections.swift"], "SharedSettingsSections.swift"),
+        (swift_file_ids["Niya/Views/Settings/DownloadManagementView.swift"], "DownloadManagementView.swift"),
     ], path_str="Settings")
 
     # Views/Hadith

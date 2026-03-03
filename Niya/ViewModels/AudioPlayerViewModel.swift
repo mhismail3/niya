@@ -4,8 +4,6 @@ import MediaPlayer
 @Observable
 @MainActor
 final class AudioPlayerViewModel {
-    var downloadingSurahId: Int?
-    var downloadError: String?
     var selectedReciter: Reciter
     var playbackSpeed: Float = 1.0
     var autoAdvance = true
@@ -15,7 +13,6 @@ final class AudioPlayerViewModel {
     private let audioService: AudioService
     private let dataService: QuranDataService
     private let wordDataService: WordDataService
-    private var downloadStore: DownloadStore?
 
     init(audioService: AudioService, dataService: QuranDataService, wordDataService: WordDataService, reciter: Reciter = .alAfasy) {
         self.audioService = audioService
@@ -51,10 +48,6 @@ final class AudioPlayerViewModel {
             guard let self else { return }
             self.updateNowPlaying()
         }
-    }
-
-    func setDownloadStore(_ store: DownloadStore) {
-        self.downloadStore = store
     }
 
     // MARK: - Remote Commands & Now Playing
@@ -123,7 +116,6 @@ final class AudioPlayerViewModel {
     var isLoading: Bool { audioService.isLoading }
     var currentVerseID: VerseID? { audioService.currentVerseID }
     var currentSurahId: Int? { audioService.currentSurahId }
-    var downloadProgress: Double { audioService.downloadProgress }
     var isFollowAlongActive: Bool { audioService.isFollowAlongActive }
     var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil || audioService.isFollowAlongActive }
 
@@ -229,22 +221,6 @@ final class AudioPlayerViewModel {
 
     func isPlayingSurah(_ surahId: Int) -> Bool {
         audioService.currentSurahId == surahId && audioService.currentVerseID == nil
-    }
-
-    func downloadSurah(_ surahId: Int) async {
-        downloadingSurahId = surahId
-        downloadError = nil
-        do {
-            let localURL = try await audioService.downloadSurah(surahId: surahId, reciter: selectedReciter)
-            try downloadStore?.save(surahId: surahId, filename: localURL.lastPathComponent, reciterId: selectedReciter.rawValue)
-        } catch {
-            downloadError = error.localizedDescription
-        }
-        downloadingSurahId = nil
-    }
-
-    func isDownloaded(_ surahId: Int) -> Bool {
-        audioService.localSurahURL(surahId: surahId, reciter: selectedReciter) != nil
     }
 
     private func startPlayback(surahId: Int, ayahId: Int) {

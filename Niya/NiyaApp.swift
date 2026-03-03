@@ -18,6 +18,7 @@ struct NiyaApp: App {
     @State private var locationService = LocationService()
     @State private var prayerTimeService = PrayerTimeService()
     @State private var autoScrollVM = AutoScrollViewModel()
+    @State private var downloadManager: DownloadManager
     @State private var storeContainer: StoreContainer?
 
     private let container: ModelContainer
@@ -47,7 +48,10 @@ struct NiyaApp: App {
 
         let sc = StoreContainer(modelContext: container.mainContext)
         _storeContainer = State(wrappedValue: sc)
-        avm.setDownloadStore(sc.downloads)
+
+        let dm = DownloadManager(downloadStore: sc.downloads)
+        dm.reconcile()
+        _downloadManager = State(wrappedValue: dm)
 
         as_.configureSession()
         Self.migrateAudioFilenames()
@@ -75,8 +79,10 @@ struct NiyaApp: App {
                 .environment(locationService)
                 .environment(prayerTimeService)
                 .environment(autoScrollVM)
+                .environment(downloadManager)
                 .environment(\.stores, storeContainer)
                 .modelContainer(container)
+                .accentColor(Color.niyaTeal)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
                     await wordDataService.load(reciter: selectedReciter)
