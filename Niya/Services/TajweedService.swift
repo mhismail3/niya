@@ -114,6 +114,12 @@ final class TajweedService {
             }.filter { $0.start >= 0 }
         }
 
+        // Normalize characters the API uses that the KFGQPC Uthmanic font lacks glyphs for.
+        plainText = plainText
+            .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
+            .replacingOccurrences(of: "\u{06DF}", with: "\u{06E0}")  // Small High Rounded Zero → Upright Rectangular Zero
+            .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
+
         return TajweedVerse(id: ayahId, text: plainText, annotations: annotations)
     }
 }
