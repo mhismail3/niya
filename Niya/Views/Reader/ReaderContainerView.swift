@@ -172,7 +172,7 @@ struct ReaderContainerView: View {
             followAlongVM.pauseTracking()
             autoScrollVM.stop()
             guard vm.hasUserScrolled else { return }
-            stores!.readingPosition
+            stores.readingPosition
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
         }
         .task {

@@ -51,12 +51,12 @@ struct MushaPageView: View {
     }
 
     private func loadBookmarks() {
-        let all = stores!.quranBookmarks.allBookmarks().filter { $0.surahId == surahId }
+        let all = stores.quranBookmarks.allBookmarks().filter { $0.surahId == surahId }
         bookmarkedAyahs = Set(all.map(\.ayahId))
     }
 
     private func toggleBookmark(_ ayahId: Int) {
-        stores!.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
+        stores.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
         if bookmarkedAyahs.contains(ayahId) {
             bookmarkedAyahs.remove(ayahId)
         } else {

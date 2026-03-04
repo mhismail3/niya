@@ -52,19 +52,18 @@ struct HomeView: View {
         }
         .onAppear { reload() }
         .onChange(of: coordinator.selectedTab) { _, tab in
-            if tab == "home" { reload() }
+            if tab == .home { reload() }
         }
         .task {
-            await hadithDataService.load()
-            let recents = stores!.recentHadith.recentHadiths()
+            async let h: () = hadithDataService.load()
+            async let d: () = duaDataService.load()
+            _ = await (h, d)
+            let recents = stores.recentHadith.recentHadiths()
             for id in Set(recents.map(\.collectionId)) {
                 await hadithDataService.loadCollection(id)
             }
-            recentHadiths = stores!.recentHadith.recentHadiths()
-        }
-        .task {
-            await duaDataService.load()
-            recentDuas = stores!.recentDua.recentDuas()
+            recentHadiths = stores.recentHadith.recentHadiths()
+            recentDuas = stores.recentDua.recentDuas()
             markLoaded()
         }
     }
@@ -75,9 +74,9 @@ struct HomeView: View {
     }
 
     private func reload() {
-        positions = stores!.readingPosition.recentPositions()
-        recentHadiths = stores!.recentHadith.recentHadiths()
-        recentDuas = stores!.recentDua.recentDuas()
+        positions = stores.readingPosition.recentPositions()
+        recentHadiths = stores.recentHadith.recentHadiths()
+        recentDuas = stores.recentDua.recentDuas()
     }
 
     // MARK: - Loading Placeholder

@@ -35,7 +35,7 @@ struct DuaTabView: View {
             if let dest = newDest {
                 coordinator.pendingDuaDestination = nil
                 path = NavigationPath()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                Task { @MainActor in
                     path.append(dest)
                 }
             }

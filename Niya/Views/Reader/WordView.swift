@@ -8,6 +8,8 @@ struct WordView: View {
     let showMeaning: Bool
     let onTap: () -> Void
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
+    @ScaledMetric(relativeTo: .caption) private var transliterationSize: CGFloat = 12
+    @ScaledMetric(relativeTo: .caption2) private var meaningSize: CGFloat = 11
 
     var body: some View {
         Button(action: onTap) {
@@ -22,14 +24,14 @@ struct WordView: View {
 
                 if showTransliteration {
                     Text(word.tr)
-                        .font(.system(size: 12, design: .serif))
+                        .font(.system(size: transliterationSize, design: .serif))
                         .foregroundStyle(secondaryColor)
                         .accessibilityLabel("Transliteration: \(word.tr)")
                 }
 
                 if showMeaning {
                     Text(word.en)
-                        .font(.system(size: 11, design: .serif))
+                        .font(.system(size: meaningSize, design: .serif))
                         .foregroundStyle(secondaryColor)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)

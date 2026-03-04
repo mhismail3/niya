@@ -29,7 +29,7 @@ struct SurahSearchView: View {
         }
         .searchable(text: $searchQuery, prompt: "Surahs, hadiths, and duas")
         .onSubmit(of: .search) {
-            stores!.recentSearch.saveQuery(searchQuery)
+            stores.recentSearch.saveQuery(searchQuery)
             reloadRecents()
         }
         .onAppear { reloadRecents() }
@@ -193,6 +193,6 @@ struct SurahSearchView: View {
     }
 
     private func reloadRecents() {
-        recentQueries = stores!.recentSearch.recentQueries()
+        recentQueries = stores.recentSearch.recentQueries()
     }
 }

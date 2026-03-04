@@ -27,7 +27,8 @@ struct PageReaderView: View {
         .environment(\.layoutDirection, .rightToLeft)
         .onAppear {
             scrolledPage = vm.currentPage
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(500))
                 vm.isSettled = true
             }
         }

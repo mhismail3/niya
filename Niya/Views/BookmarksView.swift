@@ -252,13 +252,13 @@ struct BookmarksView: View {
     }
 
     private func reload() {
-        quranBookmarks = stores!.quranBookmarks.allBookmarks()
-        hadithBookmarks = stores!.hadithBookmarks.allBookmarks()
-        duaBookmarks = stores!.duaBookmarks.allBookmarks()
+        quranBookmarks = stores.quranBookmarks.allBookmarks()
+        hadithBookmarks = stores.hadithBookmarks.allBookmarks()
+        duaBookmarks = stores.duaBookmarks.allBookmarks()
     }
 
     private func loadHadithCollections() async {
-        let bookmarks = stores!.hadithBookmarks.allBookmarks()
+        let bookmarks = stores.hadithBookmarks.allBookmarks()
         for id in Set(bookmarks.map(\.collectionId)) {
             await hadithDataService.loadCollection(id)
         }

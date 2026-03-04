@@ -38,4 +38,8 @@ enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
     var bundleFilename: String {
         "tafsir_\(rawValue)"
     }
+
+    var bundleDirectory: String {
+        "tafsir_\(rawValue)"
+    }
 }

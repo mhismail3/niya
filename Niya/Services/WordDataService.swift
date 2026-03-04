@@ -2,7 +2,7 @@ import Foundation
 
 @Observable
 @MainActor
-final class WordDataService {
+final class WordDataService: WordDataProviding {
     private(set) var isLoaded = false
     private(set) var currentReciter: Reciter?
     private var cache: [Int: [Int: VerseWordData]]?

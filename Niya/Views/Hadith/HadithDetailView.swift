@@ -71,8 +71,8 @@ struct HadithDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .niyaToolbar()
         .onAppear {
-            isBookmarked = stores!.hadithBookmarks.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
-            stores!.recentHadith
+            isBookmarked = stores.hadithBookmarks.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
+            stores.recentHadith
                 .record(collectionId: collectionId, hadithId: hadith.id, hasGrades: hasGrades)
         }
     }
@@ -116,19 +116,21 @@ struct HadithDetailView: View {
     private var actionBar: some View {
         HStack(spacing: 24) {
             Button {
-                stores!.hadithBookmarks.toggle(collectionId: collectionId, hadithId: hadith.id)
+                stores.hadithBookmarks.toggle(collectionId: collectionId, hadithId: hadith.id)
                 isBookmarked.toggle()
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.niyaVerseAction)
                     .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
             }
+            .accessibilityLabel(isBookmarked ? "Remove bookmark" : "Add bookmark")
 
             ShareLink(item: shareText) {
                 Image(systemName: "square.and.arrow.up")
                     .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
+            .accessibilityLabel("Share hadith")
 
             Button {
                 UIPasteboard.general.string = shareText
@@ -137,6 +139,7 @@ struct HadithDetailView: View {
                     .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
+            .accessibilityLabel("Copy hadith text")
 
             Spacer()
         }

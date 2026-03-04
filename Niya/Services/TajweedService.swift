@@ -3,6 +3,7 @@ import SwiftUI
 @Observable
 @MainActor
 final class TajweedService {
+    var lastError: AppError?
     private var cache: [Int: [Int: TajweedVerse]] = [:]
     private var loadingSurahs: Set<Int> = []
     private var failedSurahs: [Int: Date] = [:]
@@ -46,7 +47,17 @@ final class TajweedService {
             AppLogger.network.error("Tajweed fetch failed for surah \(surahId): \(error)")
             loadingSurahs.remove(surahId)
             failedSurahs[surahId] = Date()
+            lastError = .network("Could not load tajweed data. Check your connection.")
+            Task {
+                try? await Task.sleep(for: .seconds(5))
+                self.lastError = nil
+            }
         }
+    }
+
+    func clearCache() {
+        cache.removeAll()
+        failedSurahs.removeAll()
     }
 
     // MARK: - Markup Parser (operates on Unicode scalars to avoid grapheme cluster issues)

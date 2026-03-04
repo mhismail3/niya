@@ -26,33 +26,30 @@ struct ContentView: View {
             .animation(.spring(duration: 0.35), value: autoScrollVM.isEnabled)
             .animation(.spring(duration: 0.35), value: audioPlayerVM.hasActiveSession)
             .task {
-                await dataService.load()
-            }
-            .task {
-                await hadithDataService.load()
-            }
-            .task {
-                await duaDataService.load()
+                async let d: () = dataService.load()
+                async let h: () = hadithDataService.load()
+                async let du: () = duaDataService.load()
+                _ = await (d, h, du)
             }
     }
 
     @ViewBuilder
-    private func tabContent(selection: Binding<String>) -> some View {
+    private func tabContent(selection: Binding<AppTab>) -> some View {
         if #available(iOS 18.0, *) {
             let tv = TabView(selection: selection) {
-                Tab("Home", systemImage: "house", value: "home") {
+                Tab("Home", systemImage: "house", value: AppTab.home) {
                     HomeView()
                 }
-                Tab("Quran", systemImage: "text.book.closed.fill", value: "quran") {
+                Tab("Quran", systemImage: "text.book.closed.fill", value: AppTab.quran) {
                     SurahListView()
                 }
-                Tab("Hadith", systemImage: "books.vertical.fill", value: "hadith") {
+                Tab("Hadith", systemImage: "books.vertical.fill", value: AppTab.hadith) {
                     HadithTabView()
                 }
-                Tab("Dua", systemImage: "quote.bubble.fill", value: "dua") {
+                Tab("Dua", systemImage: "quote.bubble.fill", value: AppTab.dua) {
                     DuaTabView()
                 }
-                Tab("Search", systemImage: "magnifyingglass", value: "search", role: .search) {
+                Tab("Search", systemImage: "magnifyingglass", value: AppTab.search, role: .search) {
                     SurahSearchView()
                 }
             }
@@ -63,11 +60,11 @@ struct ContentView: View {
             }
         } else {
             TabView(selection: selection) {
-                HomeView().tabItem { Label("Home", systemImage: "house") }.tag("home")
-                SurahListView().tabItem { Label("Quran", systemImage: "text.book.closed.fill") }.tag("quran")
-                HadithTabView().tabItem { Label("Hadith", systemImage: "books.vertical.fill") }.tag("hadith")
-                DuaTabView().tabItem { Label("Dua", systemImage: "quote.bubble.fill") }.tag("dua")
-                SurahSearchView().tabItem { Label("Search", systemImage: "magnifyingglass") }.tag("search")
+                HomeView().tabItem { Label("Home", systemImage: "house") }.tag(AppTab.home)
+                SurahListView().tabItem { Label("Quran", systemImage: "text.book.closed.fill") }.tag(AppTab.quran)
+                HadithTabView().tabItem { Label("Hadith", systemImage: "books.vertical.fill") }.tag(AppTab.hadith)
+                DuaTabView().tabItem { Label("Dua", systemImage: "quote.bubble.fill") }.tag(AppTab.dua)
+                SurahSearchView().tabItem { Label("Search", systemImage: "magnifyingglass") }.tag(AppTab.search)
             }
         }
     }

@@ -45,13 +45,14 @@ struct ScrollReaderView: View {
             .onAppear {
                 loadBookmarks()
                 if let target = vm.initialAyahId, target > 1 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    Task { @MainActor in
                         withAnimation(.easeInOut(duration: 0.4)) {
                             proxy.scrollTo(target, anchor: .top)
                         }
                     }
                 }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(500))
                     vm.isSettled = true
                 }
             }
@@ -142,12 +143,12 @@ struct ScrollReaderView: View {
     // MARK: - Bookmarks
 
     private func loadBookmarks() {
-        let all = stores!.quranBookmarks.allBookmarks().filter { $0.surahId == vm.surah.id }
+        let all = stores.quranBookmarks.allBookmarks().filter { $0.surahId == vm.surah.id }
         bookmarkedAyahs = Set(all.map(\.ayahId))
     }
 
     private func toggleBookmark(_ ayahId: Int) {
-        stores!.quranBookmarks.toggle(surahId: vm.surah.id, ayahId: ayahId)
+        stores.quranBookmarks.toggle(surahId: vm.surah.id, ayahId: ayahId)
         if bookmarkedAyahs.contains(ayahId) {
             bookmarkedAyahs.remove(ayahId)
         } else {

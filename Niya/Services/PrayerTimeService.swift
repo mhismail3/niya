@@ -42,7 +42,7 @@ final class PrayerTimeService {
         )
         todayTimes = result
 
-        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+        guard let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: now) else { return }
         tomorrowTimes = PrayerTimeCalculator.calculate(
             date: tomorrow,
             location: location,

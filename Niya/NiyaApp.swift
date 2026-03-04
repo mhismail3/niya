@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 import TipKit
 import UserNotifications
+import UIKit
 
 @main
 struct NiyaApp: App {
@@ -19,7 +20,7 @@ struct NiyaApp: App {
     @State private var prayerTimeService = PrayerTimeService()
     @State private var autoScrollVM = AutoScrollViewModel()
     @State private var downloadManager: DownloadManager
-    @State private var storeContainer: StoreContainer?
+    @State private var storeContainer: StoreContainer
 
     private let container: ModelContainer
 
@@ -99,6 +100,11 @@ struct NiyaApp: App {
                     } else if phase == .background {
                         prayerTimeService.stopCountdown()
                     }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in
+                    dataService.clearCache()
+                    tafsirService.clearCache()
+                    tajweedService.clearCache()
                 }
         }
     }

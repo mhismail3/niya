@@ -24,7 +24,7 @@ struct DuaNavDestination: Hashable {
 @Observable
 @MainActor
 final class NavigationCoordinator {
-    var selectedTab: String = "home"
+    var selectedTab: AppTab = .home
     var isReaderVisible = false
     var pendingQuranDestination: QuranNavDestination?
     var pendingHadithDestination: HadithNavDestination?
@@ -32,16 +32,16 @@ final class NavigationCoordinator {
 
     func navigateToAyah(surahId: Int, ayahId: Int) {
         pendingQuranDestination = QuranNavDestination(surahId: surahId, ayahId: ayahId)
-        selectedTab = "quran"
+        selectedTab = .quran
     }
 
     func navigateToHadith(collectionId: String, hadithId: Int, hasGrades: Bool) {
         pendingHadithDestination = HadithNavDestination(collectionId: collectionId, hadithId: hadithId, hasGrades: hasGrades)
-        selectedTab = "hadith"
+        selectedTab = .hadith
     }
 
     func navigateToDua(categoryId: Int, duaId: Int) {
         pendingDuaDestination = DuaNavDestination(categoryId: categoryId, duaId: duaId)
-        selectedTab = "dua"
+        selectedTab = .dua
     }
 }

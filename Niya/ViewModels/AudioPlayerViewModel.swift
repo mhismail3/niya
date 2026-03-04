@@ -10,11 +10,11 @@ final class AudioPlayerViewModel {
     var loopCount: Int = 1
     private(set) var currentLoop = 0
 
-    private let audioService: AudioService
-    private let dataService: QuranDataService
-    private let wordDataService: WordDataService
+    private let audioService: any AudioPlaying
+    private let dataService: any QuranDataProviding
+    private let wordDataService: any WordDataProviding
 
-    init(audioService: AudioService, dataService: QuranDataService, wordDataService: WordDataService, reciter: Reciter = .alAfasy) {
+    init(audioService: any AudioPlaying, dataService: any QuranDataProviding, wordDataService: any WordDataProviding, reciter: Reciter = .alAfasy) {
         self.audioService = audioService
         self.dataService = dataService
         self.wordDataService = wordDataService
@@ -149,10 +149,10 @@ final class AudioPlayerViewModel {
 
     func playSurah(_ surahId: Int) {
         if let localURL = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter) {
-            audioService.play(url: localURL, surahId: surahId)
+            audioService.play(url: localURL, verseID: nil, surahId: surahId)
         } else {
             let url = audioService.surahStreamURL(surahId: surahId, reciter: selectedReciter)
-            audioService.play(url: url, surahId: surahId)
+            audioService.play(url: url, verseID: nil, surahId: surahId)
         }
         updateNowPlaying()
     }

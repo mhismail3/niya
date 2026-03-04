@@ -6,15 +6,7 @@ import Testing
 struct NetworkClientDownloadTests {
 
     @Test func downloadDelegateProgressCallbackFires() async throws {
-        var progressValues: [Double] = []
-        let client = NetworkClient()
-
-        // Use a small known-good URL to test real delegate-based download
-        // We'll test the delegate class directly instead of hitting network
-        let delegate = DownloadDelegate { fraction in
-            progressValues.append(fraction)
-        }
-
+        let delegate = DownloadDelegate { _ in }
         #expect(delegate.onProgress != nil)
     }
 

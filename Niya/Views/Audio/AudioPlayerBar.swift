@@ -60,10 +60,10 @@ struct AudioPlayerBar: View {
                 if isFollowAlong {
                     guard let surahId = followAlongVM.currentSurahId,
                           let ayahId = followAlongVM.currentVerseId else { return }
-                    stores!.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
+                    stores.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
                 } else {
                     guard let vid = vm.currentVerseID else { return }
-                    stores!.quranBookmarks.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
+                    stores.quranBookmarks.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
                 }
                 isBookmarked.toggle()
                 NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
@@ -121,7 +121,7 @@ struct AudioPlayerBar: View {
                 if !isFollowAlong { isBookmarked = false }
                 return
             }
-            isBookmarked = stores!.quranBookmarks
+            isBookmarked = stores.quranBookmarks
                 .isBookmarked(surahId: vid.surahId, ayahId: vid.ayahId)
         }
         .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
@@ -129,7 +129,7 @@ struct AudioPlayerBar: View {
                 if isFollowAlong { isBookmarked = false }
                 return
             }
-            isBookmarked = stores!.quranBookmarks
+            isBookmarked = stores.quranBookmarks
                 .isBookmarked(surahId: surahId, ayahId: ayahId)
         }
     }

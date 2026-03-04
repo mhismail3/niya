@@ -2,7 +2,7 @@ import Foundation
 
 @Observable
 @MainActor
-final class QuranDataService {
+final class QuranDataService: QuranDataProviding {
     var surahs: [Surah] = []
     var isLoaded = false
     var loadError: String?
@@ -14,6 +14,8 @@ final class QuranDataService {
     private var verseCounts: [Int] = []
     private var translationOverlays: [(edition: TranslationEdition, overlay: [String: String])] = []
     private var versesCache: [String: [Verse]] = [:]
+    private var cacheOrder: [String] = []
+    private let maxCacheEntries = 20
 
     func load() async {
         guard !isLoaded else { return }
@@ -75,6 +77,12 @@ final class QuranDataService {
             return v
         }
         versesCache[cacheKey] = result
+        cacheOrder.removeAll { $0 == cacheKey }
+        cacheOrder.append(cacheKey)
+        while versesCache.count > maxCacheEntries, let oldest = cacheOrder.first {
+            cacheOrder.removeFirst()
+            versesCache.removeValue(forKey: oldest)
+        }
         return result
     }
 
@@ -88,7 +96,7 @@ final class QuranDataService {
         for verse in all {
             grouped[verse.page, default: []].append(verse)
         }
-        return grouped.keys.sorted().map { grouped[$0]! }
+        return grouped.keys.sorted().compactMap { grouped[$0] }
     }
 
     func absoluteVerseNumber(surah: Int, ayah: Int) -> Int {
@@ -133,6 +141,11 @@ final class QuranDataService {
 
     func isTranslationSelected(_ edition: TranslationEdition) -> Bool {
         selectedTranslations.contains { $0.id == edition.id }
+    }
+
+    func clearCache() {
+        versesCache.removeAll()
+        cacheOrder.removeAll()
     }
 
     private func saveSelectedIds() {

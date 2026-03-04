@@ -20,11 +20,11 @@ final class FollowAlongViewModel {
     private var trackingTask: Task<Void, Never>?
     private var wordPlayer: AVPlayer?
     private var tapObserver: NSObjectProtocol?
-    private let audioService: AudioService
-    private let wordDataService: WordDataService
-    private let dataService: QuranDataService
+    private let audioService: any AudioPlaying
+    private let wordDataService: any WordDataProviding
+    private let dataService: any QuranDataProviding
 
-    init(audioService: AudioService, wordDataService: WordDataService, dataService: QuranDataService) {
+    init(audioService: any AudioPlaying, wordDataService: any WordDataProviding, dataService: any QuranDataProviding) {
         self.audioService = audioService
         self.wordDataService = wordDataService
         self.dataService = dataService
@@ -205,7 +205,7 @@ final class FollowAlongViewModel {
         currentWordIndex = 0
         currentLoop = 0
         seekingToStart = true
-        audioService.seekTo(ms: verseData.vs)
+        audioService.seekTo(ms: verseData.vs, completion: nil)
         audioService.setRate(playbackSpeed)
         updateNowPlaying()
         startWordTracking()
@@ -255,7 +255,7 @@ final class FollowAlongViewModel {
                   let verseData = wordDataService.words(surahId: surahId, ayahId: verseId) else { return }
             currentWordIndex = 0
             seekingToStart = true
-            audioService.seekTo(ms: verseData.vs)
+            audioService.seekTo(ms: verseData.vs, completion: nil)
             audioService.setRate(playbackSpeed)
             startWordTracking()
         } else {

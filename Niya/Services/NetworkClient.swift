@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 enum NetworkError: LocalizedError {
     case badStatus(Int)
@@ -14,7 +15,7 @@ enum NetworkError: LocalizedError {
     }
 }
 
-struct NetworkClient: Sendable {
+struct NetworkClient: Networking, Sendable {
     static let shared = NetworkClient()
 
     private let session: URLSession
@@ -48,6 +49,34 @@ struct NetworkClient: Sendable {
             throw NetworkError.badStatus(http.statusCode)
         }
         return (data, http)
+    }
+
+    private static let retryableStatuses: Set<Int> = [408, 429, 500, 502, 503, 504]
+
+    func fetchWithRetry<T: Decodable & Sendable>(
+        _ type: T.Type,
+        from url: URL,
+        maxAttempts: Int = 3
+    ) async throws -> T {
+        var lastError: Error?
+        for attempt in 0..<maxAttempts {
+            do {
+                return try await fetch(type, from: url)
+            } catch let error as NetworkError {
+                lastError = error
+                guard case .badStatus(let code) = error,
+                      Self.retryableStatuses.contains(code) else { throw error }
+                guard attempt < maxAttempts - 1 else { break }
+                let delay = Double(1 << attempt) * 0.5
+                try? await Task.sleep(for: .seconds(delay))
+            } catch {
+                lastError = error
+                guard attempt < maxAttempts - 1 else { break }
+                let delay = Double(1 << attempt) * 0.5
+                try? await Task.sleep(for: .seconds(delay))
+            }
+        }
+        throw lastError ?? NetworkError.requestFailed(URLError(.unknown))
     }
 
     func download(from url: URL) async throws -> URL {
@@ -85,11 +114,25 @@ struct NetworkClient: Sendable {
 }
 
 final class DownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
-    let onProgress: ((Double) -> Void)?
-    var continuation: CheckedContinuation<URL, Error>?
-    var task: URLSessionDownloadTask?
+    let onProgress: (@Sendable (Double) -> Void)?
+    private let state = OSAllocatedUnfairLock(initialState: DelegateState())
 
-    init(onProgress: ((Double) -> Void)?) {
+    struct DelegateState {
+        var continuation: CheckedContinuation<URL, Error>?
+        var task: URLSessionDownloadTask?
+    }
+
+    var continuation: CheckedContinuation<URL, Error>? {
+        get { state.withLock { $0.continuation } }
+        set { state.withLock { $0.continuation = newValue } }
+    }
+
+    var task: URLSessionDownloadTask? {
+        get { state.withLock { $0.task } }
+        set { state.withLock { $0.task = newValue } }
+    }
+
+    init(onProgress: (@Sendable (Double) -> Void)?) {
         self.onProgress = onProgress
     }
 
@@ -98,15 +141,18 @@ final class DownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked S
         if totalBytesExpectedToWrite > 0 {
             fraction = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
         } else {
-            // Server didn't send Content-Length; estimate based on typical surah size (~5MB)
             fraction = min(Double(totalBytesWritten) / 5_000_000, 0.95)
         }
         onProgress?(fraction)
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        guard let cont = continuation else { return }
-        continuation = nil
+        let cont: CheckedContinuation<URL, Error>? = state.withLock {
+            let c = $0.continuation
+            $0.continuation = nil
+            return c
+        }
+        guard let cont else { return }
 
         let tempDir = FileManager.default.temporaryDirectory
         let dest = tempDir.appendingPathComponent(UUID().uuidString + ".tmp")
@@ -125,8 +171,13 @@ final class DownloadDelegate: NSObject, URLSessionDownloadDelegate, @unchecked S
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: (any Error)?) {
-        guard let error, let cont = continuation else { return }
-        continuation = nil
+        guard let error else { return }
+        let cont: CheckedContinuation<URL, Error>? = state.withLock {
+            let c = $0.continuation
+            $0.continuation = nil
+            return c
+        }
+        guard let cont else { return }
         cont.resume(throwing: NetworkError.requestFailed(error))
     }
 }

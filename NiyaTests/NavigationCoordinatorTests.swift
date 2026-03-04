@@ -8,7 +8,7 @@ struct NavigationCoordinatorTests {
 
     @Test func initialState() {
         let coordinator = NavigationCoordinator()
-        #expect(coordinator.selectedTab == "home")
+        #expect(coordinator.selectedTab == .home)
         #expect(coordinator.pendingQuranDestination == nil)
         #expect(coordinator.pendingHadithDestination == nil)
         #expect(coordinator.pendingDuaDestination == nil)
@@ -18,7 +18,7 @@ struct NavigationCoordinatorTests {
     @Test func navigateToAyah_setsTabAndDestination() {
         let coordinator = NavigationCoordinator()
         coordinator.navigateToAyah(surahId: 2, ayahId: 255)
-        #expect(coordinator.selectedTab == "quran")
+        #expect(coordinator.selectedTab == .quran)
         #expect(coordinator.pendingQuranDestination?.surahId == 2)
         #expect(coordinator.pendingQuranDestination?.ayahId == 255)
     }
@@ -26,7 +26,7 @@ struct NavigationCoordinatorTests {
     @Test func navigateToHadith_setsTabAndDestination() {
         let coordinator = NavigationCoordinator()
         coordinator.navigateToHadith(collectionId: "bukhari", hadithId: 1, hasGrades: true)
-        #expect(coordinator.selectedTab == "hadith")
+        #expect(coordinator.selectedTab == .hadith)
         #expect(coordinator.pendingHadithDestination?.collectionId == "bukhari")
         #expect(coordinator.pendingHadithDestination?.hadithId == 1)
         #expect(coordinator.pendingHadithDestination?.hasGrades == true)
@@ -35,7 +35,7 @@ struct NavigationCoordinatorTests {
     @Test func navigateToDua_setsTabAndDestination() {
         let coordinator = NavigationCoordinator()
         coordinator.navigateToDua(categoryId: 5, duaId: 3)
-        #expect(coordinator.selectedTab == "dua")
+        #expect(coordinator.selectedTab == .dua)
         #expect(coordinator.pendingDuaDestination?.categoryId == 5)
         #expect(coordinator.pendingDuaDestination?.duaId == 3)
     }
@@ -43,15 +43,15 @@ struct NavigationCoordinatorTests {
     @Test func sequentialNavigations_clearPriorDestinations() {
         let coordinator = NavigationCoordinator()
         coordinator.navigateToAyah(surahId: 1, ayahId: 1)
-        #expect(coordinator.selectedTab == "quran")
+        #expect(coordinator.selectedTab == .quran)
 
         coordinator.navigateToHadith(collectionId: "muslim", hadithId: 10, hasGrades: true)
-        #expect(coordinator.selectedTab == "hadith")
+        #expect(coordinator.selectedTab == .hadith)
         #expect(coordinator.pendingQuranDestination?.surahId == 1)
 
         coordinator.pendingQuranDestination = nil
         coordinator.navigateToDua(categoryId: 1, duaId: 1)
-        #expect(coordinator.selectedTab == "dua")
+        #expect(coordinator.selectedTab == .dua)
         #expect(coordinator.pendingQuranDestination == nil)
     }
 }

@@ -24,6 +24,7 @@ struct VerseRowView: View {
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @AppStorage(StorageKey.translationIsRTL) private var translationIsRTL: Bool = false
+    @ScaledMetric(relativeTo: .caption2) private var verseBadgeSize: CGFloat = 24
     @State private var activeTap: TajweedTap?
     @State private var tooltipWidth: CGFloat = 160
     @State private var dismissTask: Task<Void, Never>?
@@ -251,7 +252,7 @@ struct VerseRowView: View {
     private var verseNumberBadge: some View {
         ZStack {
             Image(systemName: "diamond")
-                .font(.system(size: 24))
+                .font(.system(size: verseBadgeSize))
                 .foregroundStyle(Color.niyaTeal.opacity(0.15))
             Text("\(verse.id)")
                 .font(.system(.caption2, design: .rounded, weight: .semibold))

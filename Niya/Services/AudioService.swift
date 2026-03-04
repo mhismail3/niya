@@ -14,7 +14,7 @@ struct VerseBoundary: Sendable {
 
 @Observable
 @MainActor
-final class AudioService {
+final class AudioService: AudioPlaying {
     var isPlaying = false
     var isLoading = false
     var currentVerseID: VerseID?
@@ -28,6 +28,7 @@ final class AudioService {
     private var currentItem: AVPlayerItem?
     private var boundaryObserver: Any?
     private var verseTrackingObserver: Any?
+    private var fadeTask: Task<Void, Never>?
 
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -287,11 +288,14 @@ final class AudioService {
 
     private func fadeOutAndStop(duration: TimeInterval = 0.5, steps: Int = 15) {
         guard let player else { stop(); return }
+        fadeTask?.cancel()
         let interval = duration / Double(steps)
         let initialVolume = player.volume
-        for i in 1...steps {
-            DispatchQueue.main.asyncAfter(deadline: .now() + interval * Double(i)) { [weak self] in
-                guard let self else { return }
+        fadeTask = Task { [weak self] in
+            for i in 1...steps {
+                guard !Task.isCancelled else { return }
+                try? await Task.sleep(for: .milliseconds(Int(interval * 1000)))
+                guard !Task.isCancelled, let self else { return }
                 if i == steps {
                     self.stop()
                 } else {
@@ -302,6 +306,8 @@ final class AudioService {
     }
 
     func stop() {
+        fadeTask?.cancel()
+        fadeTask = nil
         if let obs = boundaryObserver, let player {
             player.removeTimeObserver(obs)
         }

@@ -24,8 +24,17 @@ final class StoreContainer {
     }
 }
 
-private struct StoreContainerKey: EnvironmentKey {
-    static let defaultValue: StoreContainer? = nil
+private struct StoreContainerKey: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: StoreContainer = {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try! ModelContainer(
+            for: AudioDownload.self, ReadingPosition.self, RecentSearch.self,
+            HadithBookmark.self, QuranBookmark.self, DuaBookmark.self,
+            RecentHadith.self, RecentDua.self,
+            configurations: config
+        )
+        return StoreContainer(modelContext: container.mainContext)
+    }()
 }
 
 private struct HighlightedAyahKey: EnvironmentKey {
@@ -33,7 +42,7 @@ private struct HighlightedAyahKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    var stores: StoreContainer? {
+    var stores: StoreContainer {
         get { self[StoreContainerKey.self] }
         set { self[StoreContainerKey.self] = newValue }
     }

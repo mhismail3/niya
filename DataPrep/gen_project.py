@@ -71,6 +71,13 @@ SWIFT_FILES = [
     "Niya/Models/UserLocation.swift",
     "Niya/Models/CalculationMethod.swift",
     "Niya/Models/PrayerTime.swift",
+    "Niya/Models/AppError.swift",
+    "Niya/Models/Tab.swift",
+    # Protocols
+    "Niya/Protocols/AudioPlaying.swift",
+    "Niya/Protocols/QuranDataProviding.swift",
+    "Niya/Protocols/WordDataProviding.swift",
+    "Niya/Protocols/Networking.swift",
     # Services
     "Niya/Services/QuranDataService.swift",
     "Niya/Services/AudioService.swift",
@@ -126,6 +133,7 @@ SWIFT_FILES = [
     "Niya/Views/Home/RecentHadithCard.swift",
     "Niya/Views/Home/RecentDuaCard.swift",
     # Views/Shared
+    "Niya/Views/Shared/ErrorBannerView.swift",
     "Niya/Views/BookmarksView.swift",
     # Views/Settings
     "Niya/Views/Settings/SettingsView.swift",
@@ -162,6 +170,7 @@ SWIFT_FILES = [
     "Niya/Design/NiyaToolbar.swift",
     "Niya/Design/FlowLayout.swift",
     "Niya/Design/ViewCompat.swift",
+    "Niya/Design/LayoutConstants.swift",
 ]
 
 # Resource files — paths relative to project root
@@ -205,10 +214,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/translation_ms_basmeih.json",
     "Niya/Resources/Data/translation_zh_jian.json",
     "Niya/Resources/Data/translation_my_ghazi.json",
-    "Niya/Resources/Data/tafsir_ibn_kathir.json",
-    "Niya/Resources/Data/tafsir_maarif_ul_quran.json",
-    "Niya/Resources/Data/tafsir_ibn_abbas.json",
-    "Niya/Resources/Data/tafsir_tazkirul_quran.json",
+] + [
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
@@ -231,6 +237,8 @@ TEST_FILES = [
     "NiyaTests/TajweedServiceTests.swift",
     "NiyaTests/ReciterTests.swift",
     "NiyaTests/AudioPlayerViewModelTests.swift",
+    "NiyaTests/AudioPlayerViewModelMockTests.swift",
+    "NiyaTests/FollowAlongViewModelMockTests.swift",
     "NiyaTests/HadithDataIntegrityTests.swift",
     "NiyaTests/TranslationTests.swift",
     "NiyaTests/TafsirEditionTests.swift",
@@ -250,6 +258,23 @@ TEST_FILES = [
     "NiyaTests/NetworkClientTests.swift",
     "NiyaTests/DownloadManagerTests.swift",
     "NiyaTests/NetworkClientDownloadTests.swift",
+    "NiyaTests/NetworkRetryTests.swift",
+    "NiyaTests/TafsirCacheTests.swift",
+    "NiyaTests/StoreContainerTests.swift",
+    "NiyaTests/QuranDataServiceEdgeTests.swift",
+    "NiyaTests/TajweedParseTests.swift",
+    "NiyaTests/Mocks/MockAudioService.swift",
+    "NiyaTests/Mocks/MockQuranDataService.swift",
+    "NiyaTests/Mocks/MockWordDataService.swift",
+    "NiyaTests/Mocks/MockNetworkClient.swift",
+]
+
+# Folder references — copied as directories preserving structure
+FOLDER_REFS = [
+    "Niya/Resources/Data/tafsir_ibn_kathir",
+    "Niya/Resources/Data/tafsir_maarif_ul_quran",
+    "Niya/Resources/Data/tafsir_ibn_abbas",
+    "Niya/Resources/Data/tafsir_tazkirul_quran",
 ]
 
 # Assets catalog — treated specially
@@ -303,6 +328,7 @@ ID_CONTAINER_ITEM_PROXY = new_id()
 # Sub-groups inside Niya/
 SUBGROUP_IDS = {
     "Models":             new_id(),
+    "Protocols":          new_id(),
     "Services":           new_id(),
     "ViewModels":         new_id(),
     "Views":              new_id(),
@@ -310,6 +336,7 @@ SUBGROUP_IDS = {
     "Views/Reader":       new_id(),
     "Views/Audio":        new_id(),
     "Views/Home":         new_id(),
+    "Views/Shared":       new_id(),
     "Views/Settings":     new_id(),
     "Views/Hadith":       new_id(),
     "Views/Dua":          new_id(),
@@ -321,12 +348,18 @@ SUBGROUP_IDS = {
     "Resources/Fonts":    new_id(),
 }
 
+# Sub-group inside NiyaTests/
+ID_MOCKS_GROUP = new_id()
+
 # Per-file IDs
 swift_file_ids   = {p: new_id() for p in SWIFT_FILES}
 swift_build_ids  = {p: new_id() for p in SWIFT_FILES}
 
 resource_file_ids  = {p: new_id() for p in RESOURCE_FILES}
 resource_build_ids = {p: new_id() for p in RESOURCE_FILES}
+
+folder_file_ids  = {p: new_id() for p in FOLDER_REFS}
+folder_build_ids = {p: new_id() for p in FOLDER_REFS}
 
 test_file_ids  = {p: new_id() for p in TEST_FILES}
 test_build_ids = {p: new_id() for p in TEST_FILES}
@@ -390,6 +423,12 @@ def section_pbx_build_file():
         name = basename(path)
         lines.append(f"\t\t{bid} /* {name} in Resources */ = {{isa = PBXBuildFile; fileRef = {fid} /* {name} */; }};")
 
+    for path in FOLDER_REFS:
+        bid = folder_build_ids[path]
+        fid = folder_file_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t{bid} /* {name} in Resources */ = {{isa = PBXBuildFile; fileRef = {fid} /* {name} */; }};")
+
     lines.append(f"\t\t{ID_ASSETS_BUILD} /* Assets.xcassets in Resources */ = {{isa = PBXBuildFile; fileRef = {ID_ASSETS_FILE} /* Assets.xcassets */; }};")
 
     for fw_name, fw_short in FRAMEWORKS:
@@ -420,6 +459,11 @@ def section_pbx_file_reference():
         name = basename(path)
         ft = file_type_for(path)
         lines.append(f"\t\t{fid} /* {name} */ = {{isa = PBXFileReference; lastKnownFileType = {ft}; path = {pbx_string(name)}; sourceTree = \"<group>\"; }};")
+
+    for path in FOLDER_REFS:
+        fid = folder_file_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t{fid} /* {name} */ = {{isa = PBXFileReference; lastKnownFileType = folder; path = {pbx_string(name)}; sourceTree = \"<group>\"; }};")
 
     lines.append(f"\t\t{ID_ASSETS_FILE} /* Assets.xcassets */ = {{isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = \"<group>\"; }};")
 
@@ -524,6 +568,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/NavigationCoordinator.swift"], "NavigationCoordinator.swift"),
         (ID_INFOPLIST,                              "Info.plist"),
         (SUBGROUP_IDS["Models"],                   "Models"),
+        (SUBGROUP_IDS["Protocols"],                "Protocols"),
         (SUBGROUP_IDS["Services"],                 "Services"),
         (SUBGROUP_IDS["ViewModels"],               "ViewModels"),
         (SUBGROUP_IDS["Views"],                    "Views"),
@@ -591,7 +636,17 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/UserLocation.swift"], "UserLocation.swift"),
         (swift_file_ids["Niya/Models/CalculationMethod.swift"], "CalculationMethod.swift"),
         (swift_file_ids["Niya/Models/PrayerTime.swift"], "PrayerTime.swift"),
+        (swift_file_ids["Niya/Models/AppError.swift"], "AppError.swift"),
+        (swift_file_ids["Niya/Models/Tab.swift"], "Tab.swift"),
     ], path_str="Models")
+
+    # Protocols
+    emit_subgroup(SUBGROUP_IDS["Protocols"], "Protocols", "Protocols", [
+        (swift_file_ids["Niya/Protocols/AudioPlaying.swift"], "AudioPlaying.swift"),
+        (swift_file_ids["Niya/Protocols/QuranDataProviding.swift"], "QuranDataProviding.swift"),
+        (swift_file_ids["Niya/Protocols/WordDataProviding.swift"], "WordDataProviding.swift"),
+        (swift_file_ids["Niya/Protocols/Networking.swift"], "Networking.swift"),
+    ], path_str="Protocols")
 
     # Services
     emit_subgroup(SUBGROUP_IDS["Services"], "Services", "Services", [
@@ -635,6 +690,7 @@ def section_pbx_group():
         (SUBGROUP_IDS["Views/Reader"],    "Reader"),
         (SUBGROUP_IDS["Views/Audio"],     "Audio"),
         (SUBGROUP_IDS["Views/Home"],      "Home"),
+        (SUBGROUP_IDS["Views/Shared"],    "Shared"),
         (SUBGROUP_IDS["Views/Settings"],  "Settings"),
         (SUBGROUP_IDS["Views/Hadith"],    "Hadith"),
         (SUBGROUP_IDS["Views/Dua"],       "Dua"),
@@ -677,6 +733,11 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Home/RecentHadithCard.swift"], "RecentHadithCard.swift"),
         (swift_file_ids["Niya/Views/Home/RecentDuaCard.swift"], "RecentDuaCard.swift"),
     ], path_str="Home")
+
+    # Views/Shared
+    emit_subgroup(SUBGROUP_IDS["Views/Shared"], "Shared", "Views/Shared", [
+        (swift_file_ids["Niya/Views/Shared/ErrorBannerView.swift"], "ErrorBannerView.swift"),
+    ], path_str="Shared")
 
     # Views/Settings
     emit_subgroup(SUBGROUP_IDS["Views/Settings"], "Settings", "Views/Settings", [
@@ -729,6 +790,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Design/NiyaToolbar.swift"], "NiyaToolbar.swift"),
         (swift_file_ids["Niya/Design/FlowLayout.swift"], "FlowLayout.swift"),
         (swift_file_ids["Niya/Design/ViewCompat.swift"], "ViewCompat.swift"),
+        (swift_file_ids["Niya/Design/LayoutConstants.swift"], "LayoutConstants.swift"),
     ], path_str="Design")
 
     # Resources (parent)
@@ -761,8 +823,8 @@ def section_pbx_group():
         fname = f"hadith_{coll_id}.json"
         data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
     for taf_id in ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran"]:
-        fname = f"tafsir_{taf_id}.json"
-        data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
+        path = f"Niya/Resources/Data/tafsir_{taf_id}"
+        data_children.append((folder_file_ids[path], f"tafsir_{taf_id}"))
     emit_subgroup(SUBGROUP_IDS["Resources/Data"], "Data", "Resources/Data", data_children, path_str="Data")
 
     # Resources/Fonts
@@ -772,9 +834,14 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf"], "NotoNaskhArabic-Regular.ttf"),
     ], path_str="Fonts")
 
-    # NiyaTests group
-    test_children = [(test_file_ids[p], basename(p)) for p in TEST_FILES]
-    emit_subgroup(ID_TESTS_GROUP, "NiyaTests", "NiyaTests", test_children, path_str="NiyaTests")
+    # NiyaTests group — separate top-level tests from Mocks subgroup
+    test_top_children = [(test_file_ids[p], basename(p)) for p in TEST_FILES if "/Mocks/" not in p]
+    test_top_children.append((ID_MOCKS_GROUP, "Mocks"))
+    emit_subgroup(ID_TESTS_GROUP, "NiyaTests", "NiyaTests", test_top_children, path_str="NiyaTests")
+
+    # NiyaTests/Mocks subgroup
+    mock_children = [(test_file_ids[p], basename(p)) for p in TEST_FILES if "/Mocks/" in p]
+    emit_subgroup(ID_MOCKS_GROUP, "Mocks", "NiyaTests/Mocks", mock_children, path_str="Mocks")
 
     lines.append("/* End PBXGroup section */")
     return "\n".join(lines)
@@ -887,6 +954,10 @@ def section_pbx_resources_build_phase():
     ]
     for path in RESOURCE_FILES:
         bid = resource_build_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t\t\t{bid} /* {name} in Resources */,")
+    for path in FOLDER_REFS:
+        bid = folder_build_ids[path]
         name = basename(path)
         lines.append(f"\t\t\t\t{bid} /* {name} in Resources */,")
     lines.append(f"\t\t\t\t{ID_ASSETS_BUILD} /* Assets.xcassets in Resources */,")

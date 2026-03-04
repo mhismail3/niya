@@ -85,8 +85,8 @@ struct DuaDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .niyaToolbar()
         .onAppear {
-            isBookmarked = stores!.duaBookmarks.isBookmarked(categoryId: categoryId, duaId: dua.id)
-            stores!.recentDua
+            isBookmarked = stores.duaBookmarks.isBookmarked(categoryId: categoryId, duaId: dua.id)
+            stores.recentDua
                 .record(categoryId: categoryId, duaId: dua.id)
         }
     }
@@ -119,19 +119,21 @@ struct DuaDetailView: View {
     private var actionBar: some View {
         HStack(spacing: 24) {
             Button {
-                stores!.duaBookmarks.toggle(categoryId: categoryId, duaId: dua.id)
+                stores.duaBookmarks.toggle(categoryId: categoryId, duaId: dua.id)
                 isBookmarked.toggle()
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.niyaVerseAction)
                     .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
             }
+            .accessibilityLabel(isBookmarked ? "Remove bookmark" : "Add bookmark")
 
             ShareLink(item: shareText) {
                 Image(systemName: "square.and.arrow.up")
                     .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
+            .accessibilityLabel("Share dua")
 
             Button {
                 UIPasteboard.general.string = shareText
@@ -140,6 +142,7 @@ struct DuaDetailView: View {
                     .font(.niyaVerseAction)
                     .foregroundStyle(Color.niyaSecondary)
             }
+            .accessibilityLabel("Copy dua text")
 
             Spacer()
         }

@@ -66,11 +66,11 @@ struct HadithBookmarksView: View {
     }
 
     private func reload() {
-        bookmarks = stores!.hadithBookmarks.allBookmarks()
+        bookmarks = stores.hadithBookmarks.allBookmarks()
     }
 
     private func loadBookmarkedCollections() async {
-        let all = stores!.hadithBookmarks.allBookmarks()
+        let all = stores.hadithBookmarks.allBookmarks()
         let collectionIds = Set(all.map(\.collectionId))
         for id in collectionIds {
             await dataService.loadCollection(id)
