@@ -21,17 +21,13 @@ struct MediumWidgetView: View {
             Spacer()
 
             if let next = entry.nextPrayer {
-                HStack(spacing: 4) {
-                    Text(next.time, style: .relative)
-                    Spacer()
-                    Text("until \(next.name)")
-                }
-                .font(.system(.headline, design: .serif, weight: .medium))
-                .foregroundStyle(Color.niyaTeal)
-                .lineLimit(1)
-            }
-
-            if entry.isFallback {
+                (Text(next.time, style: .relative) + Text(" until \(next.name)"))
+                    .font(.system(.headline, design: .serif, weight: .medium))
+                    .foregroundStyle(Color.niyaTeal)
+                    .lineLimit(1)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else if entry.isFallback {
                 Text("Open Niya to configure")
                     .font(.system(.caption2, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)

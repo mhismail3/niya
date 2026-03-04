@@ -5,47 +5,58 @@ struct SmallWidgetView: View {
     let entry: PrayerTimeEntry
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if let next = entry.nextPrayer {
-                HStack(spacing: 4) {
-                    Image(systemName: next.icon)
-                        .font(.caption)
-                    Text(next.name)
-                        .font(.system(.subheadline, design: .serif, weight: .semibold))
-                }
-                .foregroundStyle(Color.niyaGold)
+        if let next = entry.nextPrayer {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(HijriFormatter.format(date: entry.date, includeYear: true))
+                    .font(.system(.caption2, design: .serif))
+                    .foregroundStyle(Color.niyaSecondary)
 
                 Spacer()
 
                 Text(next.time, style: .relative)
-                    .font(.system(.subheadline, design: .serif, weight: .medium))
+                    .font(.system(.title3, design: .serif, weight: .medium))
                     .foregroundStyle(Color.niyaTeal)
                     .lineLimit(1)
 
+                Text("until \(next.name)")
+                    .font(.system(.headline, design: .serif, weight: .medium))
+                    .foregroundStyle(Color.niyaTeal)
+
                 Spacer()
 
-                Text(formattedTime(next.time))
-                    .font(.system(.caption, design: .serif))
-                    .monospacedDigit()
-                    .foregroundStyle(Color.niyaText)
+                upcomingPrayers(after: next)
 
-                Text(HijriFormatter.format(date: entry.date, includeYear: false))
+                Text(entry.data.locationName)
                     .font(.system(.caption2, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
 
-                if entry.isFallback {
-                    Text("Open Niya to set up")
+    private func upcomingPrayers(after current: WidgetPrayer) -> some View {
+        let upcoming = entry.data.prayers.filter { $0.time > current.time }
+        let display = Array(upcoming.prefix(2))
+        return HStack(spacing: 0) {
+            ForEach(display, id: \.name) { prayer in
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(prayer.name)
                         .font(.system(.caption2, design: .serif))
-                        .foregroundStyle(Color.niyaSecondary)
+                    Text(formattedTime(prayer.time))
+                        .font(.system(.caption, design: .serif))
+                        .monospacedDigit()
                 }
+                .foregroundStyle(Color.niyaText)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 6)
     }
 
     private func formattedTime(_ date: Date) -> String {
         let f = DateFormatter()
-        f.dateFormat = "h:mm a"
+        f.dateFormat = "h:mm"
         f.timeZone = TimeZone(identifier: entry.data.timezoneIdentifier) ?? .current
         return f.string(from: date)
     }
