@@ -42,6 +42,8 @@ SWIFT_FILES = [
     "Niya/ContentView.swift",
     "Niya/AppStorageKeys.swift",
     "Niya/NavigationCoordinator.swift",
+    # Shared
+    "Niya/Shared/SharedConstants.swift",
     # Models
     "Niya/Models/QuranScript.swift",
     "Niya/Models/Surah.swift",
@@ -97,6 +99,7 @@ SWIFT_FILES = [
     "Niya/Services/PrayerTimeCalculator.swift",
     "Niya/Services/LocationService.swift",
     "Niya/Services/PrayerTimeService.swift",
+    "Niya/Services/WidgetDataWriter.swift",
     "Niya/Services/NetworkClient.swift",
     "Niya/Services/AppLogger.swift",
     "Niya/Services/StoreContainer.swift",
@@ -263,10 +266,49 @@ TEST_FILES = [
     "NiyaTests/StoreContainerTests.swift",
     "NiyaTests/QuranDataServiceEdgeTests.swift",
     "NiyaTests/TajweedParseTests.swift",
+    "NiyaTests/WidgetPrayerDataTests.swift",
+    "NiyaTests/WidgetDataWriterTests.swift",
+    "NiyaTests/HijriFormatterTests.swift",
+    "NiyaTests/PrayerTimelineProviderTests.swift",
+    "NiyaTests/WidgetPrayerStateTests.swift",
     "NiyaTests/Mocks/MockAudioService.swift",
     "NiyaTests/Mocks/MockQuranDataService.swift",
     "NiyaTests/Mocks/MockWordDataService.swift",
     "NiyaTests/Mocks/MockNetworkClient.swift",
+]
+
+# Widget extension files
+WIDGET_FILES = [
+    "NiyaWidgets/NiyaWidgetBundle.swift",
+    "NiyaWidgets/Provider/PrayerTimelineProvider.swift",
+    "NiyaWidgets/Models/WidgetPrayerData.swift",
+    "NiyaWidgets/Models/PrayerTimeEntry.swift",
+    "NiyaWidgets/Views/MediumWidgetView.swift",
+    "NiyaWidgets/Views/SmallWidgetView.swift",
+    "NiyaWidgets/Views/RectangularAccessoryView.swift",
+    "NiyaWidgets/Views/PrayerProgressBar.swift",
+    "NiyaWidgets/Helpers/HijriFormatter.swift",
+    "NiyaWidgets/Helpers/WidgetConstants.swift",
+]
+
+# Files from main app compiled also into widget target
+WIDGET_SHARED_FILES = [
+    "Niya/Services/PrayerTimeCalculator.swift",
+    "Niya/Services/WidgetDataWriter.swift",
+    "Niya/Models/PrayerTime.swift",
+    "Niya/Models/UserLocation.swift",
+    "Niya/Models/CalculationMethod.swift",
+    "Niya/Shared/SharedConstants.swift",
+    "Niya/Design/NiyaColors.swift",
+]
+
+# Files from widget compiled also into main app target
+APP_SHARED_WIDGET_FILES = [
+    "NiyaWidgets/Models/WidgetPrayerData.swift",
+    "NiyaWidgets/Models/PrayerTimeEntry.swift",
+    "NiyaWidgets/Helpers/HijriFormatter.swift",
+    "NiyaWidgets/Helpers/WidgetConstants.swift",
+    "NiyaWidgets/Provider/PrayerTimelineProvider.swift",
 ]
 
 # Folder references — copied as directories preserving structure
@@ -294,10 +336,12 @@ FRAMEWORKS = [
 ID_PROJECT          = new_id()
 ID_TARGET           = new_id()
 ID_TEST_TARGET      = new_id()
+ID_WIDGET_TARGET    = new_id()
 ID_PRODUCTS_GROUP   = new_id()
 ID_MAIN_GROUP       = new_id()
 ID_NIYA_GROUP       = new_id()   # "Niya" source group
 ID_TESTS_GROUP      = new_id()   # "NiyaTests" source group
+ID_WIDGETS_GROUP    = new_id()   # "NiyaWidgets" source group
 
 # Build phases
 ID_SOURCES_PHASE    = new_id()
@@ -305,6 +349,10 @@ ID_RESOURCES_PHASE  = new_id()
 ID_FRAMEWORKS_PHASE = new_id()
 ID_TEST_SOURCES_PHASE = new_id()
 ID_TEST_FRAMEWORKS_PHASE = new_id()
+ID_WIDGET_SOURCES_PHASE = new_id()
+ID_WIDGET_RESOURCES_PHASE = new_id()
+ID_WIDGET_FRAMEWORKS_PHASE = new_id()
+ID_EMBED_EXTENSIONS_PHASE = new_id()
 
 # Build configurations
 ID_DEBUG_PROJECT    = new_id()
@@ -313,20 +361,30 @@ ID_DEBUG_TARGET     = new_id()
 ID_RELEASE_TARGET   = new_id()
 ID_DEBUG_TEST_TARGET  = new_id()
 ID_RELEASE_TEST_TARGET = new_id()
+ID_DEBUG_WIDGET_TARGET  = new_id()
+ID_RELEASE_WIDGET_TARGET = new_id()
 ID_CFGLIST_PROJECT  = new_id()
 ID_CFGLIST_TARGET   = new_id()
 ID_CFGLIST_TEST_TARGET = new_id()
+ID_CFGLIST_WIDGET_TARGET = new_id()
 
 # Product file reference
 ID_PRODUCT_REF      = new_id()
 ID_TEST_PRODUCT_REF = new_id()
+ID_WIDGET_PRODUCT_REF = new_id()
 
 # Target dependency
 ID_TARGET_DEPENDENCY = new_id()
 ID_CONTAINER_ITEM_PROXY = new_id()
+ID_WIDGET_TARGET_DEPENDENCY = new_id()
+ID_WIDGET_CONTAINER_ITEM_PROXY = new_id()
+
+# Widget embed build file ref
+ID_WIDGET_EMBED_BUILD = new_id()
 
 # Sub-groups inside Niya/
 SUBGROUP_IDS = {
+    "Shared":             new_id(),
     "Models":             new_id(),
     "Protocols":          new_id(),
     "Services":           new_id(),
@@ -348,6 +406,14 @@ SUBGROUP_IDS = {
     "Resources/Fonts":    new_id(),
 }
 
+# Sub-groups inside NiyaWidgets/
+WIDGET_SUBGROUP_IDS = {
+    "Provider":  new_id(),
+    "Models":    new_id(),
+    "Views":     new_id(),
+    "Helpers":   new_id(),
+}
+
 # Sub-group inside NiyaTests/
 ID_MOCKS_GROUP = new_id()
 
@@ -364,6 +430,18 @@ folder_build_ids = {p: new_id() for p in FOLDER_REFS}
 test_file_ids  = {p: new_id() for p in TEST_FILES}
 test_build_ids = {p: new_id() for p in TEST_FILES}
 
+widget_file_ids  = {p: new_id() for p in WIDGET_FILES}
+widget_build_ids = {p: new_id() for p in WIDGET_FILES}
+
+# Build IDs for shared files compiled into widget target
+widget_shared_build_ids = {p: new_id() for p in WIDGET_SHARED_FILES}
+
+# Build IDs for widget files compiled into main app
+app_shared_widget_build_ids = {p: new_id() for p in APP_SHARED_WIDGET_FILES}
+
+# Widget assets build ID
+ID_WIDGET_ASSETS_BUILD = new_id()
+
 # Assets catalog
 ID_ASSETS_FILE  = new_id()
 ID_ASSETS_BUILD = new_id()
@@ -377,6 +455,9 @@ ID_FRAMEWORKS_GROUP = new_id()
 
 # Info.plist file reference (not in any build phase)
 ID_INFOPLIST = new_id()
+ID_WIDGET_INFOPLIST = new_id()
+ID_NIYA_ENTITLEMENTS = new_id()
+ID_WIDGET_ENTITLEMENTS = new_id()
 
 # ---------------------------------------------------------------------------
 # Build the pbxproj sections
@@ -442,6 +523,33 @@ def section_pbx_build_file():
         name = basename(path)
         lines.append(f"\t\t{bid} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {fid} /* {name} */; }};")
 
+    # Widget extension files
+    for path in WIDGET_FILES:
+        bid = widget_build_ids[path]
+        fid = widget_file_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t{bid} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {fid} /* {name} */; }};")
+
+    # Shared files compiled into widget target
+    for path in WIDGET_SHARED_FILES:
+        bid = widget_shared_build_ids[path]
+        fid = swift_file_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t{bid} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {fid} /* {name} */; }};")
+
+    # Widget files compiled into main app
+    for path in APP_SHARED_WIDGET_FILES:
+        bid = app_shared_widget_build_ids[path]
+        fid = widget_file_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t{bid} /* {name} in Sources */ = {{isa = PBXBuildFile; fileRef = {fid} /* {name} */; }};")
+
+    # Widget assets
+    lines.append(f"\t\t{ID_WIDGET_ASSETS_BUILD} /* Assets.xcassets in Resources */ = {{isa = PBXBuildFile; fileRef = {ID_ASSETS_FILE} /* Assets.xcassets */; }};")
+
+    # Widget embed in app
+    lines.append(f"\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed App Extensions */ = {{isa = PBXBuildFile; fileRef = {ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};")
+
     lines.append("/* End PBXBuildFile section */")
     return "\n".join(lines)
 
@@ -476,6 +584,17 @@ def section_pbx_file_reference():
     lines.append(f"\t\t{ID_PRODUCT_REF} /* Niya.app */ = {{isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Niya.app; sourceTree = BUILT_PRODUCTS_DIR; }};")
 
     lines.append(f"\t\t{ID_TEST_PRODUCT_REF} /* NiyaTests.xctest */ = {{isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NiyaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; }};")
+
+    lines.append(f"\t\t{ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */ = {{isa = PBXFileReference; explicitFileType = \"wrapper.app-extension\"; includeInIndex = 0; path = NiyaWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; }};")
+
+    lines.append(f"\t\t{ID_WIDGET_INFOPLIST} /* Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; }};")
+    lines.append(f"\t\t{ID_NIYA_ENTITLEMENTS} /* Niya.entitlements */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Niya.entitlements; sourceTree = \"<group>\"; }};")
+    lines.append(f"\t\t{ID_WIDGET_ENTITLEMENTS} /* NiyaWidgets.entitlements */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NiyaWidgets.entitlements; sourceTree = \"<group>\"; }};")
+
+    for path in WIDGET_FILES:
+        fid = widget_file_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t{fid} /* {name} */ = {{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = {pbx_string(name)}; sourceTree = \"<group>\"; }};")
 
     for path in TEST_FILES:
         fid = test_file_ids[path]
@@ -524,6 +643,7 @@ def section_pbx_group():
         "\t\t\tchildren = (",
         f"\t\t\t\t{ID_NIYA_GROUP} /* Niya */,",
         f"\t\t\t\t{ID_TESTS_GROUP} /* NiyaTests */,",
+        f"\t\t\t\t{ID_WIDGETS_GROUP} /* NiyaWidgets */,",
         f"\t\t\t\t{ID_FRAMEWORKS_GROUP} /* Frameworks */,",
         f"\t\t\t\t{ID_PRODUCTS_GROUP} /* Products */,",
         "\t\t\t);",
@@ -538,6 +658,7 @@ def section_pbx_group():
         "\t\t\tchildren = (",
         f"\t\t\t\t{ID_PRODUCT_REF} /* Niya.app */,",
         f"\t\t\t\t{ID_TEST_PRODUCT_REF} /* NiyaTests.xctest */,",
+        f"\t\t\t\t{ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */,",
         "\t\t\t);",
         "\t\t\tname = Products;",
         "\t\t\tsourceTree = \"<group>\";",
@@ -567,6 +688,8 @@ def section_pbx_group():
         (swift_file_ids["Niya/AppStorageKeys.swift"], "AppStorageKeys.swift"),
         (swift_file_ids["Niya/NavigationCoordinator.swift"], "NavigationCoordinator.swift"),
         (ID_INFOPLIST,                              "Info.plist"),
+        (ID_NIYA_ENTITLEMENTS,                     "Niya.entitlements"),
+        (SUBGROUP_IDS["Shared"],                   "Shared"),
         (SUBGROUP_IDS["Models"],                   "Models"),
         (SUBGROUP_IDS["Protocols"],                "Protocols"),
         (SUBGROUP_IDS["Services"],                 "Services"),
@@ -605,6 +728,11 @@ def section_pbx_group():
             lines.append(f"\t\t\tpath = {pbx_string(path_str)};")
         lines.append("\t\t\tsourceTree = \"<group>\";")
         lines.append("\t\t};")
+
+    # Shared
+    emit_subgroup(SUBGROUP_IDS["Shared"], "Shared", "Shared", [
+        (swift_file_ids["Niya/Shared/SharedConstants.swift"], "SharedConstants.swift"),
+    ], path_str="Shared")
 
     # Models
     emit_subgroup(SUBGROUP_IDS["Models"], "Models", "Models", [
@@ -668,6 +796,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/PrayerTimeCalculator.swift"], "PrayerTimeCalculator.swift"),
         (swift_file_ids["Niya/Services/LocationService.swift"], "LocationService.swift"),
         (swift_file_ids["Niya/Services/PrayerTimeService.swift"], "PrayerTimeService.swift"),
+        (swift_file_ids["Niya/Services/WidgetDataWriter.swift"], "WidgetDataWriter.swift"),
         (swift_file_ids["Niya/Services/NetworkClient.swift"], "NetworkClient.swift"),
         (swift_file_ids["Niya/Services/AppLogger.swift"], "AppLogger.swift"),
         (swift_file_ids["Niya/Services/StoreContainer.swift"], "StoreContainer.swift"),
@@ -843,6 +972,43 @@ def section_pbx_group():
     mock_children = [(test_file_ids[p], basename(p)) for p in TEST_FILES if "/Mocks/" in p]
     emit_subgroup(ID_MOCKS_GROUP, "Mocks", "NiyaTests/Mocks", mock_children, path_str="Mocks")
 
+    # NiyaWidgets group
+    widget_top_children = [
+        (widget_file_ids["NiyaWidgets/NiyaWidgetBundle.swift"], "NiyaWidgetBundle.swift"),
+        (ID_WIDGET_INFOPLIST, "Info.plist"),
+        (ID_WIDGET_ENTITLEMENTS, "NiyaWidgets.entitlements"),
+        (WIDGET_SUBGROUP_IDS["Provider"], "Provider"),
+        (WIDGET_SUBGROUP_IDS["Models"], "Models"),
+        (WIDGET_SUBGROUP_IDS["Views"], "Views"),
+        (WIDGET_SUBGROUP_IDS["Helpers"], "Helpers"),
+    ]
+    emit_subgroup(ID_WIDGETS_GROUP, "NiyaWidgets", "NiyaWidgets", widget_top_children, path_str="NiyaWidgets")
+
+    # NiyaWidgets/Provider
+    emit_subgroup(WIDGET_SUBGROUP_IDS["Provider"], "Provider", "NiyaWidgets/Provider", [
+        (widget_file_ids["NiyaWidgets/Provider/PrayerTimelineProvider.swift"], "PrayerTimelineProvider.swift"),
+    ], path_str="Provider")
+
+    # NiyaWidgets/Models
+    emit_subgroup(WIDGET_SUBGROUP_IDS["Models"], "Models", "NiyaWidgets/Models", [
+        (widget_file_ids["NiyaWidgets/Models/WidgetPrayerData.swift"], "WidgetPrayerData.swift"),
+        (widget_file_ids["NiyaWidgets/Models/PrayerTimeEntry.swift"], "PrayerTimeEntry.swift"),
+    ], path_str="Models")
+
+    # NiyaWidgets/Views
+    emit_subgroup(WIDGET_SUBGROUP_IDS["Views"], "Views", "NiyaWidgets/Views", [
+        (widget_file_ids["NiyaWidgets/Views/MediumWidgetView.swift"], "MediumWidgetView.swift"),
+        (widget_file_ids["NiyaWidgets/Views/SmallWidgetView.swift"], "SmallWidgetView.swift"),
+        (widget_file_ids["NiyaWidgets/Views/RectangularAccessoryView.swift"], "RectangularAccessoryView.swift"),
+        (widget_file_ids["NiyaWidgets/Views/PrayerProgressBar.swift"], "PrayerProgressBar.swift"),
+    ], path_str="Views")
+
+    # NiyaWidgets/Helpers
+    emit_subgroup(WIDGET_SUBGROUP_IDS["Helpers"], "Helpers", "NiyaWidgets/Helpers", [
+        (widget_file_ids["NiyaWidgets/Helpers/HijriFormatter.swift"], "HijriFormatter.swift"),
+        (widget_file_ids["NiyaWidgets/Helpers/WidgetConstants.swift"], "WidgetConstants.swift"),
+    ], path_str="Helpers")
+
     lines.append("/* End PBXGroup section */")
     return "\n".join(lines)
 
@@ -857,6 +1023,13 @@ def section_pbx_container_item_proxy():
         f"\t\t\tremoteGlobalIDString = {ID_TARGET};",
         "\t\t\tremoteInfo = Niya;",
         "\t\t};",
+        f"\t\t{ID_WIDGET_CONTAINER_ITEM_PROXY} /* PBXContainerItemProxy */ = {{",
+        "\t\t\tisa = PBXContainerItemProxy;",
+        f"\t\t\tcontainerPortal = {ID_PROJECT} /* Project object */;",
+        "\t\t\tproxyType = 1;",
+        f"\t\t\tremoteGlobalIDString = {ID_WIDGET_TARGET};",
+        "\t\t\tremoteInfo = NiyaWidgets;",
+        "\t\t};",
         "/* End PBXContainerItemProxy section */",
     ]
     return "\n".join(lines)
@@ -869,6 +1042,11 @@ def section_pbx_target_dependency():
         "\t\t\tisa = PBXTargetDependency;",
         f"\t\t\ttarget = {ID_TARGET} /* Niya */;",
         f"\t\t\ttargetProxy = {ID_CONTAINER_ITEM_PROXY} /* PBXContainerItemProxy */;",
+        "\t\t};",
+        f"\t\t{ID_WIDGET_TARGET_DEPENDENCY} /* PBXTargetDependency */ = {{",
+        "\t\t\tisa = PBXTargetDependency;",
+        f"\t\t\ttarget = {ID_WIDGET_TARGET} /* NiyaWidgets */;",
+        f"\t\t\ttargetProxy = {ID_WIDGET_CONTAINER_ITEM_PROXY} /* PBXContainerItemProxy */;",
         "\t\t};",
         "/* End PBXTargetDependency section */",
     ]
@@ -885,10 +1063,12 @@ def section_pbx_native_target():
         f"\t\t\t\t{ID_SOURCES_PHASE} /* Sources */,",
         f"\t\t\t\t{ID_RESOURCES_PHASE} /* Resources */,",
         f"\t\t\t\t{ID_FRAMEWORKS_PHASE} /* Frameworks */,",
+        f"\t\t\t\t{ID_EMBED_EXTENSIONS_PHASE} /* Embed App Extensions */,",
         "\t\t\t);",
         "\t\t\tbuildRules = (",
         "\t\t\t);",
         "\t\t\tdependencies = (",
+        f"\t\t\t\t{ID_WIDGET_TARGET_DEPENDENCY} /* PBXTargetDependency */,",
         "\t\t\t);",
         f"\t\t\tname = {PRODUCT_NAME};",
         f"\t\t\tproductName = {PRODUCT_NAME};",
@@ -911,6 +1091,23 @@ def section_pbx_native_target():
         "\t\t\tproductName = NiyaTests;",
         f"\t\t\tproductReference = {ID_TEST_PRODUCT_REF} /* NiyaTests.xctest */;",
         "\t\t\tproductType = \"com.apple.product-type.bundle.unit-test\";",
+        "\t\t};",
+        f"\t\t{ID_WIDGET_TARGET} /* NiyaWidgets */ = {{",
+        "\t\t\tisa = PBXNativeTarget;",
+        f"\t\t\tbuildConfigurationList = {ID_CFGLIST_WIDGET_TARGET} /* Build configuration list for PBXNativeTarget \"NiyaWidgets\" */;",
+        "\t\t\tbuildPhases = (",
+        f"\t\t\t\t{ID_WIDGET_SOURCES_PHASE} /* Sources */,",
+        f"\t\t\t\t{ID_WIDGET_RESOURCES_PHASE} /* Resources */,",
+        f"\t\t\t\t{ID_WIDGET_FRAMEWORKS_PHASE} /* Frameworks */,",
+        "\t\t\t);",
+        "\t\t\tbuildRules = (",
+        "\t\t\t);",
+        "\t\t\tdependencies = (",
+        "\t\t\t);",
+        "\t\t\tname = NiyaWidgets;",
+        "\t\t\tproductName = NiyaWidgets;",
+        f"\t\t\tproductReference = {ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */;",
+        "\t\t\tproductType = \"com.apple.product-type.app-extension\";",
         "\t\t};",
         "/* End PBXNativeTarget section */",
     ]
@@ -937,6 +1134,7 @@ def section_pbx_project():
         "\t\t\ttargets = (",
         f"\t\t\t\t{ID_TARGET} /* Niya */,",
         f"\t\t\t\t{ID_TEST_TARGET} /* NiyaTests */,",
+        f"\t\t\t\t{ID_WIDGET_TARGET} /* NiyaWidgets */,",
         "\t\t\t);",
         "\t\t};",
         "/* End PBXProject section */",
@@ -982,6 +1180,11 @@ def section_pbx_sources_build_phase():
         bid = swift_build_ids[path]
         name = basename(path)
         lines.append(f"\t\t\t\t{bid} /* {name} in Sources */,")
+    # Widget files also compiled into main app
+    for path in APP_SHARED_WIDGET_FILES:
+        bid = app_shared_widget_build_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t\t\t{bid} /* {name} in Sources */,")
     lines += [
         "\t\t\t);",
         "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
@@ -1023,6 +1226,97 @@ def section_pbx_test_frameworks_build_phase():
         "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
         "\t\t};",
         "/* End PBXFrameworksBuildPhase section (Tests) */",
+    ]
+    return "\n".join(lines)
+
+
+def section_widget_sources_build_phase():
+    lines = [
+        f"\t\t{ID_WIDGET_SOURCES_PHASE} /* Sources */ = {{",
+        "\t\t\tisa = PBXSourcesBuildPhase;",
+        "\t\t\tbuildActionMask = 2147483647;",
+        "\t\t\tfiles = (",
+    ]
+    for path in WIDGET_FILES:
+        bid = widget_build_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t\t\t{bid} /* {name} in Sources */,")
+    for path in WIDGET_SHARED_FILES:
+        bid = widget_shared_build_ids[path]
+        name = basename(path)
+        lines.append(f"\t\t\t\t{bid} /* {name} in Sources */,")
+    lines += [
+        "\t\t\t);",
+        "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
+        "\t\t};",
+    ]
+    return "\n".join(lines)
+
+
+def section_widget_resources_build_phase():
+    lines = [
+        f"\t\t{ID_WIDGET_RESOURCES_PHASE} /* Resources */ = {{",
+        "\t\t\tisa = PBXResourcesBuildPhase;",
+        "\t\t\tbuildActionMask = 2147483647;",
+        "\t\t\tfiles = (",
+        f"\t\t\t\t{ID_WIDGET_ASSETS_BUILD} /* Assets.xcassets in Resources */,",
+        "\t\t\t);",
+        "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
+        "\t\t};",
+    ]
+    return "\n".join(lines)
+
+
+def section_widget_frameworks_build_phase():
+    lines = [
+        f"\t\t{ID_WIDGET_FRAMEWORKS_PHASE} /* Frameworks */ = {{",
+        "\t\t\tisa = PBXFrameworksBuildPhase;",
+        "\t\t\tbuildActionMask = 2147483647;",
+        "\t\t\tfiles = (",
+        "\t\t\t);",
+        "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
+        "\t\t};",
+    ]
+    return "\n".join(lines)
+
+
+def section_embed_extensions_build_phase():
+    lines = [
+        f"\t\t{ID_EMBED_EXTENSIONS_PHASE} /* Embed App Extensions */ = {{",
+        "\t\t\tisa = PBXCopyFilesBuildPhase;",
+        "\t\t\tbuildActionMask = 2147483647;",
+        "\t\t\tdstPath = \"\";",
+        "\t\t\tdstSubfolderSpec = 13;",
+        "\t\t\tfiles = (",
+        f"\t\t\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed App Extensions */,",
+        "\t\t\t);",
+        "\t\t\tname = \"Embed App Extensions\";",
+        "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
+        "\t\t};",
+    ]
+    return "\n".join(lines)
+
+
+def build_settings_widget_target(config):
+    lines = [
+        f"\t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;",
+        f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = NiyaWidgets/NiyaWidgets.entitlements;",
+        "\t\t\t\tCODE_SIGN_STYLE = Automatic;",
+        "\t\t\t\tDEVELOPMENT_TEAM = MYGKXH6TY4;",
+        "\t\t\t\tCURRENT_PROJECT_VERSION = 6;",
+        f"\t\t\t\tGENERATE_INFOPLIST_FILE = NO;",
+        f"\t\t\t\tINFOPLIST_FILE = NiyaWidgets/Info.plist;",
+        f"\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = {DEPLOYMENT};",
+        "\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"@executable_path/Frameworks\",\n\t\t\t\t\t\"@executable_path/../../Frameworks\",\n\t\t\t\t);",
+        "\t\t\t\tMARKETING_VERSION = 1.0;",
+        f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = {BUNDLE_ID}.widgets;",
+        f"\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";",
+        "\t\t\t\tSDKROOT = iphoneos;",
+        "\t\t\t\tSKIP_INSTALL = YES;",
+        f"\t\t\t\tSWIFT_EMIT_LOC_STRINGS = YES;",
+        f"\t\t\t\tSWIFT_VERSION = {SWIFT_VER};",
+        "\t\t\t\tSWIFT_STRICT_CONCURRENCY = complete;",
+        "\t\t\t\tTARGETED_DEVICE_FAMILY = \"1,2\";",
     ]
     return "\n".join(lines)
 
@@ -1091,6 +1385,7 @@ def build_settings_target(config):
     is_debug = config == "Debug"
     lines = [
         "\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;",
+        f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = Niya/Niya.entitlements;",
         f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = {BUNDLE_ID};",
         f"\t\t\t\tINFOPLIST_FILE = Niya/Info.plist;",
         "\t\t\t\tCODE_SIGN_STYLE = Automatic;",
@@ -1136,6 +1431,8 @@ def section_xcbuild_configuration_list():
     release_tgt_settings  = build_settings_target("Release")
     debug_test_settings   = build_settings_test_target("Debug")
     release_test_settings = build_settings_test_target("Release")
+    debug_widget_settings = build_settings_widget_target("Debug")
+    release_widget_settings = build_settings_widget_target("Release")
 
     lines = [
         "/* Begin XCBuildConfiguration section */",
@@ -1181,6 +1478,20 @@ def section_xcbuild_configuration_list():
         "\t\t\t};",
         "\t\t\tname = Release;",
         "\t\t};",
+        f"\t\t{ID_DEBUG_WIDGET_TARGET} /* Debug */ = {{",
+        "\t\t\tisa = XCBuildConfiguration;",
+        "\t\t\tbuildSettings = {",
+        debug_widget_settings,
+        "\t\t\t};",
+        "\t\t\tname = Debug;",
+        "\t\t};",
+        f"\t\t{ID_RELEASE_WIDGET_TARGET} /* Release */ = {{",
+        "\t\t\tisa = XCBuildConfiguration;",
+        "\t\t\tbuildSettings = {",
+        release_widget_settings,
+        "\t\t\t};",
+        "\t\t\tname = Release;",
+        "\t\t};",
         "/* End XCBuildConfiguration section */",
     ]
     return "\n".join(lines)
@@ -1216,6 +1527,15 @@ def section_xcconfiguration_list():
         "\t\t\tdefaultConfigurationIsVisible = 0;",
         "\t\t\tdefaultConfigurationName = Release;",
         "\t\t};",
+        f"\t\t{ID_CFGLIST_WIDGET_TARGET} /* Build configuration list for PBXNativeTarget \"NiyaWidgets\" */ = {{",
+        "\t\t\tisa = XCConfigurationList;",
+        "\t\t\tbuildConfigurations = (",
+        f"\t\t\t\t{ID_DEBUG_WIDGET_TARGET} /* Debug */,",
+        f"\t\t\t\t{ID_RELEASE_WIDGET_TARGET} /* Release */,",
+        "\t\t\t);",
+        "\t\t\tdefaultConfigurationIsVisible = 0;",
+        "\t\t\tdefaultConfigurationName = Release;",
+        "\t\t};",
         "/* End XCConfigurationList section */",
     ]
     return "\n".join(lines)
@@ -1239,6 +1559,10 @@ def generate():
         section_pbx_target_dependency(),
         section_pbx_test_sources_build_phase(),
         section_pbx_test_frameworks_build_phase(),
+        section_widget_sources_build_phase(),
+        section_widget_resources_build_phase(),
+        section_widget_frameworks_build_phase(),
+        section_embed_extensions_build_phase(),
         section_xcbuild_configuration_list(),
         section_xcconfiguration_list(),
     ]

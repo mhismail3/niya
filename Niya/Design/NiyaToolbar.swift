@@ -1,11 +1,12 @@
 import SwiftUI
 
 struct NiyaToolbar: ViewModifier {
+    @Environment(NavigationCoordinator.self) private var coordinator
     @State private var showSettings = false
     @State private var showBookmarks = false
-    @State private var showSalah = false
 
     func body(content: Content) -> some View {
+        @Bindable var coord = coordinator
         content
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -15,7 +16,7 @@ struct NiyaToolbar: ViewModifier {
                     .accessibilityLabel("Bookmarks")
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Button { showSalah = true } label: {
+                    Button { coordinator.showSalahSheet = true } label: {
                         Image(systemName: "location.circle")
                     }
                     .accessibilityLabel("Qibla and prayer times")
@@ -37,7 +38,7 @@ struct NiyaToolbar: ViewModifier {
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.hidden)
             }
-            .sheet(isPresented: $showSalah) {
+            .sheet(isPresented: $coord.showSalahSheet) {
                 SalahSheetView()
             }
     }

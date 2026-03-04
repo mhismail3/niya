@@ -3,6 +3,7 @@ import SwiftData
 import TipKit
 import UserNotifications
 import UIKit
+import WidgetKit
 
 @main
 struct NiyaApp: App {
@@ -97,8 +98,18 @@ struct NiyaApp: App {
                     if phase == .active {
                         prayerTimeService.checkDayChange(location: locationService.effectiveLocation)
                         prayerTimeService.startCountdown()
+                        if let loc = locationService.effectiveLocation, let today = prayerTimeService.todayTimes {
+                            let asr = max(1, UserDefaults.standard.integer(forKey: StorageKey.asrJuristic))
+                            WidgetDataWriter.shared.write(today: today, tomorrow: prayerTimeService.tomorrowTimes, location: loc, asrFactor: asr)
+                            WidgetDataWriter.shared.reloadTimelines()
+                        }
                     } else if phase == .background {
                         prayerTimeService.stopCountdown()
+                    }
+                }
+                .onOpenURL { url in
+                    if url.scheme == "niya" && url.host == "salah" {
+                        navigationCoordinator.showSalahSheet = true
                     }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in

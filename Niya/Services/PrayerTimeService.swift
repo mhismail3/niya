@@ -53,6 +53,9 @@ final class PrayerTimeService {
         lastCalculationDate = now
         startCountdown()
 
+        WidgetDataWriter.shared.write(today: result, tomorrow: tomorrowTimes, location: location, asrFactor: asrJuristic)
+        WidgetDataWriter.shared.reloadTimelines()
+
         if notificationsEnabled {
             scheduleNotifications(times: result, timeZone: location.timeZone)
         }

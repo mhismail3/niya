@@ -29,6 +29,7 @@ final class NavigationCoordinator {
     var pendingQuranDestination: QuranNavDestination?
     var pendingHadithDestination: HadithNavDestination?
     var pendingDuaDestination: DuaNavDestination?
+    var showSalahSheet = false
 
     func navigateToAyah(surahId: Int, ayahId: Int) {
         pendingQuranDestination = QuranNavDestination(surahId: surahId, ayahId: ayahId)
