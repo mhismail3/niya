@@ -23,8 +23,12 @@ final class PrayerTimeService {
         set { storedMethod = newValue.rawValue }
     }
 
-    @ObservationIgnored private var countdownTimer: Timer?
+    @ObservationIgnored nonisolated(unsafe) private var countdownTimer: Timer?
     @ObservationIgnored private var lastCalculationDate: Date?
+
+    deinit {
+        countdownTimer?.invalidate()
+    }
 
     var activeTimes: DailyPrayerTimes? {
         guard let today = todayTimes else { return nil }

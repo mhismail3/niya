@@ -13,6 +13,9 @@ struct HomeView: View {
     @State private var recentHadiths: [RecentHadith] = []
     @State private var recentDuas: [RecentDua] = []
     @State private var loaded = false
+    @State private var resolvedPositions: [(position: ReadingPosition, surah: Surah)] = []
+    @State private var resolvedHadiths: [(recent: RecentHadith, hadith: Hadith, collection: HadithCollection)] = []
+    @State private var resolvedDuas: [(recent: RecentDua, dua: Dua, categoryName: String)] = []
 
     var body: some View {
         NavigationStack {
@@ -20,17 +23,17 @@ struct HomeView: View {
                 if !loaded {
                     loadingPlaceholder
                         .transition(.opacity)
-                } else if !positions.isEmpty || !recentHadiths.isEmpty || !recentDuas.isEmpty {
+                } else if !resolvedPositions.isEmpty || !resolvedHadiths.isEmpty || !resolvedDuas.isEmpty {
                     VStack(alignment: .leading, spacing: 20) {
-                        if !positions.isEmpty {
+                        if !resolvedPositions.isEmpty {
                             continueReadingSection
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
-                        if !recentHadiths.isEmpty {
+                        if !resolvedHadiths.isEmpty {
                             recentHadithSection
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
-                        if !recentDuas.isEmpty {
+                        if !resolvedDuas.isEmpty {
                             recentDuaSection
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
                         }
@@ -42,9 +45,9 @@ struct HomeView: View {
                 }
             }
             .animation(.easeOut(duration: 0.4), value: loaded)
-            .animation(.easeOut(duration: 0.35), value: positions.map(\.surahId))
-            .animation(.easeOut(duration: 0.35), value: recentHadiths.map(\.hadithKey))
-            .animation(.easeOut(duration: 0.35), value: recentDuas.map(\.duaKey))
+            .animation(.easeOut(duration: 0.35), value: resolvedPositions.map(\.position.surahId))
+            .animation(.easeOut(duration: 0.35), value: resolvedHadiths.map(\.recent.hadithKey))
+            .animation(.easeOut(duration: 0.35), value: resolvedDuas.map(\.recent.duaKey))
             .background(Color.niyaBackground)
             .navigationTitle("Niya")
             .navigationBarTitleDisplayMode(.large)
@@ -62,8 +65,7 @@ struct HomeView: View {
             for id in Set(recents.map(\.collectionId)) {
                 await hadithDataService.loadCollection(id)
             }
-            recentHadiths = stores.recentHadith.recentHadiths()
-            recentDuas = stores.recentDua.recentDuas()
+            reload()
             markLoaded()
         }
     }
@@ -77,6 +79,22 @@ struct HomeView: View {
         positions = stores.readingPosition.recentPositions()
         recentHadiths = stores.recentHadith.recentHadiths()
         recentDuas = stores.recentDua.recentDuas()
+
+        resolvedPositions = positions.compactMap { position in
+            guard let surah = dataService.surahs.first(where: { $0.id == position.surahId }) else { return nil }
+            return (position, surah)
+        }
+        resolvedHadiths = recentHadiths.compactMap { recent in
+            guard let collection = hadithDataService.collections.first(where: { $0.id == recent.collectionId }),
+                  let hadith = hadithDataService.hadiths(for: recent.collectionId).first(where: { $0.id == recent.hadithId })
+            else { return nil }
+            return (recent, hadith, collection)
+        }
+        resolvedDuas = recentDuas.compactMap { recent in
+            guard let dua = duaDataService.dua(categoryId: recent.categoryId, duaId: recent.duaId) else { return nil }
+            let categoryName = duaDataService.category(id: recent.categoryId)?.name ?? "Dua"
+            return (recent, dua, categoryName)
+        }
     }
 
     // MARK: - Loading Placeholder
@@ -113,31 +131,29 @@ struct HomeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 12) {
-                    ForEach(positions, id: \.surahId) { position in
-                        if let surah = dataService.surahs.first(where: { $0.id == position.surahId }) {
-                            NavigationLink {
-                                ReaderContainerView(
-                                    vm: ReaderViewModel(
-                                        surah: surah,
-                                        dataService: dataService,
-                                        script: script,
-                                        initialAyahId: position.lastAyahId
-                                    )
+                    ForEach(resolvedPositions, id: \.position.surahId) { item in
+                        NavigationLink {
+                            ReaderContainerView(
+                                vm: ReaderViewModel(
+                                    surah: item.surah,
+                                    dataService: dataService,
+                                    script: script,
+                                    initialAyahId: item.position.lastAyahId
                                 )
+                            )
+                        } label: {
+                            ContinueReadingCard(surah: item.surah, position: item.position)
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                modelContext.delete(item.position)
+                                try? modelContext.save()
+                                reload()
                             } label: {
-                                ContinueReadingCard(surah: surah, position: position)
+                                Label("Remove", systemImage: "trash")
                             }
-                            .buttonStyle(.plain)
-                            .contextMenu {
-                                Button(role: .destructive) {
-                                    modelContext.delete(position)
-                                    try? modelContext.save()
-                                    reload()
-                                } label: {
-                                    Label("Remove", systemImage: "trash")
-                                }
-                                .tint(.red)
-                            }
+                            .tint(.red)
                         }
                     }
                 }
@@ -157,36 +173,30 @@ struct HomeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 12) {
-                    ForEach(recentHadiths, id: \.hadithKey) { recent in
-                        let collection = hadithDataService.collections.first { $0.id == recent.collectionId }
-                        let hadith = hadithDataService.hadiths(for: recent.collectionId)
-                            .first { $0.id == recent.hadithId }
-
-                        if let hadith, let collection {
-                            Button {
-                                coordinator.navigateToHadith(
-                                    collectionId: recent.collectionId,
-                                    hadithId: recent.hadithId,
-                                    hasGrades: recent.hasGrades
-                                )
+                    ForEach(resolvedHadiths, id: \.recent.hadithKey) { item in
+                        Button {
+                            coordinator.navigateToHadith(
+                                collectionId: item.recent.collectionId,
+                                hadithId: item.recent.hadithId,
+                                hasGrades: item.recent.hasGrades
+                            )
+                        } label: {
+                            RecentHadithCard(
+                                hadith: item.hadith,
+                                collectionName: item.collection.name,
+                                visitedAt: item.recent.visitedAt
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                modelContext.delete(item.recent)
+                                try? modelContext.save()
+                                reload()
                             } label: {
-                                RecentHadithCard(
-                                    hadith: hadith,
-                                    collectionName: collection.name,
-                                    visitedAt: recent.visitedAt
-                                )
+                                Label("Remove", systemImage: "trash")
                             }
-                            .buttonStyle(.plain)
-                            .contextMenu {
-                                Button(role: .destructive) {
-                                    modelContext.delete(recent)
-                                    try? modelContext.save()
-                                    reload()
-                                } label: {
-                                    Label("Remove", systemImage: "trash")
-                                }
-                                .tint(.red)
-                            }
+                            .tint(.red)
                         }
                     }
                 }
@@ -206,34 +216,29 @@ struct HomeView: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 12) {
-                    ForEach(recentDuas, id: \.duaKey) { recent in
-                        let dua = duaDataService.dua(categoryId: recent.categoryId, duaId: recent.duaId)
-                        let categoryName = duaDataService.category(id: recent.categoryId)?.name ?? "Dua"
-
-                        if let dua {
-                            Button {
-                                coordinator.navigateToDua(
-                                    categoryId: recent.categoryId,
-                                    duaId: recent.duaId
-                                )
+                    ForEach(resolvedDuas, id: \.recent.duaKey) { item in
+                        Button {
+                            coordinator.navigateToDua(
+                                categoryId: item.recent.categoryId,
+                                duaId: item.recent.duaId
+                            )
+                        } label: {
+                            RecentDuaCard(
+                                dua: item.dua,
+                                categoryName: item.categoryName,
+                                visitedAt: item.recent.visitedAt
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                modelContext.delete(item.recent)
+                                try? modelContext.save()
+                                reload()
                             } label: {
-                                RecentDuaCard(
-                                    dua: dua,
-                                    categoryName: categoryName,
-                                    visitedAt: recent.visitedAt
-                                )
+                                Label("Remove", systemImage: "trash")
                             }
-                            .buttonStyle(.plain)
-                            .contextMenu {
-                                Button(role: .destructive) {
-                                    modelContext.delete(recent)
-                                    try? modelContext.save()
-                                    reload()
-                                } label: {
-                                    Label("Remove", systemImage: "trash")
-                                }
-                                .tint(.red)
-                            }
+                            .tint(.red)
                         }
                     }
                 }

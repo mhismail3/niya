@@ -51,16 +51,16 @@ final class DuaDataService {
     }
 
     func searchDuas(query: String) -> [(categoryId: Int, dua: Dua)] {
-        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        let q = query.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty else { return [] }
         var results: [(categoryId: Int, dua: Dua)] = []
         for categoryId in duasByCategory.keys.sorted() {
             guard let duas = duasByCategory[categoryId] else { continue }
             for dua in duas {
                 if results.count >= 50 { return results }
-                if dua.translation.lowercased().contains(q) ||
+                if dua.translation.range(of: q, options: .caseInsensitive) != nil ||
                    dua.arabic.contains(q) ||
-                   (dua.transliteration?.lowercased().contains(q) ?? false) {
+                   (dua.transliteration?.range(of: q, options: .caseInsensitive) != nil) {
                     results.append((categoryId, dua))
                 }
             }

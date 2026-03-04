@@ -25,8 +25,10 @@ final class HadithDataService {
             guard let url = Bundle.main.url(forResource: "hadith_collections", withExtension: "json") else {
                 throw DataError.missingResource("hadith_collections.json")
             }
-            let data = try Data(contentsOf: url)
-            let all = try JSONDecoder().decode([HadithCollection].self, from: data)
+            let all = try await Task.detached {
+                let data = try Data(contentsOf: url)
+                return try JSONDecoder().decode([HadithCollection].self, from: data)
+            }.value
             collections = all.filter { Self.enabledCollections.contains($0.id) }
             isLoaded = true
         } catch {
@@ -46,8 +48,10 @@ final class HadithDataService {
         }
         loadError = nil
         do {
-            let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode(RawCollectionFile.self, from: data)
+            let decoded = try await Task.detached {
+                let data = try Data(contentsOf: url)
+                return try JSONDecoder().decode(RawCollectionFile.self, from: data)
+            }.value
             loadedCollections[id] = HadithCollectionData(
                 chapters: decoded.chapters,
                 hadiths: decoded.hadiths
@@ -70,14 +74,14 @@ final class HadithDataService {
     }
 
     func searchHadiths(query: String) -> [(collectionId: String, hadith: Hadith)] {
-        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        let q = query.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty else { return [] }
         var results: [(collectionId: String, hadith: Hadith)] = []
         for (collectionId, data) in loadedCollections {
             for hadith in data.hadiths {
                 if results.count >= 50 { return results }
-                if hadith.text.lowercased().contains(q) ||
-                   hadith.narrator.lowercased().contains(q) ||
+                if hadith.text.range(of: q, options: .caseInsensitive) != nil ||
+                   hadith.narrator.range(of: q, options: .caseInsensitive) != nil ||
                    hadith.arabic.contains(q) {
                     results.append((collectionId, hadith))
                 }

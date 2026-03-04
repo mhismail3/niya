@@ -7,6 +7,7 @@ final class TajweedService {
     private var cache: [Int: [Int: TajweedVerse]] = [:]
     private var loadingSurahs: Set<Int> = []
     private var failedSurahs: [Int: Date] = [:]
+    private var activeTasks: [Int: Task<Void, Never>] = [:]
     private static let retryInterval: TimeInterval = 30
 
     func verse(surahId: Int, ayahId: Int) -> TajweedVerse? {
@@ -18,7 +19,7 @@ final class TajweedService {
               !loadingSurahs.contains(surahId),
               !isInCooldown(surahId) else { return }
         loadingSurahs.insert(surahId)
-        Task { await fetchSurah(surahId) }
+        activeTasks[surahId] = Task { await fetchSurah(surahId) }
     }
 
     private func isInCooldown(_ surahId: Int) -> Bool {
@@ -43,9 +44,11 @@ final class TajweedService {
             }
             cache[surahId] = surahCache
             loadingSurahs.remove(surahId)
+            activeTasks.removeValue(forKey: surahId)
         } catch {
             AppLogger.network.error("Tajweed fetch failed for surah \(surahId): \(error)")
             loadingSurahs.remove(surahId)
+            activeTasks.removeValue(forKey: surahId)
             failedSurahs[surahId] = Date()
             lastError = .network("Could not load tajweed data. Check your connection.")
             Task {
@@ -56,6 +59,8 @@ final class TajweedService {
     }
 
     func clearCache() {
+        for task in activeTasks.values { task.cancel() }
+        activeTasks.removeAll()
         cache.removeAll()
         failedSurahs.removeAll()
     }

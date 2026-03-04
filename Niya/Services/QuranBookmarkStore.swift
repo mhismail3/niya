@@ -14,13 +14,11 @@ final class QuranBookmarkStore {
     }
 
     func isBookmarked(surahId: Int, ayahId: Int) -> Bool {
-        let key = "\(surahId):\(ayahId)"
-        return fetchAll().contains { $0.verseKey == key }
+        fetch(surahId: surahId, ayahId: ayahId) != nil
     }
 
     func toggle(surahId: Int, ayahId: Int) {
-        let key = "\(surahId):\(ayahId)"
-        if let existing = fetchAll().first(where: { $0.verseKey == key }) {
+        if let existing = fetch(surahId: surahId, ayahId: ayahId) {
             modelContext.delete(existing)
         } else {
             modelContext.insert(QuranBookmark(surahId: surahId, ayahId: ayahId))
@@ -30,6 +28,15 @@ final class QuranBookmarkStore {
 
     func allBookmarks() -> [QuranBookmark] {
         fetchAll().sorted { $0.createdAt > $1.createdAt }
+    }
+
+    private func fetch(surahId: Int, ayahId: Int) -> QuranBookmark? {
+        let key = "\(surahId):\(ayahId)"
+        var descriptor = FetchDescriptor<QuranBookmark>(
+            predicate: #Predicate<QuranBookmark> { $0.verseKey == key }
+        )
+        descriptor.fetchLimit = 1
+        return (try? modelContext.fetch(descriptor))?.first
     }
 
     private func fetchAll() -> [QuranBookmark] {

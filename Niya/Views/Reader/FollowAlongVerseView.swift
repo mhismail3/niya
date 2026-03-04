@@ -85,24 +85,6 @@ struct FollowAlongVerseView: View {
             }
         }
         .animation(.easeOut(duration: 0.5), value: highlightedAyahId)
-        .task {
-            guard isFirstVerse else { return }
-            for await status in playVerseTip.statusUpdates {
-                if case .invalidated = status {
-                    BookmarkVerseTip.playDismissed = true
-                    break
-                }
-            }
-        }
-        .task {
-            guard isFirstVerse else { return }
-            for await status in bookmarkVerseTip.statusUpdates {
-                if case .invalidated = status {
-                    TafsirVerseTip.bookmarkVerseDismissed = true
-                    break
-                }
-            }
-        }
     }
 
     @ViewBuilder

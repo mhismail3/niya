@@ -26,6 +26,8 @@ struct ReaderContainerView: View {
     private let bookmarkToolbarTip = BookmarkToolbarTip()
     private let optionsMenuTip = OptionsMenuTip()
     private let settingsToolbarTip = SettingsToolbarTip()
+    private let playVerseTip = PlayVerseTip()
+    private let bookmarkVerseTip = BookmarkVerseTip()
 
     var body: some View {
         Group {
@@ -195,6 +197,22 @@ struct ReaderContainerView: View {
             for await status in settingsToolbarTip.statusUpdates {
                 if case .invalidated = status {
                     PlayVerseTip.settingsDismissed = true
+                    break
+                }
+            }
+        }
+        .task {
+            for await status in playVerseTip.statusUpdates {
+                if case .invalidated = status {
+                    BookmarkVerseTip.playDismissed = true
+                    break
+                }
+            }
+        }
+        .task {
+            for await status in bookmarkVerseTip.statusUpdates {
+                if case .invalidated = status {
+                    TafsirVerseTip.bookmarkVerseDismissed = true
                     break
                 }
             }

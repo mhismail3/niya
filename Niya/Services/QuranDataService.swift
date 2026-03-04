@@ -106,14 +106,14 @@ final class QuranDataService: QuranDataProviding {
     }
 
     func searchSurahs(query: String) -> [Surah] {
-        let q = query.trimmingCharacters(in: .whitespaces).lowercased()
+        let q = query.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty else { return surahs }
         if let n = Int(q) {
             return surahs.filter { $0.id == n }
         }
         return surahs.filter {
-            $0.transliteration.lowercased().contains(q) ||
-            $0.translation.lowercased().contains(q) ||
+            $0.transliteration.range(of: q, options: .caseInsensitive) != nil ||
+            $0.translation.range(of: q, options: .caseInsensitive) != nil ||
             $0.name.contains(q)
         }
     }
@@ -157,24 +157,30 @@ final class QuranDataService: QuranDataProviding {
 
     private func loadTranslationIndex() async throws -> [TranslationEdition] {
         guard let url = Bundle.main.url(forResource: "translations_index", withExtension: "json") else { return [] }
-        let data = try Data(contentsOf: url)
-        return try JSONDecoder().decode([TranslationEdition].self, from: data)
+        return try await Task.detached {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode([TranslationEdition].self, from: data)
+        }.value
     }
 
     private func loadSurahs() async throws -> [Surah] {
         guard let url = Bundle.main.url(forResource: "surahs", withExtension: "json") else {
             throw DataError.missingResource("surahs.json")
         }
-        let data = try Data(contentsOf: url)
-        return try JSONDecoder().decode([Surah].self, from: data)
+        return try await Task.detached {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode([Surah].self, from: data)
+        }.value
     }
 
     private func loadVerses(filename: String) async throws -> [String: [Verse]] {
         guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
             throw DataError.missingResource("\(filename).json")
         }
-        let data = try Data(contentsOf: url)
-        return try JSONDecoder().decode([String: [Verse]].self, from: data)
+        return try await Task.detached {
+            let data = try Data(contentsOf: url)
+            return try JSONDecoder().decode([String: [Verse]].self, from: data)
+        }.value
     }
 
     private func buildVerseCounts(from surahs: [Surah]) -> [Int] {

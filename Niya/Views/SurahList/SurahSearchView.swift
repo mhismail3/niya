@@ -8,6 +8,9 @@ struct SurahSearchView: View {
     @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
     @State private var searchQuery = ""
     @State private var recentQueries: [RecentSearch] = []
+    @State private var surahResults: [Surah] = []
+    @State private var hadithResults: [HadithSearchItem] = []
+    @State private var duaResults: [DuaSearchItem] = []
 
     private var isSearching: Bool {
         !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
@@ -28,6 +31,7 @@ struct SurahSearchView: View {
             .niyaToolbar()
         }
         .searchable(text: $searchQuery, prompt: "Surahs, hadiths, and duas")
+        .onChange(of: searchQuery) { _, _ in updateSearch() }
         .onSubmit(of: .search) {
             stores.recentSearch.saveQuery(searchQuery)
             reloadRecents()
@@ -38,9 +42,6 @@ struct SurahSearchView: View {
     // MARK: - Unified Search
 
     private var unifiedSearchResults: some View {
-        let surahResults = dataService.searchSurahs(query: searchQuery)
-        let hadithResults = hadithDataService.searchHadiths(query: searchQuery)
-        let duaResults = duaDataService.searchDuas(query: searchQuery)
         let hasAny = !surahResults.isEmpty || !hadithResults.isEmpty || !duaResults.isEmpty
 
         return List {
@@ -59,19 +60,19 @@ struct SurahSearchView: View {
 
             if !hadithResults.isEmpty {
                 Section {
-                    ForEach(Array(hadithResults.enumerated()), id: \.offset) { _, result in
-                        let collection = hadithDataService.collections.first { $0.id == result.collectionId }
+                    ForEach(hadithResults) { item in
+                        let collection = hadithDataService.collections.first { $0.id == item.collectionId }
                         NavigationLink {
                             HadithDetailView(
-                                hadith: result.hadith,
-                                collectionId: result.collectionId,
+                                hadith: item.hadith,
+                                collectionId: item.collectionId,
                                 hasGrades: collection?.hasGrades ?? false
                             )
                         } label: {
                             HadithSearchResultRow(
-                                collectionId: result.collectionId,
-                                hadith: result.hadith,
-                                collectionName: collection?.name ?? result.collectionId,
+                                collectionId: item.collectionId,
+                                hadith: item.hadith,
+                                collectionName: collection?.name ?? item.collectionId,
                                 hasGrades: collection?.hasGrades ?? false
                             )
                         }
@@ -84,14 +85,14 @@ struct SurahSearchView: View {
 
             if !duaResults.isEmpty {
                 Section {
-                    ForEach(Array(duaResults.enumerated()), id: \.offset) { _, result in
-                        let category = duaDataService.category(id: result.categoryId)
+                    ForEach(duaResults) { item in
+                        let category = duaDataService.category(id: item.categoryId)
                         NavigationLink {
-                            DuaDetailView(dua: result.dua, categoryId: result.categoryId)
+                            DuaDetailView(dua: item.dua, categoryId: item.categoryId)
                         } label: {
                             DuaSearchResultRow(
                                 categoryName: category?.name ?? "Dua",
-                                dua: result.dua
+                                dua: item.dua
                             )
                         }
                         .listRowBackground(Color.niyaBackground)
@@ -192,7 +193,41 @@ struct SurahSearchView: View {
         )
     }
 
+    private func updateSearch() {
+        surahResults = dataService.searchSurahs(query: searchQuery)
+        hadithResults = hadithDataService.searchHadiths(query: searchQuery).map {
+            HadithSearchItem(collectionId: $0.collectionId, hadith: $0.hadith)
+        }
+        duaResults = duaDataService.searchDuas(query: searchQuery).map {
+            DuaSearchItem(categoryId: $0.categoryId, dua: $0.dua)
+        }
+    }
+
     private func reloadRecents() {
         recentQueries = stores.recentSearch.recentQueries()
+    }
+}
+
+private struct HadithSearchItem: Identifiable {
+    let id: String
+    let collectionId: String
+    let hadith: Hadith
+
+    init(collectionId: String, hadith: Hadith) {
+        self.id = "\(collectionId):\(hadith.id)"
+        self.collectionId = collectionId
+        self.hadith = hadith
+    }
+}
+
+private struct DuaSearchItem: Identifiable {
+    let id: String
+    let categoryId: Int
+    let dua: Dua
+
+    init(categoryId: Int, dua: Dua) {
+        self.id = "\(categoryId):\(dua.id)"
+        self.categoryId = categoryId
+        self.dua = dua
     }
 }

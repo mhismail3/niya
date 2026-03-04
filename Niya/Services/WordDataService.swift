@@ -12,18 +12,21 @@ final class WordDataService: WordDataProviding {
         let filename = reciter.wordDataFilename
         guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else { return }
         do {
-            let data = try Data(contentsOf: url)
-            let raw = try JSONDecoder().decode([String: [String: VerseWordData]].self, from: data)
-            var result: [Int: [Int: VerseWordData]] = [:]
-            for (surahKey, verses) in raw {
-                guard let surahId = Int(surahKey) else { continue }
-                var verseMap: [Int: VerseWordData] = [:]
-                for (verseKey, wordData) in verses {
-                    guard let verseId = Int(verseKey) else { continue }
-                    verseMap[verseId] = wordData
+            let result = try await Task.detached {
+                let data = try Data(contentsOf: url)
+                let raw = try JSONDecoder().decode([String: [String: VerseWordData]].self, from: data)
+                var result: [Int: [Int: VerseWordData]] = [:]
+                for (surahKey, verses) in raw {
+                    guard let surahId = Int(surahKey) else { continue }
+                    var verseMap: [Int: VerseWordData] = [:]
+                    for (verseKey, wordData) in verses {
+                        guard let verseId = Int(verseKey) else { continue }
+                        verseMap[verseId] = wordData
+                    }
+                    result[surahId] = verseMap
                 }
-                result[surahId] = verseMap
-            }
+                return result
+            }.value
             cache = result
             currentReciter = reciter
             isLoaded = true

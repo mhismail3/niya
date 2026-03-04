@@ -27,7 +27,10 @@ final class ReadingPositionStore {
     }
 
     func position(for surahId: Int) -> ReadingPosition? {
-        let all = (try? modelContext.fetch(FetchDescriptor<ReadingPosition>())) ?? []
-        return all.first { $0.surahId == surahId }
+        var descriptor = FetchDescriptor<ReadingPosition>(
+            predicate: #Predicate<ReadingPosition> { $0.surahId == surahId }
+        )
+        descriptor.fetchLimit = 1
+        return (try? modelContext.fetch(descriptor))?.first
     }
 }

@@ -113,24 +113,6 @@ struct VerseRowView: View {
         .onChange(of: showTajweed) { _, on in
             if !on { dismissTooltip() }
         }
-        .task {
-            guard isFirstVerse else { return }
-            for await status in playVerseTip.statusUpdates {
-                if case .invalidated = status {
-                    BookmarkVerseTip.playDismissed = true
-                    break
-                }
-            }
-        }
-        .task {
-            guard isFirstVerse else { return }
-            for await status in bookmarkVerseTip.statusUpdates {
-                if case .invalidated = status {
-                    TafsirVerseTip.bookmarkVerseDismissed = true
-                    break
-                }
-            }
-        }
     }
 
     @ViewBuilder
