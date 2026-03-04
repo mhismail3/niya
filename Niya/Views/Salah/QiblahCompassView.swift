@@ -4,7 +4,7 @@ struct QiblahCompassView: View {
     let bearing: Double
     let heading: Double
     let headingAvailable: Bool
-    let needsCalibration: Bool
+    let headingAccuracy: Double
     var compassSize: CGFloat = 260
 
     @State private var continuousRotation: Double = 0
@@ -18,17 +18,31 @@ struct QiblahCompassView: View {
         compassSize * 0.09
     }
 
+    private var accuracyState: AccuracyState {
+        if headingAccuracy < 0 { return .calibrating }
+        if headingAccuracy > 25 { return .poor }
+        if headingAccuracy > 15 { return .fair }
+        return .good
+    }
+
+    private var ringColor: Color {
+        switch accuracyState {
+        case .good: return Color.niyaSecondary.opacity(0.3)
+        case .fair: return Color.niyaGold.opacity(0.5)
+        case .poor, .calibrating: return Color.red.opacity(0.4)
+        }
+    }
+
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             if !headingAvailable {
                 staticCompass
-            } else if needsCalibration {
-                ZStack {
-                    compassDial
-                    calibrationOverlay
-                }
             } else {
                 compassDial
+            }
+
+            if accuracyState != .good && headingAvailable {
+                accuracyBanner
             }
 
             bearingText
@@ -38,6 +52,15 @@ struct QiblahCompassView: View {
             var delta = newVal - prev
             if delta > 180 { delta -= 360 }
             if delta < -180 { delta += 360 }
+
+            // Dampen large jumps when accuracy is poor — likely interference
+            if accuracyState == .poor || accuracyState == .calibrating {
+                if abs(delta) > 15 {
+                    lastHeading = newVal
+                    return
+                }
+            }
+
             continuousRotation += delta
             lastHeading = newVal
         }
@@ -46,7 +69,7 @@ struct QiblahCompassView: View {
     private var compassDial: some View {
         ZStack {
             Circle()
-                .stroke(Color.niyaSecondary.opacity(0.3), lineWidth: 2)
+                .stroke(ringColor, lineWidth: 2)
                 .frame(width: compassSize, height: compassSize)
 
             ForEach(0..<36, id: \.self) { i in
@@ -107,19 +130,15 @@ struct QiblahCompassView: View {
         }
     }
 
-    private var calibrationOverlay: some View {
-        VStack {
-            Spacer()
-            HStack(spacing: 8) {
-                Image(systemName: "figure.wave")
-                    .font(.title3)
-                Text("Move your device in a figure-8 pattern")
-                    .font(.niyaCaption)
-            }
-            .foregroundStyle(Color.niyaGold)
-            .padding(8)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+    private var accuracyBanner: some View {
+        let color: Color = accuracyState == .fair ? .niyaGold : .red
+        return HStack(spacing: 6) {
+            Image(systemName: accuracyState == .fair ? "exclamationmark.triangle" : "figure.wave")
+                .font(.niyaCaption)
+            Text(accuracyState.message)
+                .font(.niyaCaption2)
         }
+        .foregroundStyle(color)
     }
 
     private var bearingText: some View {
@@ -141,5 +160,21 @@ struct QiblahCompassView: View {
 
     private var cardinalDirections: [(label: String, angle: Double)] {
         [("N", 0), ("E", 90), ("S", 180), ("W", 270)]
+    }
+}
+
+private enum AccuracyState {
+    case good
+    case fair
+    case poor
+    case calibrating
+
+    var message: String {
+        switch self {
+        case .good: return ""
+        case .fair: return "Compass accuracy is reduced"
+        case .poor: return "Low accuracy — move away from metal objects"
+        case .calibrating: return "Move your device in a figure-8 to calibrate"
+        }
     }
 }

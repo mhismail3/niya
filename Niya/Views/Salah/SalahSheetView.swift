@@ -28,7 +28,7 @@ struct SalahSheetView: View {
                             bearing: bearing,
                             heading: locationService.heading,
                             headingAvailable: locationService.isHeadingAvailable,
-                            needsCalibration: locationService.needsCalibration,
+                            headingAccuracy: locationService.headingAccuracy,
                             compassSize: compassSize
                         )
                         .animation(.smooth, value: compassSize)

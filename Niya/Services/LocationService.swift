@@ -52,6 +52,7 @@ final class LocationService: NSObject {
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         manager.distanceFilter = 500
+        manager.headingFilter = 5
         authorizationStatus = manager.authorizationStatus
         completer.delegate = self
         completer.resultTypes = .address
