@@ -1,5 +1,6 @@
 import Foundation
 import CoreLocation
+import MapKit
 import SwiftUI
 
 @Observable
@@ -9,6 +10,8 @@ final class LocationService: NSObject {
     var heading: Double = 0
     var headingAccuracy: Double = -1
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    var searchCompletions: [MKLocalSearchCompletion] = []
+    var isSearching = false
 
     @ObservationIgnored
     @AppStorage(StorageKey.manualLocationData) private var manualLocationData: Data?
@@ -40,6 +43,7 @@ final class LocationService: NSObject {
     }
 
     @ObservationIgnored private let manager = CLLocationManager()
+    @ObservationIgnored private let completer = MKLocalSearchCompleter()
     @ObservationIgnored private var isUpdatingHeading = false
     @ObservationIgnored private var lastGeocodeDate: Date?
 
@@ -49,6 +53,8 @@ final class LocationService: NSObject {
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         manager.distanceFilter = 500
         authorizationStatus = manager.authorizationStatus
+        completer.delegate = self
+        completer.resultTypes = .address
     }
 
     func requestPermission() {
@@ -76,28 +82,78 @@ final class LocationService: NSObject {
         manager.stopUpdatingHeading()
     }
 
-    func geocodeCity(_ query: String) async -> [UserLocation] {
-        let geocoder = CLGeocoder()
+    // MARK: - Location Search
+
+    func updateSearchQuery(_ query: String) {
+        guard !query.isEmpty else {
+            stopSearch()
+            return
+        }
+        isSearching = true
+        completer.queryFragment = query
+    }
+
+    func stopSearch() {
+        completer.cancel()
+        searchCompletions = []
+        isSearching = false
+    }
+
+    func selectCompletion(_ completion: MKLocalSearchCompletion) async -> UserLocation? {
+        let request = MKLocalSearch.Request(completion: completion)
+        let search = MKLocalSearch(request: request)
         do {
-            let placemarks = try await geocoder.geocodeAddressString(query)
-            return placemarks.compactMap { placemark -> UserLocation? in
-                guard let coord = placemark.location?.coordinate else { return nil }
-                let name = [placemark.locality, placemark.country]
-                    .compactMap { $0 }
-                    .joined(separator: ", ")
-                let tzId = placemark.timeZone?.identifier ?? TimeZone.current.identifier
-                return UserLocation(
-                    latitude: coord.latitude,
-                    longitude: coord.longitude,
-                    name: name.isEmpty ? "Unknown" : name,
-                    timezoneIdentifier: tzId
-                )
-            }
+            let response = try await search.start()
+            guard let item = response.mapItems.first else { return nil }
+            let pm = item.placemark
+            let name = Self.formatLocationName(
+                locality: pm.locality,
+                administrativeArea: pm.administrativeArea,
+                country: pm.country
+            )
+            let tzId = pm.timeZone?.identifier ?? TimeZone.current.identifier
+            return UserLocation(
+                latitude: pm.coordinate.latitude,
+                longitude: pm.coordinate.longitude,
+                name: name,
+                timezoneIdentifier: tzId
+            )
         } catch {
-            return []
+            return nil
         }
     }
+
+    // MARK: - Name Formatting
+
+    nonisolated static func formatLocationName(
+        locality: String?,
+        administrativeArea: String?,
+        country: String?
+    ) -> String {
+        var parts: [String] = []
+        if let locality { parts.append(locality) }
+        if let admin = administrativeArea, admin != locality {
+            parts.append(admin)
+        }
+        if let country { parts.append(country) }
+        return parts.isEmpty ? "Unknown" : parts.joined(separator: ", ")
+    }
 }
+
+// MARK: - MKLocalSearchCompleterDelegate
+
+extension LocationService: @preconcurrency MKLocalSearchCompleterDelegate {
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        searchCompletions = completer.results
+        isSearching = false
+    }
+
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        isSearching = false
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
 
 extension LocationService: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -117,7 +173,11 @@ extension LocationService: CLLocationManagerDelegate {
                 let geocoder = CLGeocoder()
                 if let placemarks = try? await geocoder.reverseGeocodeLocation(loc),
                    let pm = placemarks.first {
-                    name = [pm.locality, pm.country].compactMap { $0 }.joined(separator: ", ")
+                    name = Self.formatLocationName(
+                        locality: pm.locality,
+                        administrativeArea: pm.administrativeArea,
+                        country: pm.country
+                    )
                 } else {
                     name = self.currentLocation?.name ?? String(format: "%.2f, %.2f", coord.latitude, coord.longitude)
                 }

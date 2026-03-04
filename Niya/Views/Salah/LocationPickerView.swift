@@ -1,13 +1,12 @@
 import SwiftUI
+import MapKit
 
 struct LocationPickerView: View {
     @Environment(LocationService.self) private var locationService
     @Environment(PrayerTimeService.self) private var prayerTimeService
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
-    @State private var searchResults: [UserLocation] = []
-    @State private var isSearching = false
-    @State private var searchTask: Task<Void, Never>?
+    @State private var isSelecting = false
 
     var body: some View {
         NavigationStack {
@@ -53,7 +52,7 @@ struct LocationPickerView: View {
                     }
                 }
 
-                if isSearching {
+                if locationService.isSearching {
                     Section {
                         HStack {
                             ProgressView()
@@ -62,29 +61,34 @@ struct LocationPickerView: View {
                                 .foregroundStyle(Color.niyaSecondary)
                         }
                     }
-                } else if !searchResults.isEmpty {
+                } else if !locationService.searchCompletions.isEmpty {
                     Section("Results") {
-                        ForEach(searchResults, id: \.name) { loc in
+                        ForEach(locationService.searchCompletions, id: \.self) { completion in
                             Button {
-                                locationService.manualLocation = loc
-                                prayerTimeService.recalculate(location: loc)
-                                dismiss()
+                                selectCompletion(completion)
                             } label: {
                                 HStack {
                                     Image(systemName: "mappin")
                                         .foregroundStyle(Color.niyaSecondary)
                                     VStack(alignment: .leading) {
-                                        Text(loc.name)
+                                        Text(completion.title)
                                             .foregroundStyle(Color.niyaText)
-                                        Text(String(format: "%.2f, %.2f", loc.latitude, loc.longitude))
-                                            .font(.niyaCaption)
-                                            .foregroundStyle(Color.niyaSecondary)
+                                        if !completion.subtitle.isEmpty {
+                                            Text(completion.subtitle)
+                                                .font(.niyaCaption)
+                                                .foregroundStyle(Color.niyaSecondary)
+                                        }
+                                    }
+                                    Spacer()
+                                    if isSelecting {
+                                        ProgressView()
                                     }
                                 }
                             }
+                            .disabled(isSelecting)
                         }
                     }
-                } else if !searchText.isEmpty && !isSearching {
+                } else if !searchText.isEmpty && !locationService.isSearching {
                     Section {
                         Text("No results found")
                             .font(.niyaCaption)
@@ -100,21 +104,23 @@ struct LocationPickerView: View {
                 }
             }
             .onChange(of: searchText) { _, newValue in
-                searchTask?.cancel()
-                guard !newValue.isEmpty else {
-                    searchResults = []
-                    return
-                }
-                searchTask = Task {
-                    try? await Task.sleep(for: .milliseconds(500))
-                    guard !Task.isCancelled else { return }
-                    isSearching = true
-                    let results = await locationService.geocodeCity(newValue)
-                    guard !Task.isCancelled else { return }
-                    searchResults = results
-                    isSearching = false
-                }
+                locationService.updateSearchQuery(newValue)
             }
+            .onDisappear {
+                locationService.stopSearch()
+            }
+        }
+    }
+
+    private func selectCompletion(_ completion: MKLocalSearchCompletion) {
+        isSelecting = true
+        Task {
+            if let loc = await locationService.selectCompletion(completion) {
+                locationService.manualLocation = loc
+                prayerTimeService.recalculate(location: loc)
+                dismiss()
+            }
+            isSelecting = false
         }
     }
 }

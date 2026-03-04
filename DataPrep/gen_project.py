@@ -275,6 +275,8 @@ TEST_FILES = [
     "NiyaTests/Mocks/MockQuranDataService.swift",
     "NiyaTests/Mocks/MockWordDataService.swift",
     "NiyaTests/Mocks/MockNetworkClient.swift",
+    "NiyaTests/LocationNameFormattingTests.swift",
+    "NiyaTests/LocationSearchTests.swift",
 ]
 
 # Widget extension files
