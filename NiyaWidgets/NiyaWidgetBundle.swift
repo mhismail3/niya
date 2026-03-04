@@ -29,13 +29,7 @@ struct PrayerTimeWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: PrayerTimelineProvider()) { entry in
             PrayerTimeWidgetEntryView(entry: entry)
-                .containerBackground(for: .widget) {
-                    if #available(iOSApplicationExtension 26.0, *) {
-                        Color.clear.glassEffect()
-                    } else {
-                        Color.niyaSurface
-                    }
-                }
+                .containerBackground(.background, for: .widget)
                 .widgetURL(URL(string: "niya://salah"))
         }
         .configurationDisplayName("Prayer Times")
