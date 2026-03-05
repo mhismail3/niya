@@ -117,6 +117,7 @@ final class PrayerTimeService {
             content.title = "\(pt.prayer.displayName) Prayer"
             content.body = "It's time for \(pt.prayer.displayName) - \(formatter.string(from: pt.time))"
             content.sound = .default
+            content.interruptionLevel = .timeSensitive
             content.categoryIdentifier = "prayerTime"
 
             let trigger = UNTimeIntervalNotificationTrigger(
