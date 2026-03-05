@@ -47,7 +47,13 @@ struct ScrollReaderView: View {
                             isBookmarked: bookmarkedAyahSet.contains(verse.id),
                             bookmarkColor: bookmarkColors[verse.id],
                             isFirstVerse: verse.id == 1,
-                            onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) },
+                            onPlay: {
+                                if audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id) {
+                                    audioPlayerVM.togglePause()
+                                } else {
+                                    audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id)
+                                }
+                            },
                             onBookmark: { toggleBookmark(verse.id) },
                             onSetBookmarkColor: { color in setBookmarkColor(verse.id, color: color) },
                             onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }

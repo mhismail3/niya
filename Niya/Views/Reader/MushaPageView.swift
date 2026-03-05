@@ -49,7 +49,13 @@ struct MushaPageView: View {
                         isBookmarked: bookmarkedAyahSet.contains(verse.id),
                         bookmarkColor: bookmarkColors[verse.id],
                         isFirstVerse: verse.id == 1,
-                        onPlay: { audioPlayerVM.playVerse(surahId: surahId, ayahId: verse.id) },
+                        onPlay: {
+                            if audioPlayerVM.isPlayingVerse(surahId: surahId, ayahId: verse.id) {
+                                audioPlayerVM.togglePause()
+                            } else {
+                                audioPlayerVM.playVerse(surahId: surahId, ayahId: verse.id)
+                            }
+                        },
                         onBookmark: { toggleBookmark(verse.id) },
                         onSetBookmarkColor: { color in setBookmarkColor(verse.id, color: color) },
                         onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
