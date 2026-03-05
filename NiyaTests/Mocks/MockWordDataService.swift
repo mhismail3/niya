@@ -5,8 +5,10 @@ import Foundation
 final class MockWordDataService: WordDataProviding {
     var isLoaded = false
     var currentReciter: Reciter?
+    var currentMeaningLanguage: String?
 
     var loadCallCount = 0
+    var loadMeaningsCallCount = 0
     var wordsResult: [String: VerseWordData] = [:]
     var allVerseDataResult: [(ayahId: Int, data: VerseWordData)]?
 
@@ -14,6 +16,11 @@ final class MockWordDataService: WordDataProviding {
         loadCallCount += 1
         currentReciter = reciter
         isLoaded = true
+    }
+
+    func loadMeanings(language: String) async {
+        loadMeaningsCallCount += 1
+        currentMeaningLanguage = language
     }
 
     func words(surahId: Int, ayahId: Int) -> VerseWordData? {

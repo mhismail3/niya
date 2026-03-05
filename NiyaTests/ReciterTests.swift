@@ -5,9 +5,29 @@ import Testing
 @Suite("Reciter")
 struct ReciterTests {
 
+    @Test func allCasesCount() {
+        #expect(Reciter.allCases.count == 8)
+    }
+
+    @Test(arguments: Reciter.allCases)
+    func displayNameNotEmpty(reciter: Reciter) {
+        #expect(!reciter.displayName.isEmpty)
+    }
+
+    @Test(arguments: Reciter.allCases)
+    func shortNameNotEmpty(reciter: Reciter) {
+        #expect(!reciter.shortName.isEmpty)
+    }
+
     @Test func displayNames() {
         #expect(Reciter.alAfasy.displayName == "Mishary Rashid Al-Afasy")
         #expect(Reciter.noreenSiddiq.displayName == "Noreen Mohammad Siddiq")
+        #expect(Reciter.abdulBaset.displayName == "AbdulBaset AbdulSamad")
+        #expect(Reciter.sudais.displayName == "Abdur-Rahman as-Sudais")
+        #expect(Reciter.shatri.displayName == "Abu Bakr al-Shatri")
+        #expect(Reciter.haniRifai.displayName == "Hani ar-Rifai")
+        #expect(Reciter.husary.displayName == "Mahmoud Khalil Al-Husary")
+        #expect(Reciter.shuraym.displayName == "Sa'ud ash-Shuraym")
     }
 
     @Test func shortNames() {
@@ -23,9 +43,26 @@ struct ReciterTests {
         #expect(Reciter.noreenSiddiq.hasPerVerseAudio == false)
     }
 
+    @Test(arguments: [Reciter.abdulBaset, .sudais, .shatri, .haniRifai, .husary, .shuraym])
+    func newRecitersHavePerVerseAudio(reciter: Reciter) {
+        #expect(reciter.hasPerVerseAudio == true)
+    }
+
     @Test func wordDataFilenames() {
         #expect(Reciter.alAfasy.wordDataFilename == "word_data")
         #expect(Reciter.noreenSiddiq.wordDataFilename == "noreen_word_data")
+        #expect(Reciter.abdulBaset.wordDataFilename == "word_data_abdulbaset")
+        #expect(Reciter.sudais.wordDataFilename == "word_data_sudais")
+        #expect(Reciter.shatri.wordDataFilename == "word_data_shatri")
+        #expect(Reciter.haniRifai.wordDataFilename == "word_data_hanirifai")
+        #expect(Reciter.husary.wordDataFilename == "word_data_husary")
+        #expect(Reciter.shuraym.wordDataFilename == "word_data_shuraym")
+    }
+
+    @Test func allRecitersHaveWordDataFilenames() {
+        for reciter in Reciter.allCases {
+            #expect(!reciter.wordDataFilename.isEmpty, "\(reciter.rawValue) missing wordDataFilename")
+        }
     }
 
     @Test func alAfasySurahURL() {
@@ -54,12 +91,77 @@ struct ReciterTests {
         #expect(url == nil)
     }
 
+    @Test func newReciterSurahURLFormat() {
+        let url = Reciter.sudais.surahStreamURL(surahId: 2)
+        #expect(url.absoluteString == "https://download.quranicaudio.com/qdc/abdurrahmaan_as_sudais/murattal/2.mp3")
+    }
+
+    @Test func shuraymSurahURLZeroPadded() {
+        let url = Reciter.shuraym.surahStreamURL(surahId: 1)
+        #expect(url.absoluteString == "https://download.quranicaudio.com/qdc/saud_ash-shuraym/murattal/001.mp3")
+    }
+
+    @Test func newReciterVerseURLFormat() {
+        let url = Reciter.husary.verseStreamURL(absoluteVerseNumber: 1)
+        #expect(url != nil)
+        #expect(url!.absoluteString == "https://cdn.islamic.network/quran/audio/128/ar.husary/1.mp3")
+    }
+
+    @Test func reciterBitrates() {
+        let url64 = Reciter.sudais.verseStreamURL(absoluteVerseNumber: 1)!
+        #expect(url64.absoluteString.contains("/64/"))
+        let url128 = Reciter.shatri.verseStreamURL(absoluteVerseNumber: 1)!
+        #expect(url128.absoluteString.contains("/128/"))
+    }
+
+    @Test(arguments: [
+        (Reciter.abdulBaset, "ar.abdulsamad"),
+        (.sudais, "ar.abdurrahmaansudais"),
+        (.shatri, "ar.shaatree"),
+        (.haniRifai, "ar.hanirifai"),
+        (.husary, "ar.husary"),
+        (.shuraym, "ar.saoodshuraym"),
+    ])
+    func islamicNetworkCDNIds(reciter: Reciter, networkId: String) {
+        let url = reciter.verseStreamURL(absoluteVerseNumber: 42)!
+        #expect(url.absoluteString.contains(networkId))
+    }
+
+    @Test(arguments: Reciter.allCases)
+    func surahURLsUseCorrectCDN(reciter: Reciter) {
+        let url = reciter.surahStreamURL(surahId: 1)
+        switch reciter {
+        case .alAfasy:
+            #expect(url.absoluteString.contains("cdn.islamic.network"))
+        case .noreenSiddiq:
+            #expect(url.absoluteString.contains("quranicaudio.com/quran/"))
+        default:
+            #expect(url.absoluteString.contains("quranicaudio.com/qdc/"))
+        }
+    }
+
     @Test func localFilenamesDistinct() {
         let a = Reciter.alAfasy.localFilename(for: 42)
         let n = Reciter.noreenSiddiq.localFilename(for: 42)
         #expect(a != n)
         #expect(a == "audio_alafasy_surah_42.mp3")
         #expect(n == "audio_noreen_surah_42.mp3")
+    }
+
+    @Test func newReciterLocalFilenames() {
+        #expect(Reciter.abdulBaset.localFilename(for: 1) == "audio_abdulbaset_surah_1.mp3")
+        #expect(Reciter.sudais.localFilename(for: 114) == "audio_sudais_surah_114.mp3")
+        #expect(Reciter.shatri.localFilename(for: 36) == "audio_shatri_surah_36.mp3")
+        #expect(Reciter.haniRifai.localFilename(for: 55) == "audio_hanirifai_surah_55.mp3")
+        #expect(Reciter.husary.localFilename(for: 67) == "audio_husary_surah_67.mp3")
+        #expect(Reciter.shuraym.localFilename(for: 78) == "audio_shuraym_surah_78.mp3")
+    }
+
+    @Test(arguments: Reciter.allCases)
+    func allLocalFilenamesUnique(reciter: Reciter) {
+        let filenames = Reciter.allCases.map { $0.localFilename(for: 1) }
+        let unique = Set(filenames)
+        #expect(unique.count == filenames.count)
     }
 
     @Test func codableRoundTrip() throws {
@@ -75,5 +177,11 @@ struct ReciterTests {
     @Test func rawValueMatchesExpected() {
         #expect(Reciter.alAfasy.rawValue == "alAfasy")
         #expect(Reciter.noreenSiddiq.rawValue == "noreenSiddiq")
+        #expect(Reciter.abdulBaset.rawValue == "abdulBaset")
+        #expect(Reciter.sudais.rawValue == "sudais")
+        #expect(Reciter.shatri.rawValue == "shatri")
+        #expect(Reciter.haniRifai.rawValue == "haniRifai")
+        #expect(Reciter.husary.rawValue == "husary")
+        #expect(Reciter.shuraym.rawValue == "shuraym")
     }
 }

@@ -135,7 +135,7 @@ struct ReaderContainerView: View {
             if showTajweed && storedScript == .hafs {
                 tajweedService.fetch(surahId: vm.surah.id)
             }
-            if followAlong && storedScript == .hafs || !selectedReciter.hasPerVerseAudio {
+            if followAlong && storedScript == .hafs {
                 Task { await wordDataService.load(reciter: selectedReciter) }
             }
             if followAlong && audioPlayerVM.hasActiveSession,
@@ -165,6 +165,12 @@ struct ReaderContainerView: View {
         .onChange(of: followAlongLoopCount) { _, count in
             followAlongVM.setLoopCount(count)
             audioPlayerVM.loopCount = count
+        }
+        .onChange(of: selectedReciter) { _, newReciter in
+            followAlongVM.stopTracking()
+            if followAlong && storedScript == .hafs {
+                Task { await wordDataService.load(reciter: newReciter) }
+            }
         }
         .onChange(of: selectedTranslationIds) { _, _ in
             vm.reloadTranslation()

@@ -25,9 +25,19 @@ struct TranslationPickerView: View {
                         } label: {
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(edition.name)
-                                        .font(.niyaBody)
-                                        .foregroundStyle(Color.niyaText)
+                                    HStack(spacing: 6) {
+                                        Text(edition.name)
+                                            .font(.niyaBody)
+                                            .foregroundStyle(Color.niyaText)
+                                        if edition.hasWordByWord {
+                                            Text("W×W")
+                                                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                                                .foregroundStyle(.white)
+                                                .padding(.horizontal, 5)
+                                                .padding(.vertical, 2)
+                                                .background(Color.niyaTeal.opacity(0.8), in: Capsule())
+                                        }
+                                    }
                                     Text(edition.author)
                                         .font(.niyaCaption)
                                         .foregroundStyle(Color.niyaSecondary)

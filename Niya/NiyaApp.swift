@@ -88,11 +88,17 @@ struct NiyaApp: App {
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
                     await wordDataService.load(reciter: selectedReciter)
+                    let lang = dataService.selectedTranslations.first?.language ?? "en"
+                    await wordDataService.loadMeanings(language: lang)
                 }
                 .onChange(of: selectedReciter) { _, newReciter in
                     audioPlayerVM.stop()
                     audioPlayerVM.selectedReciter = newReciter
                     Task { await wordDataService.load(reciter: newReciter) }
+                }
+                .onChange(of: dataService.selectedTranslations) {
+                    let lang = dataService.selectedTranslations.first?.language ?? "en"
+                    Task { await wordDataService.loadMeanings(language: lang) }
                 }
                 .onChange(of: scenePhase) { _, phase in
                     if phase == .active {

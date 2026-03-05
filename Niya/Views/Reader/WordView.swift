@@ -30,12 +30,12 @@ struct WordView: View {
                 }
 
                 if showMeaning {
-                    Text(word.en)
+                    Text(word.displayMeaning)
                         .font(.system(size: meaningSize, design: .serif))
                         .foregroundStyle(secondaryColor)
                         .lineLimit(2)
                         .multilineTextAlignment(.center)
-                        .accessibilityLabel("Meaning: \(word.en)")
+                        .accessibilityLabel("Meaning: \(word.displayMeaning)")
                 }
             }
             .padding(.horizontal, 6)
@@ -124,11 +124,12 @@ private class GlyphBoundsLabel: UIView {
            let bold = CTFontCreateCopyWithSymbolicTraits(font, fontSize, nil, .boldTrait, .boldTrait) {
             font = bold
         }
+        let cleaned = Self.textWithSupportedGlyphs(text, font: font)
         let attrs: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: textColor
         ]
-        let attrStr = NSAttributedString(string: text, attributes: attrs)
+        let attrStr = NSAttributedString(string: cleaned, attributes: attrs)
         let ctLine = CTLineCreateWithAttributedString(attrStr)
         line = ctLine
         cachedGlyphBounds = CTLineGetBoundsWithOptions(ctLine, .useGlyphPathBounds)
@@ -137,6 +138,54 @@ private class GlyphBoundsLabel: UIView {
         cachedFontDescent = CTFontGetDescent(font)
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
+    }
+
+    /// Replaces characters the font lacks glyphs for with equivalents, then strips any remaining unsupported characters.
+    private static func textWithSupportedGlyphs(_ input: String, font: CTFont) -> String {
+        // Apply known substitutions (characters with equivalent glyphs in Uthmanic fonts)
+        var text = input
+            .replacingOccurrences(of: "\u{06DF}", with: "\u{06E0}")  // Small High Rounded Zero → Upright Rectangular Zero
+            .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
+            .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
+
+        // Quranic annotation marks that render as dotted circles or fallback glyphs
+        // in KFGQPC Uthmanic Script HAFS despite CTFont reporting glyphs exist.
+        // U+06D6-U+06DC: waqf/pause signs, U+06DD-U+06DE: end-of-ayah/section marks,
+        // U+06E9: place of sajdah, U+06EA-U+06ED: small annotation marks
+        let stripSet: Set<UInt32> = [
+            0x06D6, 0x06D7, 0x06D8, 0x06D9, 0x06DA, 0x06DB, 0x06DC,
+            0x06DD, 0x06DE,
+            0x06E9,
+            0x06EA, 0x06EB, 0x06EC, 0x06ED,
+        ]
+
+        let scalars = Array(text.unicodeScalars)
+        guard !scalars.isEmpty else { return text }
+
+        var hasUnsupported = false
+        var supported = [Bool](repeating: true, count: scalars.count)
+        for (i, scalar) in scalars.enumerated() {
+            if stripSet.contains(scalar.value) {
+                supported[i] = false
+                hasUnsupported = true
+                continue
+            }
+            guard scalar.value <= 0xFFFF else { continue }
+            var utf16 = UniChar(truncatingIfNeeded: scalar.value)
+            var glyph: CGGlyph = 0
+            if !CTFontGetGlyphsForCharacters(font, &utf16, &glyph, 1) {
+                supported[i] = false
+                hasUnsupported = true
+            }
+        }
+        guard hasUnsupported else { return text }
+
+        var result = String.UnicodeScalarView()
+        result.reserveCapacity(scalars.count)
+        for (i, scalar) in scalars.enumerated() where supported[i] {
+            result.append(scalar)
+        }
+        return String(result)
     }
 
     override var intrinsicContentSize: CGSize {

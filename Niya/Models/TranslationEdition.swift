@@ -11,4 +11,8 @@ struct TranslationEdition: Codable, Identifiable, Hashable, Sendable {
     var isRTL: Bool {
         ["ur", "fa", "ar"].contains(language)
     }
+
+    var hasWordByWord: Bool {
+        WordDataService.supportedMeaningLanguages.contains(language) || language == "en"
+    }
 }

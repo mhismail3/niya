@@ -8,12 +8,18 @@ struct QuranWord: Codable, Identifiable, Sendable, Hashable {
     let a: String
     let s: Int
     let e: Int
+    var meaning: String?
 
     var id: Int { p }
+    var displayMeaning: String { meaning ?? en }
 
     var audioURL: URL? { URL(string: "https://audio.qurancdn.com/\(a)") }
 
     var durationMs: Int { e - s }
+
+    private enum CodingKeys: String, CodingKey {
+        case p, t, tr, en, a, s, e
+    }
 }
 
 struct VerseWordData: Codable, Sendable {

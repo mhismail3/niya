@@ -214,6 +214,7 @@ struct AudioSettingsSection<Extra: View>: View {
                     Text(r.displayName).tag(r)
                 }
             }
+            .pickerStyle(.navigationLink)
             .tint(Color.niyaTeal)
             Toggle("Auto-advance", isOn: $autoAdvance)
                 .tint(Color.niyaTeal)

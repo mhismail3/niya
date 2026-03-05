@@ -2,13 +2,16 @@
 """
 Fetch word-by-word data and audio timing from Quran.com API v4.
 
-Produces Niya/Resources/Data/word_data.json with per-word Arabic text,
-transliteration, English translation, and millisecond-accurate audio timing
-synced to Mishari al-Afasy's recitation.
+Produces Niya/Resources/Data/word_data_*.json with per-word Arabic text,
+transliteration, English translation, and millisecond-accurate audio timing.
 
 Usage:
-    python3 DataPrep/fetch_word_data.py
+    python3 DataPrep/fetch_word_data.py                         # Al-Afasy (default)
+    python3 DataPrep/fetch_word_data.py --reciter sudais         # specific reciter
+    python3 DataPrep/fetch_word_data.py --all                    # all reciters
+    python3 DataPrep/fetch_word_data.py --all --compress         # all + zlib compressed
 """
+import argparse
 import json
 import math
 import os
@@ -16,14 +19,25 @@ import sys
 import time
 import urllib.request
 import urllib.error
+import zlib
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
 SURAHS_PATH = os.path.join(PROJECT_ROOT, "Niya", "Resources", "Data", "surahs.json")
-OUTPUT_PATH = os.path.join(PROJECT_ROOT, "Niya", "Resources", "Data", "word_data.json")
+DATA_DIR = os.path.join(PROJECT_ROOT, "Niya", "Resources", "Data")
+
+RECITERS = {
+    "alafasy":     {"quran_com_id": 7,  "output": "word_data.json"},
+    "abdulbaset":  {"quran_com_id": 2,  "output": "word_data_abdulbaset.json"},
+    "sudais":      {"quran_com_id": 3,  "output": "word_data_sudais.json"},
+    "shatri":      {"quran_com_id": 4,  "output": "word_data_shatri.json"},
+    "hanirifai":   {"quran_com_id": 5,  "output": "word_data_hanirifai.json"},
+    "husary":      {"quran_com_id": 6,  "output": "word_data_husary.json"},
+    "shuraym":     {"quran_com_id": 10, "output": "word_data_shuraym.json"},
+}
 
 WORDS_API = "https://api.quran.com/api/v4/verses/by_chapter/{ch}?language=en&words=true&word_fields=text_uthmani&per_page=300&page={page}"
-TIMING_API = "https://api.quran.com/api/v4/chapter_recitations/7/{ch}?segments=true"
+TIMING_API = "https://api.quran.com/api/v4/chapter_recitations/{reciter_id}/{ch}?segments=true"
 
 RATE_LIMIT = 0.5
 MAX_RETRIES = 3
@@ -71,9 +85,9 @@ def fetch_words_for_surah(ch):
     return all_verses
 
 
-def fetch_timing_for_surah(ch):
+def fetch_timing_for_surah(ch, reciter_id):
     """Fetch audio timing with segments for a surah."""
-    url = TIMING_API.format(ch=ch)
+    url = TIMING_API.format(reciter_id=reciter_id, ch=ch)
     data = api_get(url)
     af = data.get("audio_file")
     if not af:
@@ -182,7 +196,7 @@ def clean_segments(raw_segments, word_count, verse_start_ms, verse_end_ms):
     return parsed
 
 
-def build_surah_data(ch, surah_info):
+def build_surah_data(ch, surah_info, reciter_id):
     """Build complete word-by-word data for one surah."""
     print(f"  [{ch:>3}/114] {surah_info['transliteration']} ({surah_info['totalVerses']} verses)")
 
@@ -191,7 +205,7 @@ def build_surah_data(ch, surah_info):
     time.sleep(RATE_LIMIT)
 
     # Fetch timing
-    timing_raw = fetch_timing_for_surah(ch)
+    timing_raw = fetch_timing_for_surah(ch, reciter_id)
     time.sleep(RATE_LIMIT)
 
     if timing_raw is None:
@@ -255,8 +269,12 @@ def build_surah_data(ch, surah_info):
     return surah_out
 
 
-def build_all():
-    """Fetch and assemble word data for the entire Quran."""
+def build_all(reciter_slug, compress):
+    """Fetch and assemble word data for one reciter."""
+    info = RECITERS[reciter_slug]
+    reciter_id = info["quran_com_id"]
+    output_path = os.path.join(DATA_DIR, info["output"])
+
     surahs = load_surahs()
     if len(surahs) != 114:
         print(f"ERROR: expected 114 surahs in surahs.json, got {len(surahs)}")
@@ -266,12 +284,12 @@ def build_all():
     total_verses = 0
     total_words = 0
 
-    print("Fetching word-by-word data for all 114 surahs...")
+    print(f"Fetching word-by-word data for reciter '{reciter_slug}' (Quran.com ID {reciter_id})...")
     print()
 
     for ch in range(1, 115):
         surah_info = surahs[ch]
-        surah_data = build_surah_data(ch, surah_info)
+        surah_data = build_surah_data(ch, surah_info, reciter_id)
         result[str(ch)] = surah_data
         v_count = len(surah_data)
         w_count = sum(len(v["w"]) for v in surah_data.values())
@@ -285,28 +303,45 @@ def build_all():
     if total_verses != EXPECTED_TOTAL_VERSES:
         print(f"WARNING: expected {EXPECTED_TOTAL_VERSES} verses, got {total_verses}")
 
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, separators=(",", ":"))
 
-    size_mb = os.path.getsize(OUTPUT_PATH) / (1024 * 1024)
-    print(f"Saved: {OUTPUT_PATH} ({size_mb:.1f} MB)")
+    size_mb = os.path.getsize(output_path) / (1024 * 1024)
+    print(f"Saved: {output_path} ({size_mb:.1f} MB)")
 
-    return result
+    if compress:
+        compress_file(output_path)
+
+    return result, output_path
 
 
-def self_test():
+def compress_file(json_path):
+    """Produce a .json.zlib companion using zlib.compress(level=9)."""
+    zlib_path = json_path + ".zlib"
+    with open(json_path, "rb") as f:
+        raw = f.read()
+    compressed = zlib.compress(raw, level=9)
+    with open(zlib_path, "wb") as f:
+        f.write(compressed)
+    raw_mb = len(raw) / (1024 * 1024)
+    comp_mb = len(compressed) / (1024 * 1024)
+    ratio = len(compressed) / len(raw) * 100
+    print(f"Compressed: {zlib_path} ({comp_mb:.1f} MB, {ratio:.0f}% of {raw_mb:.1f} MB)")
+
+
+def self_test(output_path):
     """Validate the generated output file."""
     print()
     print("=" * 60)
     print("SELF-TEST")
     print("=" * 60)
 
-    if not os.path.exists(OUTPUT_PATH):
+    if not os.path.exists(output_path):
         print("FAIL: output file not found")
         return False
 
-    with open(OUTPUT_PATH, "r", encoding="utf-8") as f:
+    with open(output_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     surahs = load_surahs()
@@ -438,9 +473,29 @@ def self_test():
 
 
 def main():
-    build_all()
-    ok = self_test()
-    if not ok:
+    parser = argparse.ArgumentParser(description="Fetch word-by-word data from Quran.com API v4")
+    parser.add_argument("--reciter", choices=list(RECITERS.keys()), default="alafasy",
+                        help="Reciter slug (default: alafasy)")
+    parser.add_argument("--all", action="store_true",
+                        help="Fetch for all reciters")
+    parser.add_argument("--compress", action="store_true",
+                        help="Produce .json.zlib companion files")
+    args = parser.parse_args()
+
+    slugs = list(RECITERS.keys()) if args.all else [args.reciter]
+    all_ok = True
+
+    for slug in slugs:
+        print()
+        print(f"{'=' * 60}")
+        print(f"  RECITER: {slug}")
+        print(f"{'=' * 60}")
+        _, output_path = build_all(slug, args.compress)
+        ok = self_test(output_path)
+        if not ok:
+            all_ok = False
+
+    if not all_ok:
         print()
         print("Some checks failed. Review warnings above.")
         sys.exit(1)
