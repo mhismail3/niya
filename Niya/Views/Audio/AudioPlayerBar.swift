@@ -6,6 +6,7 @@ struct AudioPlayerBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.stores) private var stores
     @State private var isBookmarked = false
+    @State private var bookmarkColor: BookmarkColor?
 
     private var isFollowAlong: Bool { vm.isFollowAlongActive }
     private var isVerseMode: Bool { vm.currentVerseID != nil || isFollowAlong }
@@ -66,16 +67,50 @@ struct AudioPlayerBar: View {
                     stores.quranBookmarks.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
                 }
                 isBookmarked.toggle()
+                if !isBookmarked { bookmarkColor = nil }
                 NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.body)
-                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                    .foregroundStyle(isBookmarked ? (bookmarkColor?.color ?? .niyaGold) : Color.niyaSecondary)
                     .frame(width: NiyaSize.touchTarget, height: NiyaSize.touchTarget)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(isBookmarked ? "Remove bookmark" : "Add bookmark")
+            .accessibilityLabel(isBookmarked ? "Remove bookmark, \(bookmarkColor?.displayName ?? "Gold")" : "Add bookmark")
+            .contextMenu {
+                if isBookmarked {
+                    Section("Color") {
+                        Button { setBarBookmarkColor(nil) } label: {
+                            Label("Gold", systemImage: bookmarkColor == nil ? "checkmark.circle.fill" : "circle.fill")
+                        }
+                        .tint(.niyaGold)
+                        ForEach(BookmarkColor.allCases) { bc in
+                            Button { setBarBookmarkColor(bc) } label: {
+                                Label(bc.displayName, systemImage: bookmarkColor == bc ? "checkmark.circle.fill" : "circle.fill")
+                            }
+                            .tint(bc.color)
+                        }
+                    }
+                    Section {
+                        Button(role: .destructive) {
+                            if isFollowAlong {
+                                guard let surahId = followAlongVM.currentSurahId,
+                                      let ayahId = followAlongVM.currentVerseId else { return }
+                                stores.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
+                            } else {
+                                guard let vid = vm.currentVerseID else { return }
+                                stores.quranBookmarks.toggle(surahId: vid.surahId, ayahId: vid.ayahId)
+                            }
+                            isBookmarked = false
+                            bookmarkColor = nil
+                            NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
+                        } label: {
+                            Label("Remove Bookmark", systemImage: "bookmark.slash")
+                        }
+                    }
+                }
+            }
             .disabled(!isVerseMode)
             .opacity(isVerseMode ? 1 : 0.3)
 
@@ -118,19 +153,27 @@ struct AudioPlayerBar: View {
         .modifier(StableGlassModifier())
         .onChange(of: vm.currentVerseID) { _, vid in
             guard let vid else {
-                if !isFollowAlong { isBookmarked = false }
+                if !isFollowAlong { isBookmarked = false; bookmarkColor = nil }
                 return
             }
             isBookmarked = stores.quranBookmarks
                 .isBookmarked(surahId: vid.surahId, ayahId: vid.ayahId)
+            bookmarkColor = isBookmarked
+                ? stores.quranBookmarks.allBookmarks()
+                    .first { $0.surahId == vid.surahId && $0.ayahId == vid.ayahId }?.bookmarkColor
+                : nil
         }
         .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
             guard let surahId = followAlongVM.currentSurahId, let ayahId else {
-                if isFollowAlong { isBookmarked = false }
+                if isFollowAlong { isBookmarked = false; bookmarkColor = nil }
                 return
             }
             isBookmarked = stores.quranBookmarks
                 .isBookmarked(surahId: surahId, ayahId: ayahId)
+            bookmarkColor = isBookmarked
+                ? stores.quranBookmarks.allBookmarks()
+                    .first { $0.surahId == surahId && $0.ayahId == ayahId }?.bookmarkColor
+                : nil
         }
     }
 
@@ -199,6 +242,18 @@ struct AudioPlayerBar: View {
         if speed == 0.5 { return "0.5x" }
         if speed == 0.75 { return "0.75x" }
         return "1.25x"
+    }
+
+    private func setBarBookmarkColor(_ color: BookmarkColor?) {
+        if isFollowAlong {
+            guard let surahId = followAlongVM.currentSurahId,
+                  let ayahId = followAlongVM.currentVerseId else { return }
+            stores.quranBookmarks.setColor(color, surahId: surahId, ayahId: ayahId)
+        } else {
+            guard let vid = vm.currentVerseID else { return }
+            stores.quranBookmarks.setColor(color, surahId: vid.surahId, ayahId: vid.ayahId)
+        }
+        bookmarkColor = color
     }
 }
 

@@ -26,6 +26,13 @@ final class QuranBookmarkStore {
         do { try modelContext.save() } catch { AppLogger.store.error("QuranBookmarkStore save failed: \(error)") }
     }
 
+    func setColor(_ color: BookmarkColor?, surahId: Int, ayahId: Int) {
+        guard let bookmark = fetch(surahId: surahId, ayahId: ayahId) else { return }
+        bookmark.bookmarkColor = color
+        do { try modelContext.save() } catch { AppLogger.store.error("QuranBookmarkStore save failed: \(error)") }
+        NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
+    }
+
     func allBookmarks() -> [QuranBookmark] {
         fetchAll().sorted { $0.createdAt > $1.createdAt }
     }
@@ -40,6 +47,12 @@ final class QuranBookmarkStore {
     }
 
     private func fetchAll() -> [QuranBookmark] {
-        (try? modelContext.fetch(FetchDescriptor<QuranBookmark>())) ?? []
+        do {
+            let results = try modelContext.fetch(FetchDescriptor<QuranBookmark>())
+            return results
+        } catch {
+            AppLogger.store.error("QuranBookmarkStore fetchAll failed: \(error)")
+            return []
+        }
     }
 }

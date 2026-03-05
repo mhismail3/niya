@@ -6,9 +6,11 @@ struct VerseCellView: View {
     let script: QuranScript
     let isPlaying: Bool
     let isBookmarked: Bool
+    let bookmarkColor: BookmarkColor?
     let isFirstVerse: Bool
     let onPlay: () -> Void
     let onBookmark: () -> Void
+    let onSetBookmarkColor: (BookmarkColor?) -> Void
     let onTafsir: () -> Void
 
     @AppStorage(StorageKey.followAlong) private var followAlong: Bool = false
@@ -21,8 +23,10 @@ struct VerseCellView: View {
                 surahId: surahId,
                 verseData: verseData,
                 isBookmarked: isBookmarked,
+                bookmarkColor: bookmarkColor,
                 isFirstVerse: isFirstVerse,
                 onBookmark: onBookmark,
+                onSetBookmarkColor: onSetBookmarkColor,
                 onTafsir: onTafsir
             )
         } else {
@@ -32,9 +36,11 @@ struct VerseCellView: View {
                 script: script,
                 isPlaying: isPlaying,
                 isBookmarked: isBookmarked,
+                bookmarkColor: bookmarkColor,
                 isFirstVerse: isFirstVerse,
                 onPlay: onPlay,
                 onBookmark: onBookmark,
+                onSetBookmarkColor: onSetBookmarkColor,
                 onTafsir: onTafsir
             )
         }

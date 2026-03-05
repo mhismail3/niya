@@ -10,6 +10,7 @@ struct HadithDetailView: View {
     @AppStorage(StorageKey.hadithArabicFontSize) private var hadithArabicFontSize: Double = 22
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @State private var isBookmarked = false
+    @State private var bookmarkColor: BookmarkColor?
 
     private var collectionName: String {
         dataService.collections.first { $0.id == collectionId }?.name ?? collectionId
@@ -72,6 +73,10 @@ struct HadithDetailView: View {
         .niyaToolbar()
         .onAppear {
             isBookmarked = stores.hadithBookmarks.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
+            if isBookmarked {
+                bookmarkColor = stores.hadithBookmarks.allBookmarks()
+                    .first { $0.collectionId == collectionId && $0.hadithId == hadith.id }?.bookmarkColor
+            }
             stores.recentHadith
                 .record(collectionId: collectionId, hadithId: hadith.id, hasGrades: hasGrades)
         }
@@ -118,12 +123,38 @@ struct HadithDetailView: View {
             Button {
                 stores.hadithBookmarks.toggle(collectionId: collectionId, hadithId: hadith.id)
                 isBookmarked.toggle()
+                if !isBookmarked { bookmarkColor = nil }
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.niyaVerseAction)
-                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                    .foregroundStyle(isBookmarked ? (bookmarkColor?.color ?? .niyaGold) : Color.niyaSecondary)
             }
-            .accessibilityLabel(isBookmarked ? "Remove bookmark" : "Add bookmark")
+            .accessibilityLabel(isBookmarked ? "Remove bookmark, \(bookmarkColor?.displayName ?? "Gold")" : "Add bookmark")
+            .contextMenu {
+                if isBookmarked {
+                    Section("Color") {
+                        Button { setHadithBookmarkColor(nil) } label: {
+                            Label("Gold", systemImage: bookmarkColor == nil ? "checkmark.circle.fill" : "circle.fill")
+                        }
+                        .tint(.niyaGold)
+                        ForEach(BookmarkColor.allCases) { bc in
+                            Button { setHadithBookmarkColor(bc) } label: {
+                                Label(bc.displayName, systemImage: bookmarkColor == bc ? "checkmark.circle.fill" : "circle.fill")
+                            }
+                            .tint(bc.color)
+                        }
+                    }
+                    Section {
+                        Button(role: .destructive) {
+                            stores.hadithBookmarks.toggle(collectionId: collectionId, hadithId: hadith.id)
+                            isBookmarked = false
+                            bookmarkColor = nil
+                        } label: {
+                            Label("Remove Bookmark", systemImage: "bookmark.slash")
+                        }
+                    }
+                }
+            }
 
             ShareLink(item: shareText) {
                 Image(systemName: "square.and.arrow.up")
@@ -144,5 +175,10 @@ struct HadithDetailView: View {
             Spacer()
         }
         .padding(.top, 8)
+    }
+
+    private func setHadithBookmarkColor(_ color: BookmarkColor?) {
+        stores.hadithBookmarks.setColor(color, collectionId: collectionId, hadithId: hadith.id)
+        bookmarkColor = color
     }
 }

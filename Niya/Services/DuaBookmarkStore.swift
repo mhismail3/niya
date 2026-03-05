@@ -24,6 +24,14 @@ final class DuaBookmarkStore {
         do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore save failed: \(error)") }
     }
 
+    func setColor(_ color: BookmarkColor?, categoryId: Int, duaId: Int) {
+        let key = "\(categoryId):\(duaId)"
+        guard let bookmark = fetchAll().first(where: { $0.duaKey == key }) else { return }
+        bookmark.bookmarkColor = color
+        do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore save failed: \(error)") }
+        NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
+    }
+
     func allBookmarks() -> [DuaBookmark] {
         fetchAll().sorted { $0.createdAt > $1.createdAt }
     }

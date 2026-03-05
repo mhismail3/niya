@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct ScrollReaderView: View {
     let vm: ReaderViewModel
@@ -6,11 +7,29 @@ struct ScrollReaderView: View {
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(\.stores) private var stores
-    @State private var bookmarkedAyahs: Set<Int> = []
+    @Query private var bookmarks: [QuranBookmark]
     @State private var tafsirAyahId: IdentifiableInt?
     @State private var uiScrollView: UIScrollView?
     @State private var scrollTask: Task<Void, Never>?
     @State private var highlightTask: Task<Void, Never>?
+
+    init(vm: ReaderViewModel) {
+        self.vm = vm
+        let surahId = vm.surah.id
+        _bookmarks = Query(filter: #Predicate<QuranBookmark> { $0.surahId == surahId })
+    }
+
+    private var bookmarkedAyahSet: Set<Int> {
+        Set(bookmarks.map(\.ayahId))
+    }
+
+    private var bookmarkColors: [Int: BookmarkColor] {
+        var colors: [Int: BookmarkColor] = [:]
+        for b in bookmarks {
+            if let c = b.bookmarkColor { colors[b.ayahId] = c }
+        }
+        return colors
+    }
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -25,10 +44,12 @@ struct ScrollReaderView: View {
                             surahId: vm.surah.id,
                             script: vm.script,
                             isPlaying: audioPlayerVM.isPlayingVerse(surahId: vm.surah.id, ayahId: verse.id),
-                            isBookmarked: bookmarkedAyahs.contains(verse.id),
+                            isBookmarked: bookmarkedAyahSet.contains(verse.id),
+                            bookmarkColor: bookmarkColors[verse.id],
                             isFirstVerse: verse.id == 1,
                             onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) },
                             onBookmark: { toggleBookmark(verse.id) },
+                            onSetBookmarkColor: { color in setBookmarkColor(verse.id, color: color) },
                             onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
                         )
                         .id(verse.id)
@@ -42,7 +63,6 @@ struct ScrollReaderView: View {
                 .background(ScrollViewFinder(scrollView: $uiScrollView))
             }
             .onAppear {
-                loadBookmarks()
                 if let target = vm.initialAyahId, target > 1 {
                     Task { @MainActor in
                         withAnimation(.easeInOut(duration: 0.4)) {
@@ -84,9 +104,6 @@ struct ScrollReaderView: View {
             }
         }
         .background(Color.niyaBackground)
-        .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
-            loadBookmarks()
-        }
         .sheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: vm.surah.id, ayahId: item.value, surahName: vm.surah.transliteration)
                 .presentationDetents([.medium, .large])
@@ -141,18 +158,12 @@ struct ScrollReaderView: View {
 
     // MARK: - Bookmarks
 
-    private func loadBookmarks() {
-        let all = stores.quranBookmarks.allBookmarks().filter { $0.surahId == vm.surah.id }
-        bookmarkedAyahs = Set(all.map(\.ayahId))
-    }
-
     private func toggleBookmark(_ ayahId: Int) {
         stores.quranBookmarks.toggle(surahId: vm.surah.id, ayahId: ayahId)
-        if bookmarkedAyahs.contains(ayahId) {
-            bookmarkedAyahs.remove(ayahId)
-        } else {
-            bookmarkedAyahs.insert(ayahId)
-        }
+    }
+
+    private func setBookmarkColor(_ ayahId: Int, color: BookmarkColor?) {
+        stores.quranBookmarks.setColor(color, surahId: vm.surah.id, ayahId: ayahId)
     }
 
     private var bismillahHeader: some View {

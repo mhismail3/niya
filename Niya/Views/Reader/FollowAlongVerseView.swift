@@ -6,8 +6,10 @@ struct FollowAlongVerseView: View {
     let surahId: Int
     let verseData: VerseWordData
     let isBookmarked: Bool
+    let bookmarkColor: BookmarkColor?
     let isFirstVerse: Bool
     let onBookmark: () -> Void
+    let onSetBookmarkColor: (BookmarkColor?) -> Void
     let onTafsir: () -> Void
 
     private let playVerseTip = PlayVerseTip()
@@ -114,14 +116,40 @@ struct FollowAlongVerseView: View {
         let btn = Button(action: onBookmark) {
             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                 .font(.niyaVerseAction)
-                .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                .foregroundStyle(isBookmarked ? (bookmarkColor?.color ?? .niyaGold) : Color.niyaSecondary)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(isBookmarked ? "Remove bookmark, verse \(verse.id)" : "Bookmark verse \(verse.id)")
+        .accessibilityLabel(isBookmarked ? "Remove bookmark, verse \(verse.id), \(bookmarkColor?.displayName ?? "Gold")" : "Bookmark verse \(verse.id)")
+        .contextMenu {
+            if isBookmarked {
+                bookmarkColorMenu
+            }
+        }
         if isFirstVerse {
             btn.popoverTip(bookmarkVerseTip)
         } else {
             btn
+        }
+    }
+
+    @ViewBuilder
+    private var bookmarkColorMenu: some View {
+        Section("Color") {
+            Button { onSetBookmarkColor(nil) } label: {
+                Label("Gold", systemImage: bookmarkColor == nil ? "checkmark.circle.fill" : "circle.fill")
+            }
+            .tint(.niyaGold)
+            ForEach(BookmarkColor.allCases) { bc in
+                Button { onSetBookmarkColor(bc) } label: {
+                    Label(bc.displayName, systemImage: bookmarkColor == bc ? "checkmark.circle.fill" : "circle.fill")
+                }
+                .tint(bc.color)
+            }
+        }
+        Section {
+            Button(role: .destructive, action: onBookmark) {
+                Label("Remove Bookmark", systemImage: "bookmark.slash")
+            }
         }
     }
 

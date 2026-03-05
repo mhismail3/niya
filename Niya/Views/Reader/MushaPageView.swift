@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct MushaPageView: View {
     let verses: [Verse]
@@ -7,10 +8,31 @@ struct MushaPageView: View {
     let surahName: String
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(\.stores) private var stores
-    @State private var bookmarkedAyahs: Set<Int> = []
+    @Query private var bookmarks: [QuranBookmark]
     @State private var tafsirAyahId: IdentifiableInt?
 
     let showBismillah: Bool
+
+    init(verses: [Verse], script: QuranScript, surahId: Int, surahName: String, showBismillah: Bool) {
+        self.verses = verses
+        self.script = script
+        self.surahId = surahId
+        self.surahName = surahName
+        self.showBismillah = showBismillah
+        _bookmarks = Query(filter: #Predicate<QuranBookmark> { $0.surahId == surahId })
+    }
+
+    private var bookmarkedAyahSet: Set<Int> {
+        Set(bookmarks.map(\.ayahId))
+    }
+
+    private var bookmarkColors: [Int: BookmarkColor] {
+        var colors: [Int: BookmarkColor] = [:]
+        for b in bookmarks {
+            if let c = b.bookmarkColor { colors[b.ayahId] = c }
+        }
+        return colors
+    }
 
     var body: some View {
         ScrollView {
@@ -24,10 +46,12 @@ struct MushaPageView: View {
                         surahId: surahId,
                         script: script,
                         isPlaying: audioPlayerVM.isPlayingVerse(surahId: surahId, ayahId: verse.id),
-                        isBookmarked: bookmarkedAyahs.contains(verse.id),
+                        isBookmarked: bookmarkedAyahSet.contains(verse.id),
+                        bookmarkColor: bookmarkColors[verse.id],
                         isFirstVerse: verse.id == 1,
                         onPlay: { audioPlayerVM.playVerse(surahId: surahId, ayahId: verse.id) },
                         onBookmark: { toggleBookmark(verse.id) },
+                        onSetBookmarkColor: { color in setBookmarkColor(verse.id, color: color) },
                         onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
                     )
                     Divider()
@@ -38,10 +62,6 @@ struct MushaPageView: View {
             .padding(.bottom, 100)
         }
         .environment(\.layoutDirection, .leftToRight)
-        .onAppear { loadBookmarks() }
-        .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
-            loadBookmarks()
-        }
         .sheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: surahId, ayahId: item.value, surahName: surahName)
                 .presentationDetents([.medium, .large])
@@ -49,18 +69,12 @@ struct MushaPageView: View {
         }
     }
 
-    private func loadBookmarks() {
-        let all = stores.quranBookmarks.allBookmarks().filter { $0.surahId == surahId }
-        bookmarkedAyahs = Set(all.map(\.ayahId))
-    }
-
     private func toggleBookmark(_ ayahId: Int) {
         stores.quranBookmarks.toggle(surahId: surahId, ayahId: ayahId)
-        if bookmarkedAyahs.contains(ayahId) {
-            bookmarkedAyahs.remove(ayahId)
-        } else {
-            bookmarkedAyahs.insert(ayahId)
-        }
+    }
+
+    private func setBookmarkColor(_ ayahId: Int, color: BookmarkColor?) {
+        stores.quranBookmarks.setColor(color, surahId: surahId, ayahId: ayahId)
     }
 
     private var bismillahHeader: some View {

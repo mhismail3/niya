@@ -61,6 +61,7 @@ SWIFT_FILES = [
     "Niya/Models/DuaCategory.swift",
     "Niya/Models/Dua.swift",
     "Niya/Models/DuaBookmark.swift",
+    "Niya/Models/BookmarkColor.swift",
     "Niya/Models/RecentHadith.swift",
     "Niya/Models/RecentDua.swift",
     "Niya/Models/TajweedRule.swift",
@@ -293,6 +294,7 @@ TEST_FILES = [
     "NiyaTests/LocationNameFormattingTests.swift",
     "NiyaTests/LocationSearchTests.swift",
     "NiyaTests/WordMeaningTests.swift",
+    "NiyaTests/BookmarkColorTests.swift",
 ]
 
 # Widget extension files
@@ -770,6 +772,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/DuaCategory.swift"], "DuaCategory.swift"),
         (swift_file_ids["Niya/Models/Dua.swift"], "Dua.swift"),
         (swift_file_ids["Niya/Models/DuaBookmark.swift"], "DuaBookmark.swift"),
+        (swift_file_ids["Niya/Models/BookmarkColor.swift"], "BookmarkColor.swift"),
         (swift_file_ids["Niya/Models/RecentHadith.swift"], "RecentHadith.swift"),
         (swift_file_ids["Niya/Models/RecentDua.swift"], "RecentDua.swift"),
         (swift_file_ids["Niya/Models/TajweedRule.swift"], "TajweedRule.swift"),

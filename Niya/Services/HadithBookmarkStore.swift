@@ -24,6 +24,14 @@ final class HadithBookmarkStore {
         do { try modelContext.save() } catch { AppLogger.store.error("HadithBookmarkStore save failed: \(error)") }
     }
 
+    func setColor(_ color: BookmarkColor?, collectionId: String, hadithId: Int) {
+        let key = "\(collectionId):\(hadithId)"
+        guard let bookmark = fetchAll().first(where: { $0.hadithKey == key }) else { return }
+        bookmark.bookmarkColor = color
+        do { try modelContext.save() } catch { AppLogger.store.error("HadithBookmarkStore save failed: \(error)") }
+        NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
+    }
+
     func allBookmarks() -> [HadithBookmark] {
         fetchAll().sorted { $0.createdAt > $1.createdAt }
     }

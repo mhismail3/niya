@@ -8,6 +8,7 @@ struct DuaDetailView: View {
     @AppStorage(StorageKey.hadithArabicFontSize) private var arabicFontSize: Double = 22
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @State private var isBookmarked = false
+    @State private var bookmarkColor: BookmarkColor?
 
     private var categoryName: String {
         dataService.category(id: categoryId)?.name ?? "Dua"
@@ -86,6 +87,10 @@ struct DuaDetailView: View {
         .niyaToolbar()
         .onAppear {
             isBookmarked = stores.duaBookmarks.isBookmarked(categoryId: categoryId, duaId: dua.id)
+            if isBookmarked {
+                bookmarkColor = stores.duaBookmarks.allBookmarks()
+                    .first { $0.categoryId == categoryId && $0.duaId == dua.id }?.bookmarkColor
+            }
             stores.recentDua
                 .record(categoryId: categoryId, duaId: dua.id)
         }
@@ -121,12 +126,38 @@ struct DuaDetailView: View {
             Button {
                 stores.duaBookmarks.toggle(categoryId: categoryId, duaId: dua.id)
                 isBookmarked.toggle()
+                if !isBookmarked { bookmarkColor = nil }
             } label: {
                 Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                     .font(.niyaVerseAction)
-                    .foregroundStyle(isBookmarked ? Color.niyaGold : Color.niyaSecondary)
+                    .foregroundStyle(isBookmarked ? (bookmarkColor?.color ?? .niyaGold) : Color.niyaSecondary)
             }
-            .accessibilityLabel(isBookmarked ? "Remove bookmark" : "Add bookmark")
+            .accessibilityLabel(isBookmarked ? "Remove bookmark, \(bookmarkColor?.displayName ?? "Gold")" : "Add bookmark")
+            .contextMenu {
+                if isBookmarked {
+                    Section("Color") {
+                        Button { setDuaBookmarkColor(nil) } label: {
+                            Label("Gold", systemImage: bookmarkColor == nil ? "checkmark.circle.fill" : "circle.fill")
+                        }
+                        .tint(.niyaGold)
+                        ForEach(BookmarkColor.allCases) { bc in
+                            Button { setDuaBookmarkColor(bc) } label: {
+                                Label(bc.displayName, systemImage: bookmarkColor == bc ? "checkmark.circle.fill" : "circle.fill")
+                            }
+                            .tint(bc.color)
+                        }
+                    }
+                    Section {
+                        Button(role: .destructive) {
+                            stores.duaBookmarks.toggle(categoryId: categoryId, duaId: dua.id)
+                            isBookmarked = false
+                            bookmarkColor = nil
+                        } label: {
+                            Label("Remove Bookmark", systemImage: "bookmark.slash")
+                        }
+                    }
+                }
+            }
 
             ShareLink(item: shareText) {
                 Image(systemName: "square.and.arrow.up")
@@ -147,5 +178,10 @@ struct DuaDetailView: View {
             Spacer()
         }
         .padding(.top, 8)
+    }
+
+    private func setDuaBookmarkColor(_ color: BookmarkColor?) {
+        stores.duaBookmarks.setColor(color, categoryId: categoryId, duaId: dua.id)
+        bookmarkColor = color
     }
 }
