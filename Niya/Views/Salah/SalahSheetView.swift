@@ -75,8 +75,6 @@ struct SalahSheetView: View {
             }
             .sheet(isPresented: $showCalendar) {
                 IslamicCalendarView()
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showLocationPicker) {
                 LocationPickerView()

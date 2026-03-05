@@ -6,36 +6,40 @@ struct IslamicCalendarView: View {
     @AppStorage(StorageKey.asrJuristic) private var asrJuristic: Int = 1
     @State private var currentMonth = HijriMonth.current()
     @State private var selectedDay: Int?
+    @State private var selectedMonth: HijriMonth?
     @State private var selectedDayTimes: DailyPrayerTimes?
     @State private var prayerTimesCache: [DateComponents: DailyPrayerTimes] = [:]
+    @State private var selectedDetent: PresentationDetent = .medium
 
     private let hijriCal = Calendar(identifier: .islamicUmmAlQura)
     private let weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
 
+    private var isExpanded: Bool { selectedDetent == .large }
+
     private var calculationMethod: CalculationMethod {
         CalculationMethod(rawValue: storedMethod) ?? .isna
     }
 
-    private var todayHijriDay: Int? {
-        let today = HijriMonth.current()
-        guard today == currentMonth else { return nil }
-        return hijriCal.component(.day, from: Date())
+    private var visibleMonths: [HijriMonth] {
+        let base = currentMonth
+        return (-2...2).map { offset in
+            var m = base
+            for _ in 0..<abs(offset) {
+                m = offset < 0 ? m.previous : m.next
+            }
+            return m
+        }
     }
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    monthHeader
-                    weekdayHeader
-                    dayGrid
-                    if let day = selectedDay {
-                        prayerDetailCard(for: day)
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
-                    }
+            Group {
+                if isExpanded {
+                    scrollingLayout
+                } else {
+                    singleMonthLayout
                 }
-                .padding()
             }
             .navigationTitle("Islamic Calendar")
             .navigationBarTitleDisplayMode(.inline)
@@ -44,40 +48,84 @@ struct IslamicCalendarView: View {
                     Button("Today") {
                         withAnimation {
                             currentMonth = HijriMonth.current()
-                            selectedDay = hijriCal.component(.day, from: Date())
-                            computePrayerTimes(forDay: selectedDay!)
+                            let day = hijriCal.component(.day, from: Date())
+                            selectedDay = day
+                            selectedMonth = currentMonth
+                            computePrayerTimes(forDay: day, in: currentMonth)
                         }
                     }
                     .font(.niyaCaption)
                 }
             }
         }
-        .onChange(of: currentMonth) { _, _ in
-            withAnimation {
-                selectedDay = nil
-                selectedDayTimes = nil
+        .presentationDetents([.medium, .large], selection: $selectedDetent)
+        .presentationDragIndicator(.hidden)
+    }
+
+    // MARK: - Single Month (Medium Detent)
+
+    private var singleMonthLayout: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                monthHeader(currentMonth, showArrows: true)
+                weekdayHeader
+                dayGrid(for: currentMonth)
+                if let day = selectedDay, selectedMonth == currentMonth {
+                    prayerDetailCard(for: day, in: currentMonth)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
             }
+            .padding()
+        }
+    }
+
+    // MARK: - Scrolling Months (Large Detent)
+
+    private var scrollingLayout: some View {
+        ScrollView {
+            LazyVStack(spacing: 32) {
+                ForEach(visibleMonths, id: \.self) { month in
+                    VStack(spacing: 16) {
+                        monthHeader(month, showArrows: false)
+                        weekdayHeader
+                        dayGrid(for: month)
+                        if let day = selectedDay, selectedMonth == month {
+                            prayerDetailCard(for: day, in: month)
+                                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        }
+                    }
+                }
+            }
+            .padding()
         }
     }
 
     // MARK: - Month Header
 
-    private var monthHeader: some View {
+    private func monthHeader(_ month: HijriMonth, showArrows: Bool) -> some View {
         VStack(spacing: 4) {
             HStack {
-                Button { withAnimation { currentMonth = currentMonth.previous } } label: {
-                    Image(systemName: "chevron.left")
-                        .fontWeight(.medium)
+                if showArrows {
+                    Button {
+                        withAnimation {
+                            currentMonth = currentMonth.previous
+                            selectedDay = nil
+                            selectedDayTimes = nil
+                        }
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .fontWeight(.medium)
+                    }
                 }
 
                 Spacer()
 
                 VStack(spacing: 2) {
-                    Text("\(currentMonth.displayName) \(String(currentMonth.year)) AH")
+                    Text("\(month.displayName) \(String(month.year)) AH")
                         .font(.niyaHeadline)
                         .foregroundStyle(Color.niyaText)
 
-                    let range = currentMonth.gregorianDateRange
+                    let range = month.gregorianDateRange
                     Text(gregorianRangeString(start: range.start, end: range.end))
                         .font(.caption2)
                         .foregroundStyle(Color.niyaSecondary)
@@ -85,9 +133,17 @@ struct IslamicCalendarView: View {
 
                 Spacer()
 
-                Button { withAnimation { currentMonth = currentMonth.next } } label: {
-                    Image(systemName: "chevron.right")
-                        .fontWeight(.medium)
+                if showArrows {
+                    Button {
+                        withAnimation {
+                            currentMonth = currentMonth.next
+                            selectedDay = nil
+                            selectedDayTimes = nil
+                        }
+                    } label: {
+                        Image(systemName: "chevron.right")
+                            .fontWeight(.medium)
+                    }
                 }
             }
             .foregroundStyle(Color.niyaTeal)
@@ -111,29 +167,34 @@ struct IslamicCalendarView: View {
 
     // MARK: - Day Grid
 
-    private var dayGrid: some View {
-        LazyVGrid(columns: columns, spacing: 8) {
-            let leadingBlanks = currentMonth.firstWeekday - 1
-            ForEach(0..<leadingBlanks, id: \.self) { _ in
-                Color.clear.frame(height: 44)
-            }
+    private func dayGrid(for month: HijriMonth) -> some View {
+        let leadingBlanks = month.firstWeekday - 1
+        let totalCells = leadingBlanks + month.dayCount
 
-            ForEach(1...currentMonth.dayCount, id: \.self) { day in
-                dayCell(day)
+        return LazyVGrid(columns: columns, spacing: 8) {
+            ForEach(0..<totalCells, id: \.self) { index in
+                if index < leadingBlanks {
+                    Color.clear.frame(height: 44)
+                } else {
+                    dayCell(index - leadingBlanks + 1, in: month)
+                }
             }
         }
+        .id(month)
     }
 
-    private func dayCell(_ day: Int) -> some View {
-        let isToday = todayHijriDay == day
-        let isSelected = selectedDay == day
-        let gregDate = currentMonth.gregorianDate(forDay: day)
+    private func dayCell(_ day: Int, in month: HijriMonth) -> some View {
+        let isTodayMonth = HijriMonth.current() == month
+        let isToday = isTodayMonth && hijriCal.component(.day, from: Date()) == day
+        let isSelected = selectedDay == day && selectedMonth == month
+        let gregDate = month.gregorianDate(forDay: day)
         let gregDay = Calendar(identifier: .gregorian).component(.day, from: gregDate)
 
         return Button {
             withAnimation(.easeInOut(duration: 0.25)) {
                 selectedDay = day
-                computePrayerTimes(forDay: day)
+                selectedMonth = month
+                computePrayerTimes(forDay: day, in: month)
             }
         } label: {
             VStack(spacing: 2) {
@@ -170,13 +231,13 @@ struct IslamicCalendarView: View {
 
     // MARK: - Prayer Detail Card
 
-    private func prayerDetailCard(for day: Int) -> some View {
-        let gregDate = currentMonth.gregorianDate(forDay: day)
+    private func prayerDetailCard(for day: Int, in month: HijriMonth) -> some View {
+        let gregDate = month.gregorianDate(forDay: day)
 
         return VStack(spacing: 12) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("\(day) \(currentMonth.displayName) \(String(currentMonth.year)) AH")
+                    Text("\(day) \(month.displayName) \(String(month.year)) AH")
                         .font(.niyaCaption)
                         .fontWeight(.semibold)
                         .foregroundStyle(Color.niyaText)
@@ -222,12 +283,12 @@ struct IslamicCalendarView: View {
 
     // MARK: - Prayer Time Computation
 
-    private func computePrayerTimes(forDay day: Int) {
+    private func computePrayerTimes(forDay day: Int, in month: HijriMonth) {
         guard let location = locationService.effectiveLocation else {
             selectedDayTimes = nil
             return
         }
-        let gregDate = currentMonth.gregorianDate(forDay: day)
+        let gregDate = month.gregorianDate(forDay: day)
         let gregCal = Calendar(identifier: .gregorian)
         let key = gregCal.dateComponents([.year, .month, .day], from: gregDate)
 
