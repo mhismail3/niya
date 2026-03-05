@@ -8,8 +8,7 @@ struct MushaPageView: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(\.stores) private var stores
     @State private var bookmarkedAyahs: Set<Int> = []
-    @State private var showTafsir = false
-    @State private var tafsirAyahId: Int = 1
+    @State private var tafsirAyahId: IdentifiableInt?
 
     let showBismillah: Bool
 
@@ -29,7 +28,7 @@ struct MushaPageView: View {
                         isFirstVerse: verse.id == 1,
                         onPlay: { audioPlayerVM.playVerse(surahId: surahId, ayahId: verse.id) },
                         onBookmark: { toggleBookmark(verse.id) },
-                        onTafsir: { tafsirAyahId = verse.id; showTafsir = true }
+                        onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
                     )
                     Divider()
                         .padding(.horizontal)
@@ -43,8 +42,8 @@ struct MushaPageView: View {
         .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
             loadBookmarks()
         }
-        .sheet(isPresented: $showTafsir) {
-            TafsirSheetView(surahId: surahId, ayahId: tafsirAyahId, surahName: surahName)
+        .sheet(item: $tafsirAyahId) { item in
+            TafsirSheetView(surahId: surahId, ayahId: item.value, surahName: surahName)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }

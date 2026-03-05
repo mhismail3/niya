@@ -7,8 +7,7 @@ struct ScrollReaderView: View {
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(\.stores) private var stores
     @State private var bookmarkedAyahs: Set<Int> = []
-    @State private var showTafsir = false
-    @State private var tafsirAyahId: Int = 1
+    @State private var tafsirAyahId: IdentifiableInt?
     @State private var uiScrollView: UIScrollView?
     @State private var scrollTask: Task<Void, Never>?
     @State private var highlightTask: Task<Void, Never>?
@@ -30,7 +29,7 @@ struct ScrollReaderView: View {
                             isFirstVerse: verse.id == 1,
                             onPlay: { audioPlayerVM.playVerse(surahId: vm.surah.id, ayahId: verse.id) },
                             onBookmark: { toggleBookmark(verse.id) },
-                            onTafsir: { tafsirAyahId = verse.id; showTafsir = true }
+                            onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
                         )
                         .id(verse.id)
                         .onAppear { vm.updateVisibleAyah(verse.id) }
@@ -88,8 +87,8 @@ struct ScrollReaderView: View {
         .onReceive(NotificationCenter.default.publisher(for: .bookmarkChanged)) { _ in
             loadBookmarks()
         }
-        .sheet(isPresented: $showTafsir) {
-            TafsirSheetView(surahId: vm.surah.id, ayahId: tafsirAyahId, surahName: vm.surah.transliteration)
+        .sheet(item: $tafsirAyahId) { item in
+            TafsirSheetView(surahId: vm.surah.id, ayahId: item.value, surahName: vm.surah.transliteration)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
@@ -185,6 +184,12 @@ private struct ScrollViewFinder: UIViewRepresentable {
             }
         }
     }
+}
+
+struct IdentifiableInt: Identifiable {
+    let value: Int
+    var id: Int { value }
+    init(_ value: Int) { self.value = value }
 }
 
 private extension UIView {
