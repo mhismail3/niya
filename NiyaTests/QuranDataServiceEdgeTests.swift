@@ -66,4 +66,43 @@ struct QuranDataServiceEdgeTests {
         let first = service.verses(for: 1, script: .hafs)
         #expect(!first.isEmpty)
     }
+
+    // MARK: - IndoPak-specific tests
+
+    @Test func indoPakVersesLoad() async {
+        let service = await makeLoadedService()
+        let verses = service.verses(for: 1, script: .indoPak)
+        #expect(verses.count == 7)
+    }
+
+    @Test func indoPakVersesForAllSurahs() async {
+        let service = await makeLoadedService()
+        for surahId in 1...114 {
+            let verses = service.verses(for: surahId, script: .indoPak)
+            #expect(!verses.isEmpty, "IndoPak surah \(surahId) returned no verses")
+        }
+    }
+
+    @Test func indoPakCacheKeyDistinctFromHafs() async {
+        let service = await makeLoadedService()
+        let hafsVerses = service.verses(for: 1, script: .hafs)
+        let ipVerses = service.verses(for: 1, script: .indoPak)
+        #expect(!hafsVerses.isEmpty)
+        #expect(!ipVerses.isEmpty)
+        #expect(hafsVerses[0].text != ipVerses[0].text,
+                "Hafs and IndoPak should return different Arabic text for same surah")
+    }
+
+    @Test func indoPakPagesMatchHafs() async {
+        let service = await makeLoadedService()
+        let hafsPages = service.pages(for: 2, script: .hafs)
+        let ipPages = service.pages(for: 2, script: .indoPak)
+        #expect(hafsPages.count == ipPages.count, "Page grouping differs between scripts")
+    }
+
+    @Test func versesForInvalidSurahReturnsEmpty_indoPak() async {
+        let service = await makeLoadedService()
+        let verses = service.verses(for: 999, script: .indoPak)
+        #expect(verses.isEmpty)
+    }
 }

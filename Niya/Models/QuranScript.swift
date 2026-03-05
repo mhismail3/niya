@@ -9,7 +9,7 @@ enum QuranScript: String, CaseIterable, Identifiable, Codable {
     var fontName: String {
         switch self {
         case .hafs: return "KFGQPCUthmanicScriptHAFS"
-        case .indoPak: return "ScheherazadeNew-Regular"
+        case .indoPak: return "AlQuranIndoPakbyQuranWBW"
         }
     }
 

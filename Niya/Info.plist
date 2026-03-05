@@ -21,7 +21,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>KFGQPC Uthmanic Script HAFS Regular.otf</string>
-		<string>ScheherazadeNew-Regular.ttf</string>
+		<string>AlQuran-IndoPak.ttf</string>
 		<string>NotoNaskhArabic-Regular.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>

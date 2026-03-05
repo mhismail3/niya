@@ -235,7 +235,7 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/translation_my_ghazi.json",
 ] + [
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
-    "Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf",
+    "Niya/Resources/Fonts/AlQuran-IndoPak.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
 ]
 
@@ -295,6 +295,8 @@ TEST_FILES = [
     "NiyaTests/LocationSearchTests.swift",
     "NiyaTests/WordMeaningTests.swift",
     "NiyaTests/BookmarkColorTests.swift",
+    "NiyaTests/IndoPakDataIntegrityTests.swift",
+    "NiyaTests/QuranScriptTests.swift",
 ]
 
 # Widget extension files
@@ -995,7 +997,7 @@ def section_pbx_group():
     # Resources/Fonts
     emit_subgroup(SUBGROUP_IDS["Resources/Fonts"], "Fonts", "Resources/Fonts", [
         (resource_file_ids["Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf"], "KFGQPC Uthmanic Script HAFS Regular.otf"),
-        (resource_file_ids["Niya/Resources/Fonts/ScheherazadeNew-Regular.ttf"], "ScheherazadeNew-Regular.ttf"),
+        (resource_file_ids["Niya/Resources/Fonts/AlQuran-IndoPak.ttf"], "AlQuran-IndoPak.ttf"),
         (resource_file_ids["Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf"], "NotoNaskhArabic-Regular.ttf"),
     ], path_str="Fonts")
 
