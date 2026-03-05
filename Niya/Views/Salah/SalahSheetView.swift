@@ -4,6 +4,7 @@ struct SalahSheetView: View {
     @Environment(LocationService.self) private var locationService
     @Environment(PrayerTimeService.self) private var prayerTimeService
     @State private var showLocationPicker = false
+    @State private var showCalendar = false
     @State private var selectedDetent: PresentationDetent = .medium
 
     private var location: UserLocation? {
@@ -57,6 +58,13 @@ struct SalahSheetView: View {
             .navigationTitle("Salah")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showCalendar = true
+                    } label: {
+                        Image(systemName: "calendar")
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showLocationPicker = true
@@ -64,6 +72,11 @@ struct SalahSheetView: View {
                         Image(systemName: "location.circle")
                     }
                 }
+            }
+            .sheet(isPresented: $showCalendar) {
+                IslamicCalendarView()
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showLocationPicker) {
                 LocationPickerView()

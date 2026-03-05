@@ -72,6 +72,8 @@ struct WordByWordSettingsSection: View {
     @Binding var followAlongTransliteration: Bool
     @Binding var followAlongMeaning: Bool
     let script: QuranScript
+    @AppStorage(StorageKey.followAlongTransliterationFontSize) private var transliterationFontSize: Double = 12
+    @AppStorage(StorageKey.followAlongMeaningFontSize) private var meaningFontSize: Double = 11
 
     var body: some View {
         Section("Word-by-Word") {
@@ -81,8 +83,36 @@ struct WordByWordSettingsSection: View {
             if followAlong && script == .hafs {
                 Toggle("Transliteration", isOn: $followAlongTransliteration)
                     .tint(Color.niyaTeal)
+                if followAlongTransliteration {
+                    HStack {
+                        Text("Transliteration Size")
+                        Spacer()
+                        Text("\(Int(transliterationFontSize))")
+                            .foregroundStyle(Color.niyaTeal)
+                            .monospacedDigit()
+                        Slider(value: $transliterationFontSize, in: 8...20, step: 1)
+                            .frame(width: NiyaSize.sliderWidth)
+                            .tint(Color.niyaTeal)
+                            .accessibilityLabel("Transliteration font size")
+                            .accessibilityValue("\(Int(transliterationFontSize))")
+                    }
+                }
                 Toggle("Word Meanings", isOn: $followAlongMeaning)
                     .tint(Color.niyaTeal)
+                if followAlongMeaning {
+                    HStack {
+                        Text("Meaning Size")
+                        Spacer()
+                        Text("\(Int(meaningFontSize))")
+                            .foregroundStyle(Color.niyaTeal)
+                            .monospacedDigit()
+                        Slider(value: $meaningFontSize, in: 8...20, step: 1)
+                            .frame(width: NiyaSize.sliderWidth)
+                            .tint(Color.niyaTeal)
+                            .accessibilityLabel("Meaning font size")
+                            .accessibilityValue("\(Int(meaningFontSize))")
+                    }
+                }
             }
             if script != .hafs {
                 Text("Available for Uthmanic Hafs only")

@@ -22,5 +22,7 @@ enum StorageKey {
     static let asrJuristic = "asrJuristic"
     static let manualLocationData = "manualLocationData"
     static let prayerNotificationsEnabled = "prayerNotificationsEnabled"
+    static let followAlongTransliterationFontSize = "followAlongTransliterationFontSize"
+    static let followAlongMeaningFontSize = "followAlongMeaningFontSize"
     static let audioFilenameMigrated = "audioFilenameMigrated"
 }

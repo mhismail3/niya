@@ -8,8 +8,8 @@ struct WordView: View {
     let showMeaning: Bool
     let onTap: () -> Void
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
-    @ScaledMetric(relativeTo: .caption) private var transliterationSize: CGFloat = 12
-    @ScaledMetric(relativeTo: .caption2) private var meaningSize: CGFloat = 11
+    @AppStorage(StorageKey.followAlongTransliterationFontSize) private var transliterationSize: Double = 12
+    @AppStorage(StorageKey.followAlongMeaningFontSize) private var meaningSize: Double = 11
 
     var body: some View {
         Button(action: onTap) {

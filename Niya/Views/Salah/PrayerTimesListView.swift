@@ -108,29 +108,15 @@ struct PrayerTimesListView: View {
     }
 
     private var dateLocationHeader: some View {
-        Group {
-            let hijriCal = Calendar(identifier: .islamicUmmAlQura)
-            let comps = hijriCal.dateComponents([.year, .month, .day], from: now)
-            if let y = comps.year, let m = comps.month, let d = comps.day {
-                HStack {
-                    Text(hijriDateString(year: y, month: m, day: d))
-                    if !locationName.isEmpty {
-                        Spacer()
-                        Text(locationName)
-                    }
-                }
-                .font(.niyaCaption)
-                .foregroundStyle(Color.niyaSecondary)
+        HStack {
+            Text(HijriFormatter.format(date: now))
+            if !locationName.isEmpty {
+                Spacer()
+                Text(locationName)
             }
         }
-    }
-
-    private func hijriDateString(year: Int, month: Int, day: Int) -> String {
-        let months = ["Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani",
-                      "Jumada al-Ula", "Jumada al-Thani", "Rajab", "Sha'ban",
-                      "Ramadan", "Shawwal", "Dhul Qi'dah", "Dhul Hijjah"]
-        let monthName = (month >= 1 && month <= 12) ? months[month - 1] : "Unknown"
-        return "\(day) \(monthName) \(year) AH"
+        .font(.niyaCaption)
+        .foregroundStyle(Color.niyaSecondary)
     }
 
     private func formattedTime(_ date: Date) -> String {

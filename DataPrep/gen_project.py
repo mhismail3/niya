@@ -73,6 +73,7 @@ SWIFT_FILES = [
     "Niya/Models/UserLocation.swift",
     "Niya/Models/CalculationMethod.swift",
     "Niya/Models/PrayerTime.swift",
+    "Niya/Models/HijriMonth.swift",
     "Niya/Models/AppError.swift",
     "Niya/Models/Tab.swift",
     # Protocols
@@ -157,6 +158,7 @@ SWIFT_FILES = [
     "Niya/Views/Salah/QiblahCompassView.swift",
     "Niya/Views/Salah/PrayerTimesListView.swift",
     "Niya/Views/Salah/LocationPickerView.swift",
+    "Niya/Views/Salah/IslamicCalendarView.swift",
     # Views/Dua
     "Niya/Views/Dua/DuaTabView.swift",
     "Niya/Views/Dua/DuaSectionView.swift",
@@ -766,6 +768,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/UserLocation.swift"], "UserLocation.swift"),
         (swift_file_ids["Niya/Models/CalculationMethod.swift"], "CalculationMethod.swift"),
         (swift_file_ids["Niya/Models/PrayerTime.swift"], "PrayerTime.swift"),
+        (swift_file_ids["Niya/Models/HijriMonth.swift"], "HijriMonth.swift"),
         (swift_file_ids["Niya/Models/AppError.swift"], "AppError.swift"),
         (swift_file_ids["Niya/Models/Tab.swift"], "Tab.swift"),
     ], path_str="Models")
@@ -905,6 +908,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Salah/QiblahCompassView.swift"], "QiblahCompassView.swift"),
         (swift_file_ids["Niya/Views/Salah/PrayerTimesListView.swift"], "PrayerTimesListView.swift"),
         (swift_file_ids["Niya/Views/Salah/LocationPickerView.swift"], "LocationPickerView.swift"),
+        (swift_file_ids["Niya/Views/Salah/IslamicCalendarView.swift"], "IslamicCalendarView.swift"),
     ], path_str="Salah")
 
     # Onboarding
