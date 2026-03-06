@@ -7,7 +7,7 @@ import urllib.request
 
 EDITIONS = [
     ("en.sahih",      "en_sahih",      "en", "English",    "Sahih International",        "Saheeh International"),
-    ("en.itani",      "en_clearquran", "en", "English",    "The Clear Quran",            "Talal Itani"),
+    ("MANUAL",        "en_clearquran", "en", "English",    "The Clear Quran",            "Dr. Mustafa Khattab"),
     ("en.hilali",     "en_hilali",     "en", "English",    "Al-Hilali & Khan",           "Muhammad Taqi-ud-Din al-Hilali and Muhammad Muhsin Khan"),
     ("fr.hamidullah", "fr_hamidullah", "fr", "French",     "Muhammad Hamidullah",        "Muhammad Hamidullah"),
     ("es.abboud",     "es_abboud",     "es", "Spanish",    "Abboud & Castellanos",       "Ahmad Abboud & Rafael Castellanos"),
@@ -29,6 +29,22 @@ index = []
 
 for api_id, output_id, lang, lang_name, name, author in EDITIONS:
     out_path = os.path.join(OUTPUT_DIR, f"translation_{output_id}.json")
+
+    if api_id == "MANUAL":
+        if not os.path.exists(out_path):
+            print(f"  WARNING: {output_id} is MANUAL — run fetch_khattab.py first")
+        else:
+            print(f"  {output_id}: MANUAL (already built)")
+        index.append({
+            "id": output_id,
+            "language": lang,
+            "languageName": lang_name,
+            "name": name,
+            "author": author,
+            "filename": f"translation_{output_id}.json",
+        })
+        continue
+
     if os.path.exists(out_path):
         print(f"  Skipping {output_id} (already exists)")
         index.append({
