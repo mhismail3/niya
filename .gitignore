@@ -4,6 +4,7 @@ DerivedData/
 DataPrep/output/
 DataPrep/source/
 DataPrep/noreen_audio/
+DataPrep/bukhatir_audio/
 DataPrep/venv/
 __pycache__/
 *.pyc
