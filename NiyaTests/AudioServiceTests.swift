@@ -48,4 +48,18 @@ struct AudioServiceTests {
         let noreen = service.surahStreamURL(surahId: 36, reciter: .noreenSiddiq)
         #expect(alAfasy != noreen)
     }
+
+    @Test func streamURLReturnsNilForBukhatir() {
+        let service = AudioService()
+        let url = service.streamURL(absoluteVerseNumber: 1, reciter: .bukhatir)
+        #expect(url == nil)
+    }
+
+    @Test func bukhatirSurahStreamURLDiffersFromNoreen() {
+        let service = AudioService()
+        let bukhatir = service.surahStreamURL(surahId: 36, reciter: .bukhatir)
+        let noreen = service.surahStreamURL(surahId: 36, reciter: .noreenSiddiq)
+        #expect(bukhatir != noreen)
+        #expect(bukhatir.absoluteString.contains("salaah_bukhaatir"))
+    }
 }

@@ -37,6 +37,17 @@ struct DownloadManagerTests {
         #expect(k1 != k2)
     }
 
+    @Test func downloadKeyBukhatir() {
+        let key = DownloadManager.downloadKey(surahId: 36, reciter: .bukhatir)
+        #expect(key == "bukhatir:36")
+    }
+
+    @Test func downloadKeyBukhatirDiffersFromNoreen() {
+        let k1 = DownloadManager.downloadKey(surahId: 1, reciter: .bukhatir)
+        let k2 = DownloadManager.downloadKey(surahId: 1, reciter: .noreenSiddiq)
+        #expect(k1 != k2)
+    }
+
     // MARK: - isDownloaded (file-system based)
 
     @Test func isDownloadedReturnsFalseWhenNoFile() {

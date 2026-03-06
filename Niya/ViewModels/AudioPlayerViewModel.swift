@@ -127,7 +127,10 @@ final class AudioPlayerViewModel {
             guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
             audioService.play(url: url, verseID: verseID, surahId: surahId)
         } else if autoAdvance && loopCount <= 1 {
-            guard let allVerses = wordDataService.allVerseData(surahId: surahId) else { return }
+            guard let allVerses = wordDataService.allVerseData(surahId: surahId) else {
+                playSurah(surahId)
+                return
+            }
             let boundaries = allVerses
                 .filter { $0.ayahId >= ayahId }
                 .map { VerseBoundary(verseID: VerseID(surahId: surahId, ayahId: $0.ayahId), startMs: $0.data.vs, endMs: $0.data.ve) }
@@ -139,7 +142,10 @@ final class AudioPlayerViewModel {
                 audioService.setRate(playbackSpeed)
             }
         } else {
-            guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return }
+            guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else {
+                playSurah(surahId)
+                return
+            }
             let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
                 ?? selectedReciter.surahStreamURL(surahId: surahId)
             audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)
@@ -230,7 +236,10 @@ final class AudioPlayerViewModel {
             guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
             audioService.play(url: url, verseID: verseID, surahId: surahId)
         } else {
-            guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return }
+            guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else {
+                playSurah(surahId)
+                return
+            }
             let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
                 ?? selectedReciter.surahStreamURL(surahId: surahId)
             audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)

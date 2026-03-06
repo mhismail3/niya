@@ -6,7 +6,7 @@ import Testing
 struct ReciterTests {
 
     @Test func allCasesCount() {
-        #expect(Reciter.allCases.count == 8)
+        #expect(Reciter.allCases.count == 9)
     }
 
     @Test(arguments: Reciter.allCases)
@@ -28,6 +28,7 @@ struct ReciterTests {
         #expect(Reciter.haniRifai.displayName == "Hani ar-Rifai")
         #expect(Reciter.husary.displayName == "Mahmoud Khalil Al-Husary")
         #expect(Reciter.shuraym.displayName == "Sa'ud ash-Shuraym")
+        #expect(Reciter.bukhatir.displayName == "Salah Bukhatir")
     }
 
     @Test func shortNames() {
@@ -57,6 +58,7 @@ struct ReciterTests {
         #expect(Reciter.haniRifai.wordDataFilename == "word_data_hanirifai")
         #expect(Reciter.husary.wordDataFilename == "word_data_husary")
         #expect(Reciter.shuraym.wordDataFilename == "word_data_shuraym")
+        #expect(Reciter.bukhatir.wordDataFilename == "word_data_bukhatir")
     }
 
     @Test func allRecitersHaveWordDataFilenames() {
@@ -133,7 +135,7 @@ struct ReciterTests {
         switch reciter {
         case .alAfasy:
             #expect(url.absoluteString.contains("cdn.islamic.network"))
-        case .noreenSiddiq:
+        case .noreenSiddiq, .bukhatir:
             #expect(url.absoluteString.contains("quranicaudio.com/quran/"))
         default:
             #expect(url.absoluteString.contains("quranicaudio.com/qdc/"))
@@ -174,6 +176,34 @@ struct ReciterTests {
         }
     }
 
+    @Test func bukhatirLacksPerVerseAudio() {
+        #expect(Reciter.bukhatir.hasPerVerseAudio == false)
+    }
+
+    @Test func bukhatirVerseURLIsNil() {
+        let url = Reciter.bukhatir.verseStreamURL(absoluteVerseNumber: 7)
+        #expect(url == nil)
+    }
+
+    @Test func bukhatirSurahURL() {
+        let url = Reciter.bukhatir.surahStreamURL(surahId: 1)
+        #expect(url.absoluteString == "https://download.quranicaudio.com/quran/salaah_bukhaatir/001.mp3")
+    }
+
+    @Test func bukhatirSurahURLNonPaddedCheck() {
+        let url = Reciter.bukhatir.surahStreamURL(surahId: 114)
+        #expect(url.absoluteString == "https://download.quranicaudio.com/quran/salaah_bukhaatir/114.mp3")
+    }
+
+    @Test func bukhatirLocalFilename() {
+        #expect(Reciter.bukhatir.localFilename(for: 1) == "audio_bukhatir_surah_1.mp3")
+        #expect(Reciter.bukhatir.localFilename(for: 114) == "audio_bukhatir_surah_114.mp3")
+    }
+
+    @Test func bukhatirShortName() {
+        #expect(Reciter.bukhatir.shortName == "Bukhatir")
+    }
+
     @Test func rawValueMatchesExpected() {
         #expect(Reciter.alAfasy.rawValue == "alAfasy")
         #expect(Reciter.noreenSiddiq.rawValue == "noreenSiddiq")
@@ -183,5 +213,6 @@ struct ReciterTests {
         #expect(Reciter.haniRifai.rawValue == "haniRifai")
         #expect(Reciter.husary.rawValue == "husary")
         #expect(Reciter.shuraym.rawValue == "shuraym")
+        #expect(Reciter.bukhatir.rawValue == "bukhatir")
     }
 }

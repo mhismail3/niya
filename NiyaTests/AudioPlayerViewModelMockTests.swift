@@ -104,6 +104,74 @@ struct AudioPlayerViewModelMockTests {
         #expect(audio.playVerseInSurahCallCount == 1)
     }
 
+    // MARK: - playVerse per-surah reciter (Bukhatir)
+
+    @Test func playVerse_bukhatir_noAutoAdvance_callsPlayVerseInSurah() {
+        let (audio, data, words) = makeMocks()
+        let verseData = VerseWordData(
+            au: "https://example.com/surah.mp3", vs: 0, ve: 5000,
+            w: [QuranWord(p: 1, t: "بِسْمِ", tr: "bismi", en: "In the name", a: "", s: 0, e: 500)]
+        )
+        words.wordsResult["1:1"] = verseData
+        let vm = makeVM(audio: audio, data: data, words: words, reciter: .bukhatir)
+        vm.autoAdvance = false
+        vm.loopCount = 1
+
+        vm.playVerse(surahId: 1, ayahId: 1)
+
+        #expect(audio.playVerseInSurahCallCount == 1)
+        #expect(audio.playSurahContinuousCallCount == 0)
+        #expect(audio.playCallCount == 0)
+    }
+
+    @Test func playVerse_bukhatir_autoAdvance_callsPlaySurahContinuous() {
+        let (audio, data, words) = makeMocks()
+        let verseData = VerseWordData(au: "https://example.com/surah.mp3", vs: 0, ve: 5000, w: [])
+        words.allVerseDataResult = [
+            (ayahId: 1, data: verseData),
+            (ayahId: 2, data: VerseWordData(au: "https://example.com/surah.mp3", vs: 5000, ve: 10000, w: [])),
+        ]
+        let vm = makeVM(audio: audio, data: data, words: words, reciter: .bukhatir)
+        vm.autoAdvance = true
+        vm.loopCount = 1
+
+        vm.playVerse(surahId: 1, ayahId: 1)
+
+        #expect(audio.playSurahContinuousCallCount == 1)
+        #expect(audio.playVerseInSurahCallCount == 0)
+        #expect(audio.playCallCount == 0)
+    }
+
+    // MARK: - playVerse fallback when word data missing
+
+    @Test func playVerse_perSurahReciter_noWordData_fallsBackToPlaySurah() {
+        let (audio, data, words) = makeMocks()
+        let vm = makeVM(audio: audio, data: data, words: words, reciter: .bukhatir)
+        vm.autoAdvance = false
+        vm.loopCount = 1
+
+        vm.playVerse(surahId: 1, ayahId: 1)
+
+        #expect(audio.playCallCount == 1)
+        #expect(audio.playVerseInSurahCallCount == 0)
+        #expect(audio.playSurahContinuousCallCount == 0)
+        #expect(audio.currentSurahId == 1)
+    }
+
+    @Test func playVerse_perSurahReciter_noWordData_autoAdvance_fallsBackToPlaySurah() {
+        let (audio, data, words) = makeMocks()
+        let vm = makeVM(audio: audio, data: data, words: words, reciter: .bukhatir)
+        vm.autoAdvance = true
+        vm.loopCount = 1
+
+        vm.playVerse(surahId: 1, ayahId: 1)
+
+        #expect(audio.playCallCount == 1)
+        #expect(audio.playSurahContinuousCallCount == 0)
+        #expect(audio.playVerseInSurahCallCount == 0)
+        #expect(audio.currentSurahId == 1)
+    }
+
     // MARK: - stop clears state
 
     @Test func stop_callsAudioServiceStop() {

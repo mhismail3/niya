@@ -9,6 +9,7 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
     case haniRifai
     case husary
     case shuraym
+    case bukhatir
 
     var id: String { rawValue }
 
@@ -128,6 +129,17 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
                 surahPath: "saud_ash-shuraym/murattal",
                 surahZeroPad: true,
                 filenameSlug: "shuraym"
+            ),
+            .bukhatir: Config(
+                displayName: "Salah Bukhatir",
+                shortName: "Bukhatir",
+                hasPerVerseAudio: false,
+                wordDataFilename: "word_data_bukhatir",
+                surahStreamURL: { surahId in
+                    URL(string: "https://download.quranicaudio.com/quran/salaah_bukhaatir/\(String(format: "%03d", surahId)).mp3")!
+                },
+                verseStreamURL: nil,
+                localFilenamePrefix: "audio_bukhatir_surah_"
             ),
         ]
     }()
