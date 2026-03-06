@@ -36,7 +36,11 @@ struct SmallWidgetView: View {
     }
 
     private func upcomingPrayers(after current: WidgetPrayer) -> some View {
-        let upcoming = entry.data.prayers.filter { $0.time > current.time }
+        var upcoming = entry.data.prayers.filter { $0.time > current.time }
+        if upcoming.count < 2 {
+            let tomorrowUpcoming = entry.data.tomorrowPrayers.filter { $0.time > current.time }
+            upcoming.append(contentsOf: tomorrowUpcoming)
+        }
         let display = Array(upcoming.prefix(2))
         return HStack(spacing: 0) {
             ForEach(display, id: \.name) { prayer in

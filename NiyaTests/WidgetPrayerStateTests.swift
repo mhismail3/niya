@@ -26,6 +26,11 @@ struct WidgetPrayerStateTests {
             ],
             tomorrowPrayers: [
                 WidgetPrayer(name: "Fajr", abbreviation: "FJR", time: time(5, 18, on: tomorrow), icon: "sun.horizon", isActualPrayer: true),
+                WidgetPrayer(name: "Sunrise", abbreviation: "SHR", time: time(6, 42, on: tomorrow), icon: "sunrise", isActualPrayer: false),
+                WidgetPrayer(name: "Dhuhr", abbreviation: "DHR", time: time(12, 21, on: tomorrow), icon: "sun.max", isActualPrayer: true),
+                WidgetPrayer(name: "Asr", abbreviation: "ASR", time: time(15, 25, on: tomorrow), icon: "sun.min", isActualPrayer: true),
+                WidgetPrayer(name: "Maghrib", abbreviation: "MGB", time: time(17, 59, on: tomorrow), icon: "sunset", isActualPrayer: true),
+                WidgetPrayer(name: "Isha", abbreviation: "ISH", time: time(19, 24, on: tomorrow), icon: "moon.stars", isActualPrayer: true),
             ],
             latitude: 47.6769, longitude: -122.2060,
             timezoneIdentifier: "America/Los_Angeles",
@@ -76,6 +81,21 @@ struct WidgetPrayerStateTests {
         let time = cal.date(bySettingHour: 23, minute: 59, second: 0, of: base)!
         #expect(data.currentPrayer(at: time)?.name == "Isha")
         #expect(data.nextPrayer(at: time)?.name == "Fajr")
+    }
+
+    @Test("After tomorrow Fajr — nextPrayer is Sunrise")
+    func afterTomorrowFajr() {
+        let data = sampleData()
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: Date()))!
+        let time = cal.date(bySettingHour: 5, minute: 30, second: 0, of: tomorrow)!
+        #expect(data.nextPrayer(at: time)?.name == "Sunrise")
+    }
+
+    @Test("At midnight — nextPrayer is tomorrow Fajr")
+    func atMidnight() {
+        let data = sampleData()
+        let midnight = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: Date()))!
+        #expect(data.nextPrayer(at: midnight)?.name == "Fajr")
     }
 
     @Test("Progress bar fraction midday")

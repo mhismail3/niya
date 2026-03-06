@@ -56,6 +56,10 @@ struct PrayerTimelineProvider: TimelineProvider {
             entries.append(PrayerTimeEntry(date: prayer.time, data: data, isFallback: isFallback))
         }
 
+        for prayer in data.tomorrowPrayers where prayer.time > now {
+            entries.append(PrayerTimeEntry(date: prayer.time, data: data, isFallback: isFallback))
+        }
+
         if let midnight = cal.date(bySettingHour: 0, minute: 0, second: 0, of: cal.date(byAdding: .day, value: 1, to: now)!) {
             entries.append(PrayerTimeEntry(date: midnight, data: data, isFallback: isFallback))
         }

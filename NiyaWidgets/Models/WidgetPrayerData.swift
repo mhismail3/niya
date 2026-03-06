@@ -36,7 +36,7 @@ struct WidgetPrayerData: Codable, Sendable, Equatable {
         if let next = prayers.first(where: { $0.time > date }) {
             return next
         }
-        return tomorrowPrayers.first
+        return tomorrowPrayers.first(where: { $0.time > date })
     }
 
     func dayProgress(at date: Date) -> Double {

@@ -26,6 +26,11 @@ struct PrayerTimelineProviderTests {
             ],
             tomorrowPrayers: [
                 WidgetPrayer(name: "Fajr", abbreviation: "FJR", time: time(5, 18, on: tomorrow), icon: "sun.horizon", isActualPrayer: true),
+                WidgetPrayer(name: "Sunrise", abbreviation: "SHR", time: time(6, 42, on: tomorrow), icon: "sunrise", isActualPrayer: false),
+                WidgetPrayer(name: "Dhuhr", abbreviation: "DHR", time: time(12, 21, on: tomorrow), icon: "sun.max", isActualPrayer: true),
+                WidgetPrayer(name: "Asr", abbreviation: "ASR", time: time(15, 25, on: tomorrow), icon: "sun.min", isActualPrayer: true),
+                WidgetPrayer(name: "Maghrib", abbreviation: "MGB", time: time(17, 59, on: tomorrow), icon: "sunset", isActualPrayer: true),
+                WidgetPrayer(name: "Isha", abbreviation: "ISH", time: time(19, 24, on: tomorrow), icon: "moon.stars", isActualPrayer: true),
             ],
             latitude: 47.6769, longitude: -122.2060,
             timezoneIdentifier: "America/Los_Angeles",
@@ -102,5 +107,40 @@ struct PrayerTimelineProviderTests {
         let entry = PrayerTimeEntry(date: lateNight, data: data)
         #expect(entry.nextPrayer?.name == "Fajr")
         #expect(entry.currentPrayer?.name == "Isha")
+    }
+
+    @Test("makeEntries includes tomorrow prayer entries")
+    func entriesIncludeTomorrowPrayers() {
+        let data = sampleData()
+        let lateNight = cal.date(bySettingHour: 22, minute: 0, second: 0, of: cal.startOfDay(for: Date()))!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: lateNight)
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: Date()))!
+        let tomorrowEntries = entries.filter { cal.isDate($0.date, inSameDayAs: tomorrow) && cal.component(.hour, from: $0.date) > 0 }
+        #expect(tomorrowEntries.count >= 6)
+    }
+
+    @Test("makeEntries at midnight includes tomorrow entries")
+    func entriesAtMidnightIncludeTomorrow() {
+        let data = sampleData()
+        let midnight = cal.startOfDay(for: cal.date(byAdding: .day, value: 1, to: Date())!)
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: midnight)
+        #expect(entries.count >= 7)
+    }
+
+    @Test("makeEntries late evening - entry exists for each transition point")
+    func entriesLateEveningTransitions() {
+        let data = sampleData()
+        let lateEvening = cal.date(bySettingHour: 20, minute: 0, second: 0, of: cal.startOfDay(for: Date()))!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: lateEvening)
+        #expect(entries.count >= 8)
+    }
+
+    @Test("Entry at tomorrow Fajr time - nextPrayer transitions to Sunrise")
+    func entryAtTomorrowFajrTransitions() {
+        let data = sampleData()
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: Date()))!
+        let fajrTime = cal.date(bySettingHour: 5, minute: 18, second: 0, of: tomorrow)!
+        let entry = PrayerTimeEntry(date: fajrTime, data: data)
+        #expect(entry.nextPrayer?.name == "Sunrise")
     }
 }

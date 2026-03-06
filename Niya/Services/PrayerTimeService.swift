@@ -61,7 +61,7 @@ final class PrayerTimeService {
         WidgetDataWriter.shared.reloadTimelines()
 
         if notificationsEnabled {
-            scheduleNotifications(times: result, timeZone: location.timeZone)
+            scheduleNotifications(times: result, tomorrowTimes: tomorrowTimes, timeZone: location.timeZone)
         }
 
         Task {
@@ -101,7 +101,7 @@ final class PrayerTimeService {
 
     // MARK: - Notifications
 
-    func scheduleNotifications(times: DailyPrayerTimes, timeZone: TimeZone) {
+    func scheduleNotifications(times: DailyPrayerTimes, tomorrowTimes: DailyPrayerTimes?, timeZone: TimeZone) {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
 
@@ -110,8 +110,11 @@ final class PrayerTimeService {
         formatter.dateFormat = "h:mm a"
         formatter.timeZone = timeZone
 
-        for pt in times.times {
+        let allPrayers = times.times + (tomorrowTimes?.times ?? [])
+        for pt in allPrayers {
             guard pt.prayer.isActualPrayer, pt.time > now else { continue }
+            let interval = pt.time.timeIntervalSince(now)
+            guard interval > 0 else { continue }
 
             let content = UNMutableNotificationContent()
             content.title = "\(pt.prayer.displayName) Prayer"
@@ -121,11 +124,12 @@ final class PrayerTimeService {
             content.categoryIdentifier = "prayerTime"
 
             let trigger = UNTimeIntervalNotificationTrigger(
-                timeInterval: pt.time.timeIntervalSince(now),
+                timeInterval: interval,
                 repeats: false
             )
+            let dayTag = Calendar.current.component(.day, from: pt.time)
             let request = UNNotificationRequest(
-                identifier: "prayer_\(pt.prayer.rawValue)",
+                identifier: "prayer_\(pt.prayer.rawValue)_\(dayTag)",
                 content: content,
                 trigger: trigger
             )

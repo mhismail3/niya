@@ -26,6 +26,11 @@ struct WidgetPrayerDataTests {
             ],
             tomorrowPrayers: [
                 WidgetPrayer(name: "Fajr", abbreviation: "FJR", time: cal.date(bySettingHour: 5, minute: 18, second: 0, of: tomorrow)!, icon: "sun.horizon", isActualPrayer: true),
+                WidgetPrayer(name: "Sunrise", abbreviation: "SHR", time: cal.date(bySettingHour: 6, minute: 42, second: 0, of: tomorrow)!, icon: "sunrise", isActualPrayer: false),
+                WidgetPrayer(name: "Dhuhr", abbreviation: "DHR", time: cal.date(bySettingHour: 12, minute: 21, second: 0, of: tomorrow)!, icon: "sun.max", isActualPrayer: true),
+                WidgetPrayer(name: "Asr", abbreviation: "ASR", time: cal.date(bySettingHour: 15, minute: 25, second: 0, of: tomorrow)!, icon: "sun.min", isActualPrayer: true),
+                WidgetPrayer(name: "Maghrib", abbreviation: "MGB", time: cal.date(bySettingHour: 17, minute: 59, second: 0, of: tomorrow)!, icon: "sunset", isActualPrayer: true),
+                WidgetPrayer(name: "Isha", abbreviation: "ISH", time: cal.date(bySettingHour: 19, minute: 24, second: 0, of: tomorrow)!, icon: "moon.stars", isActualPrayer: true),
             ],
             latitude: 47.6769,
             longitude: -122.2060,
@@ -43,7 +48,7 @@ struct WidgetPrayerDataTests {
         #expect(decoded.locationName == data.locationName)
         #expect(decoded.hijriDate == data.hijriDate)
         #expect(decoded.prayers.count == 6)
-        #expect(decoded.tomorrowPrayers.count == 1)
+        #expect(decoded.tomorrowPrayers.count == 6)
         #expect(decoded.latitude == data.latitude)
         #expect(decoded.calculationMethod == "isna")
         #expect(decoded.asrFactor == 1)
@@ -146,6 +151,65 @@ struct WidgetPrayerDataTests {
         let data = sampleData()
         let icons = data.prayers.map(\.icon)
         #expect(icons == ["sun.horizon", "sunrise", "sun.max", "sun.min", "sunset", "moon.stars"])
+    }
+
+    @Test("nextPrayer after tomorrow Fajr returns tomorrow Sunrise")
+    func nextPrayerAfterTomorrowFajr() {
+        let base = cal.startOfDay(for: Date())
+        let data = sampleData(baseDate: base)
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: base)!
+        let afterFajr = cal.date(bySettingHour: 5, minute: 30, second: 0, of: tomorrow)!
+        let next = data.nextPrayer(at: afterFajr)
+        #expect(next?.name == "Sunrise")
+    }
+
+    @Test("nextPrayer at exactly tomorrow Fajr time returns tomorrow Sunrise")
+    func nextPrayerAtExactlyTomorrowFajr() {
+        let base = cal.startOfDay(for: Date())
+        let data = sampleData(baseDate: base)
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: base)!
+        let fajrTime = cal.date(bySettingHour: 5, minute: 18, second: 0, of: tomorrow)!
+        let next = data.nextPrayer(at: fajrTime)
+        #expect(next?.name == "Sunrise")
+    }
+
+    @Test("nextPrayer at midnight returns tomorrow Fajr")
+    func nextPrayerAtMidnight() {
+        let base = cal.startOfDay(for: Date())
+        let data = sampleData(baseDate: base)
+        let midnight = cal.date(byAdding: .day, value: 1, to: base)!
+        let next = data.nextPrayer(at: midnight)
+        #expect(next?.name == "Fajr")
+    }
+
+    @Test("nextPrayer after all tomorrow prayers returns nil")
+    func nextPrayerAfterAllTomorrow() {
+        let base = cal.startOfDay(for: Date())
+        let data = sampleData(baseDate: base)
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: base)!
+        let lateNextDay = cal.date(bySettingHour: 23, minute: 59, second: 0, of: tomorrow)!
+        let next = data.nextPrayer(at: lateNextDay)
+        #expect(next == nil)
+    }
+
+    @Test("nextPrayer with empty tomorrowPrayers returns nil after today")
+    func nextPrayerEmptyTomorrow() {
+        let base = cal.startOfDay(for: Date())
+        let data = WidgetPrayerData(
+            computedAt: base,
+            locationName: "Test",
+            hijriDate: "Test",
+            prayers: [
+                WidgetPrayer(name: "Fajr", abbreviation: "FJR", time: makeDate(hour: 5, minute: 0, on: base), icon: "sun.horizon", isActualPrayer: true),
+            ],
+            tomorrowPrayers: [],
+            latitude: 0, longitude: 0,
+            timezoneIdentifier: "UTC",
+            calculationMethod: "isna",
+            asrFactor: 1
+        )
+        let afterAll = makeDate(hour: 23, minute: 0, on: base)
+        #expect(data.nextPrayer(at: afterAll) == nil)
     }
 
     @Test("isActualPrayer - sunrise is false, others true")
