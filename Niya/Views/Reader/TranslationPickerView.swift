@@ -30,8 +30,8 @@ struct TranslationPickerView: View {
                                             .font(.niyaBody)
                                             .foregroundStyle(Color.niyaText)
                                         if edition.hasWordByWord {
-                                            Text("W×W")
-                                                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                                            Text("Word-by-Word")
+                                                .font(.system(size: 9, weight: .medium, design: .rounded))
                                                 .foregroundStyle(.white)
                                                 .padding(.horizontal, 5)
                                                 .padding(.vertical, 2)
