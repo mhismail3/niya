@@ -84,11 +84,21 @@ def extract_words(text):
     return [w for w in norm.split() if len(w) >= 3]
 
 
+def load_hisn_references():
+    """Load scraped hadith references from hisn_references.json."""
+    path = os.path.join(SOURCE_DIR, "hisn_references.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
+
+
 def load_hisn_muslim():
     path = os.path.join(SOURCE_DIR, "husn_en.json")
     with open(path, encoding='utf-8-sig') as f:
         data = json.load(f)
 
+    hisn_refs = load_hisn_references()
     chapters = data['English']
     categories = []
     all_duas = {}
@@ -127,6 +137,11 @@ def load_hisn_muslim():
                 dua['transliteration'] = transliteration
             if repeat and repeat > 1:
                 dua['repeat'] = repeat
+
+            # Apply scraped hadith reference
+            ref = hisn_refs.get(str(d['ID']))
+            if ref:
+                dua['source'] = ref
 
             duas.append(dua)
 
