@@ -13,6 +13,7 @@ final class AudioPlayerViewModel {
     private let audioService: any AudioPlaying
     private let dataService: any QuranDataProviding
     private let wordDataService: any WordDataProviding
+    private var _verseRevision = 0
 
     init(audioService: any AudioPlaying, dataService: any QuranDataProviding, wordDataService: any WordDataProviding, reciter: Reciter = .alAfasy) {
         self.audioService = audioService
@@ -46,6 +47,7 @@ final class AudioPlayerViewModel {
 
         audioService.onVerseDidChange = { [weak self] vid in
             guard let self else { return }
+            self._verseRevision += 1
             self.updateNowPlaying()
         }
     }
@@ -114,7 +116,10 @@ final class AudioPlayerViewModel {
 
     var isPlaying: Bool { audioService.isPlaying }
     var isLoading: Bool { audioService.isLoading }
-    var currentVerseID: VerseID? { audioService.currentVerseID }
+    var currentVerseID: VerseID? {
+        _ = _verseRevision
+        return audioService.currentVerseID
+    }
     var currentSurahId: Int? { audioService.currentSurahId }
     var isFollowAlongActive: Bool { audioService.isFollowAlongActive }
     var hasActiveSession: Bool { currentVerseID != nil || currentSurahId != nil || audioService.isFollowAlongActive }
@@ -221,7 +226,7 @@ final class AudioPlayerViewModel {
     }
 
     func isPlayingVerse(surahId: Int, ayahId: Int) -> Bool {
-        guard let vid = audioService.currentVerseID else { return false }
+        guard let vid = currentVerseID else { return false }
         return vid.surahId == surahId && vid.ayahId == ayahId
     }
 

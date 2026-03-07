@@ -65,61 +65,23 @@ final class TajweedService {
         failedSurahs.removeAll()
     }
 
-    // MARK: - Markup Parser (operates on Unicode scalars to avoid grapheme cluster issues)
+    // MARK: - Unsupported Quran Marks
+
+    nonisolated static let unsupportedQuranMarks: Set<UInt32> = [
+        0x06D6, 0x06D7, 0x06D8, 0x06D9, 0x06DA, 0x06DB, 0x06DC, // waqf signs
+        0x06DD, 0x06DE,                                             // end-of-ayah, rub el hizb
+        0x06E9,                                                     // place of sajdah
+        0x06EA, 0x06EB, 0x06EC, 0x06ED,                            // small annotations
+    ]
+
+    // MARK: - Markup Parser (recursive descent, operates on Unicode scalars)
 
     func parseTajweedMarkup(_ markup: String, ayahId: Int) -> TajweedVerse {
         let scalars = Array(markup.unicodeScalars)
         var plainText = ""
         var annotations: [TajweedAnnotation] = []
-        var i = 0
 
-        while i < scalars.count {
-            if scalars[i] == Unicode.Scalar("[") {
-                let afterBracket = i + 1
-                guard afterBracket < scalars.count else {
-                    plainText.append(String(scalars[i]))
-                    i = afterBracket
-                    continue
-                }
-
-                let tag = scalars[afterBracket]
-
-                // Find the inner `[` that starts the annotated text
-                var j = afterBracket + 1
-                while j < scalars.count && scalars[j] != Unicode.Scalar("[") {
-                    j += 1
-                }
-                guard j < scalars.count else {
-                    plainText.append(String(String.UnicodeScalarView(scalars[i...])))
-                    break
-                }
-
-                // j is at the inner `[`, read until `]`
-                let textStart = j + 1
-                var k = textStart
-                while k < scalars.count && scalars[k] != Unicode.Scalar("]") {
-                    k += 1
-                }
-                guard k < scalars.count else {
-                    plainText.append(String(String.UnicodeScalarView(scalars[i...])))
-                    break
-                }
-
-                let annotatedString = String(String.UnicodeScalarView(scalars[textStart..<k]))
-                let start = plainText.count
-                plainText.append(annotatedString)
-                let end = plainText.count
-
-                if let rule = TajweedRule(rawValue: String(tag)) {
-                    annotations.append(TajweedAnnotation(rule: rule, start: start, end: end))
-                }
-
-                i = k + 1
-            } else {
-                plainText.append(String(scalars[i]))
-                i += 1
-            }
-        }
+        _ = Self.parseContent(scalars, from: 0, into: &plainText, annotations: &annotations, untilClose: false)
 
         // Strip BOM if present
         if plainText.hasPrefix("\u{FEFF}") {
@@ -137,6 +99,69 @@ final class TajweedService {
             .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
 
         return TajweedVerse(id: ayahId, text: plainText, annotations: annotations)
+    }
+
+    /// Recursive descent parser for tajweed markup.
+    /// Returns the index after the last consumed scalar.
+    /// When `untilClose` is true, stops at the matching `]` and consumes it.
+    nonisolated private static func parseContent(
+        _ scalars: [Unicode.Scalar],
+        from startIndex: Int,
+        into plainText: inout String,
+        annotations: inout [TajweedAnnotation],
+        untilClose: Bool
+    ) -> Int {
+        var i = startIndex
+        let open = Unicode.Scalar("[")
+        let close = Unicode.Scalar("]")
+
+        while i < scalars.count {
+            let scalar = scalars[i]
+
+            if scalar == close && untilClose {
+                return i + 1 // consume the closer
+            }
+
+            if scalar == open {
+                // Try to parse a tag: [TAG[...] or [TAG:N[...]
+                let afterBracket = i + 1
+                guard afterBracket < scalars.count else {
+                    plainText.unicodeScalars.append(scalar)
+                    i = afterBracket
+                    continue
+                }
+
+                let tag = scalars[afterBracket]
+
+                // Scan forward for the inner `[` (skipping optional `:N` modifier)
+                var j = afterBracket + 1
+                while j < scalars.count && scalars[j] != open && scalars[j] != close {
+                    j += 1
+                }
+
+                if j < scalars.count && scalars[j] == open {
+                    // Valid tag opener found — recurse into the tag body
+                    let textStart = plainText.count
+                    i = parseContent(scalars, from: j + 1, into: &plainText, annotations: &annotations, untilClose: true)
+                    let textEnd = plainText.count
+
+                    if let rule = TajweedRule(rawValue: String(tag)) {
+                        annotations.append(TajweedAnnotation(rule: rule, start: textStart, end: textEnd))
+                    }
+                } else {
+                    // Malformed — no inner `[` found, dump `[` as literal
+                    plainText.unicodeScalars.append(scalar)
+                    i += 1
+                }
+            } else if unsupportedQuranMarks.contains(scalar.value) {
+                i += 1 // skip unsupported mark
+            } else {
+                plainText.unicodeScalars.append(scalar)
+                i += 1
+            }
+        }
+
+        return scalars.count
     }
 }
 

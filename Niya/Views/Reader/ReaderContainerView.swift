@@ -60,6 +60,7 @@ struct ReaderContainerView: View {
                             followAlong.toggle()
                             if followAlong {
                                 autoScrollVM.stop()
+                                audioPlayerVM.stop()
                                 Task { await wordDataService.load(reciter: selectedReciter) }
                             } else {
                                 followAlongVM.stopTracking()

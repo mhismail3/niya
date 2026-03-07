@@ -187,7 +187,7 @@ struct BookmarksView: View {
                             .foregroundStyle(Color.niyaGold)
 
                         if let verse {
-                            Text(verse.text)
+                            Text(Self.stripUnsupportedMarks(verse.text))
                                 .font(.quranText(script: storedScript, size: 20))
                                 .foregroundStyle(Color.niyaText)
                                 .multilineTextAlignment(.trailing)
@@ -455,6 +455,10 @@ struct BookmarksView: View {
     }
 
     // MARK: - Helpers
+
+    private static func stripUnsupportedMarks(_ text: String) -> String {
+        String(text.unicodeScalars.filter { !TajweedService.unsupportedQuranMarks.contains($0.value) })
+    }
 
     private func buildTranslations(verse: Verse) -> [TranslationText] {
         let primaryRTL = quranDataService.selectedTranslations.first?.isRTL ?? false

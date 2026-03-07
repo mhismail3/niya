@@ -9,6 +9,7 @@ private let tajweedRuleKey = NSAttributedString.Key("tajweedRule")
 
 struct TajweedTextView: UIViewRepresentable {
     let verse: TajweedVerse
+    let displayText: String
     let fontSize: CGFloat
     let onTap: (TajweedTap?) -> Void
 
@@ -42,7 +43,7 @@ struct TajweedTextView: UIViewRepresentable {
     }
 
     private func makeAttributedString() -> NSAttributedString {
-        let text = verse.text
+        let text = displayText
         let font = UIFont(name: QuranScript.hafs.fontName, size: fontSize)
             ?? .systemFont(ofSize: fontSize)
         let style = NSMutableParagraphStyle()
@@ -57,7 +58,8 @@ struct TajweedTextView: UIViewRepresentable {
         ]
         let result = NSMutableAttributedString(string: text, attributes: base)
 
-        for ann in verse.annotations {
+        let mapped = Self.mapAnnotations(verse.annotations, from: verse.text, to: text)
+        for ann in mapped {
             guard ann.start >= 0, ann.end <= text.count, ann.start < ann.end else { continue }
             let start = text.index(text.startIndex, offsetBy: ann.start)
             let end = text.index(text.startIndex, offsetBy: ann.end)
@@ -65,7 +67,56 @@ struct TajweedTextView: UIViewRepresentable {
             result.addAttribute(.foregroundColor, value: UIColor(ann.rule.color), range: nsRange)
             result.addAttribute(tajweedRuleKey, value: ann.rule.rawValue, range: nsRange)
         }
+
         return result
+    }
+
+    /// Maps annotation positions from API-parsed text to the hafs display text
+    /// by aligning base characters (letters, digits, spaces).
+    private static func mapAnnotations(
+        _ annotations: [TajweedAnnotation],
+        from source: String,
+        to target: String
+    ) -> [TajweedAnnotation] {
+        guard !annotations.isEmpty else { return [] }
+        if source.count == target.count { return annotations }
+
+        let srcChars = Array(source)
+        let tgtChars = Array(target)
+
+        var posMap = [Int](repeating: tgtChars.count, count: srcChars.count + 1)
+        var ti = 0
+        for si in 0..<srcChars.count {
+            posMap[si] = min(ti, tgtChars.count)
+            if isBaseChar(srcChars[si]) {
+                while ti < tgtChars.count {
+                    let matched = isBaseChar(tgtChars[ti])
+                    ti += 1
+                    if matched { break }
+                }
+            }
+        }
+        posMap[srcChars.count] = min(ti, tgtChars.count)
+
+        return annotations.compactMap { ann in
+            let s = ann.start < posMap.count ? posMap[ann.start] : tgtChars.count
+            let e = ann.end < posMap.count ? posMap[ann.end] : tgtChars.count
+            guard s < e, e <= tgtChars.count else { return nil }
+            return TajweedAnnotation(rule: ann.rule, start: s, end: e)
+        }
+    }
+
+    private static func isBaseChar(_ char: Character) -> Bool {
+        char.unicodeScalars.contains { scalar in
+            switch scalar.properties.generalCategory {
+            case .uppercaseLetter, .lowercaseLetter, .titlecaseLetter,
+                 .modifierLetter, .otherLetter,
+                 .decimalNumber, .spaceSeparator:
+                return true
+            default:
+                return false
+            }
+        }
     }
 
     func makeCoordinator() -> Coordinator {

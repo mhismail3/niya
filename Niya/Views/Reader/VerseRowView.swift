@@ -46,7 +46,7 @@ struct VerseRowView: View {
             }
 
             if showTajweed && script == .hafs, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
-                TajweedTextView(verse: tv, fontSize: arabicFontSize) { tap in
+                TajweedTextView(verse: tv, displayText: Self.stripUnsupportedMarks(verse.text), fontSize: arabicFontSize) { tap in
                     handleTajweedTap(tap)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -72,7 +72,7 @@ struct VerseRowView: View {
                 .transition(.opacity)
                 .onScrollVisibilityDismiss { dismissTooltip() }
             } else {
-                Text(verse.text)
+                Text(Self.stripUnsupportedMarks(verse.text))
                     .font(.quranText(script: script, size: arabicFontSize))
                     .foregroundStyle(Color.niyaText)
                     .multilineTextAlignment(.trailing)
@@ -257,6 +257,10 @@ struct VerseRowView: View {
                 .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
         }
         .padding(.top, 4)
+    }
+
+    private static func stripUnsupportedMarks(_ text: String) -> String {
+        String(text.unicodeScalars.filter { !TajweedService.unsupportedQuranMarks.contains($0.value) })
     }
 
     private var verseNumberBadge: some View {
