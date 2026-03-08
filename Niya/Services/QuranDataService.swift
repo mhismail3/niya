@@ -13,8 +13,8 @@ final class QuranDataService: QuranDataProviding {
     private var indoPakDictionary: [String: [Verse]]?
     private var verseCounts: [Int] = []
     private var translationOverlays: [(edition: TranslationEdition, overlay: [String: String])] = []
-    private var versesCache: [String: [Verse]] = [:]
-    private var cacheOrder: [String] = []
+    @ObservationIgnored private var versesCache: [String: [Verse]] = [:]
+    @ObservationIgnored private var cacheOrder: [String] = []
     private let maxCacheEntries = 20
 
     func load() async {

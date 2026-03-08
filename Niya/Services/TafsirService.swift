@@ -3,8 +3,8 @@ import Foundation
 @Observable
 @MainActor
 final class TafsirService {
-    private var cache: [String: [String: String]] = [:]
-    private var accessOrder: [String] = []
+    @ObservationIgnored private var cache: [String: [String: String]] = [:]
+    @ObservationIgnored private var accessOrder: [String] = []
     private let maxCachedSurahs = 10
 
     func text(edition: TafsirEdition, surahId: Int, ayahId: Int) -> String? {
