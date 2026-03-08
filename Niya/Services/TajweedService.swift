@@ -74,6 +74,12 @@ final class TajweedService {
         0x06EA, 0x06EB, 0x06EC, 0x06ED,                            // small annotations
     ]
 
+    nonisolated private static let scalarNormalization: [UInt32: Unicode.Scalar] = [
+        0x0672: Unicode.Scalar(0x0670)!,  // Alef w/ Wavy Hamza → Superscript Alef
+        0x06DF: Unicode.Scalar(0x06E0)!,  // Small High Rounded Zero → Upright Rectangular Zero
+        0x066E: Unicode.Scalar(0x0649)!,  // Dotless Beh → Alef Maksura
+    ]
+
     // MARK: - Markup Parser (recursive descent, operates on Unicode scalars)
 
     func parseTajweedMarkup(_ markup: String, ayahId: Int) -> TajweedVerse {
@@ -91,12 +97,6 @@ final class TajweedService {
                 TajweedAnnotation(rule: $0.rule, start: $0.start - bomLen, end: $0.end - bomLen)
             }.filter { $0.start >= 0 }
         }
-
-        // Normalize characters the API uses that the KFGQPC Uthmanic font lacks glyphs for.
-        plainText = plainText
-            .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
-            .replacingOccurrences(of: "\u{06DF}", with: "\u{06E0}")  // Small High Rounded Zero → Upright Rectangular Zero
-            .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
 
         return TajweedVerse(id: ayahId, text: plainText, annotations: annotations)
     }
@@ -126,7 +126,7 @@ final class TajweedService {
                 // Try to parse a tag: [TAG[...] or [TAG:N[...]
                 let afterBracket = i + 1
                 guard afterBracket < scalars.count else {
-                    plainText.unicodeScalars.append(scalar)
+                    plainText.unicodeScalars.append(scalarNormalization[scalar.value] ?? scalar)
                     i = afterBracket
                     continue
                 }
@@ -150,13 +150,13 @@ final class TajweedService {
                     }
                 } else {
                     // Malformed — no inner `[` found, dump `[` as literal
-                    plainText.unicodeScalars.append(scalar)
+                    plainText.unicodeScalars.append(scalarNormalization[scalar.value] ?? scalar)
                     i += 1
                 }
             } else if unsupportedQuranMarks.contains(scalar.value) {
                 i += 1 // skip unsupported mark
             } else {
-                plainText.unicodeScalars.append(scalar)
+                plainText.unicodeScalars.append(scalarNormalization[scalar.value] ?? scalar)
                 i += 1
             }
         }

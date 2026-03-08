@@ -4,6 +4,7 @@ import TipKit
 import UserNotifications
 import UIKit
 import WidgetKit
+import BackgroundTasks
 
 @main
 struct NiyaApp: App {
@@ -57,8 +58,14 @@ struct NiyaApp: App {
 
         as_.configureSession()
         Self.migrateAudioFilenames()
+        Self.resetTipsIfVersionChanged()
         try? Tips.configure([.displayFrequency(.immediate)])
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.niya.mobile.prayerRefresh", using: nil) { task in
+            Self.handlePrayerRefresh(task: task as! BGAppRefreshTask)
+        }
+        Self.scheduleBGRefresh()
     }
 
     @Environment(\.scenePhase) private var scenePhase
@@ -123,6 +130,38 @@ struct NiyaApp: App {
                     tafsirService.clearCache()
                     tajweedService.clearCache()
                 }
+        }
+    }
+
+    private static func handlePrayerRefresh(task: BGAppRefreshTask) {
+        scheduleBGRefresh()
+
+        guard UserDefaults.standard.bool(forKey: StorageKey.prayerNotificationsEnabled),
+              let location = PrayerNotificationScheduler.locationFromDefaults() else {
+            task.setTaskCompleted(success: true)
+            return
+        }
+
+        let methodRaw = UserDefaults.standard.string(forKey: StorageKey.calculationMethod) ?? CalculationMethod.isna.rawValue
+        let method = CalculationMethod(rawValue: methodRaw) ?? .isna
+        let asrFactor = max(1, UserDefaults.standard.integer(forKey: StorageKey.asrJuristic))
+
+        PrayerNotificationScheduler.scheduleAll(location: location, method: method, asrFactor: asrFactor)
+        task.setTaskCompleted(success: true)
+    }
+
+    private static func scheduleBGRefresh() {
+        let request = BGAppRefreshTaskRequest(identifier: "com.niya.mobile.prayerRefresh")
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 3600)
+        try? BGTaskScheduler.shared.submit(request)
+    }
+
+    private static func resetTipsIfVersionChanged() {
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+        let lastVersion = UserDefaults.standard.string(forKey: StorageKey.tipsLastShownVersion)
+        if lastVersion != currentVersion {
+            try? Tips.resetDatastore()
+            UserDefaults.standard.set(currentVersion, forKey: StorageKey.tipsLastShownVersion)
         }
     }
 

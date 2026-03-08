@@ -45,6 +45,11 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
+		<string>fetch</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.niya.mobile.prayerRefresh</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Niya uses your location to calculate prayer times and Qiblah direction.</string>

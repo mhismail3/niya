@@ -61,7 +61,7 @@ final class PrayerTimeService {
         WidgetDataWriter.shared.reloadTimelines()
 
         if notificationsEnabled {
-            scheduleNotifications(times: result, tomorrowTimes: tomorrowTimes, timeZone: location.timeZone)
+            PrayerNotificationScheduler.scheduleAll(location: location, method: calculationMethod, asrFactor: asrJuristic)
         }
 
         Task {
@@ -71,8 +71,7 @@ final class PrayerTimeService {
 
     func checkDayChange(location: UserLocation?) {
         guard let loc = location else { return }
-        let cal = Calendar.current
-        if let last = lastCalculationDate, !cal.isDateInToday(last) {
+        if todayTimes == nil || !Calendar.current.isDateInToday(lastCalculationDate ?? .distantPast) {
             recalculate(location: loc)
         }
     }
@@ -97,48 +96,6 @@ final class PrayerTimeService {
     func stopCountdown() {
         countdownTimer?.invalidate()
         countdownTimer = nil
-    }
-
-    // MARK: - Notifications
-
-    func scheduleNotifications(times: DailyPrayerTimes, tomorrowTimes: DailyPrayerTimes?, timeZone: TimeZone) {
-        let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
-
-        let now = Date()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        formatter.timeZone = timeZone
-
-        let allPrayers = times.times + (tomorrowTimes?.times ?? [])
-        for pt in allPrayers {
-            guard pt.prayer.isActualPrayer, pt.time > now else { continue }
-            let interval = pt.time.timeIntervalSince(now)
-            guard interval > 0 else { continue }
-
-            let content = UNMutableNotificationContent()
-            content.title = "\(pt.prayer.displayName) Prayer"
-            content.body = "It's time for \(pt.prayer.displayName) - \(formatter.string(from: pt.time))"
-            content.sound = .default
-            content.interruptionLevel = .timeSensitive
-            content.categoryIdentifier = "prayerTime"
-
-            let trigger = UNTimeIntervalNotificationTrigger(
-                timeInterval: interval,
-                repeats: false
-            )
-            let dayTag = Calendar.current.component(.day, from: pt.time)
-            let request = UNNotificationRequest(
-                identifier: "prayer_\(pt.prayer.rawValue)_\(dayTag)",
-                content: content,
-                trigger: trigger
-            )
-            center.add(request)
-        }
-    }
-
-    func cancelNotifications() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
     // MARK: - API Validation

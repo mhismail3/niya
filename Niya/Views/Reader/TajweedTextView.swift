@@ -72,28 +72,37 @@ struct TajweedTextView: UIViewRepresentable {
     }
 
     /// Maps annotation positions from API-parsed text to the hafs display text
-    /// by aligning base characters (letters, digits, spaces).
+    /// by aligning base Arabic letters 1:1 between source and target.
     private static func mapAnnotations(
         _ annotations: [TajweedAnnotation],
         from source: String,
         to target: String
     ) -> [TajweedAnnotation] {
         guard !annotations.isEmpty else { return [] }
-        if source.count == target.count { return annotations }
+        if source == target { return annotations }
 
         let srcChars = Array(source)
         let tgtChars = Array(target)
+        if srcChars.count == tgtChars.count { return annotations }
 
         var posMap = [Int](repeating: tgtChars.count, count: srcChars.count + 1)
         var ti = 0
+
         for si in 0..<srcChars.count {
-            posMap[si] = min(ti, tgtChars.count)
-            if isBaseChar(srcChars[si]) {
+            if let srcKey = alignmentKey(srcChars[si]) {
                 while ti < tgtChars.count {
-                    let matched = isBaseChar(tgtChars[ti])
+                    if let tgtKey = alignmentKey(tgtChars[ti]), tgtKey == srcKey {
+                        posMap[si] = ti
+                        ti += 1
+                        break
+                    }
                     ti += 1
-                    if matched { break }
                 }
+                if posMap[si] == tgtChars.count {
+                    posMap[si] = min(ti, tgtChars.count)
+                }
+            } else {
+                posMap[si] = min(ti, tgtChars.count)
             }
         }
         posMap[srcChars.count] = min(ti, tgtChars.count)
@@ -101,22 +110,23 @@ struct TajweedTextView: UIViewRepresentable {
         return annotations.compactMap { ann in
             let s = ann.start < posMap.count ? posMap[ann.start] : tgtChars.count
             let e = ann.end < posMap.count ? posMap[ann.end] : tgtChars.count
+            if s == e && s > 0 {
+                return TajweedAnnotation(rule: ann.rule, start: s - 1, end: s)
+            }
             guard s < e, e <= tgtChars.count else { return nil }
             return TajweedAnnotation(rule: ann.rule, start: s, end: e)
         }
     }
 
-    private static func isBaseChar(_ char: Character) -> Bool {
-        char.unicodeScalars.contains { scalar in
-            switch scalar.properties.generalCategory {
-            case .uppercaseLetter, .lowercaseLetter, .titlecaseLetter,
-                 .modifierLetter, .otherLetter,
-                 .decimalNumber, .spaceSeparator:
-                return true
-            default:
-                return false
+    /// Main Arabic letter of a grapheme cluster, excluding decorative Tatweel.
+    private static func alignmentKey(_ c: Character) -> UInt32? {
+        if c == " " { return 0x0020 }
+        for scalar in c.unicodeScalars {
+            if scalar.properties.generalCategory == .otherLetter && scalar.value != 0x0640 {
+                return scalar.value == 0x0649 ? 0x064A : scalar.value
             }
         }
+        return nil
     }
 
     func makeCoordinator() -> Coordinator {

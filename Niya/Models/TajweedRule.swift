@@ -15,8 +15,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
     case idghamNoGhunnah = "u"
     case iqlab = "i"
     case ikhfaShafawi = "c"
-    case tafkheem = "d"
-    case izharShafawi = "w"
+    case idghamMutajanisayn = "d"
+    case idghamShafawi = "w"
+    case idghamMutaqaribayn = "b"
 
     var id: String { rawValue }
 
@@ -36,8 +37,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamNoGhunnah: "Idgham without Ghunnah"
         case .iqlab: "Iqlab (Conversion)"
         case .ikhfaShafawi: "Ikhfa Shafawi"
-        case .tafkheem: "Tafkheem (Heavy)"
-        case .izharShafawi: "Izhar Shafawi"
+        case .idghamMutajanisayn: "Idgham Mutajanisayn"
+        case .idghamShafawi: "Idgham Shafawi"
+        case .idghamMutaqaribayn: "Idgham Mutaqaribayn"
         }
     }
 
@@ -57,8 +59,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamNoGhunnah: "إدغام بلا غُنَّة"
         case .iqlab: "إقلاب"
         case .ikhfaShafawi: "إخفاء شَفَوي"
-        case .tafkheem: "تَفخيم"
-        case .izharShafawi: "إظهار شَفَوي"
+        case .idghamMutajanisayn: "إدغام متجانسين"
+        case .idghamShafawi: "إدغام شفوي"
+        case .idghamMutaqaribayn: "إدغام متقاربين"
         }
     }
 
@@ -78,8 +81,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamNoGhunnah: Color(.idghamNoGhunnah)
         case .iqlab: Color(.iqlab)
         case .ikhfaShafawi: Color(.ikhfaShafawi)
-        case .tafkheem: Color(.tafkheem)
-        case .izharShafawi: Color(.izharShafawi)
+        case .idghamMutajanisayn: Color(.idghamMutajanisayn)
+        case .idghamShafawi: Color(.idghamShafawi)
+        case .idghamMutaqaribayn: Color(.idghamMutaqaribayn)
         }
     }
 }
@@ -99,8 +103,9 @@ extension UIColor {
     static let idghamNoGhunnah = UIColor(light: 0x00838F, dark: 0x4DD0E1)
     static let iqlab = UIColor(light: 0x6A1B9A, dark: 0xBA68C8)
     static let ikhfaShafawi = UIColor(light: 0xBF360C, dark: 0xFF7043)
-    static let tafkheem = UIColor(light: 0x4A6572, dark: 0x8EACBB)
-    static let izharShafawi = UIColor(light: 0x2E8B57, dark: 0x66CDAA)
+    static let idghamMutajanisayn = UIColor(light: 0x4A6572, dark: 0x8EACBB)
+    static let idghamShafawi = UIColor(light: 0x2E8B57, dark: 0x66CDAA)
+    static let idghamMutaqaribayn = UIColor(light: 0x4A6572, dark: 0x8EACBB)
 
     convenience init(light: Int, dark: Int) {
         self.init { traits in

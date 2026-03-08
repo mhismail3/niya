@@ -25,4 +25,5 @@ enum StorageKey {
     static let followAlongTransliterationFontSize = "followAlongTransliterationFontSize"
     static let followAlongMeaningFontSize = "followAlongMeaningFontSize"
     static let audioFilenameMigrated = "audioFilenameMigrated"
+    static let tipsLastShownVersion = "tipsLastShownVersion"
 }

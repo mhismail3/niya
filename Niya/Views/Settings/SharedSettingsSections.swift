@@ -318,7 +318,7 @@ struct PrayerTimesSettingsSection: View {
                             }
                         }
                     } else {
-                        prayerTimeService.cancelNotifications()
+                        PrayerNotificationScheduler.cancelAll()
                     }
                 }
                 .alert("Notifications Disabled", isPresented: $showNotificationDeniedAlert) {

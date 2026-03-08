@@ -71,8 +71,9 @@ struct TajweedParseTests {
             ("u", .idghamNoGhunnah),
             ("i", .iqlab),
             ("c", .ikhfaShafawi),
-            ("d", .tafkheem),
-            ("w", .izharShafawi),
+            ("d", .idghamMutajanisayn),
+            ("w", .idghamShafawi),
+            ("b", .idghamMutaqaribayn),
         ]
 
         for (tag, expectedRule) in expectedMappings {
@@ -87,19 +88,22 @@ struct TajweedParseTests {
 
     @Test func nestedSingleLevel() {
         // [o[[s[و]ٲٓاْ] — obligatory madd wrapping a silent letter
-        let result = service.parseTajweedMarkup("[o[[s[و]ٲٓاْ]", ayahId: 1)
-        #expect(result.text == "وٲٓاْ")
+        // U+0672 (ٲ) is normalized to U+0670 (combining superscript alef) during parsing,
+        // which merges with preceding و to form وٰ (1 grapheme cluster).
+        let result = service.parseTajweedMarkup("[o[[s[و]\u{0672}\u{0653}اْ]", ayahId: 1)
+        let expected = "و\u{0670}\u{0653}اْ"
+        #expect(result.text == expected)
         #expect(!result.text.contains("["))
         #expect(!result.text.contains("]"))
         #expect(result.annotations.count == 2)
-        // Inner: silent on "و"
+        // Inner: silent on "و" (which now includes the combining superscript alef)
         let silent = result.annotations.first { $0.rule == .silent }!
         #expect(silent.start == 0)
         #expect(silent.end == "و".count)
-        // Outer: obligatory on full span "وٲٓاْ"
+        // Outer: obligatory on full span
         let obligatory = result.annotations.first { $0.rule == .maddObligatory }!
         #expect(obligatory.start == 0)
-        #expect(obligatory.end == "وٲٓاْ".count)
+        #expect(obligatory.end == expected.count)
     }
 
     @Test func nestedDeep() {
@@ -199,16 +203,31 @@ struct TajweedParseTests {
         }
     }
 
+    @Test func normalizationDuringParsing() {
+        // U+0672 (standalone letter) normalizes to U+0670 (combining) during parsing,
+        // merging with preceding و. Annotations must reflect post-normalization positions.
+        let result = service.parseTajweedMarkup("و\u{0672}[h[ب]", ayahId: 1)
+        let expected = "و\u{0670}ب"
+        #expect(result.text == expected)
+        #expect(expected.count == 2)
+        #expect(result.annotations.count == 1)
+        #expect(result.annotations[0].rule == .hamzatWasl)
+        #expect(result.annotations[0].start == 1)
+        #expect(result.annotations[0].end == 2)
+    }
+
     // MARK: - Real API Pattern Tests
 
     @Test func realVerse3_130() {
         // Simplified pattern from Ali 'Imran 130 containing nested tags
-        let markup = "رِّبَ[o[[s[وٰ]ٲٓاْ]"
+        // U+0672 in markup → U+0670 after normalization
+        let markup = "رِّبَ[o[[s[وٰ]\u{0672}\u{0653}اْ]"
         let result = service.parseTajweedMarkup(markup, ayahId: 130)
         #expect(!result.text.contains("["))
         #expect(!result.text.contains("]"))
         #expect(result.text.hasPrefix("رِّبَ"))
-        #expect(result.text.contains("وٰ"))
+        #expect(result.text.unicodeScalars.contains(Unicode.Scalar(0x0648)!))  // waw present
+        #expect(!result.text.unicodeScalars.contains(Unicode.Scalar(0x0672)!)) // U+0672 normalized away
     }
 
     @Test func realVerse3_64() {
