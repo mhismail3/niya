@@ -47,18 +47,19 @@ struct QiblahCompassView: View {
 
             bearingText
         }
+        .onAppear {
+            continuousRotation = heading
+            lastHeading = nil
+        }
         .onChange(of: heading) { oldVal, newVal in
             let prev = lastHeading ?? oldVal
             var delta = newVal - prev
             if delta > 180 { delta -= 360 }
             if delta < -180 { delta += 360 }
 
-            // Dampen large jumps when accuracy is poor — likely interference
             if accuracyState == .poor || accuracyState == .calibrating {
-                if abs(delta) > 15 {
-                    lastHeading = newVal
-                    return
-                }
+                let maxStep = 5.0
+                delta = max(-maxStep, min(maxStep, delta))
             }
 
             continuousRotation += delta
@@ -101,7 +102,7 @@ struct QiblahCompassView: View {
             .rotationEffect(.degrees(bearing))
         }
         .rotationEffect(.degrees(-continuousRotation))
-        .animation(.easeInOut(duration: 0.3), value: continuousRotation)
+        .animation(.smooth(duration: 0.3), value: continuousRotation)
     }
 
     private var staticCompass: some View {

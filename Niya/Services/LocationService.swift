@@ -46,13 +46,15 @@ final class LocationService: NSObject {
     @ObservationIgnored private let completer = MKLocalSearchCompleter()
     @ObservationIgnored private var isUpdatingHeading = false
     @ObservationIgnored private var lastGeocodeDate: Date?
+    @ObservationIgnored private var smoothedHeading: Double = 0
+    @ObservationIgnored private var hasInitialHeading = false
 
     override init() {
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         manager.distanceFilter = 500
-        manager.headingFilter = 5
+        manager.headingFilter = 1
         authorizationStatus = manager.authorizationStatus
         completer.delegate = self
         completer.resultTypes = .address
@@ -80,6 +82,7 @@ final class LocationService: NSObject {
     func stopHeading() {
         guard isUpdatingHeading else { return }
         isUpdatingHeading = false
+        hasInitialHeading = false
         manager.stopUpdatingHeading()
     }
 
@@ -198,11 +201,22 @@ extension LocationService: CLLocationManagerDelegate {
 
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         let accuracy = newHeading.headingAccuracy
-        let trueH = newHeading.trueHeading
-        let magH = newHeading.magneticHeading
+        let raw = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
         Task { @MainActor in
             self.headingAccuracy = accuracy
-            self.heading = trueH >= 0 ? trueH : magH
+            if !self.hasInitialHeading {
+                self.smoothedHeading = raw
+                self.hasInitialHeading = true
+            } else {
+                var delta = raw - self.smoothedHeading
+                if delta > 180 { delta -= 360 }
+                if delta < -180 { delta += 360 }
+                let alpha: Double = 0.25
+                self.smoothedHeading += alpha * delta
+                self.smoothedHeading = self.smoothedHeading.truncatingRemainder(dividingBy: 360)
+                if self.smoothedHeading < 0 { self.smoothedHeading += 360 }
+            }
+            self.heading = self.smoothedHeading
         }
     }
 
