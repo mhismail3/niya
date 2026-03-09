@@ -36,19 +36,17 @@ struct ReadingSettingsSection: View {
                     .foregroundStyle(Color.niyaTeal)
                 }
             }
-            Toggle("Show Translation", isOn: $showTranslation)
-                .tint(Color.niyaTeal)
-            if showTranslation {
-                NavigationLink {
-                    TranslationPickerView()
-                } label: {
-                    LabeledContent("Translations") {
-                        Text(translationSummary)
-                            .foregroundStyle(Color.niyaTeal)
-                            .lineLimit(1)
-                    }
+            NavigationLink {
+                TranslationPickerView()
+            } label: {
+                LabeledContent("Translations") {
+                    Text(translationSummary)
+                        .foregroundStyle(Color.niyaTeal)
+                        .lineLimit(1)
                 }
             }
+            Toggle("Show Translation", isOn: $showTranslation)
+                .tint(Color.niyaTeal)
             Toggle("Tajweed Colors", isOn: $showTajweed)
                 .tint(Color.niyaTeal)
                 .disabled(script != .hafs)
@@ -86,6 +84,8 @@ struct WordByWordSettingsSection: View {
             if followAlong && script == .hafs {
                 Toggle("Transliteration", isOn: $followAlongTransliteration)
                     .tint(Color.niyaTeal)
+                Toggle("Word Meanings", isOn: $followAlongMeaning)
+                    .tint(Color.niyaTeal)
                 if followAlongTransliteration {
                     HStack {
                         Text("Transliteration Size")
@@ -100,8 +100,6 @@ struct WordByWordSettingsSection: View {
                             .accessibilityValue("\(Int(transliterationFontSize))")
                     }
                 }
-                Toggle("Word Meanings", isOn: $followAlongMeaning)
-                    .tint(Color.niyaTeal)
                 if followAlongMeaning {
                     HStack {
                         Text("Meaning Size")

@@ -254,7 +254,7 @@ struct BookmarksView: View {
                 }
             }
         } header: {
-            sectionHeader("Qur'an")
+            sectionHeader("Quran")
         }
     }
 

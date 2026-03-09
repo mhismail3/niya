@@ -11,6 +11,7 @@ struct WordView: View {
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.followAlongTransliterationFontSize) private var transliterationSize: Double = 12
     @AppStorage(StorageKey.followAlongMeaningFontSize) private var meaningSize: Double = 11
+    @State private var isPressing = false
 
     var body: some View {
         VStack(spacing: 4) {
@@ -46,11 +47,17 @@ struct WordView: View {
                     .fill(Color.niyaGold.opacity(0.15))
             }
         }
+        .scaleEffect(isPressing ? 0.92 : 1.0)
+        .opacity(isPressing ? 0.7 : 1.0)
         .contentShape(Rectangle())
         .onTapGesture { onTap() }
         .onLongPressGesture(minimumDuration: 0.5) {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             onLongPress()
+        } onPressingChanged: { pressing in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isPressing = pressing
+            }
         }
         .accessibilityAction(named: "Word Details") { onLongPress() }
         .animation(.easeInOut(duration: 0.15), value: highlightState)

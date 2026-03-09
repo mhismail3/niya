@@ -18,10 +18,22 @@ struct ReaderSettingsSheet: View {
     @AppStorage(StorageKey.selectedReciter) private var selectedReciter: Reciter = .alAfasy
     @AppStorage(StorageKey.showJuzProgress) private var showJuzProgress: Bool = true
     @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications: Bool = false
+    @State private var showGuide = false
 
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Button {
+                        showGuide = true
+                    } label: {
+                        Label {
+                            Text("How to Use This App").fontWeight(.semibold)
+                        } icon: {
+                            Image(systemName: "questionmark.circle")
+                        }
+                    }
+                }
                 ReadingSettingsSection(mode: $vm.mode, script: $script, showTranslation: $showTranslation, showTajweed: $showTajweed, showJuzProgress: $showJuzProgress)
                 WordByWordSettingsSection(followAlong: $followAlong, followAlongTransliteration: $followAlongTransliteration, followAlongMeaning: $followAlongMeaning, script: script)
                 FontSizeSettingsSection(arabicFontSize: $arabicFontSize, translationFontSize: $translationFontSize)
@@ -36,6 +48,9 @@ struct ReaderSettingsSheet: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .hiddenNavBarBackground()
+            .sheet(isPresented: $showGuide) {
+                AppGuideView()
+            }
         }
     }
 

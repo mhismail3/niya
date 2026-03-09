@@ -154,6 +154,7 @@ SWIFT_FILES = [
     "Niya/Views/Settings/SettingsView.swift",
     "Niya/Views/Settings/SharedSettingsSections.swift",
     "Niya/Views/Settings/DownloadManagementView.swift",
+    "Niya/Views/Settings/AppGuideView.swift",
     # Views/Hadith
     "Niya/Views/Hadith/HadithTabView.swift",
     "Niya/Views/Hadith/HadithCollectionCard.swift",
@@ -924,6 +925,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Settings/SettingsView.swift"], "SettingsView.swift"),
         (swift_file_ids["Niya/Views/Settings/SharedSettingsSections.swift"], "SharedSettingsSections.swift"),
         (swift_file_ids["Niya/Views/Settings/DownloadManagementView.swift"], "DownloadManagementView.swift"),
+        (swift_file_ids["Niya/Views/Settings/AppGuideView.swift"], "AppGuideView.swift"),
     ], path_str="Settings")
 
     # Views/Hadith

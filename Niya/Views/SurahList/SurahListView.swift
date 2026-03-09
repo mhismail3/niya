@@ -19,7 +19,7 @@ struct SurahListView: View {
                     surahList
                 }
             }
-            .navigationTitle("Qur'an")
+            .navigationTitle("Quran")
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
             .background(Color.niyaBackground)
