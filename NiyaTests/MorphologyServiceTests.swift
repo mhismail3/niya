@@ -68,12 +68,14 @@ struct MorphologyServiceTests {
         #expect(service.rootEntry("zzz") == nil)
     }
 
-    @Test func rootEntryRefsCapped() {
+    @Test func rootEntryRefsDeduplicatedByVerse() {
         let service = MorphologyService()
         // أله is the most frequent root
         let entry = service.rootEntry("أله")
         #expect(entry != nil)
-        #expect(entry!.refs.count <= 50)
+        // Refs are deduplicated to unique (surah, verse) pairs, so count <= freq
+        #expect(entry!.refs.count <= entry!.freq)
+        #expect(entry!.refs.count > 50)
         #expect(entry!.freq > 50)
     }
 

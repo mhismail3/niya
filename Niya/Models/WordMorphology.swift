@@ -54,6 +54,11 @@ struct MorphRef: Codable, Sendable, Hashable {
     let p: Int
 }
 
+struct RootMeaning: Codable, Sendable {
+    let pos: String
+    let def: String
+}
+
 enum MorphLabel {
     static func pos(_ tag: String) -> (en: String, ar: String)? {
         switch tag {

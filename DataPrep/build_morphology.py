@@ -25,8 +25,6 @@ WORD_DATA_PATH = os.path.join(PROJECT_ROOT, "Niya", "Resources", "Data", "word_d
 CORPUS_URL = "https://raw.githubusercontent.com/mustafa0x/quran-morphology/master/quran-morphology.txt"
 CORPUS_CACHE = os.path.join(SCRIPT_DIR, "source", "quran-morphology.txt")
 
-MAX_REFS_PER_ROOT = 50
-
 # POS tags that appear as the first feature element
 POS_TAGS = {
     "N", "PN", "ADJ", "V", "P", "CONJ", "DET", "REL", "DEM", "PRON",
@@ -216,7 +214,7 @@ def parse_corpus(corpus_path):
 
 
 def build_root_index(words):
-    """Build root -> {freq, refs} index."""
+    """Build root -> {freq, refs} index. Refs are deduplicated to unique (surah, verse) pairs."""
     root_refs = {}
 
     for key, word in words.items():
@@ -231,9 +229,16 @@ def build_root_index(words):
 
     roots = {}
     for root, refs in root_refs.items():
+        seen = set()
+        unique_refs = []
+        for ref in refs:
+            verse_key = (ref["s"], ref["v"])
+            if verse_key not in seen:
+                seen.add(verse_key)
+                unique_refs.append(ref)
         roots[root] = {
             "freq": len(refs),
-            "refs": refs[:MAX_REFS_PER_ROOT],
+            "refs": unique_refs,
         }
 
     return roots

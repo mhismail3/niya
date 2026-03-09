@@ -6,6 +6,7 @@ struct WordEtymologySheet: View {
     let word: QuranWord
     @Environment(MorphologyService.self) private var morphologyService
     @Environment(QuranDataService.self) private var dataService
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -28,7 +29,8 @@ struct WordEtymologySheet: View {
             ScrollView {
                 VStack(spacing: 24) {
                     headerSection(morph)
-                    rootSection(morph)
+                    rootAndLemmaRow(morph)
+                    meaningsSection(morph)
                     grammarSection(morph)
                     frequencySection(morph)
                     relatedVersesSection(morph)
@@ -59,50 +61,96 @@ struct WordEtymologySheet: View {
             Text(word.displayMeaning)
                 .font(.system(size: 14, design: .serif))
                 .foregroundStyle(Color.niyaSecondary.opacity(0.8))
-
-            if let lemma = morph.lemma {
-                HStack(spacing: 4) {
-                    Text("Lemma:")
-                        .font(.niyaCaption)
-                        .foregroundStyle(Color.niyaSecondary)
-                    Text(lemma)
-                        .font(.custom("NotoNaskhArabic", size: 18))
-                        .foregroundStyle(Color.niyaText)
-                }
-            }
         }
         .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
-    private func rootSection(_ morph: WordMorphology) -> some View {
+    private func rootAndLemmaRow(_ morph: WordMorphology) -> some View {
         if let root = morph.root {
-            VStack(spacing: 8) {
-                sectionHeader("Root", arabic: "الجذر")
-
-                HStack(spacing: 12) {
-                    ForEach(Array(root), id: \.self) { letter in
-                        Text(String(letter))
-                            .font(.custom("NotoNaskhArabic", size: 24))
-                            .foregroundStyle(Color.niyaText)
-                            .frame(width: 44, height: 44)
-                            .background(Color.niyaTeal.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                }
-
-                if let entry = morphologyService.rootEntry(root), let meaning = entry.meaning {
-                    Text(meaning)
-                        .font(.system(size: 14, design: .serif))
-                        .foregroundStyle(Color.niyaSecondary)
+            HStack(spacing: 12) {
+                rootCard(root)
+                if let lemma = morph.lemma {
+                    lemmaCard(lemma)
                 }
             }
+        } else if let lemma = morph.lemma {
+            HStack(spacing: 12) {
+                particleMessage
+                lemmaCard(lemma)
+            }
         } else {
-            VStack(spacing: 4) {
-                sectionHeader("Root", arabic: "الجذر")
-                Text("This word is a particle (حرف) and has no root.")
-                    .font(.niyaSubheadline)
-                    .foregroundStyle(Color.niyaSecondary)
+            particleMessage
+        }
+    }
+
+    private func rootCard(_ root: String) -> some View {
+        VStack(spacing: 6) {
+            Text("Root")
+                .font(.niyaCaption)
+                .foregroundStyle(Color.niyaSecondary)
+
+            Text(root)
+                .font(.custom("NotoNaskhArabic", size: 24))
+                .foregroundStyle(Color.niyaText)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 8)
+        .background(Color.niyaTeal.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func lemmaCard(_ lemma: String) -> some View {
+        VStack(spacing: 6) {
+            Text("Lemma")
+                .font(.niyaCaption)
+                .foregroundStyle(Color.niyaSecondary)
+
+            Text(lemma)
+                .font(.custom("NotoNaskhArabic", size: 24))
+                .foregroundStyle(Color.niyaText)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 8)
+        .background(Color.niyaTeal.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private var particleMessage: some View {
+        Text("This word is a particle (حرف) and has no root.")
+            .font(.niyaSubheadline)
+            .foregroundStyle(Color.niyaSecondary)
+            .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func meaningsSection(_ morph: WordMorphology) -> some View {
+        if let root = morph.root, let meanings = morphologyService.rootMeanings(root), !meanings.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                sectionHeader("Possible Meanings", arabic: "المعاني المحتملة")
+
+                VStack(spacing: 0) {
+                    ForEach(Array(meanings.enumerated()), id: \.offset) { _, meaning in
+                        HStack(alignment: .top) {
+                            Text(meaning.pos)
+                                .font(.niyaCaption)
+                                .foregroundStyle(Color.niyaTeal)
+                                .frame(width: 90, alignment: .leading)
+
+                            Text(meaning.def)
+                                .font(.niyaSubheadline)
+                                .foregroundStyle(Color.niyaText)
+
+                            Spacer()
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                    }
+                }
+                .background(Color.niyaSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             }
         }
     }
@@ -162,14 +210,14 @@ struct WordEtymologySheet: View {
     @ViewBuilder
     private func frequencySection(_ morph: WordMorphology) -> some View {
         if let root = morph.root, let entry = morphologyService.rootEntry(root) {
-            VStack(spacing: 4) {
+            VStack(alignment: .leading, spacing: 4) {
                 sectionHeader("Frequency", arabic: "التكرار")
                 HStack(spacing: 4) {
                     Text("This root appears")
                         .font(.niyaSubheadline)
                         .foregroundStyle(Color.niyaSecondary)
                     Text("\(entry.freq)")
-                        .font(.system(.title3, design: .rounded).bold())
+                        .font(.niyaSubheadline)
                         .foregroundStyle(Color.niyaTeal)
                     Text("times in the Quran")
                         .font(.niyaSubheadline)
@@ -185,21 +233,57 @@ struct WordEtymologySheet: View {
             VStack(alignment: .leading, spacing: 8) {
                 sectionHeader("Other Verses with This Root", arabic: "آيات أخرى بنفس الجذر")
 
-                let refs = Array(entry.refs.prefix(20))
-                ForEach(refs, id: \.self) { ref in
-                    let surahName = dataService.surahs.first(where: { $0.id == ref.s })?.transliteration ?? "Surah \(ref.s)"
-                    HStack {
-                        Text(surahName)
+                let grouped = groupedRefs(entry.refs)
+                ForEach(grouped, id: \.surahId) { group in
+                    HStack(alignment: .top) {
+                        Text(group.name)
                             .font(.niyaSubheadline)
                             .foregroundStyle(Color.niyaText)
-                        Text("Verse \(ref.v)")
-                            .font(.niyaCaption)
-                            .foregroundStyle(Color.niyaSecondary)
-                        Spacer()
+                            .frame(width: 110, alignment: .leading)
+
+                        FlowLayout(spacing: 6) {
+                            ForEach(group.ayahs, id: \.self) { ayahId in
+                                Button {
+                                    coordinator.navigateToAyah(surahId: group.surahId, ayahId: ayahId)
+                                    dismiss()
+                                } label: {
+                                    Text("\(ayahId)")
+                                        .font(.niyaCaption)
+                                        .foregroundStyle(Color.niyaTeal)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 3)
+                                        .background(Color.niyaTeal.opacity(0.1))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
                     }
                     .padding(.vertical, 2)
                 }
             }
+        }
+    }
+
+    private struct SurahRefGroup {
+        let surahId: Int
+        let name: String
+        let ayahs: [Int]
+    }
+
+    private func groupedRefs(_ refs: [MorphRef]) -> [SurahRefGroup] {
+        var order: [Int] = []
+        var map: [Int: [Int]] = [:]
+        for ref in refs {
+            if map[ref.s] == nil {
+                order.append(ref.s)
+                map[ref.s] = []
+            }
+            map[ref.s]!.append(ref.v)
+        }
+        return order.map { sid in
+            let name = dataService.surahs.first(where: { $0.id == sid })?.transliteration ?? "Surah \(sid)"
+            let ayahs = map[sid]!.sorted()
+            return SurahRefGroup(surahId: sid, name: name, ayahs: ayahs)
         }
     }
 
