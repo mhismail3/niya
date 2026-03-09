@@ -26,7 +26,7 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .hamzatWasl: "Hamzat al-Wasl"
         case .lamShamsiyyah: "Lam Shamsiyyah"
         case .maddNormal: "Madd (Natural)"
-        case .maddPermissible: "Madd Munfasil (Permitted)"
+        case .maddPermissible: "Permissible Prolongation"
         case .maddObligatory: "Madd Muttasil (Obligatory)"
         case .maddNecessary: "Madd Lazim (Necessary)"
         case .ghunnah: "Ghunnah (Nasalization)"

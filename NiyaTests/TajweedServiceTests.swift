@@ -6,82 +6,55 @@ import Testing
 @Suite("TajweedService")
 struct TajweedServiceTests {
 
-    // MARK: - Markup Parsing
-
-    @Test func singleTagMarkup() {
+    @Test func allSurahsLoad() {
         let service = TajweedService()
-        let result = service.parseTajweedMarkup("[h[بِسْمِ]", ayahId: 1)
-        #expect(result.text == "بِسْمِ")
-        #expect(result.annotations.count == 1)
-        #expect(result.annotations[0].rule == .hamzatWasl)
-        #expect(result.annotations[0].start == 0)
-        // end uses String.count (grapheme clusters): بِسْمِ = 3 clusters
-        #expect(result.annotations[0].end == "بِسْمِ".count)
+        for surahId in 1...114 {
+            let verse = service.verse(surahId: surahId, ayahId: 1)
+            #expect(verse != nil, "Surah \(surahId) ayah 1 should exist")
+            #expect(!verse!.text.isEmpty, "Surah \(surahId) ayah 1 text should not be empty")
+        }
     }
 
-    @Test func multipleTagsMarkup() {
+    @Test func annotationRangesWithinBounds() {
         let service = TajweedService()
-        let result = service.parseTajweedMarkup("[h[بِسْ]مِ [g[ٱللَّهِ]", ayahId: 1)
-        #expect(result.text == "بِسْمِ ٱللَّهِ")
-        #expect(result.annotations.count == 2)
-        #expect(result.annotations[0].rule == .hamzatWasl)
-        #expect(result.annotations[0].start == 0)
-        #expect(result.annotations[0].end == "بِسْ".count)
-        #expect(result.annotations[1].rule == .ghunnah)
+        for surahId in 1...114 {
+            var ayahId = 1
+            while let verse = service.verse(surahId: surahId, ayahId: ayahId) {
+                let textLen = verse.text.count
+                for ann in verse.annotations {
+                    #expect(ann.start >= 0, "\(surahId):\(ayahId) start < 0")
+                    #expect(ann.end <= textLen, "\(surahId):\(ayahId) end \(ann.end) > textLen \(textLen)")
+                    #expect(ann.start < ann.end, "\(surahId):\(ayahId) start >= end")
+                }
+                ayahId += 1
+            }
+        }
     }
 
-    @Test func plainTextNoTags() {
+    @Test func knownVerseHasExpectedRules() {
         let service = TajweedService()
-        let result = service.parseTajweedMarkup("بِسْمِ ٱللَّهِ", ayahId: 1)
-        #expect(result.text == "بِسْمِ ٱللَّهِ")
-        #expect(result.annotations.isEmpty)
+        // Al-Fatiha ayah 1 should have annotations
+        let verse = service.verse(surahId: 1, ayahId: 1)!
+        #expect(!verse.annotations.isEmpty)
+        let rules = Set(verse.annotations.map(\.rule))
+        #expect(rules.contains(.hamzatWasl))
     }
 
-    @Test func bomPrefixStripped() {
+    @Test func clearCacheAndReload() {
         let service = TajweedService()
-        let result = service.parseTajweedMarkup("\u{FEFF}[h[بِسْمِ]", ayahId: 1)
-        #expect(!result.text.hasPrefix("\u{FEFF}"))
-        #expect(result.text == "بِسْمِ")
-        #expect(result.annotations.count == 1)
-        #expect(result.annotations[0].start == 0)
+        _ = service.verse(surahId: 1, ayahId: 1)
+        service.clearCache()
+        // After clear, next call re-loads from bundle
+        let verse = service.verse(surahId: 1, ayahId: 1)
+        #expect(verse != nil)
     }
 
-    @Test func malformedUnclosedBrackets() {
+    @Test func invalidSurahReturnsNil() {
         let service = TajweedService()
-        let result = service.parseTajweedMarkup("[h[بِسْمِ", ayahId: 1)
-        #expect(!result.text.isEmpty)
+        #expect(service.verse(surahId: 999, ayahId: 1) == nil)
     }
 
-    @Test func emptyString() {
-        let service = TajweedService()
-        let result = service.parseTajweedMarkup("", ayahId: 1)
-        #expect(result.text.isEmpty)
-        #expect(result.annotations.isEmpty)
-    }
-
-    // MARK: - Cache State
-
-    @Test func verseReturnsNilBeforeLoad() {
-        let service = TajweedService()
-        #expect(service.verse(surahId: 1, ayahId: 1) == nil)
-    }
-
-    @Test func verseReturnsAfterCacheParsing() {
-        let service = TajweedService()
-        let parsed = service.parseTajweedMarkup("[q[قُلْ]", ayahId: 3)
-        #expect(parsed.annotations.count == 1)
-        #expect(parsed.annotations[0].rule == .qalqalah)
-        #expect(parsed.text == "قُلْ")
-    }
-
-    // MARK: - Loading Guards
-
-    @Test func fetchWithCachedDataIsNoop() {
-        let service = TajweedService()
-        // First call triggers loading
-        service.fetch(surahId: 999)
-        // Second call should be a no-op (loadingSurahs already contains 999)
-        service.fetch(surahId: 999)
-        // No crash or assertion error = success
+    @Test func unsupportedQuranMarksNonEmpty() {
+        #expect(!TajweedService.unsupportedQuranMarks.isEmpty)
     }
 }

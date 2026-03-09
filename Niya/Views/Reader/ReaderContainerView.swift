@@ -4,7 +4,6 @@ import TipKit
 struct ReaderContainerView: View {
     @State var vm: ReaderViewModel
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
-    @Environment(TajweedService.self) private var tajweedService
     @Environment(WordDataService.self) private var wordDataService
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
@@ -133,9 +132,6 @@ struct ReaderContainerView: View {
             vm.load()
             audioPlayerVM.autoAdvance = followAlongAutoAdvance
             audioPlayerVM.loopCount = followAlongLoopCount
-            if showTajweed && storedScript == .hafs {
-                tajweedService.fetch(surahId: vm.surah.id)
-            }
             if followAlong && storedScript == .hafs {
                 Task { await wordDataService.load(reciter: selectedReciter) }
             }
@@ -153,11 +149,6 @@ struct ReaderContainerView: View {
         }
         .onChange(of: vm.mode) { _, newMode in
             storedMode = newMode
-        }
-        .onChange(of: showTajweed) { _, on in
-            if on && storedScript == .hafs {
-                tajweedService.fetch(surahId: vm.surah.id)
-            }
         }
         .onChange(of: followAlongAutoAdvance) { _, on in
             followAlongVM.autoAdvance = on

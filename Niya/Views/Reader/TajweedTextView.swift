@@ -90,15 +90,24 @@ struct TajweedTextView: UIViewRepresentable {
 
         for si in 0..<srcChars.count {
             if let srcKey = alignmentKey(srcChars[si]) {
+                let savedTi = ti
+                var found = false
+                var skippedLetters = 0
                 while ti < tgtChars.count {
-                    if let tgtKey = alignmentKey(tgtChars[ti]), tgtKey == srcKey {
-                        posMap[si] = ti
-                        ti += 1
-                        break
+                    if let tgtKey = alignmentKey(tgtChars[ti]) {
+                        if tgtKey == srcKey {
+                            posMap[si] = ti
+                            ti += 1
+                            found = true
+                            break
+                        }
+                        skippedLetters += 1
+                        if skippedLetters > 2 { break }
                     }
                     ti += 1
                 }
-                if posMap[si] == tgtChars.count {
+                if !found {
+                    ti = savedTi
                     posMap[si] = min(ti, tgtChars.count)
                 }
             } else {
@@ -119,11 +128,16 @@ struct TajweedTextView: UIViewRepresentable {
     }
 
     /// Main Arabic letter of a grapheme cluster, excluding decorative Tatweel.
+    /// Normalizes hamza carriers for cross-edition alignment (Tanzil vs Hafs).
     private static func alignmentKey(_ c: Character) -> UInt32? {
         if c == " " { return 0x0020 }
         for scalar in c.unicodeScalars {
             if scalar.properties.generalCategory == .otherLetter && scalar.value != 0x0640 {
-                return scalar.value == 0x0649 ? 0x064A : scalar.value
+                switch scalar.value {
+                case 0x0623, 0x0625: return 0x0621 // alef+hamza above/below → hamza
+                case 0x0649: return 0x064A // alef maksura → yeh
+                default: return scalar.value
+                }
             }
         }
         return nil

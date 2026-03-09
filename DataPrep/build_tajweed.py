@@ -19,6 +19,7 @@ This script strips the basmala prefix and adjusts annotation indices accordingly
 import json
 import os
 import sys
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -28,6 +29,28 @@ OUTPUT_PATH = SCRIPT_DIR.parent / "Niya" / "Resources" / "Data" / "tajweed_hafs.
 
 TANZIL_PATH = SOURCE_DIR / "tanzil_uthmani.txt"
 TAJWEED_PATH = SOURCE_DIR / "tajweed.hafs.uthmani-pause-sajdah.json"
+
+# cpfair source names → TajweedRule rawValues (single-letter tags)
+RULE_MAP = {
+    "hamzat_wasl": "h",
+    "lam_shamsiyyah": "l",
+    "madd_2": "n",
+    "madd_munfasil": "p",
+    "madd_246": "p",
+    "madd_muttasil": "o",
+    "madd_6": "m",
+    "ghunnah": "g",
+    "qalqalah": "q",
+    "silent": "s",
+    "ikhfa": "f",
+    "idghaam_ghunnah": "a",
+    "idghaam_no_ghunnah": "u",
+    "iqlab": "i",
+    "ikhfa_shafawi": "c",
+    "idghaam_mutajanisayn": "d",
+    "idghaam_shafawi": "w",
+    "idghaam_mutaqaribayn": "b",
+}
 
 
 def load_tanzil_text():
@@ -141,9 +164,53 @@ def adjust_annotations(annotations, chars_removed):
     return adjusted
 
 
+def grapheme_len(text):
+    """Count grapheme clusters (matching Swift String.count)."""
+    count = 0
+    for ch in text:
+        if not unicodedata.category(ch).startswith("M"):
+            count += 1
+    return count
+
+
+def to_grapheme_indices(text, annotations):
+    """Convert codepoint-based indices to grapheme cluster indices.
+
+    Swift String.count uses Extended Grapheme Clusters. Arabic combining
+    diacritics (Unicode category M) merge with the preceding base character.
+    """
+    # Build codepoint index → grapheme cluster index mapping
+    cp_to_gc = []
+    gc_idx = -1
+    for ch in text:
+        if not unicodedata.category(ch).startswith("M"):
+            gc_idx += 1
+        cp_to_gc.append(gc_idx)
+    total_gc = gc_idx + 1
+
+    result = []
+    for ann in annotations:
+        start_cp = ann["start"]
+        end_cp = ann["end"]
+
+        gc_start = cp_to_gc[start_cp] if start_cp < len(cp_to_gc) else total_gc
+        # end is exclusive: map the last included codepoint, then +1
+        if end_cp > 0 and end_cp <= len(cp_to_gc):
+            gc_end = cp_to_gc[end_cp - 1] + 1
+        else:
+            gc_end = total_gc
+
+        result.append({
+            "rule": ann["rule"],
+            "start": gc_start,
+            "end": gc_end,
+        })
+    return result
+
+
 def validate_annotations(surah, ayah, text, annotations):
-    """Validate all annotation ranges are within text bounds."""
-    text_len = len(text)
+    """Validate all annotation ranges are within text bounds (grapheme clusters)."""
+    text_len = grapheme_len(text)
     errors = []
     for ann in annotations:
         if ann["start"] < 0:
@@ -187,6 +254,14 @@ def build():
             annotations = adjust_annotations(annotations, chars_removed)
             dropped = original_len - len(annotations)
             total_dropped += dropped
+
+        # Map cpfair rule names to TajweedRule rawValues
+        for ann in annotations:
+            ann["rule"] = RULE_MAP.get(ann["rule"], ann["rule"])
+
+        # Convert codepoint indices to grapheme cluster indices (Swift String.count)
+        if annotations:
+            annotations = to_grapheme_indices(text, annotations)
 
         # Validate
         errors = validate_annotations(surah, ayah, text, annotations)
