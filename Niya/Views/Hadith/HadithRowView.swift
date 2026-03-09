@@ -60,7 +60,7 @@ struct HadithRowView: View {
                 .font(.system(size: 36))
                 .foregroundStyle(Color.niyaTeal.opacity(0.15))
             Text("\(hadith.id)")
-                .font(.system(.caption2, design: .rounded, weight: .semibold))
+                .font(.system(size: hadith.id > 999 ? 10 : 11, weight: .semibold, design: .rounded))
                 .foregroundStyle(Color.niyaTeal)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
