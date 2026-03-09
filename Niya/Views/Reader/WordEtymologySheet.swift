@@ -133,7 +133,7 @@ struct WordEtymologySheet: View {
 
                 VStack(spacing: 0) {
                     ForEach(Array(meanings.enumerated()), id: \.offset) { _, meaning in
-                        HStack(alignment: .top) {
+                        HStack(alignment: .center) {
                             Text(meaning.pos)
                                 .font(.niyaCaption)
                                 .foregroundStyle(Color.niyaTeal)
