@@ -21,6 +21,7 @@ struct VerseRowView: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(\.highlightedAyahId) private var highlightedAyahId
+    @Environment(\.showTajweedGuide) private var showTajweedGuide
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
@@ -233,6 +234,9 @@ struct VerseRowView: View {
             Text(rule.arabicName)
                 .font(.niyaCaption)
                 .foregroundStyle(Color.niyaSecondary)
+            Image(systemName: "chevron.right")
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(Color.niyaSecondary)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
@@ -240,6 +244,11 @@ struct VerseRowView: View {
         .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
         .fixedSize()
         .transition(.opacity.combined(with: .scale(scale: 0.8)))
+        .onTapGesture {
+            dismissTask?.cancel()
+            withAnimation(.easeOut(duration: 0.3)) { activeTap = nil }
+            showTajweedGuide()
+        }
     }
 
     private func translationBlock(name: String, text: String, isRTL: Bool) -> some View {

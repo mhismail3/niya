@@ -65,6 +65,45 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         }
     }
 
+    var description: String {
+        switch self {
+        case .hamzatWasl:
+            "A connecting hamza at the start of a word that is pronounced when beginning from that word, but silent when continuing from the previous word without pause."
+        case .lamShamsiyyah:
+            "The Lam of the definite article (ال) is silent and the following letter is doubled when it precedes one of the 14 sun letters (ت ث د ذ ر ز س ش ص ض ط ظ ل ن)."
+        case .maddNormal:
+            "A natural prolongation of two counts that occurs when an alif follows a fatha, a waw follows a damma, or a ya follows a kasra with no hamza or sukun after it."
+        case .maddPermissible:
+            "A prolongation of 4–5 counts that occurs when a madd letter is followed by a hamza in the next word, allowing the reader a range of extension."
+        case .maddObligatory:
+            "A prolongation of 4–5 counts that is obligatory when a madd letter is followed by a hamza within the same word."
+        case .maddNecessary:
+            "A prolongation of 6 counts that occurs when a madd letter is followed by a sukun or shaddah in the same word."
+        case .ghunnah:
+            "A nasalized sound held for two counts, produced through the nasal passage when pronouncing a doubled (mushaddad) nun or mim."
+        case .qalqalah:
+            "An echoing bounce produced when one of the five qalqalah letters (ق ط ب ج د) carries a sukun, created by slightly separating the articulation point."
+        case .silent:
+            "A letter that is written in the mushaf but not pronounced during recitation, such as certain instances of alif, waw, or ya."
+        case .ikhfa:
+            "A concealed pronunciation of noon sakinah or tanween when followed by one of 15 ikhfa letters, producing a sound between izhar and idgham with ghunnah held for two counts."
+        case .idghamGhunnah:
+            "Noon sakinah or tanween merges into the following letter with a nasalized ghunnah of two counts when followed by ya, nun, mim, or waw (يَنْمُو)."
+        case .idghamNoGhunnah:
+            "Noon sakinah or tanween merges completely into the following letter without any nasal sound when followed by lam or ra."
+        case .iqlab:
+            "Noon sakinah or tanween is converted into a mim sound with ghunnah when followed by the letter ba (ب), while maintaining lip closure."
+        case .ikhfaShafawi:
+            "Mim sakinah is concealed with a light ghunnah of two counts when followed by the letter ba (ب), produced with a slight lip closure."
+        case .idghamMutajanisayn:
+            "A letter merges into the following letter when both share the same articulation point but differ in characteristics, such as ta into dal or tha into dhal."
+        case .idghamShafawi:
+            "Mim sakinah merges fully into a following mim with ghunnah of two counts, as both letters share the lip articulation point."
+        case .idghamMutaqaribayn:
+            "A letter merges into the following letter when their articulation points are close to each other, such as lam into ra or qaf into kaf."
+        }
+    }
+
     var color: Color {
         switch self {
         case .hamzatWasl: Color(.hamzatWasl)

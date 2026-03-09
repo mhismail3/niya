@@ -41,6 +41,10 @@ private struct HighlightedAyahKey: EnvironmentKey {
     static let defaultValue: Int? = nil
 }
 
+private struct ShowTajweedGuideKey: EnvironmentKey {
+    nonisolated(unsafe) static let defaultValue: () -> Void = {}
+}
+
 extension EnvironmentValues {
     var stores: StoreContainer {
         get { self[StoreContainerKey.self] }
@@ -50,5 +54,10 @@ extension EnvironmentValues {
     var highlightedAyahId: Int? {
         get { self[HighlightedAyahKey.self] }
         set { self[HighlightedAyahKey.self] = newValue }
+    }
+
+    var showTajweedGuide: () -> Void {
+        get { self[ShowTajweedGuideKey.self] }
+        set { self[ShowTajweedGuideKey.self] = newValue }
     }
 }

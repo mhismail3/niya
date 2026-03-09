@@ -21,6 +21,7 @@ struct ReaderContainerView: View {
     @State private var showBookmarks = false
     @State private var showGoToAyah = false
     @State private var goToAyahText = ""
+    @State private var showTajweedGuide = false
 
     private let bookmarkToolbarTip = BookmarkToolbarTip()
     private let optionsMenuTip = OptionsMenuTip()
@@ -38,6 +39,7 @@ struct ReaderContainerView: View {
             }
         }
         .environment(\.highlightedAyahId, vm.highlightedAyahId)
+        .environment(\.showTajweedGuide) { showTajweedGuide = true }
         .safeAreaInset(edge: .bottom) {
             if autoScrollVM.isEnabled || audioPlayerVM.hasActiveSession {
                 Color.clear.frame(height: 80)
@@ -93,6 +95,11 @@ struct ReaderContainerView: View {
                             systemImage: "scroll"
                         )
                     }
+                    if showTajweed && storedScript == .hafs {
+                        Button { showTajweedGuide = true } label: {
+                            Label("Tajweed Guide", systemImage: "paintpalette")
+                        }
+                    }
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
@@ -112,6 +119,11 @@ struct ReaderContainerView: View {
         .sheet(isPresented: $showSettings) {
             ReaderSettingsSheet(vm: vm)
                 .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+        }
+        .sheet(isPresented: $showTajweedGuide) {
+            TajweedGuideView()
+                .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
         }
         .alert("Go to Ayah", isPresented: $showGoToAyah) {

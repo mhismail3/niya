@@ -130,6 +130,7 @@ SWIFT_FILES = [
     "Niya/Views/Reader/VerseCellView.swift",
     "Niya/Views/Reader/TranslationPickerView.swift",
     "Niya/Views/Reader/TafsirSheetView.swift",
+    "Niya/Views/Reader/TajweedGuideView.swift",
     "Niya/Views/Reader/AutoScrollBar.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
@@ -875,6 +876,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/VerseCellView.swift"], "VerseCellView.swift"),
         (swift_file_ids["Niya/Views/Reader/TranslationPickerView.swift"], "TranslationPickerView.swift"),
         (swift_file_ids["Niya/Views/Reader/TafsirSheetView.swift"], "TafsirSheetView.swift"),
+        (swift_file_ids["Niya/Views/Reader/TajweedGuideView.swift"], "TajweedGuideView.swift"),
         (swift_file_ids["Niya/Views/Reader/AutoScrollBar.swift"], "AutoScrollBar.swift"),
     ], path_str="Reader")
 
