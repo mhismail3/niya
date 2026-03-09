@@ -17,6 +17,7 @@ struct ReaderContainerView: View {
     @AppStorage(StorageKey.readerMode) private var storedMode: ReaderMode = .scroll
     @AppStorage(StorageKey.selectedReciter) private var selectedReciter: Reciter = .alAfasy
     @AppStorage(StorageKey.selectedTranslations) private var selectedTranslationIds: String = "en_sahih"
+    @AppStorage(StorageKey.showJuzProgress) private var showJuzProgress: Bool = true
     @State private var showSettings = false
     @State private var showBookmarks = false
     @State private var showGoToAyah = false
@@ -40,6 +41,13 @@ struct ReaderContainerView: View {
         }
         .environment(\.highlightedAyahId, vm.highlightedAyahId)
         .environment(\.showTajweedGuide) { showTajweedGuide = true }
+        .overlay(alignment: .topTrailing) {
+            if showJuzProgress {
+                JuzProgressAccessory(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
+                    .padding(.trailing, 16)
+                    .padding(.top, 4)
+            }
+        }
         .safeAreaInset(edge: .bottom) {
             if autoScrollVM.isEnabled || audioPlayerVM.hasActiveSession {
                 Color.clear.frame(height: 80)
@@ -140,6 +148,7 @@ struct ReaderContainerView: View {
         .background(Color.niyaBackground)
         .onAppear {
             coordinator.isReaderVisible = true
+            coordinator.updateReadingPosition(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
             vm.mode = storedMode
             vm.load()
             audioPlayerVM.autoAdvance = followAlongAutoAdvance
@@ -179,8 +188,12 @@ struct ReaderContainerView: View {
         .onChange(of: selectedTranslationIds) { _, _ in
             vm.reloadTranslation()
         }
+        .onChange(of: vm.visibleAyahId) { _, newAyah in
+            coordinator.updateReadingPosition(surahId: vm.surah.id, ayahId: newAyah)
+        }
         .onDisappear {
             coordinator.isReaderVisible = false
+            coordinator.clearReadingPosition()
             followAlongVM.pauseTracking()
             autoScrollVM.stop()
             guard vm.hasUserScrolled else { return }

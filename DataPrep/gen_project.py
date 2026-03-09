@@ -77,6 +77,7 @@ SWIFT_FILES = [
     "Niya/Models/HijriMonth.swift",
     "Niya/Models/AppError.swift",
     "Niya/Models/Tab.swift",
+    "Niya/Models/Juz.swift",
     # Protocols
     "Niya/Protocols/AudioPlaying.swift",
     "Niya/Protocols/QuranDataProviding.swift",
@@ -132,6 +133,7 @@ SWIFT_FILES = [
     "Niya/Views/Reader/TafsirSheetView.swift",
     "Niya/Views/Reader/TajweedGuideView.swift",
     "Niya/Views/Reader/AutoScrollBar.swift",
+    "Niya/Views/Reader/JuzProgressAccessory.swift",
     # Views/Audio
     "Niya/Views/Audio/AudioPlayerBar.swift",
     # Views/Home
@@ -304,6 +306,7 @@ TEST_FILES = [
     "NiyaTests/BookmarkColorTests.swift",
     "NiyaTests/IndoPakDataIntegrityTests.swift",
     "NiyaTests/QuranScriptTests.swift",
+    "NiyaTests/JuzTests.swift",
 ]
 
 # Widget extension files
@@ -797,6 +800,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Models/HijriMonth.swift"], "HijriMonth.swift"),
         (swift_file_ids["Niya/Models/AppError.swift"], "AppError.swift"),
         (swift_file_ids["Niya/Models/Tab.swift"], "Tab.swift"),
+        (swift_file_ids["Niya/Models/Juz.swift"], "Juz.swift"),
     ], path_str="Models")
 
     # Protocols
@@ -881,6 +885,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/TafsirSheetView.swift"], "TafsirSheetView.swift"),
         (swift_file_ids["Niya/Views/Reader/TajweedGuideView.swift"], "TajweedGuideView.swift"),
         (swift_file_ids["Niya/Views/Reader/AutoScrollBar.swift"], "AutoScrollBar.swift"),
+        (swift_file_ids["Niya/Views/Reader/JuzProgressAccessory.swift"], "JuzProgressAccessory.swift"),
     ], path_str="Reader")
 
     # Views/Audio

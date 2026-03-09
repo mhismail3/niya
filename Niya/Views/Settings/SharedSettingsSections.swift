@@ -6,6 +6,7 @@ struct ReadingSettingsSection: View {
     @Binding var script: QuranScript
     @Binding var showTranslation: Bool
     @Binding var showTajweed: Bool
+    @Binding var showJuzProgress: Bool
     @Environment(QuranDataService.self) private var dataService
 
     var body: some View {
@@ -56,6 +57,8 @@ struct ReadingSettingsSection: View {
                     .font(.caption)
                     .foregroundStyle(Color.niyaSecondary)
             }
+            Toggle("Juz Progress", isOn: $showJuzProgress)
+                .tint(Color.niyaTeal)
         }
     }
 

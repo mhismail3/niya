@@ -30,6 +30,18 @@ final class NavigationCoordinator {
     var pendingHadithDestination: HadithNavDestination?
     var pendingDuaDestination: DuaNavDestination?
     var showSalahSheet = false
+    var currentReadingSurahId: Int?
+    var currentReadingAyahId: Int?
+
+    func updateReadingPosition(surahId: Int, ayahId: Int) {
+        currentReadingSurahId = surahId
+        currentReadingAyahId = ayahId
+    }
+
+    func clearReadingPosition() {
+        currentReadingSurahId = nil
+        currentReadingAyahId = nil
+    }
 
     func navigateToAyah(surahId: Int, ayahId: Int) {
         pendingQuranDestination = QuranNavDestination(surahId: surahId, ayahId: ayahId)

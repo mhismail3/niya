@@ -15,12 +15,13 @@ struct SettingsView: View {
     @AppStorage(StorageKey.hadithArabicFontSize) private var hadithArabicFontSize: Double = 22
     @AppStorage(StorageKey.appearanceMode) private var appearanceMode: Int = 0
     @AppStorage(StorageKey.selectedReciter) private var selectedReciter: Reciter = .alAfasy
+    @AppStorage(StorageKey.showJuzProgress) private var showJuzProgress: Bool = true
     @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications: Bool = false
 
     var body: some View {
         NavigationStack {
             List {
-                ReadingSettingsSection(mode: $mode, script: $script, showTranslation: $showTranslation, showTajweed: $showTajweed)
+                ReadingSettingsSection(mode: $mode, script: $script, showTranslation: $showTranslation, showTajweed: $showTajweed, showJuzProgress: $showJuzProgress)
                 WordByWordSettingsSection(followAlong: $followAlong, followAlongTransliteration: $followAlongTransliteration, followAlongMeaning: $followAlongMeaning, script: script)
                 FontSizeSettingsSection(arabicFontSize: $arabicFontSize, translationFontSize: $translationFontSize)
                 HadithFontSizeSection(hadithArabicFontSize: $hadithArabicFontSize)
