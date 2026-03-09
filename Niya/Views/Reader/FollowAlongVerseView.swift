@@ -11,6 +11,7 @@ struct FollowAlongVerseView: View {
     let onBookmark: () -> Void
     let onSetBookmarkColor: (BookmarkColor?) -> Void
     let onTafsir: () -> Void
+    let onWordLongPress: (QuranWord) -> Void
 
     private let playVerseTip = PlayVerseTip()
     private let bookmarkVerseTip = BookmarkVerseTip()
@@ -50,7 +51,8 @@ struct FollowAlongVerseView: View {
                         highlightState: followAlongVM.highlightState(for: word, verseId: verse.id),
                         showTransliteration: showTransliteration,
                         showMeaning: showMeaning,
-                        onTap: { if !followAlongVM.isPlaying { followAlongVM.tapWord(word, verseId: verse.id) } }
+                        onTap: { if !followAlongVM.isPlaying { followAlongVM.tapWord(word, verseId: verse.id) } },
+                        onLongPress: { onWordLongPress(word) }
                     )
                 }
             }

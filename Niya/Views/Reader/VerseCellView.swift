@@ -12,6 +12,7 @@ struct VerseCellView: View {
     let onBookmark: () -> Void
     let onSetBookmarkColor: (BookmarkColor?) -> Void
     let onTafsir: () -> Void
+    let onWordLongPress: (QuranWord) -> Void
 
     @AppStorage(StorageKey.followAlong) private var followAlong: Bool = false
     @Environment(WordDataService.self) private var wordDataService
@@ -27,7 +28,8 @@ struct VerseCellView: View {
                 isFirstVerse: isFirstVerse,
                 onBookmark: onBookmark,
                 onSetBookmarkColor: onSetBookmarkColor,
-                onTafsir: onTafsir
+                onTafsir: onTafsir,
+                onWordLongPress: onWordLongPress
             )
         } else {
             VerseRowView(

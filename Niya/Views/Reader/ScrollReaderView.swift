@@ -9,6 +9,7 @@ struct ScrollReaderView: View {
     @Environment(\.stores) private var stores
     @Query private var bookmarks: [QuranBookmark]
     @State private var tafsirAyahId: IdentifiableInt?
+    @State private var etymologyWord: EtymologySheetItem?
     @State private var uiScrollView: UIScrollView?
     @State private var scrollTask: Task<Void, Never>?
     @State private var highlightTask: Task<Void, Never>?
@@ -56,7 +57,10 @@ struct ScrollReaderView: View {
                             },
                             onBookmark: { toggleBookmark(verse.id) },
                             onSetBookmarkColor: { color in setBookmarkColor(verse.id, color: color) },
-                            onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
+                            onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) },
+                            onWordLongPress: { word in
+                                etymologyWord = EtymologySheetItem(surahId: vm.surah.id, ayahId: verse.id, word: word)
+                            }
                         )
                         .id(verse.id)
                         .onAppear { vm.updateVisibleAyah(verse.id) }
@@ -112,6 +116,11 @@ struct ScrollReaderView: View {
         .background(Color.niyaBackground)
         .sheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: vm.surah.id, ayahId: item.value, surahName: vm.surah.transliteration)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+        }
+        .sheet(item: $etymologyWord) { item in
+            WordEtymologySheet(surahId: item.surahId, ayahId: item.ayahId, word: item.word)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
@@ -207,6 +216,13 @@ struct IdentifiableInt: Identifiable {
     let value: Int
     var id: Int { value }
     init(_ value: Int) { self.value = value }
+}
+
+struct EtymologySheetItem: Identifiable {
+    let surahId: Int
+    let ayahId: Int
+    let word: QuranWord
+    var id: String { "\(surahId):\(ayahId):\(word.p)" }
 }
 
 private extension UIView {

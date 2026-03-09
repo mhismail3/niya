@@ -7,47 +7,52 @@ struct WordView: View {
     let showTransliteration: Bool
     let showMeaning: Bool
     let onTap: () -> Void
+    let onLongPress: () -> Void
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.followAlongTransliterationFontSize) private var transliterationSize: Double = 12
     @AppStorage(StorageKey.followAlongMeaningFontSize) private var meaningSize: Double = 11
 
     var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 4) {
-                GlyphBoundsText(
-                    text: word.t,
-                    fontName: QuranScript.hafs.fontName,
-                    fontSize: arabicFontSize,
-                    color: UIColor(arabicColor),
-                    isBold: highlightState == .current
-                )
+        VStack(spacing: 4) {
+            GlyphBoundsText(
+                text: word.t,
+                fontName: QuranScript.hafs.fontName,
+                fontSize: arabicFontSize,
+                color: UIColor(arabicColor),
+                isBold: highlightState == .current
+            )
 
-                if showTransliteration {
-                    Text(word.tr)
-                        .font(.system(size: transliterationSize, design: .serif))
-                        .foregroundStyle(secondaryColor)
-                        .accessibilityLabel("Transliteration: \(word.tr)")
-                }
-
-                if showMeaning {
-                    Text(word.displayMeaning)
-                        .font(.system(size: meaningSize, design: .serif))
-                        .foregroundStyle(secondaryColor)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .accessibilityLabel("Meaning: \(word.displayMeaning)")
-                }
+            if showTransliteration {
+                Text(word.tr)
+                    .font(.system(size: transliterationSize, design: .serif))
+                    .foregroundStyle(secondaryColor)
+                    .accessibilityLabel("Transliteration: \(word.tr)")
             }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
-            .background {
-                if highlightState == .current {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.niyaGold.opacity(0.15))
-                }
+
+            if showMeaning {
+                Text(word.displayMeaning)
+                    .font(.system(size: meaningSize, design: .serif))
+                    .foregroundStyle(secondaryColor)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .accessibilityLabel("Meaning: \(word.displayMeaning)")
             }
         }
-        .buttonStyle(.plain)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+        .background {
+            if highlightState == .current {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.niyaGold.opacity(0.15))
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture { onTap() }
+        .onLongPressGesture(minimumDuration: 0.5) {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            onLongPress()
+        }
+        .accessibilityAction(named: "Word Details") { onLongPress() }
         .animation(.easeInOut(duration: 0.15), value: highlightState)
     }
 

@@ -17,6 +17,7 @@ struct NiyaApp: App {
     @State private var followAlongVM: FollowAlongViewModel
     @State private var tajweedService = TajweedService()
     @State private var tafsirService = TafsirService()
+    @State private var morphologyService = MorphologyService()
     @State private var navigationCoordinator = NavigationCoordinator()
     @State private var locationService = LocationService()
     @State private var prayerTimeService = PrayerTimeService()
@@ -84,6 +85,7 @@ struct NiyaApp: App {
                 .environment(followAlongVM)
                 .environment(tajweedService)
                 .environment(tafsirService)
+                .environment(morphologyService)
                 .environment(navigationCoordinator)
                 .environment(locationService)
                 .environment(prayerTimeService)
@@ -129,6 +131,7 @@ struct NiyaApp: App {
                     dataService.clearCache()
                     tafsirService.clearCache()
                     tajweedService.clearCache()
+                    morphologyService.clearCache()
                 }
         }
     }

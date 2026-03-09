@@ -10,6 +10,7 @@ struct MushaPageView: View {
     @Environment(\.stores) private var stores
     @Query private var bookmarks: [QuranBookmark]
     @State private var tafsirAyahId: IdentifiableInt?
+    @State private var etymologyWord: EtymologySheetItem?
 
     let showBismillah: Bool
 
@@ -58,7 +59,10 @@ struct MushaPageView: View {
                         },
                         onBookmark: { toggleBookmark(verse.id) },
                         onSetBookmarkColor: { color in setBookmarkColor(verse.id, color: color) },
-                        onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) }
+                        onTafsir: { tafsirAyahId = IdentifiableInt(verse.id) },
+                        onWordLongPress: { word in
+                            etymologyWord = EtymologySheetItem(surahId: surahId, ayahId: verse.id, word: word)
+                        }
                     )
                     Divider()
                         .padding(.horizontal)
@@ -70,6 +74,11 @@ struct MushaPageView: View {
         .environment(\.layoutDirection, .leftToRight)
         .sheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: surahId, ayahId: item.value, surahName: surahName)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+        }
+        .sheet(item: $etymologyWord) { item in
+            WordEtymologySheet(surahId: item.surahId, ayahId: item.ayahId, word: item.word)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
