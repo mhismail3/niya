@@ -34,9 +34,6 @@ final class WordDataService: WordDataProviding {
             cache = result
             currentReciter = reciter
             isLoaded = true
-            if currentMeaningLanguage != nil {
-                applyMeaningsOverlay()
-            }
         } catch {
             AppLogger.data.error("WordDataService load failed: \(error)")
         }
@@ -44,14 +41,16 @@ final class WordDataService: WordDataProviding {
 
     func loadMeanings(language: String) async {
         if !Self.supportedMeaningLanguages.contains(language) {
-            clearMeanings()
+            meaningsOverlay = nil
+            currentMeaningLanguage = nil
             return
         }
         if language == currentMeaningLanguage { return }
 
         let filename = "word_meanings_\(language)"
         guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
-            clearMeanings()
+            meaningsOverlay = nil
+            currentMeaningLanguage = nil
             return
         }
         do {
@@ -61,51 +60,34 @@ final class WordDataService: WordDataProviding {
             }.value
             meaningsOverlay = overlay
             currentMeaningLanguage = language
-            applyMeaningsOverlay()
         } catch {
             AppLogger.data.error("WordDataService loadMeanings failed: \(error)")
-            clearMeanings()
+            meaningsOverlay = nil
+            currentMeaningLanguage = nil
         }
     }
 
     func words(surahId: Int, ayahId: Int) -> VerseWordData? {
-        cache?[surahId]?[ayahId]
+        guard let data = cache?[surahId]?[ayahId] else { return nil }
+        guard let overlay = meaningsOverlay else { return data }
+        var words = data.w
+        for i in words.indices {
+            words[i].meaning = overlay["\(surahId):\(ayahId):\(words[i].p)"]
+        }
+        return VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words)
     }
 
     func allVerseData(surahId: Int) -> [(ayahId: Int, data: VerseWordData)]? {
         guard let verses = cache?[surahId] else { return nil }
-        return verses.sorted(by: { $0.key < $1.key }).map { ($0.key, $0.value) }
-    }
-
-    private func clearMeanings() {
-        guard currentMeaningLanguage != nil else { return }
-        meaningsOverlay = nil
-        currentMeaningLanguage = nil
-        guard var cache else { return }
-        for (surahId, verses) in cache {
-            for (verseId, verseData) in verses {
-                var words = verseData.w
-                for i in words.indices {
-                    words[i].meaning = nil
-                }
-                cache[surahId]?[verseId] = VerseWordData(au: verseData.au, vs: verseData.vs, ve: verseData.ve, w: words)
-            }
+        guard let overlay = meaningsOverlay else {
+            return verses.sorted(by: { $0.key < $1.key }).map { ($0.key, $0.value) }
         }
-        self.cache = cache
-    }
-
-    private func applyMeaningsOverlay() {
-        guard let overlay = meaningsOverlay, var cache else { return }
-        for (surahId, verses) in cache {
-            for (verseId, verseData) in verses {
-                var words = verseData.w
-                for i in words.indices {
-                    let key = "\(surahId):\(verseId):\(words[i].p)"
-                    words[i].meaning = overlay[key]
-                }
-                cache[surahId]?[verseId] = VerseWordData(au: verseData.au, vs: verseData.vs, ve: verseData.ve, w: words)
+        return verses.sorted(by: { $0.key < $1.key }).map { (ayahId, data) in
+            var words = data.w
+            for i in words.indices {
+                words[i].meaning = overlay["\(surahId):\(ayahId):\(words[i].p)"]
             }
+            return (ayahId, VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words))
         }
-        self.cache = cache
     }
 }

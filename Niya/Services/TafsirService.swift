@@ -40,7 +40,9 @@ final class TafsirService {
     }
 
     private func touchKey(_ key: String) {
-        accessOrder.removeAll { $0 == key }
+        if let idx = accessOrder.firstIndex(of: key) {
+            accessOrder.remove(at: idx)
+        }
         accessOrder.append(key)
     }
 

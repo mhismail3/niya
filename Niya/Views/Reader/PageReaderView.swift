@@ -37,8 +37,8 @@ struct PageReaderView: View {
             highlightTask?.cancel()
             highlightTask = nil
         }
-        .onChange(of: vm.goToAyahTarget) { _, target in
-            guard let target else { return }
+        .onChange(of: vm.goToAyahTarget) { _, _ in
+            guard vm.goToAyahTarget != nil else { return }
             vm.goToAyahTarget = nil
             withAnimation(.easeInOut(duration: 0.4)) {
                 scrolledPage = vm.currentPage

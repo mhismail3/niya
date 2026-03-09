@@ -3,6 +3,7 @@ import Foundation
 struct HadithCollectionData: Sendable {
     let chapters: [HadithChapter]
     let hadiths: [Hadith]
+    let hadithsByChapter: [Int: [Hadith]]
 }
 
 @Observable
@@ -52,9 +53,11 @@ final class HadithDataService {
                 let data = try Data(contentsOf: url)
                 return try JSONDecoder().decode(RawCollectionFile.self, from: data)
             }.value
+            let chapterIndex = Dictionary(grouping: decoded.hadiths, by: \.chapterId)
             loadedCollections[id] = HadithCollectionData(
                 chapters: decoded.chapters,
-                hadiths: decoded.hadiths
+                hadiths: decoded.hadiths,
+                hadithsByChapter: chapterIndex
             )
         } catch {
             loadError = "Failed to load \(id): \(error.localizedDescription)"
@@ -70,7 +73,7 @@ final class HadithDataService {
     }
 
     func hadiths(for collectionId: String, chapterId: Int) -> [Hadith] {
-        loadedCollections[collectionId]?.hadiths.filter { $0.chapterId == chapterId } ?? []
+        loadedCollections[collectionId]?.hadithsByChapter[chapterId] ?? []
     }
 
     func searchHadiths(query: String) -> [(collectionId: String, hadith: Hadith)] {

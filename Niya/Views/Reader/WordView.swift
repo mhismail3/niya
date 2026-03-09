@@ -143,7 +143,7 @@ private class GlyphBoundsLabel: UIView {
     /// Replaces characters the font lacks glyphs for with equivalents, then strips any remaining unsupported characters.
     private static func textWithSupportedGlyphs(_ input: String, font: CTFont) -> String {
         // Apply known substitutions (characters with equivalent glyphs in Uthmanic fonts)
-        var text = input
+        let text = input
             .replacingOccurrences(of: "\u{06DF}", with: "\u{06E0}")  // Small High Rounded Zero → Upright Rectangular Zero
             .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
             .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura

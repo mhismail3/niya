@@ -141,6 +141,9 @@ SWIFT_FILES = [
     "Niya/Views/Home/RecentDuaCard.swift",
     # Views/Shared
     "Niya/Views/Shared/ErrorBannerView.swift",
+    "Niya/Views/Shared/BookmarkColorMenuContent.swift",
+    "Niya/Views/Shared/TranslationBlockView.swift",
+    "Niya/Views/Shared/VerseNumberBadge.swift",
     "Niya/Views/BookmarksView.swift",
     # Views/Settings
     "Niya/Views/Settings/SettingsView.swift",
@@ -896,6 +899,9 @@ def section_pbx_group():
     # Views/Shared
     emit_subgroup(SUBGROUP_IDS["Views/Shared"], "Shared", "Views/Shared", [
         (swift_file_ids["Niya/Views/Shared/ErrorBannerView.swift"], "ErrorBannerView.swift"),
+        (swift_file_ids["Niya/Views/Shared/BookmarkColorMenuContent.swift"], "BookmarkColorMenuContent.swift"),
+        (swift_file_ids["Niya/Views/Shared/TranslationBlockView.swift"], "TranslationBlockView.swift"),
+        (swift_file_ids["Niya/Views/Shared/VerseNumberBadge.swift"], "VerseNumberBadge.swift"),
     ], path_str="Shared")
 
     # Views/Settings

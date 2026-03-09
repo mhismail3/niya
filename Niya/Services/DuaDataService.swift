@@ -9,6 +9,8 @@ final class DuaDataService {
     var loadError: String?
 
     private var duasByCategory: [Int: [Dua]] = [:]
+    private var categoryById: [Int: DuaCategory] = [:]
+    private var sectionById: [String: DuaSection] = [:]
 
     func load() async {
         guard !isLoaded else { return }
@@ -22,6 +24,8 @@ final class DuaDataService {
             sections = decoded.sections
             categories = decoded.categories
             duasByCategory = decoded.duas
+            categoryById = Dictionary(uniqueKeysWithValues: decoded.categories.map { ($0.id, $0) })
+            sectionById = Dictionary(uniqueKeysWithValues: decoded.sections.map { ($0.id, $0) })
             isLoaded = true
         } catch {
             loadError = error.localizedDescription
@@ -29,9 +33,8 @@ final class DuaDataService {
     }
 
     func categories(for sectionId: String) -> [DuaCategory] {
-        let section = sections.first { $0.id == sectionId }
-        guard let ids = section?.categoryIds else { return [] }
-        return ids.compactMap { id in categories.first { $0.id == id } }
+        guard let ids = sectionById[sectionId]?.categoryIds else { return [] }
+        return ids.compactMap { categoryById[$0] }
     }
 
     func duas(for categoryId: Int) -> [Dua] {
@@ -43,7 +46,7 @@ final class DuaDataService {
     }
 
     func category(id: Int) -> DuaCategory? {
-        categories.first { $0.id == id }
+        categoryById[id]
     }
 
     func totalDuas(for sectionId: String) -> Int {

@@ -27,7 +27,6 @@ struct VerseRowView: View {
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @AppStorage(StorageKey.translationIsRTL) private var translationIsRTL: Bool = false
-    @ScaledMetric(relativeTo: .caption2) private var verseBadgeSize: CGFloat = 24
     @State private var activeTap: TajweedTap?
     @State private var tooltipWidth: CGFloat = 160
     @State private var dismissTask: Task<Void, Never>?
@@ -157,23 +156,11 @@ struct VerseRowView: View {
 
     @ViewBuilder
     private var bookmarkColorMenu: some View {
-        Section("Color") {
-            Button { onSetBookmarkColor(nil) } label: {
-                Label("Gold", systemImage: bookmarkColor == nil ? "checkmark.circle.fill" : "circle.fill")
-            }
-            .tint(.niyaGold)
-            ForEach(BookmarkColor.allCases) { bc in
-                Button { onSetBookmarkColor(bc) } label: {
-                    Label(bc.displayName, systemImage: bookmarkColor == bc ? "checkmark.circle.fill" : "circle.fill")
-                }
-                .tint(bc.color)
-            }
-        }
-        Section {
-            Button(role: .destructive, action: onBookmark) {
-                Label("Remove Bookmark", systemImage: "bookmark.slash")
-            }
-        }
+        BookmarkColorMenuContent(
+            currentColor: bookmarkColor,
+            onSetColor: onSetBookmarkColor,
+            onRemove: onBookmark
+        )
     }
 
     @ViewBuilder
@@ -252,20 +239,7 @@ struct VerseRowView: View {
     }
 
     private func translationBlock(name: String, text: String, isRTL: Bool) -> some View {
-        VStack(spacing: 4) {
-            Text(name)
-                .font(.system(size: translationFontSize - 2, weight: .medium))
-                .foregroundStyle(Color.niyaTeal)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .environment(\.layoutDirection, .leftToRight)
-            Text(text)
-                .font(.system(size: translationFontSize, design: .serif))
-                .foregroundStyle(Color.niyaSecondary)
-                .multilineTextAlignment(.leading)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .environment(\.layoutDirection, isRTL ? .rightToLeft : .leftToRight)
-        }
-        .padding(.top, 4)
+        TranslationBlockView(name: name, text: text, isRTL: isRTL, fontSize: translationFontSize)
     }
 
     private static func stripUnsupportedMarks(_ text: String) -> String {
@@ -273,14 +247,6 @@ struct VerseRowView: View {
     }
 
     private var verseNumberBadge: some View {
-        ZStack {
-            Image(systemName: "diamond")
-                .font(.system(size: verseBadgeSize))
-                .foregroundStyle(Color.niyaTeal.opacity(0.15))
-            Text("\(verse.id)")
-                .font(.system(.caption2, design: .rounded, weight: .semibold))
-                .foregroundStyle(Color.niyaTeal)
-        }
-        .accessibilityLabel("Verse \(verse.id)")
+        VerseNumberBadge(verseId: verse.id)
     }
 }

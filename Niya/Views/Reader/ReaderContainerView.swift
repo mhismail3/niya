@@ -187,44 +187,25 @@ struct ReaderContainerView: View {
             stores.readingPosition
                 .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
         }
-        .task {
-            for await status in bookmarkToolbarTip.statusUpdates {
-                if case .invalidated = status {
-                    OptionsMenuTip.bookmarkDismissed = true
-                    break
-                }
-            }
+        .task { await monitorTipChain() }
+    }
+
+    private func monitorTipChain() async {
+        await withTaskGroup(of: Void.self) { group in
+            group.addTask { await Self.awaitInvalidation(bookmarkToolbarTip) { OptionsMenuTip.bookmarkDismissed = true } }
+            group.addTask { await Self.awaitInvalidation(optionsMenuTip) { SettingsToolbarTip.optionsMenuDismissed = true } }
+            group.addTask { await Self.awaitInvalidation(settingsToolbarTip) { PlayVerseTip.settingsDismissed = true } }
+            group.addTask { await Self.awaitInvalidation(playVerseTip) { BookmarkVerseTip.playDismissed = true } }
+            group.addTask { await Self.awaitInvalidation(bookmarkVerseTip) { TafsirVerseTip.bookmarkVerseDismissed = true } }
         }
-        .task {
-            for await status in optionsMenuTip.statusUpdates {
-                if case .invalidated = status {
-                    SettingsToolbarTip.optionsMenuDismissed = true
-                    break
-                }
-            }
-        }
-        .task {
-            for await status in settingsToolbarTip.statusUpdates {
-                if case .invalidated = status {
-                    PlayVerseTip.settingsDismissed = true
-                    break
-                }
-            }
-        }
-        .task {
-            for await status in playVerseTip.statusUpdates {
-                if case .invalidated = status {
-                    BookmarkVerseTip.playDismissed = true
-                    break
-                }
-            }
-        }
-        .task {
-            for await status in bookmarkVerseTip.statusUpdates {
-                if case .invalidated = status {
-                    TafsirVerseTip.bookmarkVerseDismissed = true
-                    break
-                }
+    }
+
+    @Sendable
+    private static func awaitInvalidation(_ tip: some Tip, then action: @Sendable () -> Void) async {
+        for await status in tip.statusUpdates {
+            if case .invalidated = status {
+                action()
+                break
             }
         }
     }

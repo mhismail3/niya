@@ -77,7 +77,9 @@ final class QuranDataService: QuranDataProviding {
             return v
         }
         versesCache[cacheKey] = result
-        cacheOrder.removeAll { $0 == cacheKey }
+        if let idx = cacheOrder.firstIndex(of: cacheKey) {
+            cacheOrder.remove(at: idx)
+        }
         cacheOrder.append(cacheKey)
         while versesCache.count > maxCacheEntries, let oldest = cacheOrder.first {
             cacheOrder.removeFirst()
