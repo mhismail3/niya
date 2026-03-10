@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var resolvedPositions: [(position: ReadingPosition, surah: Surah)] = []
     @State private var resolvedHadiths: [(recent: RecentHadith, hadith: Hadith, collection: HadithCollection)] = []
     @State private var resolvedDuas: [(recent: RecentDua, dua: Dua, categoryName: String)] = []
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -48,6 +49,7 @@ struct HomeView: View {
             .animation(.easeOut(duration: 0.35), value: resolvedPositions.map(\.position.surahId))
             .animation(.easeOut(duration: 0.35), value: resolvedHadiths.map(\.recent.hadithKey))
             .animation(.easeOut(duration: 0.35), value: resolvedDuas.map(\.recent.duaKey))
+            .refreshable { reload() }
             .background(Color.niyaBackground)
             .navigationTitle("Niya")
             .navigationBarTitleDisplayMode(.large)
@@ -56,6 +58,9 @@ struct HomeView: View {
         .onAppear { reload() }
         .onChange(of: coordinator.selectedTab) { _, tab in
             if tab == .home { reload() }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active && coordinator.selectedTab == .home { reload() }
         }
         .task {
             async let h: () = hadithDataService.load()

@@ -45,10 +45,31 @@ struct NiyaApp: App {
         _followAlongVM = State(wrappedValue: favm)
 
         do {
-            container = try ModelContainer(for: AudioDownload.self, ReadingPosition.self, RecentSearch.self, HadithBookmark.self, QuranBookmark.self, DuaBookmark.self, RecentHadith.self, RecentDua.self)
+            let cloudConfig = ModelConfiguration(
+                "CloudSync",
+                schema: Schema([
+                    QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
+                    ReadingPosition.self, RecentHadith.self, RecentDua.self,
+                    RecentSearch.self,
+                ]),
+                cloudKitDatabase: .private("iCloud.com.niya.mobile")
+            )
+            let localConfig = ModelConfiguration(
+                "LocalOnly",
+                schema: Schema([AudioDownload.self]),
+                cloudKitDatabase: .none
+            )
+            container = try ModelContainer(
+                for: QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
+                     ReadingPosition.self, RecentHadith.self, RecentDua.self,
+                     RecentSearch.self, AudioDownload.self,
+                configurations: cloudConfig, localConfig
+            )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
+
+        CloudSyncMigration.migrateIfNeeded(container: container)
 
         let sc = StoreContainer(modelContext: container.mainContext)
         _storeContainer = State(wrappedValue: sc)

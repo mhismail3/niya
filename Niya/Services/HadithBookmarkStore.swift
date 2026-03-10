@@ -10,13 +10,11 @@ final class HadithBookmarkStore {
     }
 
     func isBookmarked(collectionId: String, hadithId: Int) -> Bool {
-        let key = "\(collectionId):\(hadithId)"
-        return fetchAll().contains { $0.hadithKey == key }
+        fetchByKey(collectionId: collectionId, hadithId: hadithId) != nil
     }
 
     func toggle(collectionId: String, hadithId: Int) {
-        let key = "\(collectionId):\(hadithId)"
-        if let existing = fetchAll().first(where: { $0.hadithKey == key }) {
+        if let existing = fetchByKey(collectionId: collectionId, hadithId: hadithId) {
             modelContext.delete(existing)
         } else {
             modelContext.insert(HadithBookmark(collectionId: collectionId, hadithId: hadithId))
@@ -25,19 +23,47 @@ final class HadithBookmarkStore {
     }
 
     func setColor(_ color: BookmarkColor?, collectionId: String, hadithId: Int) {
-        let key = "\(collectionId):\(hadithId)"
-        guard let bookmark = fetchAll().first(where: { $0.hadithKey == key }) else { return }
+        guard let bookmark = fetchByKey(collectionId: collectionId, hadithId: hadithId) else { return }
         bookmark.bookmarkColor = color
         do { try modelContext.save() } catch { AppLogger.store.error("HadithBookmarkStore save failed: \(error)") }
         NotificationCenter.default.post(name: .bookmarkChanged, object: nil)
     }
 
     func allBookmarks() -> [HadithBookmark] {
-        fetchAll().sorted { $0.createdAt > $1.createdAt }
+        let all = fetchAll().sorted { $0.createdAt < $1.createdAt }
+        var seen = Set<String>()
+        var result: [HadithBookmark] = []
+        var toDelete: [HadithBookmark] = []
+        for item in all {
+            if seen.insert(item.hadithKey).inserted {
+                result.append(item)
+            } else {
+                toDelete.append(item)
+            }
+        }
+        if !toDelete.isEmpty {
+            for dupe in toDelete { modelContext.delete(dupe) }
+            try? modelContext.save()
+        }
+        return result.sorted { $0.createdAt > $1.createdAt }
     }
 
     func bookmarks(for collectionId: String) -> [HadithBookmark] {
-        fetchAll().filter { $0.collectionId == collectionId }.sorted { $0.createdAt > $1.createdAt }
+        allBookmarks().filter { $0.collectionId == collectionId }
+    }
+
+    private func fetchByKey(collectionId: String, hadithId: Int) -> HadithBookmark? {
+        let key = "\(collectionId):\(hadithId)"
+        let all = fetchAll()
+        let matches = all.filter { $0.hadithKey == key }
+        guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
+        if matches.count > 1 {
+            for dupe in matches where dupe !== keeper {
+                modelContext.delete(dupe)
+            }
+            try? modelContext.save()
+        }
+        return keeper
     }
 
     private func fetchAll() -> [HadithBookmark] {

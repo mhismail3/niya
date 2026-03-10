@@ -3,11 +3,11 @@ import SwiftData
 
 @Model
 final class DuaBookmark {
-    @Attribute(.unique) var duaKey: String
-    var categoryId: Int
-    var duaId: Int
+    var duaKey: String = ""
+    var categoryId: Int = 0
+    var duaId: Int = 0
     var colorTag: String?
-    var createdAt: Date
+    var createdAt: Date = Date.distantPast
 
     var bookmarkColor: BookmarkColor? {
         get { colorTag.flatMap(BookmarkColor.init(rawValue:)) }

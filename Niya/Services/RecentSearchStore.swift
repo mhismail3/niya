@@ -12,7 +12,6 @@ final class RecentSearchStore {
     func saveQuery(_ query: String) {
         let trimmed = query.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        // Remove existing duplicate
         let all = fetchAll()
         for existing in all where existing.query.lowercased() == trimmed.lowercased() && existing.surahId == nil {
             modelContext.delete(existing)
@@ -31,15 +30,42 @@ final class RecentSearchStore {
     }
 
     func recentQueries() -> [RecentSearch] {
-        fetchAll()
-            .filter { $0.surahId == nil }
-            .sorted { $0.createdAt > $1.createdAt }
+        var seen = Set<String>()
+        var result: [RecentSearch] = []
+        var toDelete: [RecentSearch] = []
+        let all = fetchAll().filter { $0.surahId == nil }.sorted { $0.createdAt > $1.createdAt }
+        for item in all {
+            let normalized = item.query.lowercased()
+            if seen.insert(normalized).inserted {
+                result.append(item)
+            } else {
+                toDelete.append(item)
+            }
+        }
+        if !toDelete.isEmpty {
+            for dupe in toDelete { modelContext.delete(dupe) }
+            try? modelContext.save()
+        }
+        return result
     }
 
     func recentSurahs() -> [RecentSearch] {
-        fetchAll()
-            .filter { $0.surahId != nil }
-            .sorted { $0.createdAt > $1.createdAt }
+        var seen = Set<Int>()
+        var result: [RecentSearch] = []
+        var toDelete: [RecentSearch] = []
+        let all = fetchAll().filter { $0.surahId != nil }.sorted { $0.createdAt > $1.createdAt }
+        for item in all {
+            if let sid = item.surahId, seen.insert(sid).inserted {
+                result.append(item)
+            } else if item.surahId != nil {
+                toDelete.append(item)
+            }
+        }
+        if !toDelete.isEmpty {
+            for dupe in toDelete { modelContext.delete(dupe) }
+            try? modelContext.save()
+        }
+        return result
     }
 
     func delete(_ item: RecentSearch) {

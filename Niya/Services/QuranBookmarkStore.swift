@@ -34,16 +34,36 @@ final class QuranBookmarkStore {
     }
 
     func allBookmarks() -> [QuranBookmark] {
-        fetchAll().sorted { $0.createdAt > $1.createdAt }
+        let all = fetchAll().sorted { $0.createdAt < $1.createdAt }
+        var seen = Set<String>()
+        var result: [QuranBookmark] = []
+        var toDelete: [QuranBookmark] = []
+        for item in all {
+            if seen.insert(item.verseKey).inserted {
+                result.append(item)
+            } else {
+                toDelete.append(item)
+            }
+        }
+        if !toDelete.isEmpty {
+            for dupe in toDelete { modelContext.delete(dupe) }
+            try? modelContext.save()
+        }
+        return result.sorted { $0.createdAt > $1.createdAt }
     }
 
     private func fetch(surahId: Int, ayahId: Int) -> QuranBookmark? {
         let key = "\(surahId):\(ayahId)"
-        var descriptor = FetchDescriptor<QuranBookmark>(
-            predicate: #Predicate<QuranBookmark> { $0.verseKey == key }
-        )
-        descriptor.fetchLimit = 1
-        return (try? modelContext.fetch(descriptor))?.first
+        let all = fetchAll()
+        let matches = all.filter { $0.verseKey == key }
+        guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
+        if matches.count > 1 {
+            for dupe in matches where dupe !== keeper {
+                modelContext.delete(dupe)
+            }
+            try? modelContext.save()
+        }
+        return keeper
     }
 
     private func fetchAll() -> [QuranBookmark] {

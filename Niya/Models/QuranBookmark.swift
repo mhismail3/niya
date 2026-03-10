@@ -3,11 +3,11 @@ import SwiftData
 
 @Model
 final class QuranBookmark {
-    @Attribute(.unique) var verseKey: String
-    var surahId: Int
-    var ayahId: Int
+    var verseKey: String = ""
+    var surahId: Int = 0
+    var ayahId: Int = 0
     var colorTag: String?
-    var createdAt: Date
+    var createdAt: Date = Date.distantPast
 
     var bookmarkColor: BookmarkColor? {
         get { colorTag.flatMap(BookmarkColor.init(rawValue:)) }

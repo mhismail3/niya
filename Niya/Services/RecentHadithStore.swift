@@ -12,8 +12,12 @@ final class RecentHadithStore {
     func record(collectionId: String, hadithId: Int, hasGrades: Bool) {
         let key = "\(collectionId):\(hadithId)"
         let all = (try? modelContext.fetch(FetchDescriptor<RecentHadith>())) ?? []
-        if let existing = all.first(where: { $0.hadithKey == key }) {
+        let matches = all.filter { $0.hadithKey == key }
+        if let existing = matches.max(by: { $0.visitedAt < $1.visitedAt }) {
             existing.visitedAt = .now
+            for dupe in matches where dupe !== existing {
+                modelContext.delete(dupe)
+            }
         } else {
             modelContext.insert(RecentHadith(collectionId: collectionId, hadithId: hadithId, hasGrades: hasGrades))
         }
@@ -29,10 +33,24 @@ final class RecentHadithStore {
     }
 
     func recentHadiths(limit: Int = 20) -> [RecentHadith] {
-        var descriptor = FetchDescriptor<RecentHadith>(
+        let descriptor = FetchDescriptor<RecentHadith>(
             sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]
         )
-        descriptor.fetchLimit = limit
-        return (try? modelContext.fetch(descriptor)) ?? []
+        let all = (try? modelContext.fetch(descriptor)) ?? []
+        var seen = Set<String>()
+        var result: [RecentHadith] = []
+        var toDelete: [RecentHadith] = []
+        for item in all {
+            if seen.insert(item.hadithKey).inserted {
+                result.append(item)
+            } else {
+                toDelete.append(item)
+            }
+        }
+        if !toDelete.isEmpty {
+            for dupe in toDelete { modelContext.delete(dupe) }
+            try? modelContext.save()
+        }
+        return Array(result.prefix(limit))
     }
 }

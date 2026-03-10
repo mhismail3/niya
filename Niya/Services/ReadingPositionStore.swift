@@ -20,24 +20,44 @@ final class ReadingPositionStore {
     }
 
     func recentPositions() -> [ReadingPosition] {
-        let descriptor = FetchDescriptor<ReadingPosition>(
-            sortBy: [SortDescriptor(\.lastReadAt, order: .reverse)]
-        )
-        return (try? modelContext.fetch(descriptor)) ?? []
+        let all = fetchAll().sorted { $0.lastReadAt > $1.lastReadAt }
+        var seen = Set<Int>()
+        var result: [ReadingPosition] = []
+        var toDelete: [ReadingPosition] = []
+        for item in all {
+            if seen.insert(item.surahId).inserted {
+                result.append(item)
+            } else {
+                toDelete.append(item)
+            }
+        }
+        if !toDelete.isEmpty {
+            for dupe in toDelete { modelContext.delete(dupe) }
+            try? modelContext.save()
+        }
+        return result
     }
 
     func clearAll() {
-        for item in recentPositions() {
+        for item in fetchAll() {
             modelContext.delete(item)
         }
         do { try modelContext.save() } catch { AppLogger.store.error("ReadingPositionStore clearAll failed: \(error)") }
     }
 
     func position(for surahId: Int) -> ReadingPosition? {
-        var descriptor = FetchDescriptor<ReadingPosition>(
-            predicate: #Predicate<ReadingPosition> { $0.surahId == surahId }
-        )
-        descriptor.fetchLimit = 1
-        return (try? modelContext.fetch(descriptor))?.first
+        let matches = fetchAll().filter { $0.surahId == surahId }
+        guard let keeper = matches.max(by: { $0.lastReadAt < $1.lastReadAt }) else { return nil }
+        if matches.count > 1 {
+            for dupe in matches where dupe !== keeper {
+                modelContext.delete(dupe)
+            }
+            try? modelContext.save()
+        }
+        return keeper
+    }
+
+    private func fetchAll() -> [ReadingPosition] {
+        (try? modelContext.fetch(FetchDescriptor<ReadingPosition>())) ?? []
     }
 }

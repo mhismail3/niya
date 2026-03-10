@@ -3,9 +3,9 @@ import SwiftData
 
 @Model
 final class ReadingPosition {
-    @Attribute(.unique) var surahId: Int
-    var lastAyahId: Int
-    var lastReadAt: Date
+    var surahId: Int = 0
+    var lastAyahId: Int = 0
+    var lastReadAt: Date = Date.distantPast
 
     init(surahId: Int, lastAyahId: Int, lastReadAt: Date = .now) {
         self.surahId = surahId

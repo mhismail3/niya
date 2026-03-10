@@ -108,6 +108,7 @@ SWIFT_FILES = [
     "Niya/Services/WidgetDataWriter.swift",
     "Niya/Services/NetworkClient.swift",
     "Niya/Services/AppLogger.swift",
+    "Niya/Services/CloudSyncMigration.swift",
     "Niya/Services/StoreContainer.swift",
     "Niya/Services/DownloadManager.swift",
     # ViewModels
@@ -316,6 +317,9 @@ TEST_FILES = [
     "NiyaTests/WordMorphologyTests.swift",
     "NiyaTests/MorphologyServiceTests.swift",
     "NiyaTests/ResetDashboardTests.swift",
+    "NiyaTests/CloudSyncModelTests.swift",
+    "NiyaTests/DeduplicationTests.swift",
+    "NiyaTests/CloudSyncMigrationTests.swift",
 ]
 
 # Widget extension files
@@ -367,6 +371,7 @@ ASSETS_PATH = "Niya/Resources/Assets.xcassets"
 FRAMEWORKS = [
     ("SwiftData.framework",    "SwiftData"),
     ("AVFoundation.framework", "AVFoundation"),
+    ("CloudKit.framework",     "CloudKit"),
 ]
 
 # ---------------------------------------------------------------------------
@@ -846,6 +851,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/WidgetDataWriter.swift"], "WidgetDataWriter.swift"),
         (swift_file_ids["Niya/Services/NetworkClient.swift"], "NetworkClient.swift"),
         (swift_file_ids["Niya/Services/AppLogger.swift"], "AppLogger.swift"),
+        (swift_file_ids["Niya/Services/CloudSyncMigration.swift"], "CloudSyncMigration.swift"),
         (swift_file_ids["Niya/Services/StoreContainer.swift"], "StoreContainer.swift"),
         (swift_file_ids["Niya/Services/DownloadManager.swift"], "DownloadManager.swift"),
     ], path_str="Services")

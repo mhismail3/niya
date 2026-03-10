@@ -44,7 +44,7 @@ struct AppGuideView: View {
                 }
 
                 Section("Prayer Times & Qiblah") {
-                    guideRow("location.north.circle", "Qiblah Compass", "Live compass pointing toward the Kaaba. Open from the toolbar moon icon.")
+                    guideRow("location.north.circle", "Qiblah Compass", "Live compass pointing toward the Kaaba. Open from the toolbar location icon.")
                     guideRow("clock", "Prayer Times", "Accurate times with 20 calculation methods and Hanafi/Shafi'i asr options.")
                     guideRow("bell", "Notifications", "Get notified before each prayer time.")
                     guideRow("widget.small", "Widgets", "Add prayer time widgets to your home screen and lock screen.")
