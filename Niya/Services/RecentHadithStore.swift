@@ -20,6 +20,14 @@ final class RecentHadithStore {
         do { try modelContext.save() } catch { AppLogger.store.error("RecentHadithStore save failed: \(error)") }
     }
 
+    func clearAll() {
+        let all = (try? modelContext.fetch(FetchDescriptor<RecentHadith>())) ?? []
+        for item in all {
+            modelContext.delete(item)
+        }
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentHadithStore clearAll failed: \(error)") }
+    }
+
     func recentHadiths(limit: Int = 20) -> [RecentHadith] {
         var descriptor = FetchDescriptor<RecentHadith>(
             sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]

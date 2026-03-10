@@ -315,6 +315,7 @@ TEST_FILES = [
     "NiyaTests/JuzTests.swift",
     "NiyaTests/WordMorphologyTests.swift",
     "NiyaTests/MorphologyServiceTests.swift",
+    "NiyaTests/ResetDashboardTests.swift",
 ]
 
 # Widget extension files

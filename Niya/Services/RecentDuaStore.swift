@@ -20,6 +20,14 @@ final class RecentDuaStore {
         do { try modelContext.save() } catch { AppLogger.store.error("RecentDuaStore save failed: \(error)") }
     }
 
+    func clearAll() {
+        let all = (try? modelContext.fetch(FetchDescriptor<RecentDua>())) ?? []
+        for item in all {
+            modelContext.delete(item)
+        }
+        do { try modelContext.save() } catch { AppLogger.store.error("RecentDuaStore clearAll failed: \(error)") }
+    }
+
     func recentDuas(limit: Int = 20) -> [RecentDua] {
         var descriptor = FetchDescriptor<RecentDua>(
             sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]

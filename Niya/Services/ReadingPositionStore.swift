@@ -26,6 +26,13 @@ final class ReadingPositionStore {
         return (try? modelContext.fetch(descriptor)) ?? []
     }
 
+    func clearAll() {
+        for item in recentPositions() {
+            modelContext.delete(item)
+        }
+        do { try modelContext.save() } catch { AppLogger.store.error("ReadingPositionStore clearAll failed: \(error)") }
+    }
+
     func position(for surahId: Int) -> ReadingPosition? {
         var descriptor = FetchDescriptor<ReadingPosition>(
             predicate: #Predicate<ReadingPosition> { $0.surahId == surahId }

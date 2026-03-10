@@ -334,6 +334,33 @@ struct PrayerTimesSettingsSection: View {
     }
 }
 
+struct DataSettingsSection: View {
+    @Environment(\.stores) private var stores
+    @State private var showConfirmation = false
+
+    var body: some View {
+        Section("Data") {
+            Button(role: .destructive) {
+                showConfirmation = true
+            } label: {
+                Label("Reset Home Dashboard", systemImage: "arrow.counterclockwise")
+                    .foregroundStyle(.red)
+            }
+            .confirmationDialog(
+                "Reset Home Dashboard?",
+                isPresented: $showConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Reset", role: .destructive) {
+                    stores.clearDashboard()
+                }
+            } message: {
+                Text("This will remove all recent surahs, hadiths, and duas from the Home tab. Your bookmarks and downloads are not affected.")
+            }
+        }
+    }
+}
+
 struct DedicationFooter: View {
     var body: some View {
         Section {

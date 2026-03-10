@@ -22,6 +22,12 @@ final class StoreContainer {
         recentHadith = RecentHadithStore(modelContext: modelContext)
         recentDua = RecentDuaStore(modelContext: modelContext)
     }
+
+    func clearDashboard() {
+        readingPosition.clearAll()
+        recentHadith.clearAll()
+        recentDua.clearAll()
+    }
 }
 
 private struct StoreContainerKey: @preconcurrency EnvironmentKey {

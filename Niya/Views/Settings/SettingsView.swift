@@ -40,6 +40,7 @@ struct SettingsView: View {
                 AppearanceSettingsSection(appearanceMode: $appearanceMode)
                 AudioSettingsSection(selectedReciter: $selectedReciter, autoAdvance: $followAlongAutoAdvance, loopCount: $followAlongLoopCount)
                 PrayerTimesSettingsSection(prayerNotifications: $prayerNotifications)
+                DataSettingsSection()
                 DedicationFooter()
             }
             .navigationTitle("Settings")
