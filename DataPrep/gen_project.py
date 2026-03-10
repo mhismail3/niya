@@ -156,6 +156,7 @@ SWIFT_FILES = [
     "Niya/Views/Settings/SharedSettingsSections.swift",
     "Niya/Views/Settings/DownloadManagementView.swift",
     "Niya/Views/Settings/AppGuideView.swift",
+    "Niya/Views/Settings/ReportIssueMailer.swift",
     # Views/Hadith
     "Niya/Views/Hadith/HadithTabView.swift",
     "Niya/Views/Hadith/HadithCollectionCard.swift",
@@ -253,6 +254,8 @@ RESOURCE_FILES = [
     "Niya/Resources/Fonts/KFGQPC Uthmanic Script HAFS Regular.otf",
     "Niya/Resources/Fonts/AlQuran-IndoPak.ttf",
     "Niya/Resources/Fonts/NotoNaskhArabic-Regular.ttf",
+] + [
+    "Niya/PrivacyInfo.xcprivacy",
 ]
 
 # Test files
@@ -505,6 +508,10 @@ ID_WIDGET_INFOPLIST = new_id()
 ID_NIYA_ENTITLEMENTS = new_id()
 ID_WIDGET_ENTITLEMENTS = new_id()
 
+# Widget PrivacyInfo.xcprivacy (file ref + build)
+ID_WIDGET_PRIVACY = new_id()
+ID_WIDGET_PRIVACY_BUILD = new_id()
+
 # ---------------------------------------------------------------------------
 # Build the pbxproj sections
 # ---------------------------------------------------------------------------
@@ -517,6 +524,7 @@ def file_type_for(path):
         ".ttf":   "file.font",
         ".otf":   "file.font",
         ".plist": "text.plist.xml",
+        ".xcprivacy": "text.xml",
         ".m":     "sourcecode.c.objc",
     }.get(ext, "file")
 
@@ -593,6 +601,9 @@ def section_pbx_build_file():
     # Widget assets
     lines.append(f"\t\t{ID_WIDGET_ASSETS_BUILD} /* Assets.xcassets in Resources */ = {{isa = PBXBuildFile; fileRef = {ID_ASSETS_FILE} /* Assets.xcassets */; }};")
 
+    # Widget privacy manifest
+    lines.append(f"\t\t{ID_WIDGET_PRIVACY_BUILD} /* PrivacyInfo.xcprivacy in Resources */ = {{isa = PBXBuildFile; fileRef = {ID_WIDGET_PRIVACY} /* PrivacyInfo.xcprivacy */; }};")
+
     # Widget embed in app
     lines.append(f"\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed App Extensions */ = {{isa = PBXBuildFile; fileRef = {ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};")
 
@@ -636,6 +647,7 @@ def section_pbx_file_reference():
     lines.append(f"\t\t{ID_WIDGET_INFOPLIST} /* Info.plist */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = \"<group>\"; }};")
     lines.append(f"\t\t{ID_NIYA_ENTITLEMENTS} /* Niya.entitlements */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Niya.entitlements; sourceTree = \"<group>\"; }};")
     lines.append(f"\t\t{ID_WIDGET_ENTITLEMENTS} /* NiyaWidgets.entitlements */ = {{isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NiyaWidgets.entitlements; sourceTree = \"<group>\"; }};")
+    lines.append(f"\t\t{ID_WIDGET_PRIVACY} /* PrivacyInfo.xcprivacy */ = {{isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = \"<group>\"; }};")
 
     for path in WIDGET_FILES:
         fid = widget_file_ids[path]
@@ -734,6 +746,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/AppStorageKeys.swift"], "AppStorageKeys.swift"),
         (swift_file_ids["Niya/NavigationCoordinator.swift"], "NavigationCoordinator.swift"),
         (ID_INFOPLIST,                              "Info.plist"),
+        (resource_file_ids["Niya/PrivacyInfo.xcprivacy"], "PrivacyInfo.xcprivacy"),
         (ID_NIYA_ENTITLEMENTS,                     "Niya.entitlements"),
         (SUBGROUP_IDS["Shared"],                   "Shared"),
         (SUBGROUP_IDS["Models"],                   "Models"),
@@ -933,6 +946,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Settings/SharedSettingsSections.swift"], "SharedSettingsSections.swift"),
         (swift_file_ids["Niya/Views/Settings/DownloadManagementView.swift"], "DownloadManagementView.swift"),
         (swift_file_ids["Niya/Views/Settings/AppGuideView.swift"], "AppGuideView.swift"),
+        (swift_file_ids["Niya/Views/Settings/ReportIssueMailer.swift"], "ReportIssueMailer.swift"),
     ], path_str="Settings")
 
     # Views/Hadith
@@ -1054,6 +1068,7 @@ def section_pbx_group():
     widget_top_children = [
         (widget_file_ids["NiyaWidgets/NiyaWidgetBundle.swift"], "NiyaWidgetBundle.swift"),
         (ID_WIDGET_INFOPLIST, "Info.plist"),
+        (ID_WIDGET_PRIVACY, "PrivacyInfo.xcprivacy"),
         (ID_WIDGET_ENTITLEMENTS, "NiyaWidgets.entitlements"),
         (WIDGET_SUBGROUP_IDS["Provider"], "Provider"),
         (WIDGET_SUBGROUP_IDS["Models"], "Models"),
@@ -1338,6 +1353,7 @@ def section_widget_resources_build_phase():
         "\t\t\tbuildActionMask = 2147483647;",
         "\t\t\tfiles = (",
         f"\t\t\t\t{ID_WIDGET_ASSETS_BUILD} /* Assets.xcassets in Resources */,",
+        f"\t\t\t\t{ID_WIDGET_PRIVACY_BUILD} /* PrivacyInfo.xcprivacy in Resources */,",
         "\t\t\t);",
         "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
         "\t\t};",

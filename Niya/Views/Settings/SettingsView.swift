@@ -1,3 +1,4 @@
+import MessageUI
 import SwiftUI
 
 struct SettingsView: View {
@@ -18,6 +19,7 @@ struct SettingsView: View {
     @AppStorage(StorageKey.showJuzProgress) private var showJuzProgress: Bool = true
     @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications: Bool = false
     @State private var showGuide = false
+    @State private var showReportIssue = false
 
     var body: some View {
         NavigationStack {
@@ -30,6 +32,19 @@ struct SettingsView: View {
                             Text("How to Use This App").fontWeight(.semibold)
                         } icon: {
                             Image(systemName: "questionmark.circle")
+                        }
+                    }
+                    Button {
+                        if MFMailComposeViewController.canSendMail() {
+                            showReportIssue = true
+                        } else if let url = URL(string: "mailto:\(MailComposeView.recipient)?subject=Niya%20%E2%80%94%20Issue%20Report") {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Label {
+                            Text("Report an Issue").fontWeight(.semibold)
+                        } icon: {
+                            Image(systemName: "exclamationmark.bubble")
                         }
                     }
                 }
@@ -48,6 +63,9 @@ struct SettingsView: View {
             .hiddenNavBarBackground()
             .sheet(isPresented: $showGuide) {
                 AppGuideView()
+            }
+            .sheet(isPresented: $showReportIssue) {
+                MailComposeView(isPresented: $showReportIssue)
             }
         }
     }
