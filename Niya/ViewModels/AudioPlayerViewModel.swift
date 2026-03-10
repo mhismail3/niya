@@ -37,7 +37,7 @@ final class AudioPlayerViewModel {
                     let surah = self.dataService.surahs.first { $0.id == vid.surahId }
                     let nextAyah = vid.ayahId + 1
                     if let surah, nextAyah <= surah.totalVerses {
-                        self.startPlayback(surahId: vid.surahId, ayahId: nextAyah)
+                        self.playVerse(surahId: vid.surahId, ayahId: nextAyah)
                     }
                 } else {
                     self.clearNowPlaying()
@@ -127,25 +127,25 @@ final class AudioPlayerViewModel {
     func playVerse(surahId: Int, ayahId: Int) {
         currentLoop = 0
         let verseID = VerseID(surahId: surahId, ayahId: ayahId)
-        if selectedReciter.hasPerVerseAudio {
-            let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
-            guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
-            audioService.play(url: url, verseID: verseID, surahId: surahId)
-        } else if autoAdvance && loopCount <= 1 {
+        if autoAdvance && loopCount <= 1 {
             guard let allVerses = wordDataService.allVerseData(surahId: surahId) else {
-                playSurah(surahId)
+                playVerseFallback(surahId: surahId, ayahId: ayahId, verseID: verseID)
                 return
             }
             let boundaries = allVerses
                 .filter { $0.ayahId >= ayahId }
                 .map { VerseBoundary(verseID: VerseID(surahId: surahId, ayahId: $0.ayahId), startMs: $0.data.vs, endMs: $0.data.ve) }
-            guard !boundaries.isEmpty else { return }
-            let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
-                ?? selectedReciter.surahStreamURL(surahId: surahId)
+            guard !boundaries.isEmpty,
+                  let wordDataAudioURL = URL(string: allVerses[0].data.au) else { return }
+            let url = continuousAudioURL(surahId: surahId, wordDataURL: wordDataAudioURL)
             audioService.playSurahContinuous(url: url, boundaries: boundaries, surahId: surahId)
             if playbackSpeed != 1.0 {
                 audioService.setRate(playbackSpeed)
             }
+        } else if selectedReciter.hasPerVerseAudio {
+            let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
+            guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
+            audioService.play(url: url, verseID: verseID, surahId: surahId)
         } else {
             guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else {
                 playSurah(surahId)
@@ -154,6 +154,28 @@ final class AudioPlayerViewModel {
             let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
                 ?? selectedReciter.surahStreamURL(surahId: surahId)
             audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)
+        }
+        updateNowPlaying()
+    }
+
+    /// Returns the audio URL for continuous mode, ensuring timing data matches the audio file.
+    /// Uses local file only if it was downloaded from the same source as the word timing data.
+    private func continuousAudioURL(surahId: Int, wordDataURL: URL) -> URL {
+        let reciterURL = selectedReciter.surahStreamURL(surahId: surahId)
+        if reciterURL.host == wordDataURL.host,
+           let localURL = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter) {
+            return localURL
+        }
+        return wordDataURL
+    }
+
+    private func playVerseFallback(surahId: Int, ayahId: Int, verseID: VerseID) {
+        if selectedReciter.hasPerVerseAudio {
+            let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
+            guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
+            audioService.play(url: url, verseID: verseID, surahId: surahId)
+        } else {
+            playSurah(surahId)
         }
         updateNowPlaying()
     }
@@ -239,7 +261,7 @@ final class AudioPlayerViewModel {
         if selectedReciter.hasPerVerseAudio {
             let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
             guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
-            audioService.play(url: url, verseID: verseID, surahId: surahId)
+            audioService.transitionToVerse(url: url, verseID: verseID, surahId: surahId)
         } else {
             guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else {
                 playSurah(surahId)

@@ -25,6 +25,7 @@ final class MockAudioService: AudioPlaying {
     var seekToVerseCallCount = 0
     var playVerseInSurahCallCount = 0
     var playSurahContinuousCallCount = 0
+    var lastContinuousURL: URL?
     var playWithSeekCallCount = 0
     var configureSessionCallCount = 0
 
@@ -52,6 +53,7 @@ final class MockAudioService: AudioPlaying {
 
     func playSurahContinuous(url: URL, boundaries: [VerseBoundary], surahId: Int) {
         playSurahContinuousCallCount += 1
+        lastContinuousURL = url
         currentSurahId = surahId
         isContinuousMode = true
         if let first = boundaries.first {

@@ -142,6 +142,26 @@ struct AudioPlayerViewModelMockTests {
         #expect(audio.playCallCount == 0)
     }
 
+    // MARK: - Continuous mode uses word data audio URL (not reciter surahStreamURL)
+
+    @Test func playVerse_alAfasy_autoAdvance_withWordData_usesWordDataAudioURL() {
+        let (audio, data, words) = makeMocks()
+        let wordDataURL = "https://download.quranicaudio.com/qdc/mishari_al_afasy/murattal/1.mp3"
+        words.allVerseDataResult = [
+            (ayahId: 1, data: VerseWordData(au: wordDataURL, vs: 0, ve: 5000, w: [])),
+            (ayahId: 2, data: VerseWordData(au: wordDataURL, vs: 5000, ve: 10000, w: [])),
+        ]
+        let vm = makeVM(audio: audio, data: data, words: words, reciter: .alAfasy)
+        vm.autoAdvance = true
+        vm.loopCount = 1
+
+        vm.playVerse(surahId: 1, ayahId: 1)
+
+        #expect(audio.playSurahContinuousCallCount == 1)
+        #expect(audio.lastContinuousURL?.absoluteString == wordDataURL)
+        #expect(audio.playCallCount == 0)
+    }
+
     // MARK: - playVerse fallback when word data missing
 
     @Test func playVerse_perSurahReciter_noWordData_fallsBackToPlaySurah() {
