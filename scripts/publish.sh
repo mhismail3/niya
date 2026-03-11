@@ -86,8 +86,19 @@ APP_ENTITLEMENTS="$WORK_DIR/app_entitlements.plist"
 DECODED_PROFILE="$WORK_DIR/decoded_profile.plist"
 
 echo "==> Extracting entitlements from app provisioning profile..."
-security cms -D -i "$APP_PROFILE" > "$DECODED_PROFILE" 2>/dev/null
+security cms -D -i "$APP_PROFILE" -o "$DECODED_PROFILE" 2>/dev/null
 plutil -extract Entitlements xml1 -o "$APP_ENTITLEMENTS" "$DECODED_PROFILE"
+
+# Sanitize for App Store distribution
+/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-container-development-container-identifiers" "$APP_ENTITLEMENTS" 2>/dev/null || true
+/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.ubiquity-kvstore-identifier" "$APP_ENTITLEMENTS" 2>/dev/null || true
+/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.ubiquity-container-identifiers" "$APP_ENTITLEMENTS" 2>/dev/null || true
+/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-services" "$APP_ENTITLEMENTS" 2>/dev/null || true
+/usr/libexec/PlistBuddy -c "Add :com.apple.developer.icloud-services array" "$APP_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Add :com.apple.developer.icloud-services:0 string CloudKit" "$APP_ENTITLEMENTS"
+/usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-container-environment" "$APP_ENTITLEMENTS" 2>/dev/null || true
+/usr/libexec/PlistBuddy -c "Add :com.apple.developer.icloud-container-environment string Production" "$APP_ENTITLEMENTS"
+
 echo "    App entitlements:"
 plutil -p "$APP_ENTITLEMENTS" | sed 's/^/        /'
 
@@ -95,7 +106,7 @@ WIDGET_ENTITLEMENTS="$WORK_DIR/widget_entitlements.plist"
 DECODED_WIDGET_PROFILE="$WORK_DIR/decoded_widget_profile.plist"
 
 echo "==> Extracting entitlements from widget provisioning profile..."
-security cms -D -i "$WIDGET_PROFILE" > "$DECODED_WIDGET_PROFILE" 2>/dev/null
+security cms -D -i "$WIDGET_PROFILE" -o "$DECODED_WIDGET_PROFILE" 2>/dev/null
 plutil -extract Entitlements xml1 -o "$WIDGET_ENTITLEMENTS" "$DECODED_WIDGET_PROFILE"
 
 # --- Re-sign (extensions first, then main app) ---
