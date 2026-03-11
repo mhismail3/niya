@@ -38,12 +38,17 @@ PROFILE_DIR="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 
 find_store_profile() {
   local bid="$1"
+  local tmpfile
+  tmpfile=$(mktemp)
   for p in "$PROFILE_DIR"/*.mobileprovision; do
-    if security cms -D -i "$p" 2>/dev/null | grep -q "Store Provisioning Profile: $bid"; then
+    security cms -D -i "$p" -o "$tmpfile" 2>/dev/null
+    if grep -q "Store Provisioning Profile: ${bid}<" "$tmpfile" 2>/dev/null; then
+      rm -f "$tmpfile"
       echo "$p"
       return
     fi
   done
+  rm -f "$tmpfile"
 }
 
 echo "==> Finding distribution provisioning profiles..."
