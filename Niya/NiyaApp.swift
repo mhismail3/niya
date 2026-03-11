@@ -44,30 +44,7 @@ struct NiyaApp: App {
         _wordDataService = State(wrappedValue: wds)
         _followAlongVM = State(wrappedValue: favm)
 
-        do {
-            let cloudConfig = ModelConfiguration(
-                "CloudSync",
-                schema: Schema([
-                    QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                    ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                    RecentSearch.self,
-                ]),
-                cloudKitDatabase: .private("iCloud.com.niya.mobile")
-            )
-            let localConfig = ModelConfiguration(
-                "LocalOnly",
-                schema: Schema([AudioDownload.self]),
-                cloudKitDatabase: .none
-            )
-            container = try ModelContainer(
-                for: QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                     ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                     RecentSearch.self, AudioDownload.self,
-                configurations: cloudConfig, localConfig
-            )
-        } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
-        }
+        container = ModelContainerFactory.create()
 
         CloudSyncMigration.migrateIfNeeded(container: container)
 
@@ -85,7 +62,8 @@ struct NiyaApp: App {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
 
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.niya.mobile.prayerRefresh", using: nil) { task in
-            Self.handlePrayerRefresh(task: task as! BGAppRefreshTask)
+            guard let refreshTask = task as? BGAppRefreshTask else { return }
+            Self.handlePrayerRefresh(task: refreshTask)
         }
         Self.scheduleBGRefresh()
     }

@@ -76,55 +76,22 @@ if [ -d "$APPEX_DIR" ]; then
   /bin/cp -f "$WIDGET_PROFILE" "$APPEX_DIR/embedded.mobileprovision"
 fi
 
-# --- Entitlements ---
+# --- Extract entitlements from provisioning profiles (source of truth) ---
 APP_ENTITLEMENTS="$WORK_DIR/app_entitlements.plist"
-cat > "$APP_ENTITLEMENTS" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>application-identifier</key>
-    <string>${TEAM_ID}.${BUNDLE_ID}</string>
-    <key>com.apple.developer.team-identifier</key>
-    <string>${TEAM_ID}</string>
-    <key>beta-reports-active</key>
-    <true/>
-    <key>aps-environment</key>
-    <string>production</string>
-    <key>get-task-allow</key>
-    <false/>
-    <key>keychain-access-groups</key>
-    <array>
-        <string>${TEAM_ID}.*</string>
-        <string>com.apple.token</string>
-    </array>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>group.com.niya.mobile</string>
-    </array>
-</dict>
-</plist>
-EOF
+DECODED_PROFILE="$WORK_DIR/decoded_profile.plist"
+
+echo "==> Extracting entitlements from app provisioning profile..."
+security cms -D -i "$APP_PROFILE" > "$DECODED_PROFILE" 2>/dev/null
+plutil -extract Entitlements xml1 -o "$APP_ENTITLEMENTS" "$DECODED_PROFILE"
+echo "    App entitlements:"
+plutil -p "$APP_ENTITLEMENTS" | sed 's/^/        /'
 
 WIDGET_ENTITLEMENTS="$WORK_DIR/widget_entitlements.plist"
-cat > "$WIDGET_ENTITLEMENTS" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>application-identifier</key>
-    <string>${TEAM_ID}.${WIDGET_BUNDLE_ID}</string>
-    <key>com.apple.developer.team-identifier</key>
-    <string>${TEAM_ID}</string>
-    <key>get-task-allow</key>
-    <false/>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>group.com.niya.mobile</string>
-    </array>
-</dict>
-</plist>
-EOF
+DECODED_WIDGET_PROFILE="$WORK_DIR/decoded_widget_profile.plist"
+
+echo "==> Extracting entitlements from widget provisioning profile..."
+security cms -D -i "$WIDGET_PROFILE" > "$DECODED_WIDGET_PROFILE" 2>/dev/null
+plutil -extract Entitlements xml1 -o "$WIDGET_ENTITLEMENTS" "$DECODED_WIDGET_PROFILE"
 
 # --- Re-sign (extensions first, then main app) ---
 echo "==> Re-signing widget extension..."

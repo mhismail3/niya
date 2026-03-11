@@ -32,28 +32,7 @@ final class StoreContainer {
 
 private struct StoreContainerKey: @preconcurrency EnvironmentKey {
     @MainActor static let defaultValue: StoreContainer = {
-        let cloudConfig = ModelConfiguration(
-            "CloudSync",
-            schema: Schema([
-                QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                RecentSearch.self,
-            ]),
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        let localConfig = ModelConfiguration(
-            "LocalOnly",
-            schema: Schema([AudioDownload.self]),
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        let container = try! ModelContainer(
-            for: QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                 ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                 RecentSearch.self, AudioDownload.self,
-            configurations: cloudConfig, localConfig
-        )
+        let container = try! ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
         return StoreContainer(modelContext: container.mainContext)
     }()
 }
