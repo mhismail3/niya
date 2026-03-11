@@ -55,7 +55,6 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.large)
             .niyaToolbar()
         }
-        .onAppear { reload() }
         .onChange(of: coordinator.selectedTab) { _, tab in
             if tab == .home { reload() }
         }
@@ -63,9 +62,10 @@ struct HomeView: View {
             if phase == .active && coordinator.selectedTab == .home { reload() }
         }
         .task {
+            async let s: () = dataService.load()
             async let h: () = hadithDataService.load()
             async let d: () = duaDataService.load()
-            _ = await (h, d)
+            _ = await (s, h, d)
             let recents = stores.recentHadith.recentHadiths()
             for id in Set(recents.map(\.collectionId)) {
                 await hadithDataService.loadCollection(id)
