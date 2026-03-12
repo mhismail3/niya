@@ -13,6 +13,7 @@ struct NavigationCoordinatorTests {
         #expect(coordinator.pendingHadithDestination == nil)
         #expect(coordinator.pendingDuaDestination == nil)
         #expect(coordinator.isReaderVisible == false)
+        #expect(coordinator.isChromeHidden == false)
     }
 
     @Test func navigateToAyah_setsTabAndDestination() {

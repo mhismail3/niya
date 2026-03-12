@@ -32,6 +32,7 @@ final class NavigationCoordinator {
     var showSalahSheet = false
     var currentReadingSurahId: Int?
     var currentReadingAyahId: Int?
+    var isChromeHidden = false
 
     func updateReadingPosition(surahId: Int, ayahId: Int) {
         currentReadingSurahId = surahId

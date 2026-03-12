@@ -45,7 +45,8 @@ struct ReaderContainerView: View {
             if showJuzProgress {
                 JuzProgressAccessory(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
                     .padding(.trailing, 16)
-                    .padding(.top, 4)
+                    .padding(.top, coordinator.isChromeHidden ? 0 : 4)
+                    .animation(.easeInOut(duration: 0.3), value: coordinator.isChromeHidden)
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -192,6 +193,7 @@ struct ReaderContainerView: View {
             coordinator.updateReadingPosition(surahId: vm.surah.id, ayahId: newAyah)
         }
         .onDisappear {
+            coordinator.isChromeHidden = false
             coordinator.isReaderVisible = false
             coordinator.clearReadingPosition()
             followAlongVM.pauseTracking()
