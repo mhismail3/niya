@@ -125,7 +125,7 @@ struct ReaderContainerView: View {
                 .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $showSettings) {
-            ReaderSettingsSheet(vm: vm)
+            SettingsView(readerVM: vm)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }

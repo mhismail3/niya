@@ -2,6 +2,8 @@ import MessageUI
 import SwiftUI
 
 struct SettingsView: View {
+    var readerVM: ReaderViewModel? = nil
+    @Environment(DownloadManager.self) private var downloadManager
     @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
@@ -10,7 +12,7 @@ struct SettingsView: View {
     @AppStorage(StorageKey.followAlongMeaning) private var followAlongMeaning: Bool = true
     @AppStorage(StorageKey.followAlongAutoAdvance) private var followAlongAutoAdvance: Bool = true
     @AppStorage(StorageKey.followAlongLoopCount) private var followAlongLoopCount: Int = 1
-    @AppStorage(StorageKey.readerMode) private var mode: ReaderMode = .scroll
+    @AppStorage(StorageKey.readerMode) private var storedMode: ReaderMode = .scroll
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @AppStorage(StorageKey.hadithArabicFontSize) private var hadithArabicFontSize: Double = 22
@@ -20,6 +22,17 @@ struct SettingsView: View {
     @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications: Bool = false
     @State private var showGuide = false
     @State private var showReportIssue = false
+
+    private var modeBinding: Binding<ReaderMode> {
+        if let vm = readerVM {
+            Binding(
+                get: { vm.mode },
+                set: { vm.mode = $0 }
+            )
+        } else {
+            $storedMode
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -48,12 +61,18 @@ struct SettingsView: View {
                         }
                     }
                 }
-                ReadingSettingsSection(mode: $mode, script: $script, showTranslation: $showTranslation, showTajweed: $showTajweed, showJuzProgress: $showJuzProgress)
+                ReadingSettingsSection(mode: modeBinding, script: $script, showTranslation: $showTranslation, showTajweed: $showTajweed, showJuzProgress: $showJuzProgress)
                 WordByWordSettingsSection(followAlong: $followAlong, followAlongTransliteration: $followAlongTransliteration, followAlongMeaning: $followAlongMeaning, script: script)
                 FontSizeSettingsSection(arabicFontSize: $arabicFontSize, translationFontSize: $translationFontSize)
                 HadithFontSizeSection(hadithArabicFontSize: $hadithArabicFontSize)
                 AppearanceSettingsSection(appearanceMode: $appearanceMode)
-                AudioSettingsSection(selectedReciter: $selectedReciter, autoAdvance: $followAlongAutoAdvance, loopCount: $followAlongLoopCount)
+                if readerVM != nil {
+                    AudioSettingsSection(selectedReciter: $selectedReciter, autoAdvance: $followAlongAutoAdvance, loopCount: $followAlongLoopCount) {
+                        downloadRow
+                    }
+                } else {
+                    AudioSettingsSection(selectedReciter: $selectedReciter, autoAdvance: $followAlongAutoAdvance, loopCount: $followAlongLoopCount)
+                }
                 PrayerTimesSettingsSection(prayerNotifications: $prayerNotifications)
                 DataSettingsSection()
                 DedicationFooter()
@@ -66,6 +85,75 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showReportIssue) {
                 MailComposeView(isPresented: $showReportIssue)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var downloadRow: some View {
+        if let vm = readerVM {
+            let surahId = vm.surah.id
+            let downloaded = downloadManager.isDownloaded(surahId, reciter: selectedReciter)
+            let prog = downloadManager.progress(for: surahId, reciter: selectedReciter)
+
+            if downloaded {
+                HStack {
+                    Label("Audio Downloaded", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(Color.niyaTeal)
+                    Spacer()
+                    Button(role: .destructive) {
+                        try? downloadManager.deleteSurah(surahId, reciter: selectedReciter)
+                    } label: {
+                        Image(systemName: "trash")
+                            .foregroundStyle(.red)
+                    }
+                    .buttonStyle(.plain)
+                }
+            } else if let prog {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        if prog.error != nil {
+                            Label("Download Failed", systemImage: "exclamationmark.triangle")
+                                .foregroundStyle(.red)
+                        } else {
+                            Label("Downloading…", systemImage: "arrow.down.circle")
+                        }
+                        Spacer()
+                        Button {
+                            downloadManager.cancelDownload(surahId, reciter: selectedReciter)
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(Color.niyaSecondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if let errorMsg = prog.error {
+                        Text(errorMsg)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                        HStack(spacing: 12) {
+                            Button("Retry") {
+                                downloadManager.dismissError(surahId, reciter: selectedReciter)
+                                downloadManager.downloadSurah(surahId, reciter: selectedReciter)
+                            }
+                            .font(.caption)
+                            Button("Dismiss") {
+                                downloadManager.dismissError(surahId, reciter: selectedReciter)
+                            }
+                            .font(.caption)
+                            .foregroundStyle(Color.niyaSecondary)
+                        }
+                    } else {
+                        ProgressView(value: prog.progress)
+                            .tint(Color.niyaGold)
+                    }
+                }
+            } else {
+                Button {
+                    downloadManager.downloadSurah(surahId, reciter: selectedReciter)
+                } label: {
+                    Label("Download Audio", systemImage: "arrow.down.circle")
+                }
             }
         }
     }

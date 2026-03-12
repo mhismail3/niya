@@ -128,7 +128,6 @@ SWIFT_FILES = [
     "Niya/Views/Reader/PageReaderView.swift",
     "Niya/Views/Reader/VerseRowView.swift",
     "Niya/Views/Reader/MushaPageView.swift",
-    "Niya/Views/Reader/ReaderSettingsSheet.swift",
     "Niya/Views/Reader/TajweedTextView.swift",
     "Niya/Views/Reader/FollowAlongVerseView.swift",
     "Niya/Views/Reader/WordView.swift",
@@ -325,6 +324,7 @@ TEST_FILES = [
     "NiyaTests/DeduplicationTests.swift",
     "NiyaTests/CloudSyncMigrationTests.swift",
     "NiyaTests/ModelContainerResilienceTests.swift",
+    "NiyaTests/SettingsViewTests.swift",
 ]
 
 # Widget extension files
@@ -909,7 +909,6 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Reader/PageReaderView.swift"],      "PageReaderView.swift"),
         (swift_file_ids["Niya/Views/Reader/VerseRowView.swift"],        "VerseRowView.swift"),
         (swift_file_ids["Niya/Views/Reader/MushaPageView.swift"],       "MushaPageView.swift"),
-        (swift_file_ids["Niya/Views/Reader/ReaderSettingsSheet.swift"], "ReaderSettingsSheet.swift"),
         (swift_file_ids["Niya/Views/Reader/TajweedTextView.swift"], "TajweedTextView.swift"),
         (swift_file_ids["Niya/Views/Reader/FollowAlongVerseView.swift"], "FollowAlongVerseView.swift"),
         (swift_file_ids["Niya/Views/Reader/WordView.swift"], "WordView.swift"),
