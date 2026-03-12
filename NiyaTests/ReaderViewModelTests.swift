@@ -69,4 +69,33 @@ struct ReaderViewModelTests {
         #expect(vm.currentPage == 0)
         #expect(vm.visibleAyahId == 1) // fallback when verses empty
     }
+
+    @Test func hasUserScrolledDefaultsFalse() {
+        let vm = makeVM()
+        #expect(vm.hasUserScrolled == false)
+    }
+
+    @Test func updateVisibleAyahIgnoredBeforeSettled() {
+        let vm = makeVM()
+        vm.updateVisibleAyah(50)
+        #expect(vm.visibleAyahId == 1)
+        #expect(vm.hasUserScrolled == false)
+    }
+
+    @Test func updateVisibleAyahSetsHasUserScrolled() {
+        let vm = makeVM()
+        vm.isSettled = true
+        #expect(vm.hasUserScrolled == false)
+        vm.updateVisibleAyah(10)
+        #expect(vm.hasUserScrolled == true)
+        #expect(vm.visibleAyahId == 10)
+    }
+
+    @Test func goToAyahSetsHasUserScrolled() {
+        let vm = makeVM()
+        vm.load()
+        vm.goToAyah(5)
+        #expect(vm.hasUserScrolled == true)
+        #expect(vm.visibleAyahId == 5)
+    }
 }

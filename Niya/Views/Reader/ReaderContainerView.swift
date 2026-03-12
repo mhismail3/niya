@@ -23,6 +23,7 @@ struct ReaderContainerView: View {
     @State private var showGoToAyah = false
     @State private var goToAyahText = ""
     @State private var showTajweedGuide = false
+    @State private var positionSaveTask: Task<Void, Never>?
 
     private let bookmarkToolbarTip = BookmarkToolbarTip()
     private let optionsMenuTip = OptionsMenuTip()
@@ -191,6 +192,13 @@ struct ReaderContainerView: View {
         }
         .onChange(of: vm.visibleAyahId) { _, newAyah in
             coordinator.updateReadingPosition(surahId: vm.surah.id, ayahId: newAyah)
+            guard vm.hasUserScrolled else { return }
+            positionSaveTask?.cancel()
+            positionSaveTask = Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(500))
+                guard !Task.isCancelled else { return }
+                stores.readingPosition.save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
+            }
         }
         .onDisappear {
             coordinator.isChromeHidden = false
@@ -198,9 +206,9 @@ struct ReaderContainerView: View {
             coordinator.clearReadingPosition()
             followAlongVM.pauseTracking()
             autoScrollVM.stop()
+            positionSaveTask?.cancel()
             guard vm.hasUserScrolled else { return }
-            stores.readingPosition
-                .save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
+            stores.readingPosition.save(surahId: vm.surah.id, ayahId: vm.visibleAyahId)
         }
         .task { await monitorTipChain() }
     }

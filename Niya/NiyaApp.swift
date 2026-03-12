@@ -119,6 +119,10 @@ struct NiyaApp: App {
                         }
                     } else if phase == .background {
                         prayerTimeService.stopCountdown()
+                        if let surahId = navigationCoordinator.currentReadingSurahId,
+                           let ayahId = navigationCoordinator.currentReadingAyahId {
+                            storeContainer.readingPosition.save(surahId: surahId, ayahId: ayahId)
+                        }
                     }
                 }
                 .onOpenURL { url in

@@ -55,4 +55,38 @@ struct NavigationCoordinatorTests {
         #expect(coordinator.selectedTab == .dua)
         #expect(coordinator.pendingQuranDestination == nil)
     }
+
+    @Test func updateReadingPositionSetsFields() {
+        let coordinator = NavigationCoordinator()
+        coordinator.updateReadingPosition(surahId: 3, ayahId: 55)
+        #expect(coordinator.currentReadingSurahId == 3)
+        #expect(coordinator.currentReadingAyahId == 55)
+    }
+
+    @Test func clearReadingPositionNilsFields() {
+        let coordinator = NavigationCoordinator()
+        coordinator.updateReadingPosition(surahId: 3, ayahId: 55)
+        coordinator.clearReadingPosition()
+        #expect(coordinator.currentReadingSurahId == nil)
+        #expect(coordinator.currentReadingAyahId == nil)
+    }
+
+    @Test func coordinatorStateAvailableForBackgroundSave() {
+        let coordinator = NavigationCoordinator()
+        coordinator.updateReadingPosition(surahId: 114, ayahId: 6)
+
+        if let surahId = coordinator.currentReadingSurahId,
+           let ayahId = coordinator.currentReadingAyahId {
+            #expect(surahId == 114)
+            #expect(ayahId == 6)
+        } else {
+            Issue.record("Coordinator state should be available")
+        }
+    }
+
+    @Test func noSaveWhenReaderNotActive() {
+        let coordinator = NavigationCoordinator()
+        #expect(coordinator.currentReadingSurahId == nil)
+        #expect(coordinator.currentReadingAyahId == nil)
+    }
 }

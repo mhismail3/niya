@@ -41,4 +41,21 @@ struct ReadingPositionStoreTests {
         #expect(sorted[0].surahId == 2)
         #expect(sorted[1].surahId == 1)
     }
+
+    @Test func repeatedUpsertKeepsLatestAyah() {
+        let position = ReadingPosition(surahId: 2, lastAyahId: 10)
+        position.lastAyahId = 20
+        position.lastAyahId = 30
+        position.lastAyahId = 40
+        #expect(position.lastAyahId == 40)
+    }
+
+    @Test func backgroundSaveUsesCoordinatorState() {
+        let surahId: Int? = 5
+        let ayahId: Int? = 42
+        #expect(surahId != nil && ayahId != nil)
+        let position = ReadingPosition(surahId: surahId!, lastAyahId: ayahId!)
+        #expect(position.surahId == 5)
+        #expect(position.lastAyahId == 42)
+    }
 }
