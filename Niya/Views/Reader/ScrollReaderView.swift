@@ -40,7 +40,7 @@ struct ScrollReaderView: View {
                 if let target = vm.initialAyahId, target > 1 {
                     Task { @MainActor in
                         withAnimation(.easeInOut(duration: 0.4)) {
-                            proxy.scrollTo(target, anchor: .top)
+                            proxy.scrollTo(target, anchor: UnitPoint(x: 0.5, y: 0.085))
                         }
                     }
                 }
@@ -52,14 +52,14 @@ struct ScrollReaderView: View {
             .onChange(of: audioPlayerVM.currentVerseID) { _, vid in
                 guard let vid, vid.surahId == vm.surah.id else { return }
                 withAnimation(.easeInOut(duration: 0.4)) {
-                    proxy.scrollTo(vid.ayahId, anchor: .top)
+                    proxy.scrollTo(vid.ayahId, anchor: UnitPoint(x: 0.5, y: 0.085))
                 }
             }
             .onChange(of: vm.goToAyahTarget) { _, target in
                 guard let target else { return }
                 vm.goToAyahTarget = nil
                 withAnimation(.easeInOut(duration: 0.4)) {
-                    proxy.scrollTo(target, anchor: .top)
+                    proxy.scrollTo(target, anchor: UnitPoint(x: 0.5, y: 0.085))
                 }
                 highlightTask?.cancel()
                 highlightTask = Task {
@@ -73,7 +73,7 @@ struct ScrollReaderView: View {
             .onChange(of: followAlongVM.currentVerseId) { _, ayahId in
                 guard let ayahId, followAlongVM.currentSurahId == vm.surah.id else { return }
                 withAnimation(.easeInOut(duration: 0.4)) {
-                    proxy.scrollTo(ayahId, anchor: .top)
+                    proxy.scrollTo(ayahId, anchor: UnitPoint(x: 0.5, y: 0.085))
                 }
             }
         }
