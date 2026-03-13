@@ -285,6 +285,7 @@ TEST_FILES = [
     "NiyaTests/TafsirServiceTests.swift",
     "NiyaTests/TafsirSheetViewTests.swift",
     "NiyaTests/TafsirBlockParserTests.swift",
+    "NiyaTests/TafsirDataIntegrityTests.swift",
     "NiyaTests/ViewCompatTests.swift",
     "NiyaTests/UserLocationTests.swift",
     "NiyaTests/CalculationMethodTests.swift",
