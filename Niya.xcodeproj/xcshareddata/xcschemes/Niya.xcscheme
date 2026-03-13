@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0805CB66C701460690A0DF08"
+               BlueprintIdentifier = "3D9C56A77DFC48B0A682522B"
                BuildableName = "Niya.app"
                BlueprintName = "Niya"
                ReferencedContainer = "container:Niya.xcodeproj">
@@ -34,7 +34,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DA51A188A4B14ACEB9D2EDC5"
+               BlueprintIdentifier = "D84E0AEB28794198A00E1706"
                BuildableName = "NiyaTests.xctest"
                BlueprintName = "NiyaTests"
                ReferencedContainer = "container:Niya.xcodeproj">
@@ -56,7 +56,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0805CB66C701460690A0DF08"
+            BlueprintIdentifier = "3D9C56A77DFC48B0A682522B"
             BuildableName = "Niya.app"
             BlueprintName = "Niya"
             ReferencedContainer = "container:Niya.xcodeproj">

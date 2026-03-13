@@ -160,15 +160,13 @@ private class GlyphBoundsLabel: UIView {
             .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
             .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
 
-        // Quranic annotation marks that render as dotted circles or fallback glyphs
-        // in KFGQPC Uthmanic Script HAFS despite CTFont reporting glyphs exist.
-        // U+06D6-U+06DC: waqf/pause signs, U+06DD-U+06DE: end-of-ayah/section marks,
-        // U+06E9: place of sajdah, U+06EA-U+06ED: small annotation marks
+        // Quranic annotation marks without font glyph support.
+        // U+06DD-U+06DE: end-of-ayah/section marks,
+        // U+06E9: place of sajdah, U+06EA-U+06EC: small annotations
         let stripSet: Set<UInt32> = [
-            0x06D6, 0x06D7, 0x06D8, 0x06D9, 0x06DA, 0x06DB, 0x06DC,
             0x06DD, 0x06DE,
             0x06E9,
-            0x06EA, 0x06EB, 0x06EC, 0x06ED,
+            0x06EA, 0x06EB, 0x06EC,
         ]
 
         let scalars = Array(text.unicodeScalars)

@@ -40,9 +40,8 @@ final class TajweedService {
     // MARK: - Unsupported Quran Marks
 
     nonisolated static let unsupportedQuranMarks: Set<UInt32> = [
-        0x06D6, 0x06D7, 0x06D8, 0x06D9, 0x06DA, 0x06DB, 0x06DC, // waqf signs
-        0x06DD, 0x06DE,                                             // end-of-ayah, rub el hizb
-        0x06E9,                                                     // place of sajdah
-        0x06EA, 0x06EB, 0x06EC, 0x06ED,                            // small annotations
+        0x06DD, 0x06DE,                             // end-of-ayah, rub el hizb
+        0x06E9,                                     // place of sajdah
+        0x06EA, 0x06EB, 0x06EC,                     // small annotations
     ]
 }

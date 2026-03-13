@@ -325,6 +325,8 @@ TEST_FILES = [
     "NiyaTests/CloudSyncMigrationTests.swift",
     "NiyaTests/ModelContainerResilienceTests.swift",
     "NiyaTests/SettingsViewTests.swift",
+    "NiyaTests/WaqfMarkTests.swift",
+    "NiyaTests/TajweedMappingWaqfTests.swift",
 ]
 
 # Widget extension files
