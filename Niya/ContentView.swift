@@ -8,10 +8,6 @@ struct ContentView: View {
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(NavigationCoordinator.self) private var coordinator
 
-    private var barChromeHidden: Bool {
-        coordinator.isChromeHidden && coordinator.isReaderVisible
-    }
-
     var body: some View {
         @Bindable var coordinator = coordinator
         tabContent(selection: $coordinator.selectedTab)
@@ -19,13 +15,11 @@ struct ContentView: View {
             .overlay(alignment: .bottom) {
                 if autoScrollVM.isEnabled {
                     AutoScrollBar()
-                        .padding(.bottom, barChromeHidden ? 0 : 60)
-                        .animation(.easeInOut(duration: 0.3), value: barChromeHidden)
+                        .padding(.bottom, 60)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 } else if audioPlayerVM.hasActiveSession {
                     AudioPlayerBar()
-                        .padding(.bottom, barChromeHidden ? 0 : 60)
-                        .animation(.easeInOut(duration: 0.3), value: barChromeHidden)
+                        .padding(.bottom, 60)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }

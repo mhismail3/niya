@@ -77,9 +77,6 @@ struct ScrollReaderView: View {
                 }
             }
         }
-        .background {
-            NavBarHideOnSwipe(coordinator: coordinator)
-        }
         .background(Color.niyaBackground)
         .sheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: vm.surah.id, ayahId: item.value, surahName: vm.surah.transliteration)
@@ -198,86 +195,6 @@ struct ScrollReaderView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .environment(\.layoutDirection, .rightToLeft)
             .padding(.vertical, 20)
-    }
-}
-
-// MARK: - Nav Bar Hide On Swipe (UIKit bridge)
-
-private struct NavBarHideOnSwipe: UIViewControllerRepresentable {
-    let coordinator: NavigationCoordinator
-
-    func makeUIViewController(context: Context) -> NavBarHideController {
-        NavBarHideController(coordinator: coordinator)
-    }
-
-    func updateUIViewController(_ vc: NavBarHideController, context: Context) {}
-}
-
-private final class NavBarHideController: UIViewController {
-    let coordinator: NavigationCoordinator
-    private var frameObservation: NSKeyValueObservation?
-
-    init(coordinator: NavigationCoordinator) {
-        self.coordinator = coordinator
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) { fatalError() }
-
-    override func didMove(toParent parent: UIViewController?) {
-        super.didMove(toParent: parent)
-        configureIfNeeded()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureIfNeeded()
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.hidesBarsOnSwipe = false
-        navigationController?.setNavigationBarHidden(false, animated: animated)
-        restoreTabBar(animated: animated)
-        frameObservation?.invalidate()
-        frameObservation = nil
-    }
-
-    private func configureIfNeeded() {
-        guard let nav = navigationController else { return }
-        nav.hidesBarsOnSwipe = true
-
-        guard frameObservation == nil else { return }
-        frameObservation = nav.navigationBar.observe(\.center, options: [.new]) {
-            [weak self] bar, _ in
-            let hidden = bar.frame.maxY <= 0
-            Task { @MainActor [weak self] in
-                guard let self, self.coordinator.isChromeHidden != hidden else { return }
-                self.coordinator.isChromeHidden = hidden
-                self.animateTabBar(hidden: hidden)
-            }
-        }
-    }
-
-    private func animateTabBar(hidden: Bool) {
-        guard let tabBar = tabBarController?.tabBar else { return }
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
-            tabBar.alpha = hidden ? 0 : 1
-        }
-    }
-
-    private func restoreTabBar(animated: Bool) {
-        guard let tabBar = tabBarController?.tabBar, tabBar.alpha < 1 else { return }
-        if animated {
-            UIView.animate(withDuration: 0.3) { tabBar.alpha = 1 }
-        } else {
-            tabBar.alpha = 1
-        }
-    }
-
-    deinit {
-        frameObservation?.invalidate()
     }
 }
 
