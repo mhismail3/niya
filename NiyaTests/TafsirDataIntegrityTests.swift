@@ -6,14 +6,14 @@ import Testing
 @Suite("TafsirDataIntegrity")
 struct TafsirDataIntegrityTests {
 
-    /// Verify no surah N+1 verse 1 is a duplicate of surah N's last verse.
-    /// Catches cross-surah boundary duplication from upstream digitization errors.
-    @Test func noCrossSurahBoundaryDuplication() throws {
+    /// Verify the first verse of each surah (if present) is not duplicated from
+    /// the previous surah. This catches the cross-surah boundary contamination
+    /// bug where quran.com's verse-group mapping shifts content across surahs.
+    @Test func noCrossSurahBoundaryContamination() throws {
         for edition in TafsirEdition.allCases {
             for surahN in 1...113 {
                 let surahNext = surahN + 1
 
-                // Load both surahs via the service's public API
                 guard let url1 = Bundle.main.url(
                     forResource: String(surahN),
                     withExtension: "json",
@@ -30,17 +30,15 @@ struct TafsirDataIntegrityTests {
                 let dict2 = try? JSONDecoder().decode([String: String].self, from: data2)
                 else { continue }
 
-                guard let verse1Text = dict2["1"] else { continue }
+                let prevTexts = Set(dict1.values)
 
-                let lastKey = dict1.keys
-                    .compactMap { Int($0) }
-                    .max()
-                    .map(String.init)
-                guard let lastKey, let lastText = dict1[lastKey] else { continue }
+                // Find the first ayah key in surah N+1
+                guard let firstKey = dict2.keys.compactMap({ Int($0) }).min(),
+                      let firstText = dict2[String(firstKey)] else { continue }
 
                 #expect(
-                    lastText != verse1Text,
-                    "\(edition.displayName): surah \(surahNext) verse 1 is a duplicate of surah \(surahN) verse \(lastKey)"
+                    !prevTexts.contains(firstText),
+                    "\(edition.displayName): surah \(surahNext) ayah \(firstKey) contains text from surah \(surahN)"
                 )
             }
         }
