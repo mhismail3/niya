@@ -6,6 +6,7 @@ import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TEXT_DIR = os.path.join(SCRIPT_DIR, "source", "hadith-json")
 GRADE_DIR = os.path.join(SCRIPT_DIR, "source", "hadith-grades")
+SUPPLEMENT_DIR = os.path.join(SCRIPT_DIR, "source", "hadith-supplement")
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "output", "hadith")
 RESOURCES_DIR = os.path.join(SCRIPT_DIR, "..", "Niya", "Resources", "Data")
 
@@ -30,10 +31,30 @@ COLLECTIONS = [
     ("shamail_muhammadiyah", "shamail", "Shamail Muhammadiyah", "الشمائل المحمدية", "Imam al-Tirmidhi"),
 ]
 
-# Collections with grade data available (fawazahmed0 provides these)
+# Collections with grade data available
+# fawazahmed0 provides 10; ahmed via fetch_ahmad_grades.py;
+# mishkat + shamail via fetch_sunnah_supplement.py (al-Albani grades from sunnah.com)
 GRADED_FILENAMES = {
     "bukhari", "muslim", "abudawud", "tirmidhi", "nasai",
-    "ibnmajah", "malik", "nawawi40", "qudsi40", "shahwaliullah40",
+    "ibnmajah", "malik", "ahmed", "darimi",
+    "nawawi40", "qudsi40", "shahwaliullah40",
+    "mishkat_almasabih", "shamail_muhammadiyah",
+}
+
+# Collections where all hadiths are Sahih by scholarly consensus
+# (no per-hadith grading needed — the entire collection is authenticated)
+UNIVERSALLY_SAHIH = {"bukhari", "muslim"}
+
+# Grade files with non-standard names (filename -> grade file basename without .json)
+GRADE_FILE_OVERRIDE = {
+    "mishkat_almasabih": "mishkat_grades",
+    "shamail_muhammadiyah": "shamail_grades",
+}
+
+# Supplement files: additional hadiths scraped from sunnah.com
+SUPPLEMENT_FILES = {
+    "mishkat_almasabih": "mishkat_supplement.json",
+    "shamail_muhammadiyah": "shamail_supplement.json",
 }
 
 GRADE_ARABIC = {
@@ -45,10 +66,10 @@ GRADE_ARABIC = {
 
 
 def normalize_grade(grade_str):
-    """Pass through original grade string (normalization happens in Swift)."""
+    """Normalize curly quotes and non-breaking spaces for consistent matching."""
     if not grade_str:
         return None
-    return grade_str.strip()
+    return grade_str.strip().replace("\u2018", "'").replace("\u2019", "'").replace("\xa0", " ")
 
 
 def grade_arabic(grade_str):
@@ -56,20 +77,25 @@ def grade_arabic(grade_str):
     if not grade_str:
         return None
     g = grade_str.lower()
-    if "mawdu" in g or "maudu" in g or "fabricat" in g:
+    if "mawdu" in g or "maudu" in g or "fabricat" in g or "repudiated" in g:
         return GRADE_ARABIC["mawdu"]
-    if "sahih" in g:
+    if "sahih" in g or "qawi" in g or "jayyid" in g \
+            or "agreed upon" in g or "muttafaq" in g \
+            or "sound" in g or "strong" in g:
         return GRADE_ARABIC["sahih"]
-    if "hasan" in g:
+    if "hasan" in g or "good" in g or "fair" in g:
         return GRADE_ARABIC["hasan"]
-    if "daif" in g or "da'if" in g or "weak" in g:
+    if "daif" in g or "da'if" in g or "da'of" in g or "da'eef" in g \
+            or "d'eef" in g or "dai'f" in g or "da 'eef" in g \
+            or "weak" in g or "munqati" in g:
         return GRADE_ARABIC["daif"]
     return None
 
 
 def load_grades(ahmedbaset_filename):
-    """Load grades from fawazahmed0 data, indexed by hadith number."""
-    grade_file = os.path.join(GRADE_DIR, f"{ahmedbaset_filename}.json")
+    """Load grades indexed by hadith number."""
+    basename = GRADE_FILE_OVERRIDE.get(ahmedbaset_filename, ahmedbaset_filename)
+    grade_file = os.path.join(GRADE_DIR, f"{basename}.json")
     if not os.path.exists(grade_file):
         return {}
     with open(grade_file, encoding="utf-8") as f:
@@ -79,9 +105,20 @@ def load_grades(ahmedbaset_filename):
         num = h.get("hadithnumber")
         grade_list = h.get("grades", [])
         if grade_list and num is not None:
-            # Use first grader's grade
             grades[num] = grade_list[0].get("grade", "")
     return grades
+
+
+def load_supplement(ahmedbaset_filename):
+    """Load supplementary hadiths scraped from sunnah.com."""
+    supp_file_name = SUPPLEMENT_FILES.get(ahmedbaset_filename)
+    if not supp_file_name:
+        return []
+    supp_file = os.path.join(SUPPLEMENT_DIR, supp_file_name)
+    if not os.path.exists(supp_file):
+        return []
+    with open(supp_file, encoding="utf-8") as f:
+        return json.load(f)
 
 
 def normalize_chapters(raw_chapters, raw_hadiths):
@@ -127,6 +164,7 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
         raw = json.loads(f.read(), strict=False)
 
     grades = load_grades(ahmedbaset_filename) if has_grades else {}
+    supplement = load_supplement(ahmedbaset_filename)
 
     # Build chapters
     raw_chapters = raw.get("chapters", [])
@@ -170,6 +208,9 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
 
         hadith_num = h.get("idInBook", h.get("id", 0))
         grade_str = grades.get(hadith_num) if has_grades else None
+        grade_normalized = normalize_grade(grade_str)
+        if not grade_normalized and ahmedbaset_filename in UNIVERSALLY_SAHIH:
+            grade_normalized = "Sahih"
 
         hadiths.append({
             "id": hadith_num,
@@ -177,9 +218,45 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
             "arabic": h.get("arabic", ""),
             "narrator": narrator,
             "text": text,
-            "grade": normalize_grade(grade_str),
-            "gradeArabic": grade_arabic(grade_str),
+            "grade": grade_normalized,
+            "gradeArabic": grade_arabic(grade_normalized),
         })
+
+    # Append supplementary hadiths (scraped from sunnah.com)
+    existing_ids = {h["id"] for h in hadiths}
+    # Map sunnah.com bookNum to our chapter IDs (original source IDs before normalization)
+    orig_id_to_new = {ch_orig: ch_new["id"]
+                      for ch_orig, ch_new in zip(
+                          [ch.get("id") for ch in raw.get("chapters", [])],
+                          chapters)}
+    last_chapter_id = chapters[-1]["id"] if chapters else 0
+    supp_added = 0
+
+    for sh in supplement:
+        num = sh["hadithNumber"]
+        if num in existing_ids:
+            continue
+        book_num = sh.get("bookNum")
+        chapter_id = orig_id_to_new.get(book_num, last_chapter_id)
+        grade_normalized = normalize_grade(sh.get("grade"))
+        hadiths.append({
+            "id": num,
+            "chapterId": chapter_id,
+            "arabic": sh.get("arabic", ""),
+            "narrator": sh.get("narrator", ""),
+            "text": sh.get("english", ""),
+            "grade": grade_normalized,
+            "gradeArabic": grade_arabic(grade_normalized),
+        })
+        supp_added += 1
+
+    if supp_added:
+        # Update hadithRange for chapters that received new hadiths
+        for ch in chapters:
+            ch_hadiths = [h["id"] for h in hadiths if h["chapterId"] == ch["id"]]
+            if ch_hadiths:
+                ch["hadithRange"] = [min(ch_hadiths), max(ch_hadiths)]
+        print(f"  + {supp_added} supplementary hadiths added")
 
     return {
         "chapters": chapters,

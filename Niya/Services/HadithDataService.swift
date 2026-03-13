@@ -14,7 +14,8 @@ final class HadithDataService {
     var loadError: String?
 
     private static let enabledCollections: Set<String> = [
-        "bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah", "ahmed"
+        "bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
+        "malik", "ahmed", "darimi",
     ]
 
     private var loadedCollections: [String: HadithCollectionData] = [:]

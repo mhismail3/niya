@@ -6,8 +6,11 @@ struct HadithRowView: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            badgeView
-                .frame(width: 48)
+            VStack(spacing: 4) {
+                badgeView
+                gradeLabel
+            }
+            .frame(width: 48)
 
             VStack(alignment: .leading, spacing: 4) {
                 if !hadith.narrator.isEmpty {
@@ -31,24 +34,6 @@ struct HadithRowView: View {
                         .multilineTextAlignment(.trailing)
                         .environment(\.layoutDirection, .rightToLeft)
                 }
-
-                if hasGrades, let grade = HadithGrade.from(hadith.grade) {
-                    Text(grade.displayName)
-                        .font(.system(.caption2, design: .serif, weight: .medium))
-                        .foregroundStyle(grade.color)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(grade.color.opacity(0.1))
-                        .clipShape(Capsule())
-                } else if hasGrades, let gradeText = hadith.grade {
-                    Text(gradeText)
-                        .font(.system(.caption2, design: .serif, weight: .medium))
-                        .foregroundStyle(Color.niyaSecondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(Color.niyaSecondary.opacity(0.1))
-                        .clipShape(Capsule())
-                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -57,14 +42,39 @@ struct HadithRowView: View {
     private var badgeView: some View {
         ZStack {
             Image(systemName: "diamond")
-                .font(.system(size: 36))
+                .font(.system(size: 30))
                 .foregroundStyle(Color.niyaTeal.opacity(0.15))
             Text("\(hadith.id)")
-                .font(.system(size: hadith.id > 999 ? 10 : 11, weight: .semibold, design: .rounded))
+                .font(.system(size: hadith.id > 999 ? 9 : 10, weight: .semibold, design: .rounded))
                 .foregroundStyle(Color.niyaTeal)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
         }
-        .frame(width: 48, height: 36)
+        .frame(width: 48, height: 30)
+    }
+
+    @ViewBuilder
+    private var gradeLabel: some View {
+        if hasGrades, let grade = HadithGrade.from(hadith.grade) {
+            Text(grade.displayName)
+                .font(.system(size: 9, weight: .medium, design: .serif))
+                .foregroundStyle(grade.color)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(grade.color.opacity(0.1))
+                .clipShape(Capsule())
+                .lineLimit(1)
+                .fixedSize()
+        } else if hasGrades, let gradeText = hadith.grade {
+            Text(gradeText)
+                .font(.system(size: 9, weight: .medium, design: .serif))
+                .foregroundStyle(Color.niyaSecondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.niyaSecondary.opacity(0.1))
+                .clipShape(Capsule())
+                .lineLimit(1)
+                .fixedSize()
+        }
     }
 }

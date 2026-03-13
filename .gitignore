@@ -3,6 +3,8 @@ build/
 DerivedData/
 DataPrep/output/
 DataPrep/source/
+DataPrep/cache/
+DataPrep/.env
 DataPrep/noreen_audio/
 DataPrep/bukhatir_audio/
 DataPrep/venv/

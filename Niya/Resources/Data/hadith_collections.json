@@ -69,7 +69,7 @@
     "author": "Imam Ahmad ibn Hanbal",
     "totalHadiths": 1374,
     "totalChapters": 8,
-    "hasGrades": false
+    "hasGrades": true
   },
   {
     "id": "darimi",
@@ -78,7 +78,7 @@
     "author": "Imam al-Darimi",
     "totalHadiths": 3406,
     "totalChapters": 24,
-    "hasGrades": false
+    "hasGrades": true
   },
   {
     "id": "nawawi",
@@ -130,9 +130,9 @@
     "name": "Mishkat al-Masabih",
     "nameArabic": "مشكاة المصابيح",
     "author": "Al-Tabrizi",
-    "totalHadiths": 4428,
+    "totalHadiths": 5225,
     "totalChapters": 25,
-    "hasGrades": false
+    "hasGrades": true
   },
   {
     "id": "riyad",
@@ -148,8 +148,8 @@
     "name": "Shamail Muhammadiyah",
     "nameArabic": "الشمائل المحمدية",
     "author": "Imam al-Tirmidhi",
-    "totalHadiths": 402,
+    "totalHadiths": 417,
     "totalChapters": 57,
-    "hasGrades": false
+    "hasGrades": true
   }
 ]
