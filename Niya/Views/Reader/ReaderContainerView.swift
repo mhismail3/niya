@@ -127,7 +127,7 @@ struct ReaderContainerView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView(readerVM: vm)
-                .presentationDetents([.medium, .large])
+                .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
         }
         .sheet(isPresented: $showTajweedGuide) {

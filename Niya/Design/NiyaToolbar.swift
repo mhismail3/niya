@@ -35,7 +35,7 @@ struct NiyaToolbar: ViewModifier {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.large])
                     .presentationDragIndicator(.hidden)
             }
             .sheet(isPresented: $coord.showSalahSheet) {

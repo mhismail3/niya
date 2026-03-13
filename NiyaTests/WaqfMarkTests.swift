@@ -34,57 +34,67 @@ struct WaqfMarkTests {
         #expect(surahsWithWaqf >= 10, "Expected waqf marks in many surahs, found in \(surahsWithWaqf)")
     }
 
-    // MARK: - Stripping set correctness
+    // MARK: - No stripping — all characters preserved
 
-    @Test func unsupportedMarksExcludeWaqfSigns() {
-        for mark: UInt32 in [0x06D6, 0x06D7, 0x06D8, 0x06D9, 0x06DA, 0x06DB, 0x06DC] {
-            #expect(!TajweedService.unsupportedQuranMarks.contains(mark),
-                    "Waqf mark U+\(String(mark, radix: 16, uppercase: true)) should NOT be stripped")
-        }
+    @Test func cleanArabicTextPreservesAllQuranicMarks() {
+        // Every Quranic mark in U+06D6-U+06ED range must survive cleanArabicText
+        let allMarks = "\u{06D6}\u{06D7}\u{06D8}\u{06D9}\u{06DA}\u{06DB}\u{06DC}"
+            + "\u{06DD}\u{06DE}\u{06E0}\u{06E1}\u{06E2}\u{06E3}\u{06E4}"
+            + "\u{06E5}\u{06E6}\u{06E7}\u{06E8}\u{06E9}\u{06EA}\u{06EB}\u{06EC}\u{06ED}"
+        let cleaned = TajweedService.cleanArabicText(allMarks)
+        #expect(cleaned.unicodeScalars.count == allMarks.unicodeScalars.count,
+                "No characters should be stripped — cascade font handles rendering")
     }
 
-    @Test func unsupportedMarksExcludeSmallLowMeem() {
-        #expect(!TajweedService.unsupportedQuranMarks.contains(0x06ED))
-    }
-
-    @Test func unsupportedMarksStillContainNonWaqfMarks() {
-        let shouldStrip: [UInt32] = [0x06DD, 0x06DE, 0x06E9, 0x06EA, 0x06EB, 0x06EC]
-        for mark in shouldStrip {
-            #expect(TajweedService.unsupportedQuranMarks.contains(mark),
-                    "Mark U+\(String(mark, radix: 16, uppercase: true)) should still be stripped")
-        }
-    }
-
-    @Test func unsupportedMarksSetExactSize() {
-        #expect(TajweedService.unsupportedQuranMarks.count == 6)
-    }
-
-    // MARK: - Display pipeline preserves waqf marks
-
-    @Test func stripUnsupportedMarksPreservesWaqfInHafsText() {
+    @Test func cleanArabicTextPreservesWaqfMarks() {
         let textWithWaqf = "بِٱلۡعُقُودِۚ أُحِلَّتۡ"  // contains U+06DA (ۚ)
-        let stripped = stripUnsupportedMarks(textWithWaqf)
-        let hasWaqf = stripped.unicodeScalars.contains { waqfRange.contains($0.value) }
-        #expect(hasWaqf, "Waqf marks must be preserved after stripping")
+        let cleaned = TajweedService.cleanArabicText(textWithWaqf)
+        let hasWaqf = cleaned.unicodeScalars.contains { waqfRange.contains($0.value) }
+        #expect(hasWaqf, "Waqf marks must be preserved")
     }
 
-    @Test func stripUnsupportedMarksRemovesEndOfAyah() {
-        let textWithEoA = "test\u{06DD}more"
-        let stripped = stripUnsupportedMarks(textWithEoA)
-        let hasEoA = stripped.unicodeScalars.contains { $0.value == 0x06DD }
-        #expect(!hasEoA, "End-of-ayah mark should be stripped")
+    @Test func cleanArabicTextPreservesSmallLowMeem() {
+        let text = "صَبْرًۭا"  // U+06ED
+        let cleaned = TajweedService.cleanArabicText(text)
+        #expect(cleaned.unicodeScalars.contains { $0.value == 0x06ED },
+                "Small low meem must be preserved for cascade font rendering")
     }
 
-    @Test func stripUnsupportedMarksRemovesRubElHizb() {
+    @Test func cleanArabicTextPreservesEndOfAyah() {
+        let text = "test\u{06DD}more"
+        let cleaned = TajweedService.cleanArabicText(text)
+        #expect(cleaned.unicodeScalars.contains { $0.value == 0x06DD })
+    }
+
+    @Test func cleanArabicTextPreservesRubElHizb() {
         let text = "test\u{06DE}more"
-        let stripped = stripUnsupportedMarks(text)
-        #expect(!stripped.unicodeScalars.contains { $0.value == 0x06DE })
+        let cleaned = TajweedService.cleanArabicText(text)
+        #expect(cleaned.unicodeScalars.contains { $0.value == 0x06DE })
     }
 
-    // MARK: - Helpers
+    // MARK: - Substitutions
 
-    private func stripUnsupportedMarks(_ text: String) -> String {
-        String(text.unicodeScalars.filter { !TajweedService.unsupportedQuranMarks.contains($0.value) })
+    @Test func cleanArabicTextSubstitutesRoundedZero() {
+        let text = "كَفَرُوا\u{06DF}"
+        let cleaned = TajweedService.cleanArabicText(text)
+        #expect(!cleaned.unicodeScalars.contains { $0.value == 0x06DF },
+                "U+06DF should be substituted")
+        #expect(cleaned.unicodeScalars.contains { $0.value == 0x06E0 },
+                "Should be replaced with U+06E0")
+    }
+
+    @Test func cleanArabicTextSubstitutesAlefWavyHamza() {
+        let text = "test\u{0672}end"
+        let cleaned = TajweedService.cleanArabicText(text)
+        #expect(!cleaned.unicodeScalars.contains { $0.value == 0x0672 })
+        #expect(cleaned.unicodeScalars.contains { $0.value == 0x0670 })
+    }
+
+    @Test func cleanArabicTextSubstitutesDotlessBeh() {
+        let text = "test\u{066E}end"
+        let cleaned = TajweedService.cleanArabicText(text)
+        #expect(!cleaned.unicodeScalars.contains { $0.value == 0x066E })
+        #expect(cleaned.unicodeScalars.contains { $0.value == 0x0649 })
     }
 }
 

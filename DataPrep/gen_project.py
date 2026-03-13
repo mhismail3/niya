@@ -327,6 +327,7 @@ TEST_FILES = [
     "NiyaTests/SettingsViewTests.swift",
     "NiyaTests/WaqfMarkTests.swift",
     "NiyaTests/TajweedMappingWaqfTests.swift",
+    "NiyaTests/CascadeFontTests.swift",
 ]
 
 # Widget extension files
@@ -1401,7 +1402,7 @@ def build_settings_widget_target(config):
         f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = NiyaWidgets/NiyaWidgets.entitlements;",
         "\t\t\t\tCODE_SIGN_STYLE = Automatic;",
         "\t\t\t\tDEVELOPMENT_TEAM = MYGKXH6TY4;",
-        "\t\t\t\tCURRENT_PROJECT_VERSION = 24;",
+        "\t\t\t\tCURRENT_PROJECT_VERSION = 25;",
         f"\t\t\t\tGENERATE_INFOPLIST_FILE = NO;",
         f"\t\t\t\tINFOPLIST_FILE = NiyaWidgets/Info.plist;",
         f"\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = {DEPLOYMENT};",
@@ -1488,7 +1489,7 @@ def build_settings_target(config):
         f"\t\t\t\tINFOPLIST_FILE = Niya/Info.plist;",
         "\t\t\t\tCODE_SIGN_STYLE = Automatic;",
         "\t\t\t\tDEVELOPMENT_TEAM = MYGKXH6TY4;",
-        "\t\t\t\tCURRENT_PROJECT_VERSION = 24;",
+        "\t\t\t\tCURRENT_PROJECT_VERSION = 25;",
         f"\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = {DEPLOYMENT};",
         "\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"@executable_path/Frameworks\",\n\t\t\t\t);",
         "\t\t\t\tMARKETING_VERSION = 1.0;",
@@ -1506,7 +1507,7 @@ def build_settings_test_target(config):
         f"\t\t\t\tBUNDLE_LOADER = \"$(TEST_HOST)\";",
         f"\t\t\t\tCODE_SIGN_STYLE = Automatic;",
         "\t\t\t\tDEVELOPMENT_TEAM = MYGKXH6TY4;",
-        f"\t\t\t\tCURRENT_PROJECT_VERSION = 24;",
+        f"\t\t\t\tCURRENT_PROJECT_VERSION = 25;",
         "\t\t\t\tGENERATE_INFOPLIST_FILE = YES;",
         f"\t\t\t\tIPHONEOS_DEPLOYMENT_TARGET = {DEPLOYMENT};",
         "\t\t\t\tLD_RUNPATH_SEARCH_PATHS = (\n\t\t\t\t\t\"$(inherited)\",\n\t\t\t\t\t\"@executable_path/Frameworks\",\n\t\t\t\t\t\"@loader_path/Frameworks\",\n\t\t\t\t);",

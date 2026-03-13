@@ -131,12 +131,13 @@ private class GlyphBoundsLabel: UIView {
             setNeedsDisplay()
             return
         }
-        var font = CTFontCreateWithName(fontName as CFString, fontSize, nil)
+        let baseFont = UIFont.quranFont(script: .hafs, size: fontSize)
+        var font: CTFont = baseFont
         if isBold,
            let bold = CTFontCreateCopyWithSymbolicTraits(font, fontSize, nil, .boldTrait, .boldTrait) {
             font = bold
         }
-        let cleaned = Self.textWithSupportedGlyphs(text, font: font)
+        let cleaned = TajweedService.cleanArabicText(text)
         let attrs: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: textColor
@@ -150,52 +151,6 @@ private class GlyphBoundsLabel: UIView {
         cachedFontDescent = CTFontGetDescent(font)
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
-    }
-
-    /// Replaces characters the font lacks glyphs for with equivalents, then strips any remaining unsupported characters.
-    private static func textWithSupportedGlyphs(_ input: String, font: CTFont) -> String {
-        // Apply known substitutions (characters with equivalent glyphs in Uthmanic fonts)
-        let text = input
-            .replacingOccurrences(of: "\u{06DF}", with: "\u{06E0}")  // Small High Rounded Zero → Upright Rectangular Zero
-            .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
-            .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
-
-        // Quranic annotation marks without font glyph support.
-        // U+06DD-U+06DE: end-of-ayah/section marks,
-        // U+06E9: place of sajdah, U+06EA-U+06EC: small annotations
-        let stripSet: Set<UInt32> = [
-            0x06DD, 0x06DE,
-            0x06E9,
-            0x06EA, 0x06EB, 0x06EC,
-        ]
-
-        let scalars = Array(text.unicodeScalars)
-        guard !scalars.isEmpty else { return text }
-
-        var hasUnsupported = false
-        var supported = [Bool](repeating: true, count: scalars.count)
-        for (i, scalar) in scalars.enumerated() {
-            if stripSet.contains(scalar.value) {
-                supported[i] = false
-                hasUnsupported = true
-                continue
-            }
-            guard scalar.value <= 0xFFFF else { continue }
-            var utf16 = UniChar(truncatingIfNeeded: scalar.value)
-            var glyph: CGGlyph = 0
-            if !CTFontGetGlyphsForCharacters(font, &utf16, &glyph, 1) {
-                supported[i] = false
-                hasUnsupported = true
-            }
-        }
-        guard hasUnsupported else { return text }
-
-        var result = String.UnicodeScalarView()
-        result.reserveCapacity(scalars.count)
-        for (i, scalar) in scalars.enumerated() where supported[i] {
-            result.append(scalar)
-        }
-        return String(result)
     }
 
     override var intrinsicContentSize: CGSize {

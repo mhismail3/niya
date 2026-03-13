@@ -44,8 +44,7 @@ struct TajweedTextView: UIViewRepresentable {
 
     private func makeAttributedString() -> NSAttributedString {
         let text = displayText
-        let font = UIFont(name: QuranScript.hafs.fontName, size: fontSize)
-            ?? .systemFont(ofSize: fontSize)
+        let font = UIFont.quranFont(script: .hafs, size: fontSize)
         let style = NSMutableParagraphStyle()
         style.alignment = .right
         style.baseWritingDirection = .rightToLeft

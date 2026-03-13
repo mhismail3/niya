@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 @Observable
 @MainActor
@@ -37,11 +38,35 @@ final class TajweedService {
         }
     }
 
-    // MARK: - Unsupported Quran Marks
+    /// Normalize Arabic text with character substitutions for equivalent glyphs.
+    /// No characters are stripped — fallback font handles unsupported marks.
+    nonisolated static func cleanArabicText(_ input: String) -> String {
+        input
+            .replacingOccurrences(of: "\u{06DF}", with: "\u{06E0}")  // Small High Rounded Zero → Upright Rectangular Zero
+            .replacingOccurrences(of: "\u{0672}", with: "\u{0670}")  // Alef w/ Wavy Hamza → Superscript Alef
+            .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
+    }
 
-    nonisolated static let unsupportedQuranMarks: Set<UInt32> = [
-        0x06DD, 0x06DE,                             // end-of-ayah, rub el hizb
-        0x06E9,                                     // place of sajdah
-        0x06EA, 0x06EB, 0x06EC,                     // small annotations
-    ]
+    /// Creates an NSAttributedString with the primary Quran font and NotoNaskhArabic
+    /// fallback for characters that KFGQPC renders as placeholders.
+    nonisolated static func attributedArabicText(
+        _ input: String,
+        font primaryFont: UIFont,
+        color: UIColor,
+        lineSpacing: CGFloat = 12,
+        alignment: NSTextAlignment = .right
+    ) -> NSAttributedString {
+        let text = cleanArabicText(input)
+        let style = NSMutableParagraphStyle()
+        style.alignment = alignment
+        style.baseWritingDirection = .rightToLeft
+        style.lineSpacing = lineSpacing
+
+        let base: [NSAttributedString.Key: Any] = [
+            .font: primaryFont,
+            .foregroundColor: color,
+            .paragraphStyle: style,
+        ]
+        return NSAttributedString(string: text, attributes: base)
+    }
 }
