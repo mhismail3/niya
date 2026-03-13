@@ -72,11 +72,10 @@ struct VerseRowView: View {
                 .transition(.opacity)
                 .onScrollVisibilityDismiss { dismissTooltip() }
             } else {
-                Text(AttributedString(TajweedService.attributedArabicText(
-                    verse.text,
-                    font: .quranFont(script: script, size: arabicFontSize),
-                    color: UIColor(named: "niyaText") ?? .label
-                )))
+                Text(TajweedService.cleanArabicText(verse.text))
+                    .font(.quranText(script: script, size: arabicFontSize))
+                    .foregroundStyle(Color.niyaText)
+                    .multilineTextAlignment(.trailing)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
 

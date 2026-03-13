@@ -1,5 +1,4 @@
 import Foundation
-import UIKit
 
 @Observable
 @MainActor
@@ -47,26 +46,4 @@ final class TajweedService {
             .replacingOccurrences(of: "\u{066E}", with: "\u{0649}")  // Dotless Beh → Alef Maksura
     }
 
-    /// Creates an NSAttributedString with the primary Quran font and NotoNaskhArabic
-    /// fallback for characters that KFGQPC renders as placeholders.
-    nonisolated static func attributedArabicText(
-        _ input: String,
-        font primaryFont: UIFont,
-        color: UIColor,
-        lineSpacing: CGFloat = 12,
-        alignment: NSTextAlignment = .right
-    ) -> NSAttributedString {
-        let text = cleanArabicText(input)
-        let style = NSMutableParagraphStyle()
-        style.alignment = alignment
-        style.baseWritingDirection = .rightToLeft
-        style.lineSpacing = lineSpacing
-
-        let base: [NSAttributedString.Key: Any] = [
-            .font: primaryFont,
-            .foregroundColor: color,
-            .paragraphStyle: style,
-        ]
-        return NSAttributedString(string: text, attributes: base)
-    }
 }

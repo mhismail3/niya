@@ -187,11 +187,10 @@ struct BookmarksView: View {
                             .foregroundStyle(Color.niyaGold)
 
                         if let verse {
-                            Text(AttributedString(TajweedService.attributedArabicText(
-                                verse.text,
-                                font: .quranFont(script: storedScript, size: 20),
-                                color: UIColor(named: "niyaText") ?? .label
-                            )))
+                            Text(TajweedService.cleanArabicText(verse.text))
+                                .font(.quranText(script: storedScript, size: 20))
+                                .foregroundStyle(Color.niyaText)
+                                .multilineTextAlignment(.trailing)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                                 .lineLimit(2)
 
