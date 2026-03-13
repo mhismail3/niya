@@ -62,6 +62,7 @@ struct TafsirSheetView: View {
     private var contentArea: some View {
         let tafsirText = tafsirService.text(edition: selectedEdition, surahId: surahId, ayahId: ayahId)
         if let tafsirText, !tafsirText.isEmpty {
+            let blocks = TafsirBlockParser.parse(tafsirText)
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(selectedEdition.author)
@@ -72,25 +73,8 @@ struct TafsirSheetView: View {
                         .font(.niyaCaption)
                         .foregroundStyle(Color.niyaSecondary.opacity(0.7))
 
-                    ForEach(Array(tafsirText.components(separatedBy: "\n").enumerated()), id: \.offset) { _, paragraph in
-                        if !paragraph.trimmingCharacters(in: .whitespaces).isEmpty {
-                            let isArabicBlock = paragraph.unicodeScalars.filter(\.properties.isAlphabetic).allSatisfy(isArabicScalar)
-                            if isArabicBlock {
-                                Text(paragraph)
-                                    .font(.custom("NotoNaskhArabic", size: 20))
-                                    .foregroundStyle(Color.niyaText)
-                                    .multilineTextAlignment(.trailing)
-                                    .lineSpacing(12)
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .textSelection(.enabled)
-                            } else {
-                                Text(styledTafsirText(paragraph))
-                                    .font(.system(.body, design: .serif))
-                                    .foregroundStyle(Color.niyaText)
-                                    .textSelection(.enabled)
-                                    .lineSpacing(4)
-                            }
-                        }
+                    ForEach(Array(blocks.enumerated()), id: \.offset) { index, block in
+                        blockView(block, previousBlock: index > 0 ? blocks[index - 1] : nil)
                     }
                 }
                 .padding()
@@ -104,12 +88,98 @@ struct TafsirSheetView: View {
         }
     }
 
-    private func isArabicScalar(_ s: Unicode.Scalar) -> Bool {
-        (0x0600...0x06FF).contains(s.value) ||
-        (0x0750...0x077F).contains(s.value) ||
-        (0x08A0...0x08FF).contains(s.value) ||
-        (0xFB50...0xFDFF).contains(s.value) ||
-        (0xFE70...0xFEFF).contains(s.value)
+    private func topSpacing(for block: TafsirBlock, after previous: TafsirBlock?) -> CGFloat {
+        guard let previous else { return 0 }
+        switch (previous, block) {
+        case (.commentary, .quoteGroup): return 8
+        case (.commentary, .arabicQuote): return 8
+        case (.quoteGroup, .commentary): return 8
+        case (.translation, .commentary): return 8
+        case (.arabicQuote, .commentary): return 8
+        case (.quoteGroup, .quoteGroup): return 8
+        case (.quoteGroup, .arabicQuote): return 8
+        default: return 0
+        }
+    }
+
+    @ViewBuilder
+    private func blockView(_ block: TafsirBlock, previousBlock: TafsirBlock?) -> some View {
+        let extra = topSpacing(for: block, after: previousBlock)
+        Group {
+            switch block {
+            case .heading(let text):
+                Text(text)
+                    .font(.niyaHeadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.niyaText)
+                    .padding(.top, 20)
+
+            case .arabicQuote(let text):
+                Text(text)
+                    .font(.custom("NotoNaskhArabic", size: 20))
+                    .foregroundStyle(Color.niyaText)
+                    .multilineTextAlignment(.trailing)
+                    .lineSpacing(12)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .padding(.leading, 12)
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .fill(Color.niyaGold.opacity(0.4))
+                            .frame(width: 3)
+                    }
+                    .textSelection(.enabled)
+
+            case .translation(let text):
+                Text(highlightVerseRefs(text))
+                    .font(.system(.subheadline, design: .serif))
+                    .italic()
+                    .foregroundStyle(Color.niyaSecondary)
+                    .textSelection(.enabled)
+                    .lineSpacing(3)
+
+            case .quoteGroup(let arabic, let translation):
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(arabic)
+                        .font(.custom("NotoNaskhArabic", size: 20))
+                        .foregroundStyle(Color.niyaText)
+                        .multilineTextAlignment(.trailing)
+                        .lineSpacing(12)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .textSelection(.enabled)
+
+                    Text(highlightVerseRefs(translation))
+                        .font(.system(.subheadline, design: .serif))
+                        .italic()
+                        .foregroundStyle(Color.niyaSecondary)
+                        .textSelection(.enabled)
+                        .lineSpacing(3)
+                }
+                .padding(.leading, 12)
+                .overlay(alignment: .leading) {
+                    Rectangle()
+                        .fill(Color.niyaGold.opacity(0.4))
+                        .frame(width: 3)
+                }
+
+            case .commentary(let text):
+                Text(styledTafsirText(text))
+                    .font(.system(.body, design: .serif))
+                    .foregroundStyle(Color.niyaText)
+                    .textSelection(.enabled)
+                    .lineSpacing(4)
+            }
+        }
+        .padding(.top, extra)
+    }
+
+    private func highlightVerseRefs(_ text: String) -> AttributedString {
+        var result = AttributedString(text)
+        let pattern = /\(\d+:\d+(?:-\d+)?\)/
+        for match in text.matches(of: pattern) {
+            guard let range = result.range(of: String(match.output), locale: nil) else { continue }
+            result[range].foregroundColor = Color.niyaTeal.opacity(0.8)
+        }
+        return result
     }
 
     private func styledTafsirText(_ text: String) -> AttributedString {
@@ -129,7 +199,7 @@ struct TafsirSheetView: View {
 
         for char in text {
             let scalars = char.unicodeScalars
-            let charIsArabic = scalars.contains { isArabicScalar($0) && $0.properties.isAlphabetic }
+            let charIsArabic = scalars.contains { TafsirBlockParser.isArabicScalar($0) && $0.properties.isAlphabetic }
             if charIsArabic != currentIsArabic && !current.isEmpty {
                 flush()
             }
