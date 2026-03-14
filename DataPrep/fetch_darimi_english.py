@@ -43,6 +43,9 @@ def parse_tsv():
             except (IndexError, ValueError):
                 continue
             body = row.get("body_en", "").strip()
+            # Strip TSV bleed: some rows have malformed fields
+            if '\t' in body:
+                body = body[:body.index('\t')]
             body = body.removeprefix("[Machine]").strip()
             if body:
                 translations[hid] = body

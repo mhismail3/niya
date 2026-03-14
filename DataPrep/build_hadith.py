@@ -2,6 +2,7 @@
 """Merge hadith text + grades into bundle-ready JSON files."""
 import json
 import os
+import re
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 TEXT_DIR = os.path.join(SCRIPT_DIR, "source", "hadith-json")
@@ -63,6 +64,26 @@ GRADE_ARABIC = {
     "daif": "ضعيف",
     "mawdu": "موضوع",
 }
+
+
+def normalize_hadith_text(text):
+    """Clean formatting artifacts from hadith text."""
+    if not text:
+        return text
+    # 1. Strip TSV bleed: tab followed by null = truncate
+    tsv_match = re.search(r'\tnull\t', text)
+    if tsv_match:
+        text = text[:tsv_match.start()]
+    # 2. Replace tabs with spaces
+    text = text.replace('\t', ' ')
+    # 3. Normalize paragraph breaks: 2+ newlines (with optional spaces) → \n\n
+    text = re.sub(r'[ \t]*\n[\s]*\n[\s\n]*', '\n\n', text)
+    # 4. Collapse single newlines + surrounding spaces → single space (preserve \n\n)
+    text = re.sub(r'(?<!\n) *\n *(?!\n)', ' ', text)
+    # 5. Collapse multiple spaces → single space
+    text = re.sub(r'  +', ' ', text)
+    # 6. Strip leading/trailing whitespace
+    return text.strip()
 
 
 def normalize_grade(grade_str):
@@ -206,6 +227,9 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
             narrator = eng.get("narrator", "")
             text = eng.get("text", "")
 
+        text = normalize_hadith_text(text)
+        narrator = normalize_hadith_text(narrator)
+
         hadith_num = h.get("idInBook", h.get("id", 0))
         grade_str = grades.get(hadith_num) if has_grades else None
         grade_normalized = normalize_grade(grade_str)
@@ -215,7 +239,7 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
         hadiths.append({
             "id": hadith_num,
             "chapterId": h.get("chapterId") or 0,
-            "arabic": h.get("arabic", ""),
+            "arabic": normalize_hadith_text(h.get("arabic", "")),
             "narrator": narrator,
             "text": text,
             "grade": grade_normalized,
@@ -242,9 +266,9 @@ def build_collection(ahmedbaset_filename, output_id, has_grades):
         hadiths.append({
             "id": num,
             "chapterId": chapter_id,
-            "arabic": sh.get("arabic", ""),
-            "narrator": sh.get("narrator", ""),
-            "text": sh.get("english", ""),
+            "arabic": normalize_hadith_text(sh.get("arabic", "")),
+            "narrator": normalize_hadith_text(sh.get("narrator", "")),
+            "text": normalize_hadith_text(sh.get("english", "")),
             "grade": grade_normalized,
             "gradeArabic": grade_arabic(grade_normalized),
         })
