@@ -27,4 +27,7 @@ enum StorageKey {
     static let audioFilenameMigrated = "audioFilenameMigrated"
     static let showJuzProgress = "showJuzProgress"
     static let tipsLastShownVersion = "tipsLastShownVersion"
+    static let selectedTranslationLegacy = "selectedTranslation"
+    static let cloudSyncMigrationCompleted = "cloudSyncMigrationCompleted"
+    static let backgroundTaskIdentifier = "com.niya.mobile.prayerRefresh"
 }

@@ -33,7 +33,7 @@ final class FollowAlongViewModel {
     private func updateNowPlaying() {
         var info = [String: Any]()
         if let surahId = currentSurahId, let verseId = currentVerseId {
-            let surah = dataService.surahs.first { $0.id == surahId }
+            let surah = dataService.surah(id: surahId)
             info[MPMediaItemPropertyTitle] = "Ayah \(verseId) — Word by Word"
             info[MPMediaItemPropertyAlbumTitle] = surah?.transliteration ?? "Surah \(surahId)"
         }
@@ -181,7 +181,7 @@ final class FollowAlongViewModel {
 
     func nextVerse() {
         guard let surahId = currentSurahId, let verseId = currentVerseId else { return }
-        let totalVerses = dataService.surahs.first { $0.id == surahId }?.totalVerses ?? 0
+        let totalVerses = dataService.surah(id: surahId)?.totalVerses ?? 0
         guard verseId < totalVerses else { return }
         if !seekToVerseInPlace(surahId: surahId, ayahId: verseId + 1) {
             playVerse(surahId: surahId, ayahId: verseId + 1)
@@ -276,7 +276,7 @@ final class FollowAlongViewModel {
 
     private func advanceToNextVerse() {
         guard let surahId = currentSurahId, let verseId = currentVerseId else { return }
-        let totalVerses = dataService.surahs.first { $0.id == surahId }?.totalVerses ?? 0
+        let totalVerses = dataService.surah(id: surahId)?.totalVerses ?? 0
         if verseId < totalVerses {
             let nextAyah = verseId + 1
             if let reciter = wordDataService.currentReciter, !reciter.hasPerVerseAudio,

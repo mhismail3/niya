@@ -15,6 +15,7 @@ final class DownloadManager {
     private(set) var changeRevision = 0
     private var downloadTasks: [String: Task<Void, Never>] = [:]
     private let downloadStore: DownloadStore?
+    @ObservationIgnored private var storageCache: [String: Int64] = [:]
 
     init(downloadStore: DownloadStore?) {
         self.downloadStore = downloadStore
@@ -56,7 +57,7 @@ final class DownloadManager {
                 try FileManager.default.moveItem(at: tempURL, to: localURL)
 
                 try self?.downloadStore?.save(surahId: surahId, filename: localURL.lastPathComponent, reciterId: reciter.rawValue)
-
+                self?.storageCache.removeValue(forKey: reciter.rawValue)
                 self?.activeDownloads.removeValue(forKey: key)
             } catch is CancellationError {
                 self?.activeDownloads.removeValue(forKey: key)
@@ -91,6 +92,7 @@ final class DownloadManager {
             try FileManager.default.removeItem(at: url)
         }
         try downloadStore?.delete(surahId: surahId, reciterId: reciter.rawValue)
+        storageCache.removeValue(forKey: reciter.rawValue)
         changeRevision += 1
     }
 
@@ -99,14 +101,15 @@ final class DownloadManager {
             let filename = reciter.localFilename(for: surahId)
             let url = Self.documentsDirectory.appendingPathComponent(filename)
             if FileManager.default.fileExists(atPath: url.path) {
-                try? FileManager.default.removeItem(at: url)
+                do { try FileManager.default.removeItem(at: url) } catch { AppLogger.store.error("deleteAll removeItem: \(error)") }
             }
         }
         if let all = try? downloadStore?.allDownloads() {
             for item in all where item.reciterId == reciter.rawValue {
-                try? downloadStore?.delete(surahId: item.surahId, reciterId: reciter.rawValue)
+                do { try downloadStore?.delete(surahId: item.surahId, reciterId: reciter.rawValue) } catch { AppLogger.store.error("deleteAll store delete: \(error)") }
             }
         }
+        storageCache.removeValue(forKey: reciter.rawValue)
         changeRevision += 1
     }
 
@@ -138,10 +141,12 @@ final class DownloadManager {
 
     func storageUsed(for reciter: Reciter) -> Int64 {
         _ = changeRevision
+        if let cached = storageCache[reciter.rawValue] { return cached }
         var total: Int64 = 0
         for surahId in 1...114 {
             total += fileSizeForSurah(surahId, reciter: reciter)
         }
+        storageCache[reciter.rawValue] = total
         return total
     }
 
@@ -156,6 +161,7 @@ final class DownloadManager {
         let fm = FileManager.default
         guard let allRecords = try? downloadStore?.allDownloads() else { return }
 
+        storageCache.removeAll()
         // Remove records where file is missing
         for record in allRecords {
             let url = Self.documentsDirectory.appendingPathComponent(record.localFileName)

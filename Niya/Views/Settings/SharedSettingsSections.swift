@@ -1,6 +1,27 @@
 import SwiftUI
 import UserNotifications
 
+private struct FontSizeSliderRow: View {
+    let label: String
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+
+    var body: some View {
+        HStack {
+            Text(label)
+            Spacer()
+            Text("\(Int(value))")
+                .foregroundStyle(Color.niyaTeal)
+                .monospacedDigit()
+            Slider(value: $value, in: range, step: 1)
+                .frame(width: NiyaSize.sliderWidth)
+                .tint(Color.niyaTeal)
+                .accessibilityLabel("\(label) font size")
+                .accessibilityValue("\(Int(value))")
+        }
+    }
+}
+
 struct ReadingSettingsSection: View {
     @Binding var mode: ReaderMode
     @Binding var script: QuranScript
@@ -87,32 +108,10 @@ struct WordByWordSettingsSection: View {
                 Toggle("Word Meanings", isOn: $followAlongMeaning)
                     .tint(Color.niyaTeal)
                 if followAlongTransliteration {
-                    HStack {
-                        Text("Transliteration Size")
-                        Spacer()
-                        Text("\(Int(transliterationFontSize))")
-                            .foregroundStyle(Color.niyaTeal)
-                            .monospacedDigit()
-                        Slider(value: $transliterationFontSize, in: 8...20, step: 1)
-                            .frame(width: NiyaSize.sliderWidth)
-                            .tint(Color.niyaTeal)
-                            .accessibilityLabel("Transliteration font size")
-                            .accessibilityValue("\(Int(transliterationFontSize))")
-                    }
+                    FontSizeSliderRow(label: "Transliteration Size", value: $transliterationFontSize, range: 8...20)
                 }
                 if followAlongMeaning {
-                    HStack {
-                        Text("Meaning Size")
-                        Spacer()
-                        Text("\(Int(meaningFontSize))")
-                            .foregroundStyle(Color.niyaTeal)
-                            .monospacedDigit()
-                        Slider(value: $meaningFontSize, in: 8...20, step: 1)
-                            .frame(width: NiyaSize.sliderWidth)
-                            .tint(Color.niyaTeal)
-                            .accessibilityLabel("Meaning font size")
-                            .accessibilityValue("\(Int(meaningFontSize))")
-                    }
+                    FontSizeSliderRow(label: "Meaning Size", value: $meaningFontSize, range: 8...20)
                 }
             }
             if script != .hafs {
@@ -130,30 +129,8 @@ struct FontSizeSettingsSection: View {
 
     var body: some View {
         Section("Quran Font Size") {
-            HStack {
-                Text("Arabic")
-                Spacer()
-                Text("\(Int(arabicFontSize))")
-                    .foregroundStyle(Color.niyaTeal)
-                    .monospacedDigit()
-                Slider(value: $arabicFontSize, in: 20...40, step: 1)
-                    .frame(width: NiyaSize.sliderWidth)
-                    .tint(Color.niyaTeal)
-                    .accessibilityLabel("Arabic font size")
-                    .accessibilityValue("\(Int(arabicFontSize))")
-            }
-            HStack {
-                Text("Translation")
-                Spacer()
-                Text("\(Int(translationFontSize))")
-                    .foregroundStyle(Color.niyaTeal)
-                    .monospacedDigit()
-                Slider(value: $translationFontSize, in: 12...24, step: 1)
-                    .frame(width: NiyaSize.sliderWidth)
-                    .tint(Color.niyaTeal)
-                    .accessibilityLabel("Translation font size")
-                    .accessibilityValue("\(Int(translationFontSize))")
-            }
+            FontSizeSliderRow(label: "Arabic", value: $arabicFontSize, range: 20...40)
+            FontSizeSliderRow(label: "Translation", value: $translationFontSize, range: 12...24)
         }
     }
 }
@@ -163,18 +140,7 @@ struct HadithFontSizeSection: View {
 
     var body: some View {
         Section("Hadith Font Size") {
-            HStack {
-                Text("Arabic")
-                Spacer()
-                Text("\(Int(hadithArabicFontSize))")
-                    .foregroundStyle(Color.niyaTeal)
-                    .monospacedDigit()
-                Slider(value: $hadithArabicFontSize, in: 16...36, step: 1)
-                    .frame(width: NiyaSize.sliderWidth)
-                    .tint(Color.niyaTeal)
-                    .accessibilityLabel("Hadith Arabic font size")
-                    .accessibilityValue("\(Int(hadithArabicFontSize))")
-            }
+            FontSizeSliderRow(label: "Arabic", value: $hadithArabicFontSize, range: 16...36)
         }
     }
 }

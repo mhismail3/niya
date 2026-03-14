@@ -61,7 +61,7 @@ struct NiyaApp: App {
         try? Tips.configure([.displayFrequency(.immediate)])
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
 
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.niya.mobile.prayerRefresh", using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: StorageKey.backgroundTaskIdentifier, using: nil) { task in
             guard let refreshTask = task as? BGAppRefreshTask else { return }
             Self.handlePrayerRefresh(task: refreshTask)
         }
@@ -157,7 +157,7 @@ struct NiyaApp: App {
     }
 
     private static func scheduleBGRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: "com.niya.mobile.prayerRefresh")
+        let request = BGAppRefreshTaskRequest(identifier: StorageKey.backgroundTaskIdentifier)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 3600)
         try? BGTaskScheduler.shared.submit(request)
     }

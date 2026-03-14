@@ -11,6 +11,7 @@ struct SurahSearchView: View {
     @State private var surahResults: [Surah] = []
     @State private var hadithResults: [HadithSearchItem] = []
     @State private var duaResults: [DuaSearchItem] = []
+    @State private var searchTask: Task<Void, Never>?
 
     private var isSearching: Bool {
         !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
@@ -31,7 +32,21 @@ struct SurahSearchView: View {
             .niyaToolbar()
         }
         .searchable(text: $searchQuery, prompt: "Surahs, hadiths, and duas")
-        .onChange(of: searchQuery) { _, _ in updateSearch() }
+        .onChange(of: searchQuery) { _, newValue in
+            searchTask?.cancel()
+            let trimmed = newValue.trimmingCharacters(in: .whitespaces)
+            if trimmed.isEmpty {
+                surahResults = []
+                hadithResults = []
+                duaResults = []
+                return
+            }
+            searchTask = Task {
+                try? await Task.sleep(for: .milliseconds(300))
+                guard !Task.isCancelled else { return }
+                updateSearch()
+            }
+        }
         .onSubmit(of: .search) {
             stores.recentSearch.saveQuery(searchQuery)
             reloadRecents()

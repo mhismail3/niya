@@ -4,7 +4,7 @@ import os
 
 @MainActor
 enum CloudSyncMigration {
-    private static let migrationKey = "cloudSyncMigrationCompleted"
+    private static let migrationKey = StorageKey.cloudSyncMigrationCompleted
 
     static func migrateIfNeeded(container: ModelContainer) {
         guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }

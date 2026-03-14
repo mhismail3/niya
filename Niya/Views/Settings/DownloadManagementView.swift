@@ -78,7 +78,7 @@ struct DownloadManagementView: View {
     private func activeDownloadRow(_ prog: DownloadProgress) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                let surah = dataService.surahs.first { $0.id == prog.surahId }
+                let surah = dataService.surah(id: prog.surahId)
                 Text(surah?.transliteration ?? "Surah \(prog.surahId)")
                 Spacer()
                 if let reciter = Reciter(rawValue: prog.reciterId) {
@@ -140,7 +140,7 @@ struct DownloadManagementView: View {
     }
 
     private func surahRow(surahId: Int, reciter: Reciter) -> some View {
-        let surah = dataService.surahs.first { $0.id == surahId }
+        let surah = dataService.surah(id: surahId)
         let size = downloadManager.fileSizeForSurah(surahId, reciter: reciter)
         return LabeledContent {
             Text(ByteCountFormatter.string(fromByteCount: size, countStyle: .file))

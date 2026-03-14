@@ -34,6 +34,10 @@ final class MockQuranDataService: QuranDataProviding {
         ayah
     }
 
+    func surah(id: Int) -> Surah? {
+        surahs.first { $0.id == id }
+    }
+
     func searchSurahs(query: String) -> [Surah] {
         surahs
     }

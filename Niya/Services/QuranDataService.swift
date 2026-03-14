@@ -3,7 +3,9 @@ import Foundation
 @Observable
 @MainActor
 final class QuranDataService: QuranDataProviding {
-    var surahs: [Surah] = []
+    var surahs: [Surah] = [] {
+        didSet { surahLookup = Dictionary(uniqueKeysWithValues: surahs.map { ($0.id, $0) }) }
+    }
     var isLoaded = false
     var loadError: String?
     var availableTranslations: [TranslationEdition] = []
@@ -12,6 +14,7 @@ final class QuranDataService: QuranDataProviding {
     private var hafsDictionary: [String: [Verse]]?
     private var indoPakDictionary: [String: [Verse]]?
     private var verseCounts: [Int] = []
+    @ObservationIgnored private var surahLookup: [Int: Surah] = [:]
     private var translationOverlays: [(edition: TranslationEdition, overlay: [String: String])] = []
     @ObservationIgnored private var versesCache: [String: [Verse]] = [:]
     @ObservationIgnored private var cacheOrder: [String] = []
@@ -36,9 +39,9 @@ final class QuranDataService: QuranDataProviding {
             let savedRaw: String
             if let multi = UserDefaults.standard.string(forKey: StorageKey.selectedTranslations) {
                 savedRaw = multi
-            } else if let single = UserDefaults.standard.string(forKey: "selectedTranslation") {
+            } else if let single = UserDefaults.standard.string(forKey: StorageKey.selectedTranslationLegacy) {
                 savedRaw = single
-                UserDefaults.standard.removeObject(forKey: "selectedTranslation")
+                UserDefaults.standard.removeObject(forKey: StorageKey.selectedTranslationLegacy)
             } else {
                 savedRaw = "en_sahih"
             }
@@ -105,6 +108,10 @@ final class QuranDataService: QuranDataProviding {
         guard surah >= 1, surah <= verseCounts.count else { return ayah }
         let offset = verseCounts.prefix(surah - 1).reduce(0, +)
         return offset + ayah
+    }
+
+    func surah(id: Int) -> Surah? {
+        surahLookup[id]
     }
 
     func searchSurahs(query: String) -> [Surah] {

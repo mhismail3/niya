@@ -8,6 +8,7 @@ final class WordDataService: WordDataProviding {
     private(set) var currentMeaningLanguage: String?
     private var cache: [Int: [Int: VerseWordData]]?
     private var meaningsOverlay: [String: String]?
+    @ObservationIgnored private var overlaidCache: [Int: [Int: VerseWordData]] = [:]
 
     nonisolated static let supportedMeaningLanguages: Set<String> = ["ur", "bn", "tr", "id", "fa", "hi", "ta"]
 
@@ -32,6 +33,7 @@ final class WordDataService: WordDataProviding {
                 return result
             }.value
             cache = result
+            overlaidCache.removeAll()
             currentReciter = reciter
             isLoaded = true
         } catch {
@@ -42,6 +44,7 @@ final class WordDataService: WordDataProviding {
     func loadMeanings(language: String) async {
         if !Self.supportedMeaningLanguages.contains(language) {
             meaningsOverlay = nil
+            overlaidCache.removeAll()
             currentMeaningLanguage = nil
             return
         }
@@ -50,6 +53,7 @@ final class WordDataService: WordDataProviding {
         let filename = "word_meanings_\(language)"
         guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
             meaningsOverlay = nil
+            overlaidCache.removeAll()
             currentMeaningLanguage = nil
             return
         }
@@ -59,10 +63,12 @@ final class WordDataService: WordDataProviding {
                 return try JSONDecoder().decode([String: String].self, from: data)
             }.value
             meaningsOverlay = overlay
+            overlaidCache.removeAll()
             currentMeaningLanguage = language
         } catch {
             AppLogger.data.error("WordDataService loadMeanings failed: \(error)")
             meaningsOverlay = nil
+            overlaidCache.removeAll()
             currentMeaningLanguage = nil
         }
     }
@@ -70,11 +76,14 @@ final class WordDataService: WordDataProviding {
     func words(surahId: Int, ayahId: Int) -> VerseWordData? {
         guard let data = cache?[surahId]?[ayahId] else { return nil }
         guard let overlay = meaningsOverlay else { return data }
+        if let cached = overlaidCache[surahId]?[ayahId] { return cached }
         var words = data.w
         for i in words.indices {
             words[i].meaning = overlay["\(surahId):\(ayahId):\(words[i].p)"]
         }
-        return VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words)
+        let result = VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words)
+        overlaidCache[surahId, default: [:]][ayahId] = result
+        return result
     }
 
     func allVerseData(surahId: Int) -> [(ayahId: Int, data: VerseWordData)]? {
@@ -83,11 +92,14 @@ final class WordDataService: WordDataProviding {
             return verses.sorted(by: { $0.key < $1.key }).map { ($0.key, $0.value) }
         }
         return verses.sorted(by: { $0.key < $1.key }).map { (ayahId, data) in
+            if let cached = overlaidCache[surahId]?[ayahId] { return (ayahId, cached) }
             var words = data.w
             for i in words.indices {
                 words[i].meaning = overlay["\(surahId):\(ayahId):\(words[i].p)"]
             }
-            return (ayahId, VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words))
+            let result = VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words)
+            overlaidCache[surahId, default: [:]][ayahId] = result
+            return (ayahId, result)
         }
     }
 }

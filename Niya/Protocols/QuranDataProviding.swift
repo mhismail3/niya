@@ -11,6 +11,7 @@ import Foundation
     func verse(surahId: Int, ayahId: Int) -> Verse?
     func pages(for surahId: Int, script: QuranScript) -> [[Verse]]
     func absoluteVerseNumber(surah: Int, ayah: Int) -> Int
+    func surah(id: Int) -> Surah?
     func searchSurahs(query: String) -> [Surah]
     func addTranslation(_ edition: TranslationEdition) async throws
     func removeTranslation(_ edition: TranslationEdition)

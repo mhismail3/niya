@@ -47,21 +47,24 @@ final class QuranBookmarkStore {
         }
         if !toDelete.isEmpty {
             for dupe in toDelete { modelContext.delete(dupe) }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("QuranBookmarkStore dedup save: \(error)") }
         }
         return result.sorted { $0.createdAt > $1.createdAt }
     }
 
     private func fetch(surahId: Int, ayahId: Int) -> QuranBookmark? {
-        let key = "\(surahId):\(ayahId)"
-        let all = fetchAll()
-        let matches = all.filter { $0.verseKey == key }
+        let targetKey = "\(surahId):\(ayahId)"
+        var descriptor = FetchDescriptor<QuranBookmark>(
+            predicate: #Predicate { $0.verseKey == targetKey }
+        )
+        descriptor.fetchLimit = 2
+        let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
         if matches.count > 1 {
             for dupe in matches where dupe !== keeper {
                 modelContext.delete(dupe)
             }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("QuranBookmarkStore dedup save: \(error)") }
         }
         return keeper
     }

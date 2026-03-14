@@ -86,7 +86,7 @@ struct HomeView: View {
         recentDuas = stores.recentDua.recentDuas()
 
         resolvedPositions = positions.compactMap { position in
-            guard let surah = dataService.surahs.first(where: { $0.id == position.surahId }) else { return nil }
+            guard let surah = dataService.surah(id: position.surahId) else { return nil }
             return (position, surah)
         }
         resolvedHadiths = recentHadiths.compactMap { recent in

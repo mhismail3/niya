@@ -11,6 +11,7 @@ struct BookmarksView: View {
     @State private var quranBookmarks: [QuranBookmark] = []
     @State private var hadithBookmarks: [HadithBookmark] = []
     @State private var duaBookmarks: [DuaBookmark] = []
+    @State private var hadithGrouped: [(collection: HadithCollection, bookmarks: [HadithBookmark])] = []
     @State private var colorFilter: ColorFilter = .all
 
     enum ColorFilter: Hashable {
@@ -43,17 +44,6 @@ struct BookmarksView: View {
         }
     }
 
-    private var hadithGrouped: [(collection: HadithCollection, bookmarks: [HadithBookmark])] {
-        var result: [(collection: HadithCollection, bookmarks: [HadithBookmark])] = []
-        let byCollection = Dictionary(grouping: filteredHadithBookmarks, by: \.collectionId)
-        for collection in hadithDataService.collections {
-            if let items = byCollection[collection.id], !items.isEmpty {
-                result.append((collection, items))
-            }
-        }
-        return result
-    }
-
     private var hasFilteredResults: Bool {
         !filteredQuranBookmarks.isEmpty || !filteredHadithBookmarks.isEmpty || !filteredDuaBookmarks.isEmpty
     }
@@ -78,6 +68,7 @@ struct BookmarksView: View {
         .task { await loadHadithCollections() }
         .task { await loadDuaData() }
         .onAppear { reload() }
+        .onChange(of: colorFilter) { _, _ in recomputeHadithGrouped() }
     }
 
     private var list: some View {
@@ -165,7 +156,7 @@ struct BookmarksView: View {
     private var quranSection: some View {
         Section {
             ForEach(filteredQuranBookmarks, id: \.verseKey) { bookmark in
-                let surah = quranDataService.surahs.first { $0.id == bookmark.surahId }
+                let surah = quranDataService.surah(id: bookmark.surahId)
                 let verse = quranDataService.verses(for: bookmark.surahId, script: storedScript)
                     .first { $0.id == bookmark.ayahId }
                 let badgeColor = bookmark.bookmarkColor?.color ?? .niyaTeal
@@ -477,6 +468,18 @@ struct BookmarksView: View {
         quranBookmarks = stores.quranBookmarks.allBookmarks()
         hadithBookmarks = stores.hadithBookmarks.allBookmarks()
         duaBookmarks = stores.duaBookmarks.allBookmarks()
+        recomputeHadithGrouped()
+    }
+
+    private func recomputeHadithGrouped() {
+        var result: [(collection: HadithCollection, bookmarks: [HadithBookmark])] = []
+        let byCollection = Dictionary(grouping: filteredHadithBookmarks, by: \.collectionId)
+        for collection in hadithDataService.collections {
+            if let items = byCollection[collection.id], !items.isEmpty {
+                result.append((collection, items))
+            }
+        }
+        hadithGrouped = result
     }
 
     private func loadHadithCollections() async {

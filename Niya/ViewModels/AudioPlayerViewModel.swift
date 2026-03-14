@@ -34,7 +34,7 @@ final class AudioPlayerViewModel {
                     self.currentLoop = 0
                 }
                 if self.autoAdvance {
-                    let surah = self.dataService.surahs.first { $0.id == vid.surahId }
+                    let surah = self.dataService.surah(id: vid.surahId)
                     let nextAyah = vid.ayahId + 1
                     if let surah, nextAyah <= surah.totalVerses {
                         self.playVerse(surahId: vid.surahId, ayahId: nextAyah)
@@ -96,11 +96,11 @@ final class AudioPlayerViewModel {
         let nowPlayingCenter = MPNowPlayingInfoCenter.default()
         var info = nowPlayingCenter.nowPlayingInfo ?? [String: Any]()
         if let vid = audioService.currentVerseID {
-            let surah = dataService.surahs.first { $0.id == vid.surahId }
+            let surah = dataService.surah(id: vid.surahId)
             info[MPMediaItemPropertyTitle] = "Ayah \(vid.ayahId)"
             info[MPMediaItemPropertyAlbumTitle] = surah?.transliteration ?? "Surah \(vid.surahId)"
         } else if let surahId = audioService.currentSurahId {
-            let surah = dataService.surahs.first { $0.id == surahId }
+            let surah = dataService.surah(id: surahId)
             info[MPMediaItemPropertyTitle] = surah?.transliteration ?? "Surah \(surahId)"
         }
         info[MPMediaItemPropertyArtist] = selectedReciter.displayName
@@ -232,7 +232,7 @@ final class AudioPlayerViewModel {
 
     func nextVerse() {
         guard let vid = currentVerseID else { return }
-        let surah = dataService.surahs.first { $0.id == vid.surahId }
+        let surah = dataService.surah(id: vid.surahId)
         let nextAyah = vid.ayahId + 1
         guard let surah, nextAyah <= surah.totalVerses else { return }
         if audioService.isContinuousMode,

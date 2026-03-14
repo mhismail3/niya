@@ -135,27 +135,15 @@ struct DuaDetailView: View {
             .accessibilityLabel(isBookmarked ? "Remove bookmark, \(bookmarkColor?.displayName ?? "Gold")" : "Add bookmark")
             .contextMenu {
                 if isBookmarked {
-                    Section("Color") {
-                        Button { setDuaBookmarkColor(nil) } label: {
-                            Label("Gold", systemImage: bookmarkColor == nil ? "checkmark.circle.fill" : "circle.fill")
-                        }
-                        .tint(.niyaGold)
-                        ForEach(BookmarkColor.allCases) { bc in
-                            Button { setDuaBookmarkColor(bc) } label: {
-                                Label(bc.displayName, systemImage: bookmarkColor == bc ? "checkmark.circle.fill" : "circle.fill")
-                            }
-                            .tint(bc.color)
-                        }
-                    }
-                    Section {
-                        Button(role: .destructive) {
+                    BookmarkColorMenuContent(
+                        currentColor: bookmarkColor,
+                        onSetColor: { setDuaBookmarkColor($0) },
+                        onRemove: {
                             stores.duaBookmarks.toggle(categoryId: categoryId, duaId: dua.id)
                             isBookmarked = false
                             bookmarkColor = nil
-                        } label: {
-                            Label("Remove Bookmark", systemImage: "bookmark.slash")
                         }
-                    }
+                    )
                 }
             }
 

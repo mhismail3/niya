@@ -281,7 +281,7 @@ struct WordEtymologySheet: View {
             map[ref.s]!.append(ref.v)
         }
         return order.map { sid in
-            let name = dataService.surahs.first(where: { $0.id == sid })?.transliteration ?? "Surah \(sid)"
+            let name = dataService.surah(id: sid)?.transliteration ?? "Surah \(sid)"
             let ayahs = map[sid]!.sorted()
             return SurahRefGroup(surahId: sid, name: name, ayahs: ayahs)
         }

@@ -43,21 +43,24 @@ final class DuaBookmarkStore {
         }
         if !toDelete.isEmpty {
             for dupe in toDelete { modelContext.delete(dupe) }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore dedup save: \(error)") }
         }
         return result.sorted { $0.createdAt > $1.createdAt }
     }
 
     private func fetchByKey(categoryId: Int, duaId: Int) -> DuaBookmark? {
-        let key = "\(categoryId):\(duaId)"
-        let all = fetchAll()
-        let matches = all.filter { $0.duaKey == key }
+        let targetKey = "\(categoryId):\(duaId)"
+        var descriptor = FetchDescriptor<DuaBookmark>(
+            predicate: #Predicate { $0.duaKey == targetKey }
+        )
+        descriptor.fetchLimit = 2
+        let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
         if matches.count > 1 {
             for dupe in matches where dupe !== keeper {
                 modelContext.delete(dupe)
             }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore dedup save: \(error)") }
         }
         return keeper
     }

@@ -33,7 +33,7 @@ final class ReadingPositionStore {
         }
         if !toDelete.isEmpty {
             for dupe in toDelete { modelContext.delete(dupe) }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("ReadingPositionStore dedup save: \(error)") }
         }
         return result
     }
@@ -46,13 +46,18 @@ final class ReadingPositionStore {
     }
 
     func position(for surahId: Int) -> ReadingPosition? {
-        let matches = fetchAll().filter { $0.surahId == surahId }
+        let targetSurah = surahId
+        var descriptor = FetchDescriptor<ReadingPosition>(
+            predicate: #Predicate { $0.surahId == targetSurah }
+        )
+        descriptor.fetchLimit = 2
+        let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.max(by: { $0.lastReadAt < $1.lastReadAt }) else { return nil }
         if matches.count > 1 {
             for dupe in matches where dupe !== keeper {
                 modelContext.delete(dupe)
             }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("ReadingPositionStore dedup save: \(error)") }
         }
         return keeper
     }

@@ -43,7 +43,7 @@ final class HadithBookmarkStore {
         }
         if !toDelete.isEmpty {
             for dupe in toDelete { modelContext.delete(dupe) }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("HadithBookmarkStore dedup save: \(error)") }
         }
         return result.sorted { $0.createdAt > $1.createdAt }
     }
@@ -53,15 +53,18 @@ final class HadithBookmarkStore {
     }
 
     private func fetchByKey(collectionId: String, hadithId: Int) -> HadithBookmark? {
-        let key = "\(collectionId):\(hadithId)"
-        let all = fetchAll()
-        let matches = all.filter { $0.hadithKey == key }
+        let targetKey = "\(collectionId):\(hadithId)"
+        var descriptor = FetchDescriptor<HadithBookmark>(
+            predicate: #Predicate { $0.hadithKey == targetKey }
+        )
+        descriptor.fetchLimit = 2
+        let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
         if matches.count > 1 {
             for dupe in matches where dupe !== keeper {
                 modelContext.delete(dupe)
             }
-            try? modelContext.save()
+            do { try modelContext.save() } catch { AppLogger.store.error("HadithBookmarkStore dedup save: \(error)") }
         }
         return keeper
     }
