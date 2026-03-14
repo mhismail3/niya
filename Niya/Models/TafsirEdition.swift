@@ -3,9 +3,9 @@ import Foundation
 enum TafsirEdition: String, CaseIterable, Identifiable, Codable {
     case ibnKathir = "ibn_kathir"
     case maarifUlQuran = "maarif_ul_quran"
+    case tafheemUlQuran = "tafheem_ul_quran"
     case ibnAbbas = "ibn_abbas"
     case tazkirulQuran = "tazkirul_quran"
-    case tafheemUlQuran = "tafheem_ul_quran"
 
     var id: String { rawValue }
 
