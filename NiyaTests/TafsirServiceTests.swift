@@ -30,8 +30,8 @@ struct TafsirServiceTests {
     @Test func allEditionsLoadSuccessfully() {
         let service = TafsirService()
         for edition in TafsirEdition.allCases {
-            let text = service.text(edition: edition, surahId: 2, ayahId: 255)
-            #expect(text != nil, "Edition \(edition.displayName) should have text for Ayatul Kursi")
+            let text = service.text(edition: edition, surahId: 1, ayahId: 1)
+            #expect(text != nil, "Edition \(edition.displayName) should have text for Al-Fatiha 1:1")
         }
     }
 

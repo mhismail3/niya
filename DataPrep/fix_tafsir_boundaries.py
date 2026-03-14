@@ -17,7 +17,7 @@ import json
 import os
 import re
 
-EDITIONS = ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran"]
+EDITIONS = ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran", "tafheem_ul_quran"]
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "Niya", "Resources", "Data")
 
 # Arabic Ibn Kathir source for surah 105 (English version is missing from upstream)

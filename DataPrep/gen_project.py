@@ -374,6 +374,7 @@ FOLDER_REFS = [
     "Niya/Resources/Data/tafsir_maarif_ul_quran",
     "Niya/Resources/Data/tafsir_ibn_abbas",
     "Niya/Resources/Data/tafsir_tazkirul_quran",
+    "Niya/Resources/Data/tafsir_tafheem_ul_quran",
 ]
 
 # Assets catalog — treated specially
@@ -1054,7 +1055,7 @@ def section_pbx_group():
                      "aladab", "bulugh", "mishkat", "riyad", "shamail"]:
         fname = f"hadith_{coll_id}.json"
         data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
-    for taf_id in ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran"]:
+    for taf_id in ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran", "tafheem_ul_quran"]:
         path = f"Niya/Resources/Data/tafsir_{taf_id}"
         data_children.append((folder_file_ids[path], f"tafsir_{taf_id}"))
     emit_subgroup(SUBGROUP_IDS["Resources/Data"], "Data", "Resources/Data", data_children, path_str="Data")

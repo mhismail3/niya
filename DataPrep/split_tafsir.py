@@ -9,7 +9,7 @@ Output: Niya/Resources/Data/tafsir_{edition}/{surahId}.json (keyed by ayahId onl
 import json
 import os
 
-EDITIONS = ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran"]
+EDITIONS = ["ibn_kathir", "maarif_ul_quran", "ibn_abbas", "tazkirul_quran", "tafheem_ul_quran"]
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "Niya", "Resources", "Data")
 
 

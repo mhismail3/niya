@@ -29,6 +29,7 @@ struct TafsirEditionTests {
         #expect(TafsirEdition.maarifUlQuran.bundleFilename == "tafsir_maarif_ul_quran")
         #expect(TafsirEdition.ibnAbbas.bundleFilename == "tafsir_ibn_abbas")
         #expect(TafsirEdition.tazkirulQuran.bundleFilename == "tafsir_tazkirul_quran")
+        #expect(TafsirEdition.tafheemUlQuran.bundleFilename == "tafsir_tafheem_ul_quran")
     }
 
     @Test func codableRoundTrip() throws {
@@ -42,7 +43,7 @@ struct TafsirEditionTests {
     }
 
     @Test func allCasesCount() {
-        #expect(TafsirEdition.allCases.count == 4)
+        #expect(TafsirEdition.allCases.count == 5)
     }
 
     @Test func rawValuesUnique() {
