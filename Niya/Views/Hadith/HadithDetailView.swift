@@ -55,6 +55,12 @@ struct HadithDetailView: View {
                         .font(.system(size: translationFontSize, design: .serif))
                         .foregroundStyle(Color.niyaText)
                         .lineSpacing(4)
+
+                    if collectionId == "darimi" && !hadith.text.isEmpty {
+                        Label("Machine-translated", systemImage: "globe")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
 
                 Divider()
