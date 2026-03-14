@@ -54,6 +54,19 @@ struct TajweedServiceTests {
         #expect(service.verse(surahId: 999, ayahId: 1) == nil)
     }
 
+    @Test func lamJalalahAnnotated() {
+        let service = TajweedService()
+        // Al-Fatiha 1:1 "بِسْمِ ٱللَّهِ" contains Allah
+        let v1 = service.verse(surahId: 1, ayahId: 1)!
+        let jRules1 = v1.annotations.filter { $0.rule == .lamJalalah }
+        #expect(!jRules1.isEmpty, "1:1 should have Lam al-Jalalah annotation")
+
+        // Al-Baqarah 2:7 "خَتَمَ ٱللَّهُ" contains Allah
+        let v2 = service.verse(surahId: 2, ayahId: 7)!
+        let jRules2 = v2.annotations.filter { $0.rule == .lamJalalah }
+        #expect(!jRules2.isEmpty, "2:7 should have Lam al-Jalalah annotation")
+    }
+
     @Test func cleanArabicTextPreservesAllMarks() {
         // No characters should be stripped — cascade font handles rendering
         let allMarks = "\u{06D6}\u{06D7}\u{06DA}\u{06DD}\u{06DE}\u{06E9}\u{06EA}\u{06ED}"

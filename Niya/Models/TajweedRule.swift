@@ -18,6 +18,7 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
     case idghamMutajanisayn = "d"
     case idghamShafawi = "w"
     case idghamMutaqaribayn = "b"
+    case lamJalalah = "j"
 
     var id: String { rawValue }
 
@@ -40,6 +41,7 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamMutajanisayn: "Idgham Mutajanisayn"
         case .idghamShafawi: "Idgham Shafawi"
         case .idghamMutaqaribayn: "Idgham Mutaqaribayn"
+        case .lamJalalah: "Lam al-Jalalah"
         }
     }
 
@@ -62,6 +64,7 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamMutajanisayn: "إدغام متجانسين"
         case .idghamShafawi: "إدغام شفوي"
         case .idghamMutaqaribayn: "إدغام متقاربين"
+        case .lamJalalah: "لام الجَلالة"
         }
     }
 
@@ -101,6 +104,8 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
             "Mim sakinah merges fully into a following mim with ghunnah of two counts, as both letters share the lip articulation point."
         case .idghamMutaqaribayn:
             "A letter merges into the following letter when their articulation points are close to each other, such as lam into ra or qaf into kaf."
+        case .lamJalalah:
+            "The Lam in the name of Allah (الله) is pronounced heavy (tafkheem) when preceded by a fatha or damma, and light (tarqeeq) when preceded by a kasra."
         }
     }
 
@@ -123,6 +128,7 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamMutajanisayn: Color(.idghamMutajanisayn)
         case .idghamShafawi: Color(.idghamShafawi)
         case .idghamMutaqaribayn: Color(.idghamMutaqaribayn)
+        case .lamJalalah: Color(.lamJalalah)
         }
     }
 }
@@ -145,6 +151,7 @@ extension UIColor {
     static let idghamMutajanisayn = UIColor(light: 0x4A6572, dark: 0x8EACBB)
     static let idghamShafawi = UIColor(light: 0x2E8B57, dark: 0x66CDAA)
     static let idghamMutaqaribayn = UIColor(light: 0x4A6572, dark: 0x8EACBB)
+    static let lamJalalah = UIColor(light: 0xF9A825, dark: 0xFFD54F)
 
     convenience init(light: Int, dark: Int) {
         self.init { traits in

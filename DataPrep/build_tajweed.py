@@ -18,6 +18,7 @@ This script strips the basmala prefix and adjusts annotation indices accordingly
 
 import json
 import os
+import re
 import sys
 import unicodedata
 from collections import Counter
@@ -50,6 +51,7 @@ RULE_MAP = {
     "idghaam_mutajanisayn": "d",
     "idghaam_shafawi": "w",
     "idghaam_mutaqaribayn": "b",
+    "lam_jalalah": "j",
 }
 
 
@@ -208,6 +210,33 @@ def to_grapheme_indices(text, annotations):
     return result
 
 
+# Pattern: lam + lam + shadda + fatha + ha (the word Allah in Uthmanic script)
+ALLAH_PATTERN = re.compile("\u0644\u0644\u0651\u064e\u0647")
+
+
+def detect_lam_jalalah(text):
+    """Detect Lam al-Jalalah in the word Allah and return annotations.
+
+    Covers the second lam (mushaddad) through the ha — in the Uthmanic hafs
+    font the ha renders elevated above the lam as part of the Allah ligature,
+    so both need coloring and the wider range provides a reliable tap target.
+    Returns a list of annotation dicts with codepoint-based indices.
+    """
+    annotations = []
+    for m in ALLAH_PATTERN.finditer(text):
+        # Cover both lams + shadda + fatha: the two lams form a ligature
+        # in the Uthmanic font, so both must share the color attribute for
+        # CoreText to color the entire glyph.
+        first_lam_cp = m.start()
+        fatha_cp = m.start() + 3  # last combining mark before the ha
+        annotations.append({
+            "rule": "j",
+            "start": first_lam_cp,
+            "end": fatha_cp + 1,
+        })
+    return annotations
+
+
 def validate_annotations(surah, ayah, text, annotations):
     """Validate all annotation ranges are within text bounds (grapheme clusters)."""
     text_len = grapheme_len(text)
@@ -258,6 +287,10 @@ def build():
         # Map cpfair rule names to TajweedRule rawValues
         for ann in annotations:
             ann["rule"] = RULE_MAP.get(ann["rule"], ann["rule"])
+
+        # Detect Lam al-Jalalah (second lam in Allah) — codepoint indices
+        lam_jalalah = detect_lam_jalalah(text)
+        annotations.extend(lam_jalalah)
 
         # Convert codepoint indices to grapheme cluster indices (Swift String.count)
         if annotations:
