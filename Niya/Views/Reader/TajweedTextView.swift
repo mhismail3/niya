@@ -59,7 +59,8 @@ struct TajweedTextView: UIViewRepresentable {
 
         let mapped = Self.mapAnnotations(verse.annotations, from: verse.text, to: text)
         for ann in mapped {
-            guard ann.start >= 0, ann.end <= text.count, ann.start < ann.end else { continue }
+            guard ann.rule.isEnabled,
+                  ann.start >= 0, ann.end <= text.count, ann.start < ann.end else { continue }
             let start = text.index(text.startIndex, offsetBy: ann.start)
             let end = text.index(text.startIndex, offsetBy: ann.end)
             let nsRange = NSRange(start..<end, in: text)

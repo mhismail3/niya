@@ -52,6 +52,9 @@ RULE_MAP = {
     "idghaam_shafawi": "w",
     "idghaam_mutaqaribayn": "b",
     "lam_jalalah": "j",
+    "ra_tafkheem": "r",
+    "ra_tarqeeq": "e",
+    "idhaar": "z",
 }
 
 
@@ -237,6 +240,236 @@ def detect_lam_jalalah(text):
     return annotations
 
 
+def get_marks(chars, i):
+    """Collect combining marks after base char at codepoint index i."""
+    marks = []
+    j = i + 1
+    while j < len(chars) and unicodedata.category(chars[j]).startswith("M"):
+        marks.append(chars[j])
+        j += 1
+    return marks
+
+
+def get_preceding_vowel(chars, i):
+    """Walk backward from index i to find the preceding base letter's vowel marks.
+
+    Returns (marks_list, base_char) where marks_list are the combining marks
+    on the preceding base letter, and base_char is the base letter itself.
+    """
+    j = i - 1
+    # Skip any combining marks that belong to the Ra itself (shouldn't happen but safe)
+    while j >= 0 and unicodedata.category(chars[j]).startswith("M"):
+        j -= 1
+    # j is now at some non-mark char (space, base letter, etc.)
+    # Skip spaces/non-letters to find the actual preceding base letter
+    while j >= 0 and not unicodedata.category(chars[j]).startswith("L"):
+        j -= 1
+    if j < 0:
+        return [], None
+    base_char = chars[j]
+    return get_marks(chars, j), base_char
+
+
+def get_next_base(chars, start):
+    """Find the next base letter after index start (skipping combining marks and spaces)."""
+    j = start
+    while j < len(chars):
+        cat = unicodedata.category(chars[j])
+        if cat.startswith("L"):
+            return chars[j]
+        j += 1
+    return None
+
+
+# Arabic diacritics
+_FATHA = "\u064E"
+_FATHATAN = "\u064B"
+_DAMMA = "\u064F"
+_DAMMATAN = "\u064C"
+_KASRA = "\u0650"
+_KASRATAN = "\u064D"
+_SHADDA = "\u0651"
+_SUKUN = "\u0652"
+_SUPERSCRIPT_ALEF = "\u0670"
+
+_HEAVY_VOWELS = {_FATHA, _FATHATAN, _DAMMA, _DAMMATAN}
+_LIGHT_VOWELS = {_KASRA, _KASRATAN}
+
+# 7 isti'la (heavy) letters
+_ISTILA_LETTERS = {
+    "\u062E",  # خ Kha
+    "\u0635",  # ص Sad
+    "\u0636",  # ض Dad
+    "\u0637",  # ط Ta
+    "\u0638",  # ظ Zha
+    "\u063A",  # غ Ghayn
+    "\u0642",  # ق Qaf
+}
+
+# Long vowel letters for the "no preceding marks" fallback
+_ALEF = "\u0627"
+_ALEF_WASLA = "\u0671"
+_WAW = "\u0648"
+_YA = "\u064A"
+
+
+def classify_ra(chars, i):
+    """Classify Ra at codepoint index i. Returns 'r' (tafkheem), 'e' (tarqeeq), or None."""
+    marks = get_marks(chars, i)
+    mark_set = set(marks)
+
+    has_shadda = _SHADDA in mark_set
+    has_sukun = _SUKUN in mark_set
+
+    # Step 1: Ra with vowel directly on it
+    if not has_sukun:
+        if mark_set & _HEAVY_VOWELS:
+            return "r"
+        if mark_set & _LIGHT_VOWELS:
+            return "e"
+        if _SUPERSCRIPT_ALEF in mark_set:
+            return "r"
+        if has_shadda:
+            # Shadda but no vowel mark — shouldn't happen but default tafkheem
+            return "r"
+        # No marks at all (9 cases) — skip
+        if not marks:
+            return None
+        # Has some marks but none we recognize as vowels — skip
+        return None
+
+    # Step 2: Ra Sakin (has sukun)
+    prev_marks, prev_base = get_preceding_vowel(chars, i)
+    prev_mark_set = set(prev_marks)
+
+    if prev_mark_set & {_FATHA, _FATHATAN}:
+        return "r"
+    if prev_mark_set & {_DAMMA, _DAMMATAN}:
+        return "r"
+    if _SHADDA in prev_mark_set and prev_mark_set & {_FATHA, _FATHATAN, _DAMMA, _DAMMATAN}:
+        return "r"
+
+    if prev_mark_set & _LIGHT_VOWELS or (_SHADDA in prev_mark_set and prev_mark_set & _LIGHT_VOWELS):
+        # Step 3: Ra Sakin after Kasra — check next letter for isti'la
+        # Skip past Ra's own marks to find next base letter
+        j = i + 1 + len(marks)
+        next_base = get_next_base(chars, j)
+        if next_base in _ISTILA_LETTERS:
+            return "r"
+        return "e"
+
+    # No preceding vowel marks — check if preceded by a long vowel letter
+    if prev_base in (_ALEF, _ALEF_WASLA):
+        return "r"
+    if prev_base == _YA:
+        return "e"
+    if prev_base == _WAW:
+        return "r"
+
+    # Default: tafkheem
+    return "r"
+
+
+def detect_ra_rules(text):
+    """Detect Ra Tafkheem/Tarqeeq rules and return annotations with codepoint indices."""
+    chars = list(text)
+    annotations = []
+    RA = "\u0631"
+
+    for i, ch in enumerate(chars):
+        if ch != RA:
+            continue
+
+        rule = classify_ra(chars, i)
+        if rule is None:
+            continue
+
+        # Annotation covers Ra + all its combining marks
+        end = i + 1
+        while end < len(chars) and unicodedata.category(chars[end]).startswith("M"):
+            end += 1
+
+        annotations.append({
+            "rule": rule,
+            "start": i,
+            "end": end,
+        })
+
+    return annotations
+
+
+# Noon (U+0646)
+_NOON = "\u0646"
+
+# Tanween marks
+_TANWEEN = {_FATHATAN, _KASRATAN, _DAMMATAN}
+
+# 6 throat letters (huruf al-halq) for Idhaar
+_THROAT_LETTERS = {
+    "\u0621",  # ء hamza (standalone)
+    "\u0623",  # أ alef with hamza above
+    "\u0625",  # إ alef with hamza below
+    "\u0624",  # ؤ waw with hamza
+    "\u0626",  # ئ ya with hamza
+    "\u0647",  # هـ ha
+    "\u0639",  # ع ain
+    "\u062D",  # ح haa
+    "\u063A",  # غ ghain
+    "\u062E",  # خ kha
+}
+
+
+def detect_idhaar(text):
+    """Detect Idhaar (clear pronunciation) of Noon Sakinah or Tanween before throat letters.
+
+    Idhaar applies when Noon Sakinah (noon + sukun) or Tanween (fathatan/kasratan/dammatan)
+    is followed by one of the 6 throat letters: ء هـ ع ح غ خ.
+    The noon/tanween is pronounced clearly without nasalization or merging.
+
+    Returns a list of annotation dicts with codepoint-based indices.
+    """
+    chars = list(text)
+    annotations = []
+
+    for i, ch in enumerate(chars):
+        # Case 1: Noon Sakinah (noon followed by sukun)
+        if ch == _NOON:
+            marks = get_marks(chars, i)
+            mark_set = set(marks)
+            if _SUKUN not in mark_set:
+                continue
+            # Find next base letter after noon + its marks
+            j = i + 1 + len(marks)
+            next_base = get_next_base(chars, j)
+            if next_base in _THROAT_LETTERS:
+                end = i + 1 + len(marks)
+                annotations.append({"rule": "z", "start": i, "end": end})
+
+        # Case 2: Tanween on any base letter
+        elif unicodedata.category(ch).startswith("L"):
+            marks = get_marks(chars, i)
+            mark_set = set(marks)
+            if not (mark_set & _TANWEEN):
+                continue
+            # Find next base letter after this letter + its marks
+            j = i + 1 + len(marks)
+            # Skip orthographic alef after fathatan (ًا is a spelling convention)
+            if _FATHATAN in mark_set and j < len(chars) and chars[j] == _ALEF:
+                j += 1
+            next_base = get_next_base(chars, j)
+            if next_base in _THROAT_LETTERS:
+                # Annotate just the tanween mark(s), not the base letter
+                # Find the position of the tanween mark within the marks
+                for k, mark in enumerate(marks):
+                    if mark in _TANWEEN:
+                        ann_start = i + 1 + k
+                        ann_end = ann_start + 1
+                        annotations.append({"rule": "z", "start": ann_start, "end": ann_end})
+                        break
+
+    return annotations
+
+
 def validate_annotations(surah, ayah, text, annotations):
     """Validate all annotation ranges are within text bounds (grapheme clusters)."""
     text_len = grapheme_len(text)
@@ -291,6 +524,14 @@ def build():
         # Detect Lam al-Jalalah (second lam in Allah) — codepoint indices
         lam_jalalah = detect_lam_jalalah(text)
         annotations.extend(lam_jalalah)
+
+        # Detect Ra Tafkheem / Tarqeeq — codepoint indices
+        ra_rules = detect_ra_rules(text)
+        annotations.extend(ra_rules)
+
+        # Detect Idhaar (Noon Sakinah / Tanween before throat letters) — codepoint indices
+        idhaar_rules = detect_idhaar(text)
+        annotations.extend(idhaar_rules)
 
         # Convert codepoint indices to grapheme cluster indices (Swift String.count)
         if annotations:

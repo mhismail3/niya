@@ -19,8 +19,20 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
     case idghamShafawi = "w"
     case idghamMutaqaribayn = "b"
     case lamJalalah = "j"
+    case raTafkheem = "r"
+    case raTarqeeq = "e"
+    case idhaar = "z"
 
     var id: String { rawValue }
+
+    var isEnabled: Bool {
+        switch self {
+        case .maddNormal, .maddObligatory, .maddNecessary:
+            false
+        default:
+            true
+        }
+    }
 
     var displayName: String {
         switch self {
@@ -42,6 +54,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamShafawi: "Idgham Shafawi"
         case .idghamMutaqaribayn: "Idgham Mutaqaribayn"
         case .lamJalalah: "Lam al-Jalalah"
+        case .raTafkheem: "Ra Tafkheem (Heavy)"
+        case .raTarqeeq: "Ra Tarqeeq (Light)"
+        case .idhaar: "Idhaar (Clear)"
         }
     }
 
@@ -65,6 +80,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamShafawi: "إدغام شفوي"
         case .idghamMutaqaribayn: "إدغام متقاربين"
         case .lamJalalah: "لام الجَلالة"
+        case .raTafkheem: "راء مُفَخَّمة"
+        case .raTarqeeq: "راء مُرَقَّقة"
+        case .idhaar: "إظهار"
         }
     }
 
@@ -106,6 +124,12 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
             "A letter merges into the following letter when their articulation points are close to each other, such as lam into ra or qaf into kaf."
         case .lamJalalah:
             "The Lam in the name of Allah (الله) is pronounced heavy (tafkheem) when preceded by a fatha or damma, and light (tarqeeq) when preceded by a kasra."
+        case .raTafkheem:
+            "The letter Ra is pronounced heavy (full mouth) when it carries a fatha, damma, or sukun preceded by a fatha or damma, giving it a deep, emphatic sound."
+        case .raTarqeeq:
+            "The letter Ra is pronounced light (thin) when it carries a kasra, or a sukun preceded by a kasra without a following isti'la letter, giving it a soft, fronted sound."
+        case .idhaar:
+            "Noon sakinah or tanween is pronounced clearly and distinctly without nasalization when followed by one of the six throat letters (ء هـ ع ح غ خ), as the distance between articulation points prevents merging."
         }
     }
 
@@ -129,6 +153,9 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
         case .idghamShafawi: Color(.idghamShafawi)
         case .idghamMutaqaribayn: Color(.idghamMutaqaribayn)
         case .lamJalalah: Color(.lamJalalah)
+        case .raTafkheem: Color(.raTafkheem)
+        case .raTarqeeq: Color(.raTarqeeq)
+        case .idhaar: Color(.idhaar)
         }
     }
 }
@@ -136,22 +163,25 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
 extension UIColor {
     static let hamzatWasl = UIColor(light: 0x78909C, dark: 0xB0BEC5)
     static let lamShamsiyyah = UIColor(light: 0x795548, dark: 0xBCAAA4)
-    static let maddNormal = UIColor(light: 0xC62828, dark: 0xEF5350)
+    static let maddNormal = UIColor(light: 0x4A6572, dark: 0x8EACBB)
     static let maddPermissible = UIColor(light: 0xC2185B, dark: 0xF06292)
-    static let maddObligatory = UIColor(light: 0xB71C1C, dark: 0xE57373)
-    static let maddNecessary = UIColor(light: 0x880E4F, dark: 0xF48FB1)
+    static let maddObligatory = UIColor(light: 0x00838F, dark: 0x4DD0E1)
+    static let maddNecessary = UIColor(light: 0x0277BD, dark: 0x4FC3F7)
     static let ghunnah = UIColor(light: 0x2E7D32, dark: 0x66BB6A)
     static let qalqalah = UIColor(light: 0x1565C0, dark: 0x64B5F6)
     static let silentLetter = UIColor(light: 0x90A4AE, dark: 0xCFD8DC)
     static let ikhfa = UIColor(light: 0xE65100, dark: 0xFF8A65)
     static let idghamGhunnah = UIColor(light: 0x00796B, dark: 0x4DB6AC)
-    static let idghamNoGhunnah = UIColor(light: 0x00838F, dark: 0x4DD0E1)
+    static let idghamNoGhunnah = UIColor(light: 0xAD1457, dark: 0xF06292)
     static let iqlab = UIColor(light: 0x6A1B9A, dark: 0xBA68C8)
-    static let ikhfaShafawi = UIColor(light: 0xBF360C, dark: 0xFF7043)
+    static let ikhfaShafawi = UIColor(light: 0xB71C1C, dark: 0xE57373)
     static let idghamMutajanisayn = UIColor(light: 0x4A6572, dark: 0x8EACBB)
     static let idghamShafawi = UIColor(light: 0x2E8B57, dark: 0x66CDAA)
-    static let idghamMutaqaribayn = UIColor(light: 0x4A6572, dark: 0x8EACBB)
+    static let idghamMutaqaribayn = UIColor(light: 0xC62828, dark: 0xEF5350)
     static let lamJalalah = UIColor(light: 0xF9A825, dark: 0xFFD54F)
+    static let raTafkheem = UIColor(light: 0x558B2F, dark: 0x9CCC65)
+    static let raTarqeeq = UIColor(light: 0x558B2F, dark: 0x9CCC65)
+    static let idhaar = UIColor(light: 0x880E4F, dark: 0xF48FB1)
 
     convenience init(light: Int, dark: Int) {
         self.init { traits in

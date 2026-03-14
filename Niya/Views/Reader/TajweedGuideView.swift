@@ -6,7 +6,7 @@ struct TajweedGuideView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(TajweedRule.allCases) { rule in
+                ForEach(TajweedRule.allCases.filter(\.isEnabled)) { rule in
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 10) {
                             Circle()
