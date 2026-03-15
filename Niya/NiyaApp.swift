@@ -139,7 +139,7 @@ struct NiyaApp: App {
         }
     }
 
-    private static func handlePrayerRefresh(task: BGAppRefreshTask) {
+    nonisolated private static func handlePrayerRefresh(task: BGAppRefreshTask) {
         scheduleBGRefresh()
 
         guard UserDefaults.standard.bool(forKey: StorageKey.prayerNotificationsEnabled),
@@ -156,7 +156,7 @@ struct NiyaApp: App {
         task.setTaskCompleted(success: true)
     }
 
-    private static func scheduleBGRefresh() {
+    nonisolated private static func scheduleBGRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: StorageKey.backgroundTaskIdentifier)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 3600)
         try? BGTaskScheduler.shared.submit(request)

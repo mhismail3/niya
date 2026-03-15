@@ -111,4 +111,27 @@ struct PrayerNotificationSchedulerTests {
         )
         #expect(requests.isEmpty)
     }
+
+    @Test func buildRequestsWorksOffMainThread() async {
+        let location = nyc
+        let tz = TimeZone(identifier: "America/New_York")!
+        let now = fixedDate(2026, 3, 1, 0, 0, tz: tz)
+
+        let count = await Task.detached {
+            PrayerNotificationScheduler.buildRequests(
+                location: location, method: .isna, asrFactor: 1, now: now
+            ).count
+        }.value
+
+        #expect(count == 60)
+    }
+
+    @Test func locationFromDefaultsWorksOffMainThread() async {
+        let didComplete = await Task.detached {
+            _ = PrayerNotificationScheduler.locationFromDefaults()
+            return true
+        }.value
+
+        #expect(didComplete)
+    }
 }
