@@ -46,7 +46,7 @@ struct VerseRowView: View {
             }
 
             if showTajweed && script == .hafs, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
-                TajweedTextView(verse: tv, displayText: TajweedService.cleanArabicText(verse.text), fontSize: arabicFontSize) { tap in
+                TajweedTextView(verse: tv, fontSize: arabicFontSize) { tap in
                     handleTajweedTap(tap)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
