@@ -27,6 +27,7 @@ struct ReadingSettingsSection: View {
     @Binding var script: QuranScript
     @Binding var showTranslation: Bool
     @Binding var showTajweed: Bool
+    @Binding var showSupplementalTajweedRules: Bool
     @Binding var showJuzProgress: Bool
     @Environment(QuranDataService.self) private var dataService
 
@@ -69,6 +70,9 @@ struct ReadingSettingsSection: View {
             Toggle("Show Translation", isOn: $showTranslation)
                 .tint(Color.niyaTeal)
             Toggle("Tajweed Colors", isOn: $showTajweed)
+                .tint(Color.niyaTeal)
+                .disabled(script != .hafs)
+            Toggle("Supplemental Tajweed Rules", isOn: $showSupplementalTajweedRules)
                 .tint(Color.niyaTeal)
                 .disabled(script != .hafs)
             if script != .hafs {

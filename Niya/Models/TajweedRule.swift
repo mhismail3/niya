@@ -25,13 +25,17 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
 
     var id: String { rawValue }
 
-    var isEnabled: Bool {
+    var isSupplemental: Bool {
         switch self {
-        case .maddNormal, .maddObligatory, .maddNecessary:
-            false
-        default:
+        case .hamzatWasl, .lamShamsiyyah, .maddNormal, .maddPermissible, .maddObligatory, .maddNecessary:
             true
+        default:
+            false
         }
+    }
+
+    func isVisible(showSupplementalRules: Bool) -> Bool {
+        showSupplementalRules || !isSupplemental
     }
 
     var displayName: String {
@@ -163,10 +167,10 @@ enum TajweedRule: String, CaseIterable, Codable, Identifiable {
 extension UIColor {
     static let hamzatWasl = UIColor(light: 0x6D4C41, dark: 0xA1887F)
     static let lamShamsiyyah = UIColor(light: 0xF57F17, dark: 0xFFB74D)
-    static let maddNormal = UIColor(light: 0x4A6572, dark: 0x8EACBB)
+    static let maddNormal = UIColor(light: 0x8C5A2B, dark: 0xD9B382)
     static let maddPermissible = UIColor(light: 0xC2185B, dark: 0xF48FB1)
-    static let maddObligatory = UIColor(light: 0x00838F, dark: 0x4DD0E1)
-    static let maddNecessary = UIColor(light: 0x0277BD, dark: 0x4FC3F7)
+    static let maddObligatory = UIColor(light: 0x047857, dark: 0x6EE7B7)
+    static let maddNecessary = UIColor(light: 0x4C6EF5, dark: 0x91A7FF)
     static let ghunnah = UIColor(light: 0x2E7D32, dark: 0x66BB6A)
     static let qalqalah = UIColor(light: 0x1565C0, dark: 0x64B5F6)
     static let silentLetter = UIColor(light: 0x78909C, dark: 0xB0BEC5)

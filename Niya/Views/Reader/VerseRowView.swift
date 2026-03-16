@@ -24,6 +24,7 @@ struct VerseRowView: View {
     @Environment(\.showTajweedGuide) private var showTajweedGuide
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
+    @AppStorage(StorageKey.showSupplementalTajweedRules) private var showSupplementalTajweedRules: Bool = false
     @AppStorage(StorageKey.arabicFontSize) private var arabicFontSize: Double = 28
     @AppStorage(StorageKey.translationFontSize) private var translationFontSize: Double = 16
     @AppStorage(StorageKey.translationIsRTL) private var translationIsRTL: Bool = false
@@ -113,6 +114,9 @@ struct VerseRowView: View {
         .animation(.easeOut(duration: 0.5), value: highlightedAyahId)
         .onChange(of: showTajweed) { _, on in
             if !on { dismissTooltip() }
+        }
+        .onChange(of: showSupplementalTajweedRules) { _, _ in
+            dismissTooltip()
         }
     }
 

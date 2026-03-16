@@ -4,6 +4,7 @@ enum StorageKey {
     static let selectedScript = "selectedScript"
     static let showTranslation = "showTranslation"
     static let showTajweed = "showTajweed"
+    static let showSupplementalTajweedRules = "showSupplementalTajweedRules"
     static let followAlong = "followAlong"
     static let followAlongTransliteration = "followAlongTransliteration"
     static let followAlongMeaning = "followAlongMeaning"

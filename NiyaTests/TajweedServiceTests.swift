@@ -116,6 +116,33 @@ struct TajweedServiceTests {
         #expect(!rRules.isEmpty, "78:21 should have Ra Tafkheem (isti'la exception)")
     }
 
+    @Test func supplementalTajweedRulesMatchExpectedSet() {
+        let supplementalRules = Set(TajweedRule.allCases.filter(\.isSupplemental))
+        #expect(supplementalRules == Set([
+            .hamzatWasl,
+            .lamShamsiyyah,
+            .maddNormal,
+            .maddPermissible,
+            .maddObligatory,
+            .maddNecessary,
+        ]))
+    }
+
+    @Test func supplementalRulesHideByDefaultAndAppearWhenEnabled() {
+        for rule in TajweedRule.allCases {
+            let visibleByDefault = rule.isVisible(showSupplementalRules: false)
+            let visibleWithSupplementals = rule.isVisible(showSupplementalRules: true)
+
+            if rule.isSupplemental {
+                #expect(!visibleByDefault, "\(rule) should be hidden by default")
+            } else {
+                #expect(visibleByDefault, "\(rule) should be visible by default")
+            }
+
+            #expect(visibleWithSupplementals, "\(rule) should be visible when supplemental rules are enabled")
+        }
+    }
+
     @Test func cleanArabicTextSubstitutesEquivalents() {
         // Test each substitution independently to avoid grapheme cluster issues
         let r1 = TajweedService.cleanArabicText("ا\u{06DF}")

@@ -2,11 +2,12 @@ import SwiftUI
 
 struct TajweedGuideView: View {
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(StorageKey.showSupplementalTajweedRules) private var showSupplementalTajweedRules: Bool = false
 
     var body: some View {
         NavigationStack {
             List {
-                ForEach(TajweedRule.allCases.filter(\.isEnabled)) { rule in
+                ForEach(TajweedRule.allCases.filter { $0.isVisible(showSupplementalRules: showSupplementalTajweedRules) }) { rule in
                     VStack(alignment: .leading, spacing: 8) {
                         HStack(spacing: 10) {
                             Circle()

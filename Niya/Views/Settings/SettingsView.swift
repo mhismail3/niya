@@ -7,6 +7,7 @@ struct SettingsView: View {
     @AppStorage(StorageKey.selectedScript) private var script: QuranScript = .hafs
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
+    @AppStorage(StorageKey.showSupplementalTajweedRules) private var showSupplementalTajweedRules: Bool = false
     @AppStorage(StorageKey.followAlong) private var followAlong: Bool = false
     @AppStorage(StorageKey.followAlongTransliteration) private var followAlongTransliteration: Bool = true
     @AppStorage(StorageKey.followAlongMeaning) private var followAlongMeaning: Bool = true
@@ -61,7 +62,14 @@ struct SettingsView: View {
                         }
                     }
                 }
-                ReadingSettingsSection(mode: modeBinding, script: $script, showTranslation: $showTranslation, showTajweed: $showTajweed, showJuzProgress: $showJuzProgress)
+                ReadingSettingsSection(
+                    mode: modeBinding,
+                    script: $script,
+                    showTranslation: $showTranslation,
+                    showTajweed: $showTajweed,
+                    showSupplementalTajweedRules: $showSupplementalTajweedRules,
+                    showJuzProgress: $showJuzProgress
+                )
                 WordByWordSettingsSection(followAlong: $followAlong, followAlongTransliteration: $followAlongTransliteration, followAlongMeaning: $followAlongMeaning, script: script)
                 FontSizeSettingsSection(arabicFontSize: $arabicFontSize, translationFontSize: $translationFontSize)
                 HadithFontSizeSection(hadithArabicFontSize: $hadithArabicFontSize)

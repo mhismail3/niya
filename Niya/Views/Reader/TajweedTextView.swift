@@ -8,6 +8,7 @@ struct TajweedTap: Equatable {
 private let tajweedRuleKey = NSAttributedString.Key("tajweedRule")
 
 struct TajweedTextView: UIViewRepresentable {
+    @AppStorage(StorageKey.showSupplementalTajweedRules) private var showSupplementalTajweedRules: Bool = false
     let verse: TajweedVerse
     let fontSize: CGFloat
     let onTap: (TajweedTap?) -> Void
@@ -57,7 +58,7 @@ struct TajweedTextView: UIViewRepresentable {
         let result = NSMutableAttributedString(string: text, attributes: base)
 
         for ann in verse.annotations {
-            guard ann.rule.isEnabled,
+            guard ann.rule.isVisible(showSupplementalRules: showSupplementalTajweedRules),
                   ann.start >= 0, ann.end <= text.count, ann.start < ann.end else { continue }
             let start = text.index(text.startIndex, offsetBy: ann.start)
             let end = text.index(text.startIndex, offsetBy: ann.end)

@@ -19,6 +19,7 @@ enum DeviceInfo {
         let reciter = defaults.string(forKey: StorageKey.selectedReciter) ?? "alAfasy"
         let readerMode = defaults.string(forKey: StorageKey.readerMode) ?? "scroll"
         let tajweed = defaults.bool(forKey: StorageKey.showTajweed) ? "On" : "Off"
+        let supplementalTajweed = defaults.bool(forKey: StorageKey.showSupplementalTajweedRules) ? "On" : "Off"
         let followAlong = defaults.bool(forKey: StorageKey.followAlong) ? "On" : "Off"
 
         return """
@@ -31,6 +32,7 @@ enum DeviceInfo {
         Reciter: \(reciter)
         Reader: \(readerMode)
         Tajweed: \(tajweed)
+        Supplemental Tajweed: \(supplementalTajweed)
         Follow Along: \(followAlong)
         """
     }
