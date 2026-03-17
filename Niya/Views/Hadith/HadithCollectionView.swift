@@ -30,7 +30,7 @@ struct HadithCollectionView: View {
         .background(Color.niyaBackground)
         .navigationTitle(collection.name)
         .navigationBarTitleDisplayMode(.large)
-        .niyaToolbar()
+        .niyaToolbar(showSalahButton: false)
         .task {
             await dataService.loadCollection(collection.id)
             isLoading = false

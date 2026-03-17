@@ -34,6 +34,6 @@ struct DuaSectionView: View {
         .background(Color.niyaBackground)
         .navigationTitle(section.name)
         .navigationBarTitleDisplayMode(.large)
-        .niyaToolbar()
+        .niyaToolbar(showSalahButton: false)
     }
 }

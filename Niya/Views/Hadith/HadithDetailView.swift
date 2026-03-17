@@ -76,7 +76,7 @@ struct HadithDetailView: View {
         }
         .background(Color.niyaBackground)
         .navigationBarTitleDisplayMode(.inline)
-        .niyaToolbar()
+        .niyaToolbar(showSalahButton: false)
         .onAppear {
             isBookmarked = stores.hadithBookmarks.isBookmarked(collectionId: collectionId, hadithId: hadith.id)
             if isBookmarked {

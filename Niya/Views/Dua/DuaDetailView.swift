@@ -84,7 +84,7 @@ struct DuaDetailView: View {
         }
         .background(Color.niyaBackground)
         .navigationBarTitleDisplayMode(.inline)
-        .niyaToolbar()
+        .niyaToolbar(showSalahButton: false)
         .onAppear {
             isBookmarked = stores.duaBookmarks.isBookmarked(categoryId: categoryId, duaId: dua.id)
             if isBookmarked {
