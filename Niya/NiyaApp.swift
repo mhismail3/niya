@@ -61,11 +61,8 @@ struct NiyaApp: App {
         try? Tips.configure([.displayFrequency(.immediate)])
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
 
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: StorageKey.backgroundTaskIdentifier, using: nil) { task in
-            guard let refreshTask = task as? BGAppRefreshTask else { return }
-            Self.handlePrayerRefresh(task: refreshTask)
-        }
-        Self.scheduleBGRefresh()
+        PrayerRefreshBackgroundTask.register()
+        PrayerRefreshBackgroundTask.scheduleNextRefresh()
     }
 
     @Environment(\.scenePhase) private var scenePhase
@@ -139,29 +136,6 @@ struct NiyaApp: App {
         }
     }
 
-    nonisolated private static func handlePrayerRefresh(task: BGAppRefreshTask) {
-        scheduleBGRefresh()
-
-        guard UserDefaults.standard.bool(forKey: StorageKey.prayerNotificationsEnabled),
-              let location = PrayerNotificationScheduler.locationFromDefaults() else {
-            task.setTaskCompleted(success: true)
-            return
-        }
-
-        let methodRaw = UserDefaults.standard.string(forKey: StorageKey.calculationMethod) ?? CalculationMethod.isna.rawValue
-        let method = CalculationMethod(rawValue: methodRaw) ?? .isna
-        let asrFactor = max(1, UserDefaults.standard.integer(forKey: StorageKey.asrJuristic))
-
-        PrayerNotificationScheduler.scheduleAll(location: location, method: method, asrFactor: asrFactor)
-        task.setTaskCompleted(success: true)
-    }
-
-    nonisolated private static func scheduleBGRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: StorageKey.backgroundTaskIdentifier)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 6 * 3600)
-        try? BGTaskScheduler.shared.submit(request)
-    }
-
     private static func resetTipsIfVersionChanged() {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
         let lastVersion = UserDefaults.standard.string(forKey: StorageKey.tipsLastShownVersion)
@@ -183,5 +157,112 @@ struct NiyaApp: App {
             }
         }
         UserDefaults.standard.set(true, forKey: StorageKey.audioFilenameMigrated)
+    }
+}
+
+enum PrayerRefreshBackgroundTask {
+    struct Configuration: Equatable {
+        let location: UserLocation
+        let method: CalculationMethod
+        let asrFactor: Int
+    }
+
+    private static let executionQueue = DispatchQueue(label: "com.niya.mobile.prayerRefresh", qos: .utility)
+
+    static func register(scheduler: BGTaskScheduler = .shared) {
+        let didRegister = scheduler.register(
+            forTaskWithIdentifier: StorageKey.backgroundTaskIdentifier,
+            using: executionQueue
+        ) { task in
+            handle(task: task)
+        }
+
+        if !didRegister {
+            AppLogger.notification.fault("Failed to register background task \(StorageKey.backgroundTaskIdentifier)")
+        }
+    }
+
+    static func scheduleNextRefresh(scheduler: BGTaskScheduler = .shared, now: Date = Date()) {
+        let request = makeRequest(now: now)
+        scheduler.cancel(taskRequestWithIdentifier: request.identifier)
+
+        do {
+            try scheduler.submit(request)
+        } catch {
+            AppLogger.notification.error(
+                "Failed to schedule background task \(request.identifier): \(error.localizedDescription)"
+            )
+        }
+    }
+
+    static func makeRequest(now: Date = Date()) -> BGAppRefreshTaskRequest {
+        let request = BGAppRefreshTaskRequest(identifier: StorageKey.backgroundTaskIdentifier)
+        request.earliestBeginDate = now.addingTimeInterval(6 * 3600)
+        return request
+    }
+
+    static func configuration(userDefaults: UserDefaults = .standard) -> Configuration? {
+        guard userDefaults.bool(forKey: StorageKey.prayerNotificationsEnabled),
+              let location = PrayerNotificationScheduler.locationFromDefaults(userDefaults: userDefaults) else {
+            return nil
+        }
+
+        let methodRaw = userDefaults.string(forKey: StorageKey.calculationMethod) ?? CalculationMethod.isna.rawValue
+        let method = CalculationMethod(rawValue: methodRaw) ?? .isna
+        let asrFactor = max(1, userDefaults.integer(forKey: StorageKey.asrJuristic))
+        return Configuration(location: location, method: method, asrFactor: asrFactor)
+    }
+
+    private static func handle(task: BGTask) {
+        guard let refreshTask = task as? BGAppRefreshTask else {
+            AppLogger.notification.error(
+                "Received unexpected background task for \(StorageKey.backgroundTaskIdentifier)"
+            )
+            task.setTaskCompleted(success: false)
+            return
+        }
+
+        handlePrayerRefresh(task: refreshTask)
+    }
+
+    private static func handlePrayerRefresh(task: BGAppRefreshTask, userDefaults: UserDefaults = .standard) {
+        let completion = PrayerRefreshTaskCompletion(task: task)
+        task.expirationHandler = {
+            AppLogger.notification.warning("Prayer refresh background task expired before completion")
+            completion.finish(success: false)
+        }
+
+        scheduleNextRefresh()
+
+        guard let configuration = configuration(userDefaults: userDefaults) else {
+            completion.finish(success: true)
+            return
+        }
+
+        PrayerNotificationScheduler.scheduleAll(
+            location: configuration.location,
+            method: configuration.method,
+            asrFactor: configuration.asrFactor
+        )
+        completion.finish(success: true)
+    }
+}
+
+private final class PrayerRefreshTaskCompletion {
+    private let lock = NSLock()
+    private let task: BGTask
+    private var hasCompleted = false
+
+    init(task: BGTask) {
+        self.task = task
+    }
+
+    func finish(success: Bool) {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !hasCompleted else { return }
+        hasCompleted = true
+        task.setTaskCompleted(success: success)
     }
 }

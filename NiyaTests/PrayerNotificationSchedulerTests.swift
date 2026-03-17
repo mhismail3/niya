@@ -12,6 +12,13 @@ struct PrayerNotificationSchedulerTests {
         timezoneIdentifier: "America/New_York"
     )
 
+    private func makeDefaults() -> UserDefaults {
+        let suiteName = "com.niya.mobile.tests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        return defaults
+    }
+
     private func fixedDate(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0, _ minute: Int = 0, tz: TimeZone) -> Date {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = tz
@@ -127,11 +134,67 @@ struct PrayerNotificationSchedulerTests {
     }
 
     @Test func locationFromDefaultsWorksOffMainThread() async {
+        let defaults = makeDefaults()
+        let encoded = try! JSONEncoder().encode(nyc)
+        defaults.set(encoded, forKey: StorageKey.manualLocationData)
+
         let didComplete = await Task.detached {
-            _ = PrayerNotificationScheduler.locationFromDefaults()
+            _ = PrayerNotificationScheduler.locationFromDefaults(userDefaults: defaults)
             return true
         }.value
 
         #expect(didComplete)
+    }
+
+    @Test func locationFromInjectedDefaultsDecodesStoredLocation() throws {
+        let defaults = makeDefaults()
+        defaults.set(try JSONEncoder().encode(nyc), forKey: StorageKey.manualLocationData)
+
+        let decoded = PrayerNotificationScheduler.locationFromDefaults(userDefaults: defaults)
+
+        #expect(decoded == nyc)
+    }
+
+    @Test func refreshConfigurationUsesStoredSettings() throws {
+        let defaults = makeDefaults()
+        defaults.set(true, forKey: StorageKey.prayerNotificationsEnabled)
+        defaults.set(try JSONEncoder().encode(nyc), forKey: StorageKey.manualLocationData)
+        defaults.set(CalculationMethod.makkah.rawValue, forKey: StorageKey.calculationMethod)
+        defaults.set(2, forKey: StorageKey.asrJuristic)
+
+        let configuration = PrayerRefreshBackgroundTask.configuration(userDefaults: defaults)
+
+        #expect(configuration?.location == nyc)
+        #expect(configuration?.method == .makkah)
+        #expect(configuration?.asrFactor == 2)
+    }
+
+    @Test func refreshConfigurationNormalizesInvalidAsrFactor() throws {
+        let defaults = makeDefaults()
+        defaults.set(true, forKey: StorageKey.prayerNotificationsEnabled)
+        defaults.set(try JSONEncoder().encode(nyc), forKey: StorageKey.manualLocationData)
+        defaults.set(0, forKey: StorageKey.asrJuristic)
+
+        let configuration = PrayerRefreshBackgroundTask.configuration(userDefaults: defaults)
+
+        #expect(configuration?.asrFactor == 1)
+    }
+
+    @Test func refreshConfigurationRequiresEnabledNotificationsAndLocation() {
+        let defaults = makeDefaults()
+
+        #expect(PrayerRefreshBackgroundTask.configuration(userDefaults: defaults) == nil)
+
+        defaults.set(true, forKey: StorageKey.prayerNotificationsEnabled)
+        #expect(PrayerRefreshBackgroundTask.configuration(userDefaults: defaults) == nil)
+    }
+
+    @Test func refreshRequestBeginsAboutSixHoursAhead() {
+        let now = Date(timeIntervalSinceReferenceDate: 123_456)
+
+        let request = PrayerRefreshBackgroundTask.makeRequest(now: now)
+
+        #expect(request.identifier == StorageKey.backgroundTaskIdentifier)
+        #expect(request.earliestBeginDate == now.addingTimeInterval(6 * 3600))
     }
 }

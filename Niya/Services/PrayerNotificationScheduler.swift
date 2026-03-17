@@ -51,9 +51,10 @@ enum PrayerNotificationScheduler {
         center.removeAllPendingNotificationRequests()
         let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
         for request in requests {
+            let requestID = request.identifier
             center.add(request) { error in
                 if let error {
-                    AppLogger.notification.error("Failed to schedule \(request.identifier): \(error.localizedDescription)")
+                    AppLogger.notification.error("Failed to schedule \(requestID): \(error.localizedDescription)")
                 }
             }
         }
@@ -63,8 +64,8 @@ enum PrayerNotificationScheduler {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
-    static func locationFromDefaults() -> UserLocation? {
-        guard let data = UserDefaults.standard.data(forKey: StorageKey.manualLocationData) else {
+    static func locationFromDefaults(userDefaults: UserDefaults = .standard) -> UserLocation? {
+        guard let data = userDefaults.data(forKey: StorageKey.manualLocationData) else {
             return nil
         }
         return try? JSONDecoder().decode(UserLocation.self, from: data)
