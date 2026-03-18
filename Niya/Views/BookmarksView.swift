@@ -13,10 +13,15 @@ struct BookmarksView: View {
     @State private var duaBookmarks: [DuaBookmark] = []
     @State private var hadithGrouped: [(collection: HadithCollection, bookmarks: [HadithBookmark])] = []
     @State private var colorFilter: ColorFilter = .all
+    @State private var typeFilter: TypeFilter = .all
 
     enum ColorFilter: Hashable {
         case all
         case color(BookmarkColor?)
+    }
+
+    enum TypeFilter: Hashable, CaseIterable {
+        case all, quran, hadith, dua
     }
 
     private var hasAny: Bool {
@@ -24,6 +29,7 @@ struct BookmarksView: View {
     }
 
     private var filteredQuranBookmarks: [QuranBookmark] {
+        guard typeFilter == .all || typeFilter == .quran else { return [] }
         switch colorFilter {
         case .all: return quranBookmarks
         case .color(let c): return quranBookmarks.filter { $0.bookmarkColor == c }
@@ -31,6 +37,7 @@ struct BookmarksView: View {
     }
 
     private var filteredHadithBookmarks: [HadithBookmark] {
+        guard typeFilter == .all || typeFilter == .hadith else { return [] }
         switch colorFilter {
         case .all: return hadithBookmarks
         case .color(let c): return hadithBookmarks.filter { $0.bookmarkColor == c }
@@ -38,6 +45,7 @@ struct BookmarksView: View {
     }
 
     private var filteredDuaBookmarks: [DuaBookmark] {
+        guard typeFilter == .all || typeFilter == .dua else { return [] }
         switch colorFilter {
         case .all: return duaBookmarks
         case .color(let c): return duaBookmarks.filter { $0.bookmarkColor == c }
@@ -69,12 +77,17 @@ struct BookmarksView: View {
         .task { await loadDuaData() }
         .onAppear { reload() }
         .onChange(of: colorFilter) { _, _ in recomputeHadithGrouped() }
+        .onChange(of: typeFilter) { _, _ in recomputeHadithGrouped() }
     }
 
     private var list: some View {
         List {
             Section {
                 colorFilterBar
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                typeFilterBar
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
@@ -126,6 +139,44 @@ struct BookmarksView: View {
             .padding(.horizontal)
             .padding(.top, 12)
         }
+    }
+
+    private var typeFilterBar: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                typeFilterChip("All", icon: nil, count: quranBookmarks.count + hadithBookmarks.count + duaBookmarks.count, filter: .all)
+                typeFilterChip("Quran", icon: "book.fill", count: quranBookmarks.count, filter: .quran)
+                typeFilterChip("Hadith", icon: "text.book.closed", count: hadithBookmarks.count, filter: .hadith)
+                typeFilterChip("Dua", icon: "hands.and.sparkles", count: duaBookmarks.count, filter: .dua)
+            }
+            .padding(.horizontal)
+            .padding(.top, 4)
+        }
+    }
+
+    private func typeFilterChip(_ label: String, icon: String?, count: Int, filter: TypeFilter) -> some View {
+        let isSelected = typeFilter == filter
+        return Button {
+            typeFilter = filter
+        } label: {
+            HStack(spacing: 5) {
+                if let icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 10))
+                }
+                Text("\(label) (\(count))")
+                    .font(.system(.caption, weight: .medium))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(isSelected ? Color.niyaGold.opacity(0.15) : Color.niyaSurface)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule().stroke(isSelected ? Color.niyaGold.opacity(0.4) : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(isSelected ? Color.niyaGold : Color.niyaSecondary)
     }
 
     private func filterChip(_ label: String, color: Color?, isSelected: Bool, action: @escaping () -> Void) -> some View {
