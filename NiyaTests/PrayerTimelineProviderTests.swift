@@ -135,6 +135,31 @@ struct PrayerTimelineProviderTests {
         #expect(entries.count >= 8)
     }
 
+    @Test("makeEntries does not crash at year boundary")
+    func entriesAtYearBoundary() {
+        let data = sampleData()
+        let dec31 = cal.date(from: DateComponents(year: 2025, month: 12, day: 31, hour: 23, minute: 59))!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: dec31)
+        #expect(!entries.isEmpty)
+        #expect(entries.first?.date == dec31)
+    }
+
+    @Test("makeEntries does not crash at leap day")
+    func entriesAtLeapDay() {
+        let data = sampleData()
+        let leapDay = cal.date(from: DateComponents(year: 2028, month: 2, day: 29, hour: 12, minute: 0))!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: leapDay)
+        #expect(!entries.isEmpty)
+    }
+
+    @Test("makeEntries handles distant future date")
+    func entriesDistantFuture() {
+        let data = sampleData()
+        let future = cal.date(from: DateComponents(year: 2099, month: 6, day: 15, hour: 14, minute: 30))!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: future)
+        #expect(!entries.isEmpty)
+    }
+
     @Test("Entry at tomorrow Fajr time - nextPrayer transitions to Sunrise")
     func entryAtTomorrowFajrTransitions() {
         let data = sampleData()

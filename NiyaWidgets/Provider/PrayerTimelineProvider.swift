@@ -41,7 +41,7 @@ struct PrayerTimelineProvider: TimelineProvider {
     private static func recompute(location: UserLocation, method: CalculationMethod, asrFactor: Int) -> WidgetPrayerData {
         let now = Date()
         let today = PrayerTimeCalculator.calculate(date: now, location: location, method: method, asrFactor: asrFactor)
-        let tomorrowDate = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+        let tomorrowDate = Calendar.current.date(byAdding: .day, value: 1, to: now) ?? now
         let tomorrow = PrayerTimeCalculator.calculate(date: tomorrowDate, location: location, method: method, asrFactor: asrFactor)
         return WidgetPrayerData.from(today: today, tomorrow: tomorrow, location: location, hijriDate: HijriFormatter.format(date: now), asrFactor: asrFactor)
     }
@@ -60,7 +60,8 @@ struct PrayerTimelineProvider: TimelineProvider {
             entries.append(PrayerTimeEntry(date: prayer.time, data: data, isFallback: isFallback))
         }
 
-        if let midnight = cal.date(bySettingHour: 0, minute: 0, second: 0, of: cal.date(byAdding: .day, value: 1, to: now)!) {
+        if let nextDay = cal.date(byAdding: .day, value: 1, to: now),
+           let midnight = cal.date(bySettingHour: 0, minute: 0, second: 0, of: nextDay) {
             entries.append(PrayerTimeEntry(date: midnight, data: data, isFallback: isFallback))
         }
 

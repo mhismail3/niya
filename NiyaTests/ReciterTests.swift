@@ -204,6 +204,33 @@ struct ReciterTests {
         #expect(Reciter.bukhatir.shortName == "Bukhatir")
     }
 
+    @Test(arguments: Reciter.allCases)
+    func configSafetyNet(reciter: Reciter) {
+        #expect(!reciter.displayName.isEmpty)
+        #expect(!reciter.shortName.isEmpty)
+        #expect(!reciter.wordDataFilename.isEmpty)
+
+        let surah1 = reciter.surahStreamURL(surahId: 1)
+        let surah114 = reciter.surahStreamURL(surahId: 114)
+        #expect(!surah1.absoluteString.isEmpty)
+        #expect(!surah114.absoluteString.isEmpty)
+
+        let filename1 = reciter.localFilename(for: 1)
+        let filename114 = reciter.localFilename(for: 114)
+        #expect(!filename1.isEmpty)
+        #expect(!filename114.isEmpty)
+        #expect(filename1 != filename114)
+
+        if reciter.hasPerVerseAudio {
+            let verse1 = reciter.verseStreamURL(absoluteVerseNumber: 1)
+            let verse6236 = reciter.verseStreamURL(absoluteVerseNumber: 6236)
+            #expect(verse1 != nil)
+            #expect(verse6236 != nil)
+        } else {
+            #expect(reciter.verseStreamURL(absoluteVerseNumber: 1) == nil)
+        }
+    }
+
     @Test func rawValueMatchesExpected() {
         #expect(Reciter.alAfasy.rawValue == "alAfasy")
         #expect(Reciter.noreenSiddiq.rawValue == "noreenSiddiq")
