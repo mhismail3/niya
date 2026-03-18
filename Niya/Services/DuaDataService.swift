@@ -8,8 +8,8 @@ final class DuaDataService {
     var isLoaded = false
     var loadError: String?
 
-    private var duasByCategory: [Int: [Dua]] = [:]
-    private var categoryById: [Int: DuaCategory] = [:]
+    private var duasByCategory: [String: [Dua]] = [:]
+    private var categoryById: [String: DuaCategory] = [:]
     private var sectionById: [String: DuaSection] = [:]
 
     func load() async {
@@ -37,15 +37,15 @@ final class DuaDataService {
         return ids.compactMap { categoryById[$0] }
     }
 
-    func duas(for categoryId: Int) -> [Dua] {
+    func duas(for categoryId: String) -> [Dua] {
         duasByCategory[categoryId] ?? []
     }
 
-    func dua(categoryId: Int, duaId: Int) -> Dua? {
+    func dua(categoryId: String, duaId: String) -> Dua? {
         duasByCategory[categoryId]?.first { $0.id == duaId }
     }
 
-    func category(id: Int) -> DuaCategory? {
+    func category(id: String) -> DuaCategory? {
         categoryById[id]
     }
 
@@ -53,17 +53,19 @@ final class DuaDataService {
         categories(for: sectionId).reduce(0) { $0 + $1.totalDuas }
     }
 
-    func searchDuas(query: String) -> [(categoryId: Int, dua: Dua)] {
+    func searchDuas(query: String) -> [(categoryId: String, dua: Dua)] {
         let q = query.trimmingCharacters(in: .whitespaces)
         guard !q.isEmpty else { return [] }
-        var results: [(categoryId: Int, dua: Dua)] = []
+        var results: [(categoryId: String, dua: Dua)] = []
         for categoryId in duasByCategory.keys.sorted() {
             guard let duas = duasByCategory[categoryId] else { continue }
             for dua in duas {
                 if results.count >= 50 { return results }
-                if dua.translation.range(of: q, options: .caseInsensitive) != nil ||
+                let translation = dua.translation ?? ""
+                if translation.range(of: q, options: .caseInsensitive) != nil ||
                    dua.arabic.contains(q) ||
-                   (dua.transliteration?.range(of: q, options: .caseInsensitive) != nil) {
+                   (dua.transliteration?.range(of: q, options: .caseInsensitive) != nil) ||
+                   (dua.context?.range(of: q, options: .caseInsensitive) != nil) {
                     results.append((categoryId, dua))
                 }
             }
@@ -75,23 +77,5 @@ final class DuaDataService {
 private struct RawDuaFile: Decodable {
     let sections: [DuaSection]
     let categories: [DuaCategory]
-    let duas: [Int: [Dua]]
-
-    enum CodingKeys: String, CodingKey {
-        case sections, categories, duas
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        sections = try container.decode([DuaSection].self, forKey: .sections)
-        categories = try container.decode([DuaCategory].self, forKey: .categories)
-        let stringKeyed = try container.decode([String: [Dua]].self, forKey: .duas)
-        var intKeyed: [Int: [Dua]] = [:]
-        for (key, value) in stringKeyed {
-            if let intKey = Int(key) {
-                intKeyed[intKey] = value
-            }
-        }
-        duas = intKeyed
-    }
+    let duas: [String: [Dua]]
 }

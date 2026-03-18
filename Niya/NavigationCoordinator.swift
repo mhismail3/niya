@@ -17,8 +17,8 @@ struct HadithNavDestination: Hashable {
 }
 
 struct DuaNavDestination: Hashable {
-    let categoryId: Int
-    let duaId: Int
+    let categoryId: String
+    let duaId: String
 }
 
 @Observable
@@ -53,7 +53,7 @@ final class NavigationCoordinator {
         selectedTab = .hadith
     }
 
-    func navigateToDua(categoryId: Int, duaId: Int) {
+    func navigateToDua(categoryId: String, duaId: String) {
         pendingDuaDestination = DuaNavDestination(categoryId: categoryId, duaId: duaId)
         selectedTab = .dua
     }

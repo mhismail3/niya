@@ -9,7 +9,7 @@ final class RecentDuaStore {
         self.modelContext = modelContext
     }
 
-    func record(categoryId: Int, duaId: Int) {
+    func record(categoryId: String, duaId: String) {
         let key = "\(categoryId):\(duaId)"
         let all = (try? modelContext.fetch(FetchDescriptor<RecentDua>())) ?? []
         let matches = all.filter { $0.duaKey == key }

@@ -237,10 +237,10 @@ private struct HadithSearchItem: Identifiable {
 
 private struct DuaSearchItem: Identifiable {
     let id: String
-    let categoryId: Int
+    let categoryId: String
     let dua: Dua
 
-    init(categoryId: Int, dua: Dua) {
+    init(categoryId: String, dua: Dua) {
         self.id = "\(categoryId):\(dua.id)"
         self.categoryId = categoryId
         self.dua = dua

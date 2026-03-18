@@ -86,7 +86,7 @@ struct BookmarkModelColorTagTests {
     }
 
     @Test func duaBookmarkColorTagWorks() {
-        let b = DuaBookmark(categoryId: 1, duaId: 1)
+        let b = DuaBookmark(categoryId: "cat-1", duaId: "dua-1")
         #expect(b.bookmarkColor == nil)
         b.bookmarkColor = .emerald
         #expect(b.colorTag == "emerald")
@@ -96,7 +96,7 @@ struct BookmarkModelColorTagTests {
     @Test func existingBookmarksDefaultToNilColor() {
         let q = QuranBookmark(surahId: 2, ayahId: 255)
         let h = HadithBookmark(collectionId: "muslim", hadithId: 42)
-        let d = DuaBookmark(categoryId: 3, duaId: 7)
+        let d = DuaBookmark(categoryId: "cat-3", duaId: "dua-7")
         #expect(q.bookmarkColor == nil)
         #expect(h.bookmarkColor == nil)
         #expect(d.bookmarkColor == nil)

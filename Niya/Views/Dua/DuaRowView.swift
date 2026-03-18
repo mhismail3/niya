@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DuaRowView: View {
     let dua: Dua
+    let index: Int
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -9,7 +10,7 @@ struct DuaRowView: View {
                 .frame(width: 48)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(dua.translation)
+                Text(dua.translation ?? dua.arabic)
                     .font(.niyaCaption)
                     .foregroundStyle(Color.niyaText)
                     .lineLimit(3)
@@ -34,7 +35,7 @@ struct DuaRowView: View {
             Image(systemName: "diamond")
                 .font(.system(size: 36))
                 .foregroundStyle(Color.niyaTeal.opacity(0.15))
-            Text("\(dua.number)")
+            Text("\(index)")
                 .font(.system(.caption2, design: .rounded, weight: .semibold))
                 .foregroundStyle(Color.niyaTeal)
                 .minimumScaleFactor(0.5)

@@ -26,11 +26,11 @@ struct CloudSyncModelTests {
     }
 
     @Test func duaBookmarkHasDefaultValues() {
-        let bm = DuaBookmark(categoryId: 5, duaId: 3)
-        #expect(bm.duaKey == "5:3")
-        #expect(bm.categoryId == 5)
-        #expect(bm.duaId == 3)
-        #expect(bm.createdAt <= .now)
+        let bm = DuaBookmark(categoryId: "cat-5", duaId: "dua-3")
+        #expect(bm.duaKey == "cat-5:dua-3")
+        #expect(bm.categorySlug == "cat-5")
+        #expect(bm.duaStringId == "dua-3")
+        #expect(bm.createdAt <= Date.now)
         #expect(bm.colorTag == nil)
     }
 
@@ -51,11 +51,11 @@ struct CloudSyncModelTests {
     }
 
     @Test func recentDuaHasDefaultValues() {
-        let rd = RecentDua(categoryId: 1, duaId: 7)
-        #expect(rd.duaKey == "1:7")
-        #expect(rd.categoryId == 1)
-        #expect(rd.duaId == 7)
-        #expect(rd.visitedAt <= .now)
+        let rd = RecentDua(categoryId: "cat-1", duaId: "dua-7")
+        #expect(rd.duaKey == "cat-1:dua-7")
+        #expect(rd.categorySlug == "cat-1")
+        #expect(rd.duaStringId == "dua-7")
+        #expect(rd.visitedAt <= Date.now)
     }
 
     @Test func recentSearchHasDefaultValues() {

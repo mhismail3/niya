@@ -17,9 +17,9 @@ struct DuaSectionView: View {
                             .padding(.top, 20)
                             .padding(.bottom, 6)
 
-                        ForEach(duas) { dua in
+                        ForEach(Array(duas.enumerated()), id: \.element.id) { index, dua in
                             NavigationLink(value: DuaNavDestination(categoryId: category.id, duaId: dua.id)) {
-                                DuaRowView(dua: dua)
+                                DuaRowView(dua: dua, index: index + 1)
                                     .padding(.horizontal)
                                     .padding(.vertical, 10)
                                     .contentShape(Rectangle())

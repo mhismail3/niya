@@ -51,10 +51,10 @@ struct ResetDashboardTests {
     // MARK: - RecentDuaStore.clearAll()
 
     @Test func clearAllRemovesAllRecentDuas() {
-        let d1 = RecentDua(categoryId: 1, duaId: 1)
-        let d2 = RecentDua(categoryId: 5, duaId: 3)
-        #expect(d1.duaKey == "1:1")
-        #expect(d2.duaKey == "5:3")
+        let d1 = RecentDua(categoryId: "cat-1", duaId: "dua-1")
+        let d2 = RecentDua(categoryId: "cat-5", duaId: "dua-3")
+        #expect(d1.duaKey == "cat-1:dua-1")
+        #expect(d2.duaKey == "cat-5:dua-3")
         let descriptor = FetchDescriptor<RecentDua>()
         #expect(type(of: descriptor) == FetchDescriptor<RecentDua>.self)
     }

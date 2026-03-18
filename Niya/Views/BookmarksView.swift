@@ -318,8 +318,8 @@ struct BookmarksView: View {
     private var duaSection: some View {
         Section {
             ForEach(filteredDuaBookmarks, id: \.duaKey) { bookmark in
-                if let dua = duaDataService.dua(categoryId: bookmark.categoryId, duaId: bookmark.duaId) {
-                    let categoryName = duaDataService.category(id: bookmark.categoryId)?.name ?? "Dua"
+                if let dua = duaDataService.dua(categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId) {
+                    let categoryName = duaDataService.category(id: bookmark.categorySlug)?.name ?? "Dua"
                     let badgeColor = bookmark.bookmarkColor?.color ?? .niyaTeal
 
                     HStack(spacing: 12) {
@@ -327,8 +327,8 @@ struct BookmarksView: View {
                             Image(systemName: "diamond")
                                 .font(.system(size: 32))
                                 .foregroundStyle(badgeColor.opacity(0.15))
-                            Text("\(dua.number)")
-                                .font(.system(.caption2, design: .rounded, weight: .semibold))
+                            Image(systemName: "sparkle")
+                                .font(.system(size: 10))
                                 .foregroundStyle(badgeColor)
                         }
                         .frame(width: 40)
@@ -337,7 +337,7 @@ struct BookmarksView: View {
                             Text(categoryName)
                                 .font(.niyaCaption)
                                 .foregroundStyle(Color.niyaGold)
-                            Text(dua.translation)
+                            Text(dua.translation ?? dua.arabic)
                                 .font(.niyaCaption)
                                 .foregroundStyle(Color.niyaText)
                                 .lineLimit(2)
@@ -351,25 +351,25 @@ struct BookmarksView: View {
                     .listRowBackground(rowBackground(for: bookmark.bookmarkColor))
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        coordinator.navigateToDua(categoryId: bookmark.categoryId, duaId: bookmark.duaId)
+                        coordinator.navigateToDua(categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId)
                         dismiss()
                     }
                     .contextMenu {
                         bookmarkContextMenu(
                             currentColor: bookmark.bookmarkColor,
                             setColor: { color in
-                                stores.duaBookmarks.setColor(color, categoryId: bookmark.categoryId, duaId: bookmark.duaId)
+                                stores.duaBookmarks.setColor(color, categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId)
                                 reload()
                             },
                             remove: {
-                                stores.duaBookmarks.toggle(categoryId: bookmark.categoryId, duaId: bookmark.duaId)
+                                stores.duaBookmarks.toggle(categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId)
                                 reload()
                             }
                         )
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
-                            stores.duaBookmarks.toggle(categoryId: bookmark.categoryId, duaId: bookmark.duaId)
+                            stores.duaBookmarks.toggle(categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId)
                             reload()
                         } label: {
                             Label("Remove", systemImage: "bookmark.slash")
@@ -377,7 +377,7 @@ struct BookmarksView: View {
                     }
                     .swipeActions(edge: .leading) {
                         colorSwipeButtons { color in
-                            stores.duaBookmarks.setColor(color, categoryId: bookmark.categoryId, duaId: bookmark.duaId)
+                            stores.duaBookmarks.setColor(color, categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId)
                             reload()
                         }
                     }

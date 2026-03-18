@@ -55,7 +55,7 @@ struct DuaDataServiceTests {
 
     @Test func duaForInvalidId_returnsNil() {
         let service = DuaDataService()
-        let result = service.dua(categoryId: 99999, duaId: 99999)
+        let result = service.dua(categoryId: "nonexistent", duaId: "nope")
         #expect(result == nil)
     }
 }

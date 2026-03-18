@@ -34,10 +34,10 @@ struct NavigationCoordinatorTests {
 
     @Test func navigateToDua_setsTabAndDestination() {
         let coordinator = NavigationCoordinator()
-        coordinator.navigateToDua(categoryId: 5, duaId: 3)
+        coordinator.navigateToDua(categoryId: "morning-adhkar", duaId: "hisn-75")
         #expect(coordinator.selectedTab == .dua)
-        #expect(coordinator.pendingDuaDestination?.categoryId == 5)
-        #expect(coordinator.pendingDuaDestination?.duaId == 3)
+        #expect(coordinator.pendingDuaDestination?.categoryId == "morning-adhkar")
+        #expect(coordinator.pendingDuaDestination?.duaId == "hisn-75")
     }
 
     @Test func sequentialNavigations_clearPriorDestinations() {
@@ -50,7 +50,7 @@ struct NavigationCoordinatorTests {
         #expect(coordinator.pendingQuranDestination?.surahId == 1)
 
         coordinator.pendingQuranDestination = nil
-        coordinator.navigateToDua(categoryId: 1, duaId: 1)
+        coordinator.navigateToDua(categoryId: "morning-adhkar", duaId: "hisn-1")
         #expect(coordinator.selectedTab == .dua)
         #expect(coordinator.pendingQuranDestination == nil)
     }

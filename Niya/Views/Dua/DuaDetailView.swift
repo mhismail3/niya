@@ -2,7 +2,7 @@ import SwiftUI
 
 struct DuaDetailView: View {
     let dua: Dua
-    let categoryId: Int
+    let categoryId: String
     @Environment(DuaDataService.self) private var dataService
     @Environment(\.stores) private var stores
     @AppStorage(StorageKey.hadithArabicFontSize) private var arabicFontSize: Double = 22
@@ -19,12 +19,14 @@ struct DuaDetailView: View {
         if let transliteration = dua.transliteration {
             parts.append(transliteration)
         }
-        parts.append("")
-        parts.append(dua.translation)
+        if let translation = dua.translation {
+            parts.append("")
+            parts.append(translation)
+        }
         parts.append("")
         parts.append(categoryName)
-        if let source = dua.source {
-            parts.append(source)
+        if let reference = dua.reference {
+            parts.append(reference)
         }
         return parts.joined(separator: "\n")
     }
@@ -50,10 +52,17 @@ struct DuaDetailView: View {
 
                 Divider()
 
-                Text(dua.translation)
-                    .font(.system(size: translationFontSize, design: .serif))
-                    .foregroundStyle(Color.niyaText)
-                    .lineSpacing(4)
+                if let translation = dua.translation {
+                    Text(translation)
+                        .font(.system(size: translationFontSize, design: .serif))
+                        .foregroundStyle(Color.niyaText)
+                        .lineSpacing(4)
+                } else {
+                    Text("Translation coming soon")
+                        .font(.system(size: translationFontSize, design: .serif))
+                        .foregroundStyle(Color.niyaSecondary)
+                        .italic()
+                }
 
                 if let benefits = dua.benefits {
                     Divider()
@@ -69,12 +78,26 @@ struct DuaDetailView: View {
                     }
                 }
 
+                if let context = dua.context {
+                    Divider()
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Context")
+                            .font(.niyaCaption)
+                            .foregroundStyle(Color.niyaGold)
+                        Text(context)
+                            .font(.system(size: translationFontSize - 2, design: .serif))
+                            .foregroundStyle(Color.niyaSecondary)
+                            .lineSpacing(3)
+                    }
+                }
+
                 Divider()
 
                 VStack(alignment: .leading, spacing: 4) {
                     metadataRow("Category", value: categoryName)
-                    if let source = dua.source {
-                        metadataRow("Source", value: source)
+                    if let reference = dua.reference {
+                        metadataRow("Reference", value: reference)
                     }
                 }
 
@@ -89,7 +112,7 @@ struct DuaDetailView: View {
             isBookmarked = stores.duaBookmarks.isBookmarked(categoryId: categoryId, duaId: dua.id)
             if isBookmarked {
                 bookmarkColor = stores.duaBookmarks.allBookmarks()
-                    .first { $0.categoryId == categoryId && $0.duaId == dua.id }?.bookmarkColor
+                    .first { $0.categorySlug == categoryId && $0.duaStringId == dua.id }?.bookmarkColor
             }
             stores.recentDua
                 .record(categoryId: categoryId, duaId: dua.id)

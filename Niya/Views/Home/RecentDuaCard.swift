@@ -12,7 +12,7 @@ struct RecentDuaCard: View {
                 .foregroundStyle(Color.niyaGold)
                 .lineLimit(1)
 
-            Text(dua.translation)
+            Text(dua.translation ?? dua.arabic)
                 .font(.niyaCaption)
                 .foregroundStyle(Color.niyaText)
                 .lineLimit(3)

@@ -96,8 +96,8 @@ struct HomeView: View {
             return (recent, hadith, collection)
         }
         resolvedDuas = recentDuas.compactMap { recent in
-            guard let dua = duaDataService.dua(categoryId: recent.categoryId, duaId: recent.duaId) else { return nil }
-            let categoryName = duaDataService.category(id: recent.categoryId)?.name ?? "Dua"
+            guard let dua = duaDataService.dua(categoryId: recent.categorySlug, duaId: recent.duaStringId) else { return nil }
+            let categoryName = duaDataService.category(id: recent.categorySlug)?.name ?? "Dua"
             return (recent, dua, categoryName)
         }
     }
@@ -224,8 +224,8 @@ struct HomeView: View {
                     ForEach(resolvedDuas, id: \.recent.duaKey) { item in
                         Button {
                             coordinator.navigateToDua(
-                                categoryId: item.recent.categoryId,
-                                duaId: item.recent.duaId
+                                categoryId: item.recent.categorySlug,
+                                duaId: item.recent.duaStringId
                             )
                         } label: {
                             RecentDuaCard(

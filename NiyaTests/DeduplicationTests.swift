@@ -58,16 +58,16 @@ struct DeduplicationTests {
     // MARK: - DuaBookmark dedup
 
     @Test func duaDedupKeepsEarliestCreatedAt() {
-        let older = DuaBookmark(categoryId: 1, duaId: 1, createdAt: Date(timeIntervalSince1970: 1000))
-        let newer = DuaBookmark(categoryId: 1, duaId: 1, createdAt: Date(timeIntervalSince1970: 2000))
+        let older = DuaBookmark(categoryId: "cat-1", duaId: "dua-1", createdAt: Date(timeIntervalSince1970: 1000))
+        let newer = DuaBookmark(categoryId: "cat-1", duaId: "dua-1", createdAt: Date(timeIntervalSince1970: 2000))
         let matches = [newer, older]
         let keeper = matches.min(by: { $0.createdAt < $1.createdAt })
         #expect(keeper === older)
     }
 
     @Test func duaDedupOnUniqueKeysIsNoOp() {
-        let a = DuaBookmark(categoryId: 1, duaId: 1)
-        let b = DuaBookmark(categoryId: 5, duaId: 3)
+        let a = DuaBookmark(categoryId: "cat-1", duaId: "dua-1")
+        let b = DuaBookmark(categoryId: "cat-5", duaId: "dua-3")
         let all = [a, b]
         var seen = Set<String>()
         var result: [DuaBookmark] = []
@@ -131,16 +131,16 @@ struct DeduplicationTests {
     // MARK: - RecentDua dedup
 
     @Test func recentDuaDedupKeepsMostRecentVisitedAt() {
-        let older = RecentDua(categoryId: 1, duaId: 1, visitedAt: Date(timeIntervalSince1970: 1000))
-        let newer = RecentDua(categoryId: 1, duaId: 1, visitedAt: Date(timeIntervalSince1970: 2000))
+        let older = RecentDua(categoryId: "cat-1", duaId: "dua-1", visitedAt: Date(timeIntervalSince1970: 1000))
+        let newer = RecentDua(categoryId: "cat-1", duaId: "dua-1", visitedAt: Date(timeIntervalSince1970: 2000))
         let matches = [older, newer]
         let keeper = matches.max(by: { $0.visitedAt < $1.visitedAt })
         #expect(keeper === newer)
     }
 
     @Test func recentDuaDedupOnUniqueKeysIsNoOp() {
-        let a = RecentDua(categoryId: 1, duaId: 1)
-        let b = RecentDua(categoryId: 5, duaId: 3)
+        let a = RecentDua(categoryId: "cat-1", duaId: "dua-1")
+        let b = RecentDua(categoryId: "cat-5", duaId: "dua-3")
         let all = [a, b]
         var seen = Set<String>()
         var result: [RecentDua] = []

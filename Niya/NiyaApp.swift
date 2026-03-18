@@ -47,6 +47,7 @@ struct NiyaApp: App {
         container = ModelContainerFactory.create()
 
         CloudSyncMigration.migrateIfNeeded(container: container)
+        DuaDataMigration.migrateIfNeeded(modelContext: container.mainContext)
 
         let sc = StoreContainer(modelContext: container.mainContext)
         _storeContainer = State(wrappedValue: sc)

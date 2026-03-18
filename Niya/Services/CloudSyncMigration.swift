@@ -50,7 +50,7 @@ enum CloudSyncMigration {
 
             let db = try oldContext.fetch(FetchDescriptor<DuaBookmark>())
             for old in db {
-                let new = DuaBookmark(categoryId: old.categoryId, duaId: old.duaId, createdAt: old.createdAt)
+                let new = DuaBookmark(categoryId: old.categorySlug, duaId: old.duaStringId, createdAt: old.createdAt)
                 new.colorTag = old.colorTag
                 newContext.insert(new)
             }
@@ -70,7 +70,7 @@ enum CloudSyncMigration {
 
             let rd = try oldContext.fetch(FetchDescriptor<RecentDua>())
             for old in rd {
-                newContext.insert(RecentDua(categoryId: old.categoryId, duaId: old.duaId, visitedAt: old.visitedAt))
+                newContext.insert(RecentDua(categoryId: old.categorySlug, duaId: old.duaStringId, visitedAt: old.visitedAt))
             }
             counts["RecentDua"] = rd.count
 

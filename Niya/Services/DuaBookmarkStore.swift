@@ -9,11 +9,11 @@ final class DuaBookmarkStore {
         self.modelContext = modelContext
     }
 
-    func isBookmarked(categoryId: Int, duaId: Int) -> Bool {
+    func isBookmarked(categoryId: String, duaId: String) -> Bool {
         fetchByKey(categoryId: categoryId, duaId: duaId) != nil
     }
 
-    func toggle(categoryId: Int, duaId: Int) {
+    func toggle(categoryId: String, duaId: String) {
         if let existing = fetchByKey(categoryId: categoryId, duaId: duaId) {
             modelContext.delete(existing)
         } else {
@@ -22,7 +22,7 @@ final class DuaBookmarkStore {
         do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore save failed: \(error)") }
     }
 
-    func setColor(_ color: BookmarkColor?, categoryId: Int, duaId: Int) {
+    func setColor(_ color: BookmarkColor?, categoryId: String, duaId: String) {
         guard let bookmark = fetchByKey(categoryId: categoryId, duaId: duaId) else { return }
         bookmark.bookmarkColor = color
         do { try modelContext.save() } catch { AppLogger.store.error("DuaBookmarkStore save failed: \(error)") }
@@ -48,7 +48,7 @@ final class DuaBookmarkStore {
         return result.sorted { $0.createdAt > $1.createdAt }
     }
 
-    private func fetchByKey(categoryId: Int, duaId: Int) -> DuaBookmark? {
+    private func fetchByKey(categoryId: String, duaId: String) -> DuaBookmark? {
         let targetKey = "\(categoryId):\(duaId)"
         var descriptor = FetchDescriptor<DuaBookmark>(
             predicate: #Predicate { $0.duaKey == targetKey }
