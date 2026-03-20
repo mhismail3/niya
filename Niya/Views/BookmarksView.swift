@@ -145,9 +145,9 @@ struct BookmarksView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
                 typeFilterChip("All", icon: nil, count: quranBookmarks.count + hadithBookmarks.count + duaBookmarks.count, filter: .all)
-                typeFilterChip("Quran", icon: "book.fill", count: quranBookmarks.count, filter: .quran)
-                typeFilterChip("Hadith", icon: "text.book.closed", count: hadithBookmarks.count, filter: .hadith)
-                typeFilterChip("Dua", icon: "hands.and.sparkles", count: duaBookmarks.count, filter: .dua)
+                typeFilterChip("Quran", icon: "text.book.closed.fill", count: quranBookmarks.count, filter: .quran)
+                typeFilterChip("Hadith", icon: "books.vertical.fill", count: hadithBookmarks.count, filter: .hadith)
+                typeFilterChip("Dua", icon: "quote.bubble.fill", count: duaBookmarks.count, filter: .dua)
             }
             .padding(.horizontal)
             .padding(.top, 4)
