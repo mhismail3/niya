@@ -2195,8 +2195,11 @@
       {
         "id": "hisn-138",
         "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيطَانِ الرَّجِيمِ، وَاتْفُلْ عَلَى يَسَارِكَ (ثلاثاً)",
-        "translation": "othman Ibn Al-AAas narrated: I said ‘O Messenger of Allah, verily the devil comes between me and my prayer and recitation making me confused’ The Messenger of Allah replied ‘That is a devil called Khanzab, so if you sense his presence then seek refuge in Allah from him and spit (A form of spitting comprising mainly of air with little spittle) on your left side three times.",
-        "reference": "Muslim 4/1729."
+        "translation": "I seek refuge in Allah from the accursed devil.",
+        "reference": "Muslim 4/1729.",
+        "transliteration": "A'udhu billahi minash-shaytanir-rajim.",
+        "context": "Uthman ibn Al-'As narrated: I said 'O Messenger of Allah, verily the devil comes between me and my prayer and recitation making me confused.' The Messenger of Allah replied: 'That is a devil called Khanzab, so if you sense his presence then seek refuge in Allah from him and spit on your left side three times.' Spit: A form of spitting comprising mainly of air with little spittle.",
+        "repeat": 3
       }
     ],
     "invocation-for-when-you-find-something-becoming-difficult-for-you": [
@@ -2204,8 +2207,8 @@
         "id": "hisn-139",
         "arabic": "اللَّهُمَّ لاَ سَهْلَ إِلاَّ مَا جَعَلْتَهُ سَهْلاً، وَأَنْتَ تَجْعَلُ الْحَزْنَ إِذَا شِئْتَ سَهْلاً",
         "translation": "O Allah, there is no ease except in that which You have made easy, and You make the difficulty, if You wish, easy.",
-        "transliteration": "Allahumma la sahla illa ma jaAAaltahu sahla, wa-anta tajAAalul- hazana in shi'ta sahla.",
-        "reference": "Ibn Hibban in his Sahih (no. 2427), and Ibn As- Sunni (no. 351). Al-Hafidh (Ibn Hajar) said that this Hadith is authentic. It was also declared authentic by 'Abdul-Qadir Al-Arna'ut in his checking of An-Nawawi's Kitabul-Athkarp. 106.",
+        "transliteration": "Allahumma la sahla illa ma ja'altahu sahla, wa anta taj'alul-hazana in shi'ta sahla.",
+        "reference": "Ibn Hibban in his Sahih (no. 2427), and Ibn As-Sunni (no. 351). Al-Hafidh (Ibn Hajar) said that this Hadith is authentic. It was also declared authentic by 'Abdul-Qadir Al-Arna'ut in his checking of An-Nawawi's Kitabul-Athkar, p. 106.",
         "benefits": "Ease comes only from Allah. Even something difficult can become easy Insha Allah."
       }
     ],
@@ -2213,7 +2216,7 @@
       {
         "id": "hisn-140",
         "arabic": "مَا مِنْ عَبْدٍ يُذنِبُ ذَنْباً فَيُحْسِنُ الطُّهُورَ، ثُمَّ يَقُومُ فَيُصَلِّي رَكْعَتَيْنِ، ثُمَّ يَسْتَغْفِرُ اللَّهَ إِلاَّ غَفَرَ اللَّهُ لَهُ",
-        "translation": "Any servant who commits a sin and as a result, performs ablution, prays two units of prayer (i.e. two rakAAas) and then seeks Allah’s forgiveness, Allah would forgive him.",
+        "translation": "Any servant who commits a sin and as a result, performs ablution, prays two units of prayer (i.e. two rak'ahs) and then seeks Allah's forgiveness, Allah would forgive him.",
         "reference": "Abu Dawud 2/86, At-Tirmidhi 2/257. Al-Albani graded it authentic in Sahih Abu Dawud 1/283."
       }
     ],
@@ -2221,21 +2224,23 @@
       {
         "id": "hisn-141",
         "arabic": "الْاسْتِعَاذَةُ بِاللَّهِ مِنْهُ",
-        "translation": "Seeking refuge from him.",
-        "reference": "Abu Dawud 1/206, At-Tirmidhi. See also Al-Albani, Sahih At-Tirmidhi 1/77, and Surat Al-Mu'minun, 23:98-9."
+        "translation": "Seek refuge in Allah from him (the devil).",
+        "reference": "Abu Dawud 1/206, At-Tirmidhi. See also Al-Albani, Sahih At-Tirmidhi 1/77, and Surat Al-Mu'minun, 23:98-9.",
+        "transliteration": "A'udhu billahi minash-shaytan."
       },
       {
         "id": "hisn-142",
         "arabic": "الْأَذَانُ",
-        "translation": "The Adhaan [call to prayer].",
+        "translation": "The adhan (call to prayer).",
         "reference": "Muslim 1/291, Al-Bukhari 1/151."
       },
       {
         "id": "hisn-143",
         "arabic": "الْأَذْكَارُ وَقِرَاءَةُ الْقُرْآنِ",
         "translation": "Recitation of the Quran and the authentic texts of remembrance and supplications.",
-        "reference": "\"Do not turn your homes into graveyards, surely the Devil flees from the house in which Surat Al-Baqarah is read,\" Muslim 1/539. The Devil is also driven out by the invocations for morning and evening, those that are said before sleeping and upon waking up, those for entering and leaving the house, including those for entering and leaving the mosque, and by many other authentic invocations taught to us by the Prophet (ﷺ) such as the reading of 'Ayatul-Kursi, (Al-Baqarah 2:255), and the last two 'Ayat of Surat Al-Baqarah before going to sleep. Whoever says: \"There is none worthy of worship but Allah alone, Who has no partner, His is the dominion and His is the praise, and he is Able to do all things,\" one hundred times, it will be a protection for him from the Devil throughout the day",
-        "context": "e.g. ‘Do not make your homes like the graveyards, indeed the devils flee from the house in which Surat Al-Baqarah has been read’ related by Muslim 1/539, also supplication and remembrance for the morning & evening, before sleep, when getting up, entering and leaving the toilet, entering and leaving the mosque, the recitation of ayat Al-kursiyy and the last two verses of Surat Al-Baqarah before sleeping, the athan…etc."
+        "reference": "Muslim 1/539.",
+        "context": "The recitation of Quran and authentic adhkar drives away the devil. Examples include: Surat Al-Baqarah, morning and evening adhkar, supplications before sleep and upon waking, for entering and leaving the home and mosque, Ayat al-Kursi, the last two verses of Surat Al-Baqarah, and the adhan.",
+        "benefits": "\"Do not turn your homes into graveyards, surely the Devil flees from the house in which Surat Al-Baqarah is read.\" (Muslim 1/539) The Devil is also driven out by the invocations for morning and evening, those that are said before sleeping and upon waking up, those for entering and leaving the house, including those for entering and leaving the mosque, and by many other authentic invocations taught to us by the Prophet (sallallahu 'alayhi wa sallam) such as the reading of Ayat al-Kursi (Al-Baqarah 2:255), and the last two ayat of Surat Al-Baqarah before going to sleep. Whoever says: \"There is none worthy of worship but Allah alone, Who has no partner, His is the dominion and His is the praise, and He is Able to do all things\" one hundred times, it will be a protection for him from the Devil throughout the day."
       }
     ],
     "invocation-for-when-something-you-dislike-happens-or-for-when-you-fail-to-achieve-what-you-attempt-to-do": [
@@ -2243,27 +2248,30 @@
         "id": "hisn-144",
         "arabic": "قَدَرُ اللَّهُ وَمَا شَاءَ فَعَلَ",
         "translation": "Allah has decreed and what He wills, He does.",
-        "transliteration": "Qaddaral-lah, wama shaa faAAal.",
-        "reference": "\"The strong believer is better and more dear to Allah than the weak believer, and in each of them there is good. Be vigilant for what is to your benefit and seek the help of Allah and do not falter. But when you are striken by some setback, do not say: 'If only I had done such and such,' rather say: 'It is the Decree of Allah and He does whatever He wills.' For verily the saying 'if (i.e. if only I had) begins the work of the Devil.\" Muslim 4/2052.",
-        "context": "for verily ‘If’ lets in the work of the devil."
+        "transliteration": "Qadarallah, wa ma sha'a fa'al.",
+        "reference": "Muslim 4/2052.",
+        "context": "Said when afflicted by a setback. The word 'if' opens the door to the work of the devil.",
+        "benefits": "\"The strong believer is better and more dear to Allah than the weak believer, and in each of them there is good. Be vigilant for what is to your benefit and seek the help of Allah and do not falter. But when you are stricken by some setback, do not say: 'If only I had done such and such,' rather say: 'It is the Decree of Allah and He does whatever He wills.' For verily the saying 'if' (i.e. if only I had) begins the work of the Devil.\""
       }
     ],
     "congratulations-for-new-parents-and-how-they-should-respond": [
       {
         "id": "hisn-145",
-        "arabic": "بَارَكَ اللَّهُ لَكَ فِي الْمَوْهُوبِ لَكَ، وَشَكَرْتَ الْوَاهِبَ، وَبَلَغَ أَشُدَّهُ، وَرُزِقْتَ بِرَّهُ)). وَيَرُدُّ عَلَيْهِ الْمُهَــــــنَّأُ فَيَقُولُ: ((بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ، وَجَزَاكَ اللَّهُ خَيْراً، وَرَزَقَكَ اللَّهُ مِثْلَهُ، وَأَجْزَلَ ثَوَابَكَ",
-        "translation": "May Allah bless you with His gift to you and may you (the new parent) give thanks, may the child reach the maturity of years, and may you be granted its righteousness. The reply of the person being congratulated is to say: May Allah bless you, and shower His blessings upon you, and may Allah reward you well and bestow upon you its like and reward you abundantly",
-        "transliteration": "Baarakallaahu laka fil-mawhoobi laka, wa shakartal-waahiba, wa balagha 'ashuddahu, wa ruzigta birrahu. The reply of the person being congratulated is to say: Baarakallahu laka wa baaraka 'alayka, wa jazaakallaahu khayran, wa razaqakallaahu mithlahu, wa 'ajzala thawaabaka.",
-        "reference": "An-Nawawi, Kitdbul-'Athkarp. 349, and Sahihul-'Athkar2/7l3 by Saleem Al-Hilali."
+        "arabic": "بَارَكَ اللَّهُ لَكَ فِي الْمَوْهُوبِ لَكَ، وَشَكَرْتَ الْوَاهِبَ، وَبَلَغَ أَشُدَّهُ، وَرُزِقْتَ بِرَّهُ. بَارَكَ اللَّهُ لَكَ وَبَارَكَ عَلَيْكَ، وَجَزَاكَ اللَّهُ خَيْراً، وَرَزَقَكَ اللَّهُ مِثْلَهُ، وَأَجْزَلَ ثَوَابَكَ",
+        "translation": "May Allah bless you with His gift to you, and may you (the new parent) give thanks, may the child reach the maturity of years, and may you be granted its righteousness. The reply of the person being congratulated is to say: May Allah bless you, and shower His blessings upon you, and may Allah reward you well and bestow upon you its like and reward you abundantly.",
+        "transliteration": "Barakallahu laka fil-mawhubi lak, wa shakarta al-wahib, wa balagha ashuddahu, wa ruziqta birrahu. Barakallahu laka wa baraka 'alayk, wa jazakallahu khayran, wa razaqakallahu mithlahu, wa ajzala thawabak.",
+        "reference": "An-Nawawi, Kitabul-Athkar, p. 349, and Sahihul-Athkar 2/713 by Saleem Al-Hilali.",
+        "context": "The first part is said to congratulate a new parent. The second part is the reply."
       }
     ],
     "how-to-seek-allah-s-protection-for-children": [
       {
         "id": "hisn-146",
         "arabic": "كَانَ رَسُولُ اللَّهِ صلى الله عليه وسلم يُعَوِّذُ الحَسَنَ وَالحُسَينَ رضي الله عنهما ((أُعِيذُكُمَا بِكَلِمَاتِ اللَّهِ التَّامَّةِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لاَمَّةٍ)).",
-        "translation": "Ibn AAabbas related that the Messenger of Allah used to commend Al-Hasan and Al-Husayn to Allah’s protection, saying:(I commend you two to the protection of Allah’s perfect words from every devil, vermin, and every evil eye.)",
-        "transliteration": "Ibn AAabbas related that the Messenger of Allah used to commend Al-Hasan and Al-Husayn to Allah’s protection, saying:(OAAeethukuma bikalimatil-lahit-tammah, min kulli shaytanin wahammah, wamin kulli AAaynin lammah.",
-        "reference": "Al-Bukhari4/119."
+        "translation": "I commend you two to the protection of Allah's perfect words from every devil, vermin, and every evil eye.",
+        "transliteration": "U'idhukuma bikalimatillahit-tammah, min kulli shaytanin wa hammah, wa min kulli 'aynin lammah.",
+        "reference": "Al-Bukhari 4/119.",
+        "context": "Ibn Abbas related that the Messenger of Allah used to commend Al-Hasan and Al-Husayn to Allah's protection with these words."
       }
     ],
     "invocations-for-visiting-the-sick": [
@@ -2271,45 +2279,48 @@
         "id": "hisn-147",
         "arabic": "لاَ بأْسَ طَهُورٌ إِنْ شَاءَ اللَّهُ",
         "translation": "Never mind, may it (the sickness) be a purification, if Allah wills.",
-        "transliteration": "La ba'sa tahoorun in shaal-lah.",
+        "transliteration": "La ba'sa tahurun in sha'allah.",
         "reference": "Al-Bukhari, cf. Al-Asqalani Fathul-Bari 10/118."
       },
       {
         "id": "hisn-148",
         "arabic": "أَسْأَلُ اللَّهَ الْعَظيمَ رَبَّ الْعَرْشِ الْعَظِيمِ أَنْ يَشْفيَكَ",
-        "translation": "I ask Allah The Supreme, Lord of the magnificent throne to cure you’.(7times) (he (the sick person) will be cured.)",
-        "transliteration": "Asalul-lahal-AAatheem rabbal-AAarshil-AAatheem an yashfeek (7times).",
-        "reference": "At-Tirmidhi, Abu Dawud. See also Al-Albani, Sahih At-Tirmidhi 2/210 and Sahihul-Jami' As-Saghir 5/180."
+        "translation": "I ask Allah The Supreme, Lord of the magnificent throne, to cure you.",
+        "transliteration": "As'alullahal-'adhim rabbal-'arshil-'adhim an yashfiyak.",
+        "reference": "At-Tirmidhi, Abu Dawud. See also Al-Albani, Sahih At-Tirmidhi 2/210 and Sahihul-Jami' As-Saghir 5/180.",
+        "repeat": 7,
+        "benefits": "Whoever says this seven times, the sick person will be cured."
       }
     ],
     "the-reward-for-visiting-the-sick": [
       {
         "id": "hisn-149",
-        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: ((إِذَا عَادَ الرَّجُلُ أَخَاهُ الْمُسْلِمَ مَشَى فِي خِرَافَةِ الْجَنَّةِ حَتَّى يَجْلِسَ، فَإِذَا جَلَسَ غَمَرَتْهُ الرَّحْمَةُ، فَإِنْ كَانَ غُدْوَةً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُمْسِيَ، وَإِنْ كَانَ مَسَاءً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُصْبِحَ)).",
-        "translation": "Ali Ibn Abee Talib related that he heard the Messenger of Allah say: ‘If a man calls on his sick Muslim brother, it is as if he walks reaping the fruits of Paradise until he sits, and when he sits he is showered in mercy, and if this was in the morning, seventy thousand angles send prayers upon him until the evening, and if this was in the evening, seventy thousand angles send prayers upon him until the morning.",
-        "reference": "At-Tirmidhi 3585"
+        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: إِذَا عَادَ الرَّجُلُ أَخَاهُ الْمُسْلِمَ مَشَى فِي خِرَافَةِ الْجَنَّةِ حَتَّى يَجْلِسَ، فَإِذَا جَلَسَ غَمَرَتْهُ الرَّحْمَةُ، فَإِنْ كَانَ غُدْوَةً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُمْسِيَ، وَإِنْ كَانَ مَسَاءً صَلَّى عَلَيْهِ سَبْعُونَ أَلْفَ مَلَكٍ حَتَّى يُصْبِحَ",
+        "translation": "Ali Ibn Abee Talib related that he heard the Messenger of Allah say: ‘If a man calls on his sick Muslim brother, it is as if he walks reaping the fruits of Paradise until he sits, and when he sits he is showered in mercy, and if this was in the morning, seventy thousand angels send prayers upon him until the evening, and if this was in the evening, seventy thousand angels send prayers upon him until the morning.",
+        "reference": "At-Tirmidhi 3585."
       }
     ],
     "invocations-of-the-terminal-ill": [
       {
         "id": "hisn-150",
         "arabic": "اللَّهُمَّ اغْفِرْ لِي، وَارْحَمْنِي، وَأَلْحِقْنِي بِالرَّفِيقِ الْأَعْلَى",
-        "translation": "‘O Allah, forgive me, have mercy upon me and unite me with the highest companions",
-        "transliteration": "Allahummagh-fir lee, warhamnee wa-alhiqnee birrafeeqil-aAAla.",
-        "reference": "Al-Bukhari7/10, Muslim 4/1893."
+        "translation": "O Allah, forgive me, have mercy upon me, and unite me with the highest companions.",
+        "transliteration": "Allahummagh-fir li, warhamni wa alhiqni bir-rafiqil-a'la.",
+        "reference": "Al-Bukhari 7/10, Muslim 4/1893."
       },
       {
         "id": "hisn-151",
         "arabic": "جَعَلَ النَّبِيُّ صلى الله عليه وسلم عِنْدَ مَوْتِهِ يُدْخِلُ يَدَيْهِ فِي الْمَاءِ فَيَمْسَحُ بِهِمَا وَجْهَهُ، وَيَقُولُ: لاَ إِلَهَ إِلاَّ اللَّهُ إِنَّ لِلْمَوْتِ سَكَرَاتٍ",
-        "translation": "Aa.ishah (radhi-yAllahu 'anhaa) related that The Prophet (sal-Allahu 'alayhe wa sallam) [during his illness in which he passed away] would dip his hands in water and then he would wipe his face and say: ‘None has the right to be worshipped except Allah, death does indeed contain agony.’",
-        "transliteration": "'Aa.ishah (radhi-yAllaahu 'anhaa) related that The Prophet (sal-Allaahu 'alayhe wa sallam) [during his illness in which he passed away] would dip his hands in water and then he would wipe his face and say:[La ilaha illal-lah, inna lilmawti lasakarat.] ‘None has the right to be worshipped except Allaah, death does indeed contain agony.’",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 8/144. The Hadith also mention him using the Siivak (tooth stick)."
+        "translation": "Aishah (may Allah be pleased with her) related that the Prophet (sallallahu 'alayhi wa sallam), during his illness in which he passed away, would dip his hands in water and then he would wipe his face and say: 'None has the right to be worshipped except Allah, death does indeed contain agony.'",
+        "transliteration": "La ilaha illallah, inna lil-mawti lasakarat.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 8/144.",
+        "context": "Narrated by Aishah (may Allah be pleased with her). The Prophet would dip his hands in water and wipe his face while saying this during his final illness. The hadith also mentions him using the siwak (tooth stick)."
       },
       {
         "id": "hisn-152",
         "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ وَاللَّهُ أَكْبَرُ، لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ، لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لاَ إِلَهَ إِلاَّ اللَّهُ لَهُ المُلْكُ وَلَهُ الْحَمْدُ، لاَ إِلَهَ إِلاَّ اللَّهُ وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ",
-        "translation": "None has the right to be worshipped except Allah and Allah is the greatest.None has the right to be worshipped except Allah, alone.None has the right to be worshipped except Allah, alone, without partner.None has the right to be worshipped except Allah, to Him belongs all sovereignty and praise. None has the right to be worshipped except Allah and there is no might and no power except with Allah.",
-        "transliteration": "La ilaha illal-lah, wallahu akbar, la ilaha illal-lahu wahdah, la shareeka lah, la ilaha illal-lahu lahul-mulku walahul-hamd, la ilaha illal-lah, wala hawla wala quwwata illa billah.",
+        "translation": "None has the right to be worshipped except Allah and Allah is the greatest. None has the right to be worshipped except Allah, alone. None has the right to be worshipped except Allah, alone, without partner. None has the right to be worshipped except Allah, to Him belongs all sovereignty and praise. None has the right to be worshipped except Allah and there is no might and no power except with Allah.",
+        "transliteration": "La ilaha illallah, wallahu akbar, la ilaha illallahu wahdah, la sharika lah, la ilaha illallahu lahul-mulku wa lahul-hamd, la ilaha illallah, wa la hawla wa la quwwata illa billah.",
         "reference": "At-Tirmidhi and Ibn Majah. See also Al-Albani, Sahih At-Tirmidhi 3/152 and Sahih Ibn Majah 2/317."
       }
     ],
@@ -2317,17 +2328,18 @@
       {
         "id": "hisn-153",
         "arabic": "مَنْ كَانَ آخِرُ كَلاَمِهِ لاَ إِلَهَ إِلاَّ اللَّهُ دَخَلَ الْجَنَّةَ",
-        "translation": "i.e. those around the sick should instruct and encourage him to say the shahadah. (He whose last words are: (None has the right to be worshipped except Allah.) will enter Paradise.)",
-        "transliteration": "i.e. those around the sick should instruct and encourage him to say the shahadah. (He whose last words are: (La ilaha illal-lah.) will enter Paradise.",
-        "reference": "Abu Dawud 3/190. See also Al-Albani, Sahihul-Jami' As-Saghir 5/432."
+        "translation": "He whose last words are 'None has the right to be worshipped except Allah' will enter Paradise.",
+        "transliteration": "La ilaha illallah.",
+        "reference": "Abu Dawud 3/190. See also Al-Albani, Sahihul-Jami' As-Saghir 5/432.",
+        "context": "Those around the dying person should instruct and encourage him to say the shahadah (La ilaha illallah)."
       }
     ],
     "invocation-for-when-tragedy-strikes": [
       {
         "id": "hisn-154",
         "arabic": "إِنَّا لِلَّهِ وَإِنَّا إِلَيْهِ رَاجِعُونَ، اللَّهُمَّ أْجُرْنِي فِي مُصِيبَتِي، وَأَخْلِفْ لِي خَيْرَاً مِنْهَا",
-        "translation": "To Allah we belong and unto Him is our return.O Allah, recompense me for my affliction and replace it for me with something better.",
-        "transliteration": "Inna lillahi wa-inna ilayhi rajiAAoon, allahumma/- jurnee fee museebatee wakhluf lee khayran minha.",
+        "translation": "To Allah we belong and unto Him is our return. O Allah, recompense me for my affliction and replace it for me with something better.",
+        "transliteration": "Inna lillahi wa inna ilayhi raji'un, allahumma'jurni fi musibati wakhluf li khayran minha.",
         "reference": "Muslim 2/632.",
         "benefits": "A servant should recite the supplication above when afflicted by calamity with certainty and hope. Insha Allah, with this, they will receive a better replacement."
       }
@@ -2337,7 +2349,7 @@
         "id": "hisn-155",
         "arabic": "اللَّهُمَّ اغْفِرْ لِفُلاَنٍ (بِاسْمِهِ) وَارْفَعْ دَرَجَتَهُ فِي الْمَهْدِيِّينَ، وَاخْلُفْهُ فِي عَقِبِهِ فِي الْغَابِرِينَ، وَاغْفِرْ لَنَا وَلَهُ  يَا رَبَّ الْعَالَمِينَ، وَافْسَحْ لَهُ فِي قَبْرِهِ، وَنَوِّرْ لَهُ فِيهِ",
         "translation": "O Allah, forgive -here the name of the deceased is mentioned- and raise his rank among the rightly guided, and be a successor to whom he has left behind, and forgive us and him O Lord of the worlds. Make spacious his grave and illuminate it for him.",
-        "transliteration": "Allahummagh-fir li-name the dead- warfaAA darajatahu fil-mahdiyyeen, wakhlufhu fee AAaqibihi fil-ghabireen, waghfir lana walahu ya rabbal-AAalameen wafsah lahu fee qabrih, wanawwir lahu feeh.",
+        "transliteration": "Allahummagh-fir li [fulan] warfa' darajatahu fil-mahdiyyin, wakhlufhu fi 'aqibihi fil-ghabirin, waghfir lana wa lahu ya rabbal-'alamin, wafsah lahu fi qabrih, wa nawwir lahu fih.",
         "reference": "Muslim 2/634.",
         "context": "A successor: one who succeeds another due to the latter’s absence or death. This is the correct meaning of the word khaleefah; thus, it is incorrect to believe that Adam is the khaleefah (vicegerent, as is commonly translated) of Allah on earth because Allah is never absent, and will never die. This supplication proves the correct understanding of this term and shows that Allah succeeds us and guards whom we leave behind when we die or are absent (also refer to supplication #198)."
       }
@@ -2347,54 +2359,55 @@
         "id": "hisn-156",
         "arabic": "اللَّهُمَّ اغْفِرْ لَهُ وَارْحَمْهُ، وَعَافِهِ، وَاعْفُ عَنْهُ، وَأَكْرِمْ نُزُلَهُ، وَوَسِّعْ مُدْخَلَهُ، وَاغْسِلْهُ بِالْمَاءِ وَالثَّلْجِ وَالْبَرَدِ، وَنَقِّهِ مِنَ الْخَطَايَا كَمَا نَقَّيْتَ الثَّوْبَ الأَبْيَضَ مِنَ الدَّنَسِ، وَأَبْدِلْهُ دَاراً خَيْراً مِنْ دَارِهِ، وَأَهْلاً خَيْراً مِنْ أَهْلِهِ، وَزَوْجَاً خَيْراً مِنْ زَوْجِهِ، وَأَدْخِلْهُ الْجَنَّةَ، وَأَعِذْهُ مِنْ عَذَابِ القَبْرِ [وَعَذَابِ النَّارِ]",
         "translation": "O Allah, forgive and have mercy upon him, excuse him and pardon him, and make honourable his reception. Expand his entry, and cleanse him with water, snow, and ice, and purify him of sin as a white robe is purified of filth. Exchange his home for a better home, and his family for a better family, and his spouse for a better spouse. Admit him into the Garden, protect him from the punishment of the grave and the torment of the Fire.",
-        "transliteration": "Allahummagh-fir lahu warhamh, waAAafihi, waAAfu AAanh, wa-akrim nuzulah, wawassiAA mudkhalah, waghsilhu bilma-i waththalji walbarad, wanaqqihi minal-khataya kama naqqaytath-thawbal-abyada minad-danas, wa-abdilhu daran khayran min darih, wa-ahlan khayran min ahlih wazawjan khayran min zawjih, wa-adkhilhul-jannah, wa-aAAithhu min AAathabil-qabr, waAAathabin-nar",
+        "transliteration": "Allahummagh-fir lahu warhamhu, wa 'afihi, wa 'fu 'anhu, wa akrim nuzulahu, wa wassi' mudkhalahu, waghsilhu bil-ma'i wath-thalji wal-barad, wa naqqihi minal-khataya kama naqqaytath-thawbal-abyada minad-danas, wa abdilhu daran khayran min darihi, wa ahlan khayran min ahlihi, wa zawjan khayran min zawjihi, wa adkhilhul-jannah, wa a'idhhu min 'adhabil-qabr wa 'adhabin-nar.",
         "reference": "Muslim 2/663."
       },
       {
         "id": "hisn-157",
         "arabic": "اللَّهُمَّ اغْفِرْ لِحَيِّنَا وَمَيِّتِنَا، وَشَاهِدِنَا وَغَائِبِنَا، وَصَغِيرِنَا وَكَبيرِنَا، وَذَكَرِنَا وَأُنْثَانَا. اللَّهُمَّ مَنْ أَحْيَيْتَهُ مِنَّا فَأَحْيِهِ عَلَى الْإِسْلاَمِ، وَمَنْ تَوَفَّيْتَهُ مِنَّا فَتَوَفَّهُ عَلَى الإِيمَانِ، اللَّهُمَّ لاَ تَحْرِمْنَا أَجْرَهُ، وَلاَ تُضِلَّنَا بَعْدَهُ",
         "translation": "O Allah, forgive our living and our dead, those present and those absent, our young and our old, our males and our females. O Allah, whom amongst us You keep alive, then let such a life be upon Islam, and whom amongst us You take unto Yourself, then let such a death be upon faith. O Allah, do not deprive us of his reward and do not let us stray after him.",
-        "transliteration": "Allahummagh-fir lihayyina wamayyitina washahidina, wagha-ibina, wasagheerina wakabeerina, wathakarina wa-onthana. Allahumma man ahyaytahu minna fa-ahyihi AAalal-islam, waman tawaffaytahu minna fatawaffahu AAalal-eeman, allahumma la tahrimna ajrah, wala tudillana baAAdah.",
+        "transliteration": "Allahummagh-fir lihayyina wa mayyitina, wa shahidina wa gha'ibina, wa saghirina wa kabirina, wa dhakarina wa unthana. Allahumma man ahyaytahu minna fa ahyihi 'alal-islam, wa man tawaffaytahu minna fa tawaffahu 'alal-iman. Allahumma la tahrimna ajrahu, wa la tudillana ba'dahu.",
         "reference": "Ibn Majah 1/480, Ahmad 2/368. See also Al-Albani, Sahih Ibn Majah 1/251."
       },
       {
         "id": "hisn-158",
         "arabic": "اللَّهُمَّ إِنَّ فُلاَنَ بْنَ فُلاَنٍ فِي ذِمَّتِكَ، وَحَبْلِ جِوَارِكَ، فَقِهِ مِنْ فِتْنَةِ الْقَبْرِ، وَعَذَابِ النَّارِ، وَأَنْتَ أَهْلُ الْوَفَاءِ وَالْحَقِّ، فَاغْفِرْ لَهُ وَارْحَمْهُ إِنَّكَ أَنْتَ الغَفُورُ الرَّحيمُ",
         "translation": "O Allah, so-and-so is under Your care and protection so protect him from the trial of the grave and torment of the Fire. Indeed You are faithful and truthful. Forgive and have mercy upon him, surely You are The Oft-Forgiving, The Most-Merciful.",
-        "transliteration": "Allahumma inna -name the dead- fee thimmatik, wahabli jiwarik, faqihi min fitnatil-qabr waAAathabin-nar, wa-anta ahlul-wafa/, walhaq, faghfir lahu warhamh, innaka antal-ghafoorur-raheem.",
+        "transliteration": "Allahumma inna [fulan ibna fulan] fi dhimmatik, wa habli jiwarik, faqihi min fitnatil-qabr wa 'adhabin-nar, wa anta ahlul-wafa'i wal-haqq, faghfir lahu warhamhu, innaka antal-Ghafurur-Rahim.",
         "reference": "Ibn Majah, Abu Dawud 3/211. See also Al Albani, Sahih Ibn Majah 1/251."
       },
       {
         "id": "hisn-159",
         "arabic": "اللَّهُمَّ عَبْدُكَ وَابْنُ أَمَتِكَ احْتَاجَ إِلَى رَحْمَتِكَ، وَأَنْتَ غَنِيٌّ عَنْ عَذَابِهِ، إِنْ كَانَ مُحْسِناً فَزِدْ فِي حَسَنَاتِهِ، وَإِنْ كَانَ مُسِيئاً فَتَجَاوَزْ عَنْهُ",
         "translation": "O Allah, Your servant and the son of Your maidservant is in need of Your mercy and You are without need of his punishment. If he was righteous then increase his reward and if he was wicked then look over his sins.",
-        "transliteration": "Allahumma AAabduka wabnu amatik, ihtaja ila rahmatik, wa-anta ghaniyyun AAan AAathabih, in kana muhsinan fazid fee hasanatih, wa-in kana museean fatajawaz AAanh.",
+        "transliteration": "Allahumma 'abduka wabnu amatik, ihtaja ila rahmatik, wa anta ghaniyyun 'an 'adhabih, in kana muhsinan fazid fi hasanatih, wa in kana musi'an fatajawaz 'anhu.",
         "reference": "Al-Hakim 1/359 who graded it authentic and Ath-Thahabi agreed with him. See also Al-Albani, Ahkamul-Jana'iz, p. 125."
       }
     ],
     "invocations-for-a-child-in-the-funeral-prayer": [
       {
         "id": "hisn-160",
-        "arabic": "اللَّهُمَّ أَعِذْهُ مِنْ عَذَابِ القَبْرِ)) وإن قال: ((اللَّهُمَّ اجْعَلْهُ فَرَطاً وَذُخْراً لِوَالِدَيْهِ، وَشَفِيعاً مُجَاباً، اللَّهُمَّ ثَقِّلْ بِهِ مَوَازِينَهُمَا، وَأَعْظِمْ بِهِ أُجورَهُمَا، وَأَلْحِقْهُ بِصَالِحِ الْمُؤْمِنِينَ، وَاجْعَلْهُ فِي كَفَالَةِ إِبْرَاهِيمَ، وَقِهِ بِرَحْمَتِكَ عَذَابَ الْجَحِيمِ، وَأَبْدِلْهُ دَاراً خَيْراً مِنْ دَارِهِ، وَأَهْلاً خَيْراً مِنْ أَهْلِهِ، اللَّهُمَّ اغْفِرْ لِأَسْلاَفِنَا، وَأَفْرَاطِنَا، وَمَنْ سَبَقَنَا بِالْإِيمَانِ",
-        "translation": "O Allah, protect him from the torment of the grave . [it is also good to say] O Allah, make him a precursor, a forerunner and a treasure for his parents and an answered intercessor. O Allah, make him weigh heavily in their scales (of good) and magnify their reward. Make him join the righteous of the believers. Place him in the care of Ibrahim. Save him by Your mercy from the torment of Hell. Give him a home better than his home and a family better than his family. O Allah, forgive those who have gone (i.e. passed away) before us, our children lost (by death), and those who have preceded us in Faith.",
-        "transliteration": "Allaahumma 'a'ith-hu min 'athaabil-qabri.) [or say:](Allahummaj-AAalhu faratan, wathukhran liwalidayh, washafeeAAan mujaban. Allahumma thaqqil bihi mawazeenahuma wa-aAAthim bihi ojoorahuma, wa-alhiqhu bisalihil-mu'mineen, wajAAalhu fee kafalati Ibraheem, waqihi birahmatika AAathabal-jaheem, wa 'abdilhu daaran khayran min daarihi, wa 'ahlan khayran min 'ahlihi, Allaahum-maghfir li'aslaafinaa, wa afraatinaa wa man sabaqanaa bil'eemaan",
-        "reference": "Ibn Qudamah, Al-Mughni 3/416 and Ad-Duroosul-Muhimmah li-Aammatil-'Ummah, pg. 15, by Shaikh 'Abdul-'Aziz bin Baz."
+        "arabic": "اللَّهُمَّ أَعِذْهُ مِنْ عَذَابِ القَبْرِ. اللَّهُمَّ اجْعَلْهُ فَرَطاً وَذُخْراً لِوَالِدَيْهِ، وَشَفِيعاً مُجَاباً، اللَّهُمَّ ثَقِّلْ بِهِ مَوَازِينَهُمَا، وَأَعْظِمْ بِهِ أُجورَهُمَا، وَأَلْحِقْهُ بِصَالِحِ الْمُؤْمِنِينَ، وَاجْعَلْهُ فِي كَفَالَةِ إِبْرَاهِيمَ، وَقِهِ بِرَحْمَتِكَ عَذَابَ الْجَحِيمِ، وَأَبْدِلْهُ دَاراً خَيْراً مِنْ دَارِهِ، وَأَهْلاً خَيْراً مِنْ أَهْلِهِ، اللَّهُمَّ اغْفِرْ لِأَسْلاَفِنَا، وَأَفْرَاطِنَا، وَمَنْ سَبَقَنَا بِالْإِيمَانِ",
+        "translation": "O Allah, protect him from the torment of the grave. [it is also good to say] O Allah, make him a precursor, a forerunner and a treasure for his parents and an answered intercessor. O Allah, make him weigh heavily in their scales (of good) and magnify their reward. Make him join the righteous of the believers. Place him in the care of Ibrahim. Save him by Your mercy from the torment of Hell. Give him a home better than his home and a family better than his family. O Allah, forgive those who have gone (i.e. passed away) before us, our children lost (by death), and those who have preceded us in Faith.",
+        "transliteration": "Allahumma a'idh-hu min 'adhabil-qabr. Allahummaj'alhu faratan wa dhukhran liwalidayhi, wa shafi'an mujaban. Allahumma thaqqil bihi mawazinahoma wa a'dhim bihi ujurahuma, wa alhiqhu bi salihil-mu'minin, waj'alhu fi kafalati Ibrahim, wa qihi bi rahmatika 'adhabal-jahim, wa abdilhu daran khayran min darihi, wa ahlan khayran min ahlihi. Allahummagh-fir li aslafina, wa afratina, wa man sabaqana bil-iman.",
+        "reference": "Ibn Qudamah, Al-Mughni 3/416 and Ad-Duroosul-Muhimmah li-Aammatil-'Ummah, pg. 15, by Shaikh 'Abdul-'Aziz bin Baz.",
+        "context": "This is for the funeral prayer of a child. The first part (protection from the grave) is said, then the longer supplication is added."
       },
       {
         "id": "hisn-161",
         "arabic": "اللَّهُمَّ اجْعَلْهُ لَنَا فَرَطاً، وَسَلَفاً، وَأَجْراً",
-        "translation": "O Allah, make him for us a precursor,a forerunner and a cause of reward",
-        "transliteration": "Allahummaj-AAalhu lana farata, wasalafan wa-ajra.",
+        "translation": "O Allah, make him for us a precursor, a forerunner, and a cause of reward.",
+        "transliteration": "Allahummaj'alhu lana faratan, wa salafan, wa ajran.",
         "reference": "Al-Hasan (Al-Basri) used to recite Surat Al-Fatihah for a child's funeral and then say this. Al-Bukhari, Kitabul-Jana'iz, p. 65."
       }
     ],
     "invocation-for-the-bereaved": [
       {
         "id": "hisn-162",
-        "arabic": "إِنَّ للَّهِ مَا أَخَذَ، وَلَهُ مَا أَعْطَى، وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمَّى... فَلْتَصْبِرْ وَلْتَحْتَسِبْ)). وَإِنْ قَالَ: ((أَعْظَمَ اللَّهُ أَجْرَكَ، وَأَحْسَنَ عَزَاءَكَ، وَغَفَرَ لِمَيِّتِكَ",
+        "arabic": "إِنَّ للَّهِ مَا أَخَذَ، وَلَهُ مَا أَعْطَى، وَكُلُّ شَيْءٍ عِنْدَهُ بِأَجَلٍ مُسَمَّى، فَلْتَصْبِرْ وَلْتَحْتَسِبْ. أَعْظَمَ اللَّهُ أَجْرَكَ، وَأَحْسَنَ عَزَاءَكَ، وَغَفَرَ لِمَيِّتِكَ",
         "translation": "Verily to Allah, belongs what He took and to Him belongs what He gave, and everything with Him has an appointed time…and then he ordered for her to be patient and hope for Allah’s reward.",
-        "transliteration": "Inna lillahi ma akhath, walahu ma aAAta, wakullu shayin AAindahu bi-ajalin musamma…faltasbir waltahtasib.",
-        "reference": "1 Al-Bukhari 2/80, Muslim 2/636. 2An-Nawawi, Kitabul-'Athkar, p. 126.",
+        "transliteration": "Inna lillahi ma akhadh, wa lahu ma a'ta, wa kullu shay'in 'indahu bi ajalin musamma, faltasbir waltahtasib.",
+        "reference": "Al-Bukhari 2/80, Muslim 2/636. An-Nawawi, Kitabul-Athkar, p. 126.",
         "context": "The words (faltasbir waltahtasib) are commands in the feminine 3rd person form, so they will need to be changed in respect to whom is being addressed."
       }
     ],
@@ -2403,7 +2416,7 @@
         "id": "hisn-163",
         "arabic": "بِسْمِ اللَّهِ وَعَلَى سُنَّةِ رَسُولِ اللَّهِ",
         "translation": "In the name of Allah and upon the sunnah of the Messenger of Allah.",
-        "transliteration": "Bismil-lahi waAAala sunnati rasoolil-lah.",
+        "transliteration": "Bismillahi wa 'ala sunnati rasulillah.",
         "reference": "Abu Dawud 3/314 with an authentic chain. Ahmad also recorded it with the wording: With the Name of Allah, and according to the religion of the Messenger of Allah. Its chain is also authentic."
       }
     ],
@@ -2411,9 +2424,10 @@
       {
         "id": "hisn-164",
         "arabic": "اللَّهُمَّ اغْفِرْ لَهُ، اللَّهُمَّ ثَبِّتْهُ",
-        "translation": "O Allah, forgive him. O Allah, strengthen him",
-        "transliteration": "Allaahum-maghfir lahu Allaahumma thabbithu",
-        "reference": "The Prophet (ﷺ) used to stop after burying the dead and say to the people: \"Ask Allah to forgive your brother and pray for him to be strengthened, for indeed he is now being questioned.\" Abu Dawud 3/315, and Al-Hakim 1/370 who graded it authentic and Ath-Thahabi agreed."
+        "translation": "O Allah, forgive him. O Allah, strengthen him.",
+        "transliteration": "Allahummagh-fir lahu. Allahumma thabbith-hu.",
+        "reference": "Abu Dawud 3/315, and Al-Hakim 1/370 who graded it authentic and Ath-Thahabi agreed.",
+        "benefits": "The Prophet (sallallahu 'alayhi wa sallam) used to stop after burying the dead and say to the people: \"Ask Allah to forgive your brother and pray for him to be strengthened, for indeed he is now being questioned.\""
       }
     ],
     "invocation-for-visiting-the-graves": [
@@ -2421,25 +2435,25 @@
         "id": "hisn-165",
         "arabic": "السَّلاَمُ عَلَيْكُمْ أَهْلَ الدِّيَارِ، مِنَ الْمُؤْمِنِينَ وَالْمُسْلِمِينَ، وَإِنَّا إِنْ شَاءَ اللَّهُ بِكُمْ لاَحِقُونَ، [وَيَرْحَمُ اللَّهُ الْمُسْتَقدِمِينَ مِنَّا وَالْمُسْتأْخِرِينَ] أَسْاَلُ اللَّهَ لَنَا وَلَكُمُ الْعَافِيَةَ",
         "translation": "Peace be upon you all, O inhabitants of the graves, amongst the believers and the Muslims. Verily we will, Allah willing, be united with you, we ask Allah for well-being for us and you.",
-        "transliteration": "Assalamu AAalaykum ahlad-diyari minal-mu/mineena walmuslimeen, wa-inna in shaal-lahu bikum lahiqoon, nas-alul-laha lana walakumul-AAafiyah.",
-        "reference": "Muslim 2/671, Ibn Majah 1/494, the portion brackets is from Muslim 2/671.",
+        "transliteration": "As-salamu 'alaykum ahlad-diyari minal-mu'minina wal-muslimin, wa inna in sha'allahu bikum lahiqun. Nas'alullaha lana wa lakumul-'afiyah.",
+        "reference": "Muslim 2/671, Ibn Majah 1/494, the portion in brackets is from Muslim 2/671.",
         "benefits": "The greeting is a supplication of hope, a hope that you will be safe from all kinds of sorrow and suffering, and be enveloped in mercy and blessings."
       }
     ],
     "invocations-for-when-the-wind-blows": [
       {
         "id": "hisn-166",
-        "arabic": "اللَّهُمَّ إِنِّي أَسْــــــأَلُكَ خَيْرَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا",
-        "translation": "O Allah, I ask You for it’s goodness and I take refuge with You from it’s evil.",
-        "transliteration": "Allahumma innee as-aluka khayraha wa-aAAoothu bika min sharriha.",
+        "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا",
+        "translation": "O Allah, I ask You for its goodness and I take refuge with You from its evil.",
+        "transliteration": "Allahumma inni as'aluka khayraha wa a'udhu bika min sharriha.",
         "reference": "Abu Dawud 4/326, Ibn Majah 2/1228. See also Al-Albani, Sahih Ibn Majah 2/305.",
         "benefits": "Among the signs of Allah's power is a strong wind that can bring blessings and punishment, namely good and bad. Therefore, a servant should continue to ask for good and seek refuge from all harm."
       },
       {
         "id": "hisn-167",
         "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَخَيْرَ مَا فِيهَا، وَخَيْرَ مَا أُرْسِلَتْ بِهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا، وَشَرِّ مَا فِيهَا، وَشَرِّ مَا أُرْسِلَتْ بِهِ",
-        "translation": "O Allah, I ask You for it’s goodness, the good within it, and the good it was sent with, and I take refuge with You from it’s evil, the evil within it, and from the evil it was sent with.",
-        "transliteration": "Allahumma innee as-aluka khayraha wakhayra ma feeha, wakhayra ma orsilat bih, wa-aAAoothu bika min sharriha, washarri ma feeha washarri ma orsilat bih.",
+        "translation": "O Allah, I ask You for its goodness, the good within it, and the good it was sent with, and I take refuge with You from its evil, the evil within it, and from the evil it was sent with.",
+        "transliteration": "Allahumma inni as'aluka khayraha wa khayra ma fiha, wa khayra ma ursilat bih, wa a'udhu bika min sharriha, wa sharri ma fiha, wa sharri ma ursilat bih.",
         "reference": "Muslim 2/616, Al-Bukhari 4/76."
       }
     ],
@@ -2447,8 +2461,8 @@
       {
         "id": "hisn-168",
         "arabic": "سُبْحَانَ الَّذِي يُسَبِّحُ الرَّعْدُ بِحَمْدِهِ وَالْمَلاَئِكةُ مِنْ خِيفَتِهِ",
-        "translation": "How perfect He is, (The One) Whom the thunder declares His perfection with His praise, as do the angles out of fear of Him.",
-        "transliteration": "Subhanal-lathee yusabbihur-raAAdu bihamdih, walmala-ikatu min kheefatih.",
+        "translation": "How perfect He is, (The One) Whom the thunder declares His perfection with His praise, as do the angels out of fear of Him.",
+        "transliteration": "Subhanal-ladhi yusabbihur-ra'du bihamdih, wal-mala'ikatu min khifatih.",
         "reference": "Whenever Abdullah bin Zubair (RA) would hear thunder, he would abandon all conversation and say this supplication. See Al-Muwatta' 2/992. It was graded authentic by Al-Albani as a statement of Abdullah bin Zubayr only."
       }
     ],
@@ -2457,8 +2471,8 @@
         "id": "hisn-169",
         "arabic": "اللَّهُمَّ اسْقِنَا غَيْثاً مُغِيثاً مَرِيئاً مَرِيعاً، نَافِعاً غَيْرَ ضَارٍّ، عَاجِلاً غَيْرَ آجِلٍ",
         "translation": "O Allah, send upon us helpful, wholesome and healthy rain, beneficial not harmful rain, now, not later.",
-        "transliteration": "Allahummas-qina ghaythan mugheethan maree-an mureeAAan, nafiAAan, ghayra dar, AAajilan ghayra ajil.",
-        "reference": "Abu Dawud 1/303. See also Al-Albani SahihAbu Dawud 1/216.",
+        "transliteration": "Allahummas-qina ghaythan mughithan mari'an muri'an, nafi'an, ghayra darr, 'ajilan ghayra ajil.",
+        "reference": "Abu Dawud 1/303. See also Al-Albani Sahih Abu Dawud 1/216.",
         "benefits": "It is encouraged to pray when it rains so that goodness and blessings increase, as well as its benefits."
       },
       {
@@ -2472,7 +2486,7 @@
         "id": "hisn-171",
         "arabic": "اللَّهُمَّ اسْقِ عِبَادَكَ، وَبَهَائِمَكَ، وَانْشُرْ رَحْمَتَكَ، وَأَحْيِي بَلَدَكَ الْمَيِّتَ",
         "translation": "O Allah, provide water for Your servants and Your cattle, spread out Your mercy and resurrect Your dead land.",
-        "transliteration": "Allahummas-qi AAibadak, wabaha-imak, wanshur rahmatak, wa-ahyi baladakal-mayyit.",
+        "transliteration": "Allahummas-qi 'ibadak, wa baha'imak, wanshur rahmatak, wa ahyi baladakal-mayyit.",
         "reference": "Abu Dawud 1/305. Al-Albani graded it good in Sahih Abu Dawud 1/218."
       }
     ],
@@ -2481,7 +2495,7 @@
         "id": "hisn-172",
         "arabic": "اللَّهُمَّ صَيِّباً نَافِعاً",
         "translation": "O Allah, may it be a beneficial rain cloud.",
-        "transliteration": "Allahumma sayyiban nafiAAa.",
+        "transliteration": "Allahumma sayyiban nafi'an.",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 2/518."
       }
     ],
@@ -2490,7 +2504,7 @@
         "id": "hisn-173",
         "arabic": "مُطِرْنَا بِفَضْلِ اللَّهِ وَرَحْمَتِهِ",
         "translation": "We have been given rain by the grace and mercy of Allah.",
-        "transliteration": "Mutirna bifadlil-lahi warahmatih.",
+        "transliteration": "Mutirna bi fadlillahi wa rahmatih.",
         "reference": "Al-Bukhari 1/205, Muslim 1/83.",
         "benefits": "By reciting this supplication, one believes that rain falls by the will of Allah (Allah's virtue), not by the stars, so they do not become disbelievers in Allah."
       }
@@ -2500,8 +2514,8 @@
         "id": "hisn-174",
         "arabic": "اللَّهُمَّ حَوَالَيْنَا وَلاَ عَلَيْنَا، اللَّهُمَّ عَلَى الآكَامِ وَالظِّرَابِ، وَبُطُونِ الْأَوْدِيَةِ، وَمَنَابِتِ الشَّجَرِ",
         "translation": "O Allah, let the rain fall around us and not upon us, O Allah, (let it fall) on the pastures, hills, valleys and the roots of trees.",
-        "transliteration": "Allahumma hawalayna wala AAalayna, allahumma AAalal-akami waththirab, wabutoonil-awdiyah, wamanabitish-shajar.",
-        "reference": "Al-Bukhari 1/224, Muslim 1/614",
+        "transliteration": "Allahumma hawalayna wa la 'alayna, allahumma 'alal-akami wadh-dhirab, wa butunul-awdiyah, wa manabitish-shajar.",
+        "reference": "Al-Bukhari 1/224, Muslim 1/614.",
         "benefits": "The supplication above is recited when the rain gets heavier or there is a concern that the rain will cause harm."
       }
     ],
@@ -2510,7 +2524,7 @@
         "id": "hisn-175",
         "arabic": "اللَّهُ أَكْبَرُ، اللَّهُمَّ أَهِلَّهُ عَلَيْنَا بِالْأَمْنِ وَالْإِيمَانِ، وَالسَّلاَمَةِ وَالْإِسْلاَمِ، وَالتَّوْفِيقِ لِمَا تُحِبُّ رَبَّنَا وَتَرْضَى، رَبُّنَا وَرَبُّكَ اللَّهُ",
         "translation": "Allah is the greatest. O Allah, let the crescent loom above us in safety, faith, peace, and Islam, and in agreement with all that You love and pleases You. Our Lord and your Lord is Allah.",
-        "transliteration": "Allahu akbar, allahumma ahillahu AAalayna bil-amni wal-eeman, wassalamati wal-islam, wattawfeeiqi lima tuhibbu watarda, rabbuna warabbukal-lah.",
+        "transliteration": "Allahu akbar, allahumma ahillahu 'alayna bil-amni wal-iman, was-salamati wal-islam, wat-tawfiqi lima tuhibbu wa tarda, rabbuna wa rabbukalllah.",
         "reference": "At-Tirmidhi 5/504, Ad-Darimi 1/336. See also Al-Albani, Sahih At-Tirmidhi 3/157."
       }
     ],
@@ -2519,33 +2533,35 @@
         "id": "hisn-176",
         "arabic": "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ العُرُوقُ، وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ",
         "translation": "The thirst has gone and the veins are quenched, and reward is confirmed, if Allah wills.",
-        "transliteration": "Thahabath-thama-o wabtallatil-AAurooq, wathabatal-ajru in shaal-lah.",
-        "reference": "Abu Dawud 2/306 and others. See also Al- Albani, Sahihul-Jami' As-Saghir 4/209.",
+        "transliteration": "Dhahabadh-dhama'u wabtallatil-'uruq, wa thabatal-ajru in sha'allah.",
+        "reference": "Abu Dawud 2/306 and others. See also Al-Albani, Sahihul-Jami' As-Saghir 4/209.",
         "benefits": "It is highly recommended for those who are fasting to increase their supplications before and after breaking the fast, because the supplication of a fasting person is one of the three supplications that are not rejected."
       },
       {
         "id": "hisn-177",
         "arabic": "اللَّهُمَّ إِنِّي أَسْأَلُكَ بِرَحْمَتِكَ الَّتِي وَسِعَتْ كُلَّ شَيْءٍ أَنْ تَغْفِرَ لِي",
         "translation": "O Allah, I ask You by Your mercy which envelopes all things, that You forgive me.",
-        "transliteration": "Allahumma inne as-aluka birahmatikal-latee wasiAAat kulla shay, an taghfira lee.",
-        "reference": "Ibn Majah 1/557 from a supplication of Abdullah bin 'Amr. Al-Hafidh graded it as good in his checking of An-Nawawi's Kitabul-'Athkdr. See Sharhul- Athkar 4/342."
+        "transliteration": "Allahumma inni as'aluka bi rahmatikal-lati wasi'at kulla shay'in, an taghfira li.",
+        "reference": "Ibn Majah 1/557 from a supplication of Abdullah bin 'Amr. Al-Hafidh graded it as good in his checking of An-Nawawi's Kitabul-Athkar. See Sharhul-Athkar 4/342."
       }
     ],
     "invocations-before-eating": [
       {
         "id": "hisn-178",
         "arabic": "إِذَا أَكَلَ أَحَدُكُمْ طَعَاماً فَلْيَقُلْ بِسْمِ اللَّهِ، فَإِنْ نَسِيَ فِي أَوَّلِهِ فَلْيَقُلْ بسمِ اللَّهِ فِي أَوَّلِهِ وَآخِرِهِ",
-        "translation": "When you are about to eat, you should say:(Bismil-lah.)and if you forget to say it before starting, then you should say (when you remember):In the name of Allah in it’s beginning and end.",
-        "transliteration": "When you are about to eat, you should say:(Bismil-lah.)and if you forget to say it before starting, then you should say (when you remember):Bismil-lahi fee awwalihi wa-akhirih.",
-        "reference": "Abu Dawud 3/347, At-Tirmidhi 4/288. See Al- Albani's Sahih At-Tirmidhi 2/167.",
-        "benefits": "Islam pays great attention to etiquette. If someone forgets to recite the supplication before eating at the beginning, it is still recommended to recite it in the middle, even if there is only a spoonful of rice left."
+        "translation": "When you are about to eat, you should say: Bismillah. And if you forget to say it before starting, then you should say (when you remember): In the name of Allah, in its beginning and end.",
+        "transliteration": "Bismillah. Bismillahi fi awwalihi wa akhirih.",
+        "reference": "Abu Dawud 3/347, At-Tirmidhi 4/288. See Al-Albani's Sahih At-Tirmidhi 2/167.",
+        "benefits": "Islam pays great attention to etiquette. If someone forgets to recite the supplication before eating at the beginning, it is still recommended to recite it in the middle, even if there is only a spoonful of rice left.",
+        "context": "The first part (Bismillah) is said before eating. If forgotten, the second part is said when one remembers during the meal."
       },
       {
         "id": "hisn-179",
         "arabic": "مَنْ أَطْعَمَهُ اللَّهُ الطَّعَامَ فَلْيَقُلْ: اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَأَطْعِمْنَا خَيْراً مِنْهُ، وَمَنْ سَقَاهُ اللَّهُ لَبَناً فَلْيَقُلْ اللَّهُمَّ بَارِكْ لَنَا فِيهِ وَزِدْنَا مِنْهُ",
-        "translation": "Whomever Allah feeds, should say:(O Allah, bless it for us and feed us better than it.) and whomever Allah gives milk to drink should say:(O Allah, bless it for usand give us more of it.)",
-        "transliteration": "Whomever Allah feeds, should say:(Allahumma barik lana feehi wa-atAAimna khayran minh.) and whomever Allah gives milk to drink should say:(Allahumma barik lana feehi wazidna minh.",
-        "reference": "At-Tirmidhi 5/506. See also Al-Albani, Sahih At-Tirmidhi 3/158."
+        "translation": "Whomever Allah feeds, should say: O Allah, bless it for us and feed us better than it. And whomever Allah gives milk to drink should say: O Allah, bless it for us and give us more of it.",
+        "transliteration": "Allahumma barik lana fihi wa at'imna khayran minhu. Allahumma barik lana fihi wa zidna minhu.",
+        "reference": "At-Tirmidhi 5/506. See also Al-Albani, Sahih At-Tirmidhi 3/158.",
+        "context": "The first supplication is said after eating food. The second is said specifically after drinking milk."
       }
     ],
     "invocations-after-eating": [
@@ -2553,14 +2569,14 @@
         "id": "hisn-180",
         "arabic": "الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا، وَرَزَقَنِيهِ، مِنْ غَيْرِ حَوْلٍ مِنِّي وَلاَ قُوَّةٍ",
         "translation": "All praise is for Allah who fed me this and provided it for me without any might nor power from myself.",
-        "transliteration": "Alhamdu lillahil-lathee atAAamanee hatha warazaqaneehi min ghayri hawlin minnee wala quwwah.",
+        "transliteration": "Alhamdulillahil-ladhi at'amani hadha wa razaqanihi min ghayri hawlin minni wa la quwwah.",
         "reference": "At-Tirmidhi, Abu Dawud, and Ibn Majah. See also Al-Albani, Sahih At-Tirmidhi 3/159."
       },
       {
         "id": "hisn-181",
         "arabic": "الْحَمْدُ لِلَّهِ حَمْداً كَثِيراً طَيِّباً مُبَارَكاً فِيهِ، غَيْرَ [مَكْفِيٍّ وَلاَ ] مُوَدَّعٍ، وَلاَ مُسْتَغْنَىً عَنْهُ رَبَّنَا",
         "translation": "Allah be praised with an abundant beautiful blessed praise, a never-ending praise, a praise which we will never bid farewell to and an indispensable praise, He is our Lord.",
-        "transliteration": "Alhamdu lillahi hamdan katheeran tayyiban mubarakan feeh, ghayra makfiyyin wala muwaddaAAin, wala mustaghnan AAanhu rabbuna.",
+        "transliteration": "Alhamdulillahi hamdan kathiran tayyiban mubarakan fih, ghayra makfiyyin wa la muwadda'in, wa la mustaghnan 'anhu rabbuna.",
         "reference": "Al-Bukhari 6/214, At-Tirmidhi 5/507.",
         "context": "There are other views as regards to the understanding of this supplication, from them: Allah be praised with an abundant beautiful blessed praise. He is The One Who is sufficient, feeds and is not fed. The One Who is longed for, along with that which is with Him and The One Who is needed, He is our Lord."
       }
@@ -2570,7 +2586,7 @@
         "id": "hisn-182",
         "arabic": "اللَّهُمَّ بَارِكْ لَهُمْ فِيمَا رَزَقْتَهُم، وَاغْفِرْ لَهُمْ وَارْحَمْهُمْ",
         "translation": "O Allah, bless for them, that which You have provided them, forgive them and have mercy upon them.",
-        "transliteration": "Allahumma barik lahum feema razaqtahum, waghfir lahum warhamhum.",
+        "transliteration": "Allahumma barik lahum fima razaqtahum, waghfir lahum warhamhum.",
         "reference": "Muslim 3/1615."
       }
     ],
@@ -2579,7 +2595,7 @@
         "id": "hisn-183",
         "arabic": "اللَّهُمَّ أَطْعِمْ مَنْ أَطْعَمَنِي، وَاسْقِ مَنْ سَقَانِي",
         "translation": "O Allah, feed him who fed me, and provide with drink him who provided me with drink.",
-        "transliteration": "Allahumma atAAim man atAAamanee wasqi man saqanee.",
+        "transliteration": "Allahumma at'im man at'amani wasqi man saqani.",
         "reference": "Muslim 3/126."
       }
     ],
@@ -2587,8 +2603,8 @@
       {
         "id": "hisn-184",
         "arabic": "أَفْطَرَ عِنْدَكُمُ الصَّائِمُونَ، وَأَكَلَ طَعَامَكُمُ الْأَبْرَارُ، وَصَلَّتْ عَلَيْكُمُ الْمَلاَئِكَةُ",
-        "translation": "May the fasting break their fast in your home, and may the dutiful and pious eat your food, and may the angles send prayers upon you.",
-        "transliteration": "Aftara AAindakumus-sa-imoon, wa-akala taAAamakumul-abrar, wasallat AAalaykumul-mala-ikah.",
+        "translation": "May the fasting break their fast in your home, and may the dutiful and pious eat your food, and may the angels send prayers upon you.",
+        "transliteration": "Aftara 'indakumus-sa'imun, wa akala ta'amakumul-abrar, wa sallat 'alaykumul-mala'ikah.",
         "reference": "Abu Dawud 3/367, Ibn Majah 1/556, An-Nasa'i, 'Amalul-Yawm wal-Laylah 296-8. Al-Albani graded it authentic in Sahih Abu Dawud 2/730."
       }
     ],
@@ -2597,7 +2613,6 @@
         "id": "hisn-185",
         "arabic": "إِذَا دُعِيَ أَحَدُكُمْ فَلْيُجِبْ، فَإِنْ كَانَ صَائِماً فَلْيُصَلِّ، وَإِنْ كَانَ مُفْطِراً فَلْيَطْعَمْ",
         "translation": "If you are not invited (to a meal) then answer. If you happen to be fasting, then supplicate (for those present) and if you are not fasting, then eat.",
-        "transliteration": "If you are not invited (to a meal) then answer. If you happen to be fasting, then supplicate (for those present) and if you are not fasting, then eat.",
         "reference": "Muslim 2/1054."
       }
     ],
@@ -2606,28 +2621,29 @@
         "id": "hisn-186",
         "arabic": "إِنِّي صَائِمٌ، إِنِّي صَائِمٌ",
         "translation": "I am fasting, I am fasting.",
-        "transliteration": "Innee sa-im, innee sa-im.",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-BAri 4/103, Muslim 2/806."
+        "transliteration": "Inni sa'im, inni sa'im.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 4/103, Muslim 2/806."
       }
     ],
     "invocation-for-when-you-see-the-first-dates-of-the-season": [
       {
         "id": "hisn-187",
         "arabic": "اللَّهُمَّ بَارِكْ لَنَا فِي ثَمَرِنَا، وَبَارِكْ لَنَا فِي مَدِينَتِنَا، وَبَارِكْ لَنَا فِي صَاعِنَا، وَبَارِكْ لَنَا فِي مُدِّنَا",
-        "translation": "O Allah, bless our fruit for us, bless our town for us, bless our saAA for us and bless our mudd for us.",
-        "transliteration": "Allahumma barik lana fee thamarina, wabarik lana fee madeenatina, wabarik lana fee saAAina wabarik lana fee muddina.",
-        "reference": "Muslim 2/1000 (Sa' and Mudd are both dry measures used for agricultural produce by the Arabs in the Prophet's time. Of the two, the So.' was the larger measure.) (Translator)",
-        "context": "A saAA is equivalent to four mudds and a mudd is equivalent to a dry measure of an average man’s two palms."
+        "translation": "O Allah, bless our fruit for us, bless our town for us, bless our sa' for us and bless our mudd for us.",
+        "transliteration": "Allahumma barik lana fi thamarina, wa barik lana fi madinatina, wa barik lana fi sa'ina, wa barik lana fi muddina.",
+        "reference": "Muslim 2/1000.",
+        "context": "Sa' and mudd are both dry measures used for agricultural produce by the Arabs in the Prophet's time. Of the two, the sa' was the larger measure. A sa' is equivalent to four mudds and a mudd is equivalent to a dry measure of an average man's two palms."
       }
     ],
     "invocation-for-sneezing": [
       {
         "id": "hisn-188",
         "arabic": "إِذَا عَطَسَ أَحَدُكُم فَلْيَقُلِ الْحَمْدُ لِلَّهِ، وَلْيَقُلْ لَهُ أَخُوهُ أَوْ صَاحِبُهُ: يَرْحَمُكَ اللَّهُ، فَإِذَا قَالَ لَهُ: يَرحَمُكَ اللَّهُ، فَلْيَقُلْ: يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ",
-        "translation": "When one of you sneezes he should say:(All praise if for Allah.) and his brother or companion should say to him: (May Allah have mercy upon you.) and he (i.e. the one who sneezed) replies back to him:(May Allah guide you and rectify your condition.)",
-        "transliteration": "When one of you sneezes he should say:(Alhamdu lillah.) and his brother or companion should say to him: (Yarhamukal-lah.) and he (i.e. the one who sneezed) replies back to him:(Yahdeekumul-lahu wayuslihu balakum.",
+        "translation": "When one of you sneezes he should say: All praise is for Allah. And his brother or companion should say to him: May Allah have mercy upon you. And he (i.e. the one who sneezed) replies back to him: May Allah guide you and rectify your condition.",
+        "transliteration": "Alhamdulillah. Yarhamukallah. Yahdikumullahu wa yuslihu balakum.",
         "reference": "Al-Bukhari 7/125.",
-        "benefits": "Indeed, Allah loves sneezing because it moves a person to worship. It is encouraged to respond to the praise of Allah by someone who praises Allah, and vice versa."
+        "benefits": "Indeed, Allah loves sneezing because it moves a person to worship. It is encouraged to respond to the praise of Allah by someone who praises Allah, and vice versa.",
+        "context": "A three-part exchange: (1) The one who sneezes says: Alhamdulillah. (2) His companion responds: Yarhamukallah. (3) The sneezer replies: Yahdikumullahu wa yuslihu balakum."
       }
     ],
     "what-to-say-to-the-disbeliever-if-he-sneezes-and-praises-allah": [
@@ -2635,8 +2651,8 @@
         "id": "hisn-189",
         "arabic": "يَهْدِيكُمُ اللَّهُ وَيُصْلِحُ بَالَكُمْ",
         "translation": "May Allah guide you and rectify your condition.",
-        "transliteration": "Yahdeekum wayuslihu balakum.",
-        "reference": "At-Tirmidhi 5/82, Ahmad 4/400, Abu Dawud 4/ 308. See also Al-Albani, Sahih At-Tirmidhi 2/354."
+        "transliteration": "Yahdikumullahu wa yuslihu balakum.",
+        "reference": "At-Tirmidhi 5/82, Ahmad 4/400, Abu Dawud 4/308. See also Al-Albani, Sahih At-Tirmidhi 2/354."
       }
     ],
     "invocation-for-the-groom": [
@@ -2644,18 +2660,18 @@
         "id": "hisn-190",
         "arabic": "بَارَكَ اللَّهُ لَكَ، وَبَارَكَ عَلَيْكَ، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ",
         "translation": "May Allah bless for you (your spouse) and bless you, and may He unite both of you in goodness.",
-        "transliteration": "Barakal-lahu lak, wabaraka AAalayk, wajamaAAa baynakuma fee khayr.",
+        "transliteration": "Barakallahu lak, wa baraka 'alayk, wa jama'a baynakuma fi khayr.",
         "reference": "Abu Dawud, Ibn Majah and At-Tirmidhi. See also Al-Albani, Sahih At-Tirmidhi 1/316."
       }
     ],
     "the-grooms-supplication-on-the-wedding-night-or-when-buying-an-animal": [
       {
         "id": "hisn-191",
-        "arabic": "إِذَا تَزَوَّجَ أَحَدُكُمُ امْرَأَةً، أَوْ إِذَا اشْتَرَى خَادِماً فَلْيَقُلْ: ((اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَخَيْرَ مَا جَبَلْتَهَا عَلَيْهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا، وَشَرِّ مَا جَبَلْتَهَا عَلَيْهِ، وَإِذَا اشْتَرَى بَعِيراً فَلْيَأْخُذْ بِذِرْوَةِ سَنَامِهِ وَلْيَقُلْ مِثْلَ ذَلِكَ)).",
-        "translation": "when you marry a woman or buy a maidservant, you should say:(O Allah, I ask You for the goodness within her and the goodness that you have made her inclined towards, and I take refuge with You from the evil within her and the evil that you have made her inclined towards.",
-        "transliteration": "when you marry a woman or buy a maidservant, you should say: (Allahumma innee as-aluka khayraha wakhayra ma jabaltaha AAalayh, wa-aAAoothu bika min sharriha washarri ma jabaltaha AAalayh.))(and if you buy a camel, then you should take hold of it’s hump and say likewise.",
+        "arabic": "إِذَا تَزَوَّجَ أَحَدُكُمُ امْرَأَةً، أَوْ إِذَا اشْتَرَى خَادِماً فَلْيَقُلْ: اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَهَا، وَخَيْرَ مَا جَبَلْتَهَا عَلَيْهِ، وَأَعُوذُ بِكَ مِنْ شَرِّهَا، وَشَرِّ مَا جَبَلْتَهَا عَلَيْهِ، وَإِذَا اشْتَرَى بَعِيراً فَلْيَأْخُذْ بِذِرْوَةِ سَنَامِهِ وَلْيَقُلْ مِثْلَ ذَلِكَ",
+        "translation": "O Allah, I ask You for the goodness within her and the goodness that You have made her inclined towards, and I take refuge with You from the evil within her and the evil that You have made her inclined towards.",
+        "transliteration": "Allahumma inni as'aluka khayraha wa khayra ma jabaltaha 'alayh, wa a'udhu bika min sharriha wa sharri ma jabaltaha 'alayh.",
         "reference": "Abu Dawud 2/248 and Ibn Majah 1/617. See also Al-Albani, Sahih Ibn Majah 1/324.",
-        "context": "and if you buy a camel, then you should take hold of it’s hump and say likewise."
+        "context": "Said when marrying a woman or acquiring a servant. And if you buy a camel, then you should take hold of its hump and say likewise."
       }
     ],
     "invocation-to-be-recited-before-intercourse": [
@@ -2663,7 +2679,7 @@
         "id": "hisn-192",
         "arabic": "بِسْمِ اللَّهِ، اللَّهُمَّ جَنِّبْنَا الشَّيْطَانَ، وَجَنِّبِ الشَّيْطَانَ مَا رَزَقْتَنَا",
         "translation": "In the name of Allah. O Allah, keep the devil away from us and keep the devil away from what you have blessed us with.",
-        "transliteration": "Bismil-lah, allahumma jannibnash-shaytan, wajannibish-shaytana ma razaqtana.",
+        "transliteration": "Bismillah, allahumma jannibnash-shaytan, wa jannibish-shaytana ma razaqtana.",
         "reference": "Al-Bukhari 6/141, Muslim 2/1028."
       }
     ],
@@ -2672,7 +2688,7 @@
         "id": "hisn-193",
         "arabic": "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
         "translation": "I take refuge with Allah from the accursed devil.",
-        "transliteration": "aAAoothu billahi minash-shaytanir-rajeem.",
+        "transliteration": "A'udhu billahi minash-shaytanir-rajim.",
         "reference": "Al-Bukhari 7/99, Muslim 4/2015."
       }
     ],
@@ -2681,17 +2697,19 @@
         "id": "hisn-194",
         "arabic": "الْحَمْدُ لِلَّهِ الَّذِي عَافَانِي مِمَّا ابْتَلاَكَ بِهِ، وَفَضَّلَنِي عَلَى كَثِيرٍ مِمَّنْ خَلَقَ تَفْضِيلاً",
         "translation": "All praise is for Allah Who saved me from that which He tested you with and Who most certainly favoured me over much of His creation.",
-        "transliteration": "Alhamdu lillahil-lathee AAafanee mimmab-talaka bih, wafaddalanee AAala katheerin mimman khalaqa tafdeela.",
+        "transliteration": "Alhamdulillahil-ladhi 'afani mimmab-talaka bih, wa faddalani 'ala kathirin mimman khalaqa tafdila.",
         "reference": "At-Tirmidhi 5/493,4. See also Al-Albani, Sahih At-Tirmidhi 3/153."
       }
     ],
     "what-to-say-while-sitting-in-an-assembly": [
       {
         "id": "hisn-195",
-        "arabic": "عَنِ ابْنِ عُمَرَ رضي الله عنه قَاَلَ: كَانَ يُعَدُّ لِرَسُولِ اللَّهِ صلى الله عليه وسلم فِي الْمَجْلِسِ الوَاحِدِ مِائَةُ مَرَّةٍ مِنْ قَبْلِ أَنْ يَقُومَ: ((رَبِّ اغْفِرْ لِي، وَتُبْ عَلَيَّ، إِنَّكَ أَنْتَ التَّوَّابُ الغَفُورُ",
-        "translation": "Ibn AAumar said: It would be counted that the Messenger of Allah would say one hundred times at any one sitting before getting up: (O my Lord, forgive me and turn towards me (to accept my repentance). Verily You are The Oft-Returning. The Oft-Forgiving.)",
-        "transliteration": "Ibn AAumar said: It would be counted that the Messenger of Allah would say one hundred times at any one sitting before getting up: (Rabbigh-fir lee watub AAalay, innaka antat-tawwabul-ghafoor.",
-        "reference": "Sahih Ibn Majah 2/321. See also Al-Albani, Sahih At-Tirmidhi 3/153."
+        "arabic": "عَنِ ابْنِ عُمَرَ رضي الله عنه قَاَلَ: كَانَ يُعَدُّ لِرَسُولِ اللَّهِ صلى الله عليه وسلم فِي الْمَجْلِسِ الوَاحِدِ مِائَةُ مَرَّةٍ مِنْ قَبْلِ أَنْ يَقُومَ: رَبِّ اغْفِرْ لِي، وَتُبْ عَلَيَّ، إِنَّكَ أَنْتَ التَّوَّابُ الغَفُورُ",
+        "translation": "O my Lord, forgive me and turn towards me (to accept my repentance). Verily You are The Oft-Returning, The Oft-Forgiving.",
+        "transliteration": "Rabbigh-fir li wa tub 'alayya, innaka antat-tawwabul-ghafur.",
+        "reference": "Sahih Ibn Majah 2/321. See also Al-Albani, Sahih At-Tirmidhi 3/153.",
+        "repeat": 100,
+        "context": "Ibn Umar said: It would be counted that the Messenger of Allah would say this one hundred times at any one sitting before getting up."
       }
     ],
     "the-expiation-of-assembly-kaffaratul-majlis": [
@@ -2699,35 +2717,39 @@
         "id": "hisn-196",
         "arabic": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ",
         "translation": "How perfect You are O Allah, and I praise You. I bear witness that None has the right to be worshipped except You. I seek Your forgiveness and turn to You in repentance.",
-        "transliteration": "Subhanakal-lahumma wabihamdik, ashhadu an la ilaha illa ant, astaghfiruka wa-atoobu ilayk.",
-        "reference": "Abu Dawud, Ibn Majah, At-Tirmidhi and An-Nasa'i. See also Al-Albani, Sahih At-Tirmidhi 3/ 153. Aishah (RA) said: \"Allah's Messenger (ﷺ) did not sit in a gathering, and did not recite the Qur'an, and did not perform any prayer without concluding by saying ... (then she quoted the above).\" This was reported by An-Nasa'i in 'Amalul-Yawm wal-Laylah (no.308), and Dr. Farooq Hamadah graded it authentic in his checking of the same book, p. 273. See also Ahmad 6/77"
+        "transliteration": "Subhanakal-lahumma wa bihamdik, ash-hadu an la ilaha illa ant, astaghfiruka wa atubu ilayk.",
+        "reference": "Abu Dawud, Ibn Majah, At-Tirmidhi and An-Nasa'i. See also Al-Albani, Sahih At-Tirmidhi 3/153. See also Ahmad 6/77.",
+        "benefits": "Aishah (may Allah be pleased with her) said: \"Allah's Messenger (sallallahu 'alayhi wa sallam) did not sit in a gathering, and did not recite the Quran, and did not perform any prayer without concluding by saying this.\" An-Nasa'i in 'Amalul-Yawm wal-Laylah (no. 308), graded authentic by Dr. Farooq Hamadah in his checking of the same book, p. 273."
       }
     ],
     "vocation-for-someone-who-says-may-allah-forgive-you": [
       {
         "id": "hisn-197",
         "arabic": "وَلَكَ",
-        "translation": "AAabdullah Ibn Sarjis said: ‘I went to see the Prophet and ate from his food and then said to him: (May Allah forgive you, O Messenger of Allah.) he replied: (and you.)",
-        "transliteration": "AAabdullah Ibn Sarjis said: ‘I went to see the Prophet and ate from his food and then said to him:(Ghafaral-lahu laka ya rasoolal-lah.) he replied: (wa-lak",
-        "reference": "Ahmad 5/82, and An-Nasa'i in 'Amalul-Yawm wal-Laylah p. 218, with checking by Dr. Farooq Hamadah."
+        "translation": "And you (i.e. may Allah forgive you too).",
+        "transliteration": "Wa lak.",
+        "reference": "Ahmad 5/82, and An-Nasa'i in 'Amalul-Yawm wal-Laylah p. 218, with checking by Dr. Farooq Hamadah.",
+        "context": "Abdullah ibn Sarjis said: 'I went to see the Prophet and ate from his food and then said to him: May Allah forgive you, O Messenger of Allah. He replied: And you.'"
       }
     ],
     "invocation-for-someone-who-does-good-to-you": [
       {
         "id": "hisn-198",
         "arabic": "جَزَاكَ اللَّهُ خَيْراً",
-        "translation": "If someone does you a favour and you say: (May Allah reward you with goodness.) then you have indeed excelled in praising him.",
-        "transliteration": "If someone does you a favour and you say: (Jazakal-lahu khayran.) then you have indeed excelled in praising him.",
-        "reference": "At-Tirmidhi (no. 2035). See also Al-Albani, Sahih At-Tirmidhi 2/200 and Sahihul-Jami' (no. 6244)."
+        "translation": "May Allah reward you with goodness.",
+        "transliteration": "Jazakallahu khayran.",
+        "reference": "At-Tirmidhi (no. 2035). See also Al-Albani, Sahih At-Tirmidhi 2/200 and Sahihul-Jami' (no. 6244).",
+        "benefits": "If someone does you a favour and you say this, then you have indeed excelled in praising him."
       }
     ],
     "invocation-for-allah-s-protection-from-the-false-messiah": [
       {
         "id": "hisn-199",
         "arabic": "مَنْ حَفِظَ عَشْرَ آيَاتٍ مِنْ أَوَّلِ سُورَةِ الْكَهْفِ عُصِمَ مِنَ الدَّجَّالِ",
-        "translation": "Dajjal: among the great signs of the last hour and the greatest trials to befall mankind, which every Prophet has warned about. Most of mankind will folow him. He will appear from Asbahan, Iran at the time when Muslims will conquer Constantinople. He will be given special powers and will make the truth seem false and vice versa. He will claim to be righteous and then he will claim prophet-hood and finally, divinity. From his features is that he will be blind in his right eye which is a definite proof that contradicts his claim to be Allah as it is a sign of imperfection. The word Kafir will be written between his eyes which every believer, literate or illiterate will recognise.",
-        "reference": "1 Muslim 1/555, another version mentions the last ten 'Ayat, Muslim 1/556. 2 See invocations no. 55 and 56 of this book.",
-        "context": "Whoever memorises the first ten verses of Surat Al-Kahf will be protected from Dajjal.\nOne should also seek refuge with Allah from the tribulations of the Dajjal after the last tashahhud in prayer.(Refer to supplications #55 & #56"
+        "translation": "Whoever memorises the first ten verses of Surat Al-Kahf will be protected from the Dajjal.",
+        "reference": "Muslim 1/555. Another version mentions the last ten ayat, Muslim 1/556. See also invocations no. 55 and 56 of this book.",
+        "context": "Whoever memorises the first ten verses of Surat Al-Kahf will be protected from Dajjal. One should also seek refuge with Allah from the tribulations of the Dajjal after the last tashahhud in prayer (refer to supplications #55 and #56). Another version mentions the last ten ayat (Muslim 1/556).",
+        "benefits": "Dajjal: among the great signs of the last hour and the greatest trials to befall mankind, which every Prophet has warned about. Most of mankind will follow him. He will appear from Asbahan, Iran at the time when Muslims will conquer Constantinople. He will be given special powers and will make the truth seem false and vice versa. He will claim to be righteous and then he will claim prophethood and finally, divinity. From his features is that he will be blind in his right eye which is a definite proof that contradicts his claim to be Allah as it is a sign of imperfection. The word Kafir will be written between his eyes which every believer, literate or illiterate, will recognise."
       }
     ],
     "invocation-for-someone-who-tells-you-i-love-you-for-the-sake-of-allah": [
@@ -2735,7 +2757,7 @@
         "id": "hisn-200",
         "arabic": "أَحَبَّكَ الَّذِي أَحْبَبْتَنِي لَهُ",
         "translation": "May He, for whom you have loved me, love you.",
-        "transliteration": "Ahabbakal-lathee ahbabtanee lah.",
+        "transliteration": "Ahabbakal-ladhi ahbabtani lah.",
         "reference": "Abu Dawud 4/333. Al-Albani graded it good in Sahih Abu Dawud 3/965."
       }
     ],
@@ -2744,8 +2766,8 @@
         "id": "hisn-201",
         "arabic": "بَارَكَ اللَّهُ لَكَ فِي أَهْلِكَ وَمَالِكَ",
         "translation": "May Allah bless for you, your family and wealth.",
-        "transliteration": "Barakal-lahu laka fee ahlika wamalik.",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-BAri 4/88."
+        "transliteration": "Barakallahu laka fi ahlika wa malik.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 4/88."
       }
     ],
     "invocation-upon-receipt-of-the-loan-for-someone-who-lends-you-money": [
@@ -2753,59 +2775,60 @@
         "id": "hisn-202",
         "arabic": "بارَكَ اللَّهُ لَكَ فِي أَهْلِكَ وَمَالِكَ، إِنَّمَا جَزَاءُ السَّلَفِ الْحَمْدُ وَالأَدَاءُ",
         "translation": "May Allah bless for you, your family and wealth. Surely commendation and payment are the reward for a loan.",
-        "transliteration": "Barakal-lahu laka fee ahlika wamalik, innama jaza-os-salafil-hamdu wal-ada'.",
-        "reference": "An-Nasa'i, 'Amalul-Yawm wal-Laylahp. 300, Ibn Majah 2/809. See also Al-Albani, Sahih Ibn Majah2/55."
+        "transliteration": "Barakallahu laka fi ahlika wa malik, innama jaza'us-salafil-hamdu wal-ada'.",
+        "reference": "An-Nasa'i, 'Amalul-Yawm wal-Laylah, p. 300, Ibn Majah 2/809. See also Al-Albani, Sahih Ibn Majah 2/55."
       }
     ],
     "invocation-for-fear-of-shirk": [
       {
         "id": "hisn-203",
         "arabic": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ أَنْ أُشْرِكَ بِكَ وَأَنَا أَعْلَمُ، وَأَسْتَغْفِرُكَ لِمَا لاَ أَعْلَمُ",
-        "translation": "shirk: to associate others with Allah in those things which are specific to Him. This can occur in (1) belief, e.g. to believe that other than Allah has the power to benefit or harm, (2) speech, e.g. to swear by other than Allah and (3) action, e.g. to bow or prostrate to other than Allah.",
-        "transliteration": "shirk: to associate others with Allah in those things which are specific to Him. This can occur in (1) belief, e.g. to believe that other than Allah has the power to benefit or harm, (2) speech, e.g. to swear by other than Allah and (3) action, e.g. to bow or prostrate to other than Allah.)(Allahumma innee aAAoothu bika an oshrika bika wa-ana aAAlam, wa-astaghfiruka lima la aAAlam.",
-        "reference": "Ahmad 4/403. See also Al-Albani, Sahihul-Jami' As-Saghir 3/233 and Sahihut-Targhib wat- Tarhib 1/19.",
-        "context": "O Allah, I take refuge in You lest I should commit shirk with You knowingly and I seek Your forgiveness for what I do unknowingly."
+        "translation": "O Allah, I take refuge in You lest I should commit shirk with You knowingly and I seek Your forgiveness for what I do unknowingly.",
+        "transliteration": "Allahumma inni a'udhu bika an ushrika bika wa ana a'lam, wa astaghfiruka lima la a'lam.",
+        "reference": "Ahmad 4/403. See also Al-Albani, Sahihul-Jami' As-Saghir 3/233 and Sahihut-Targhib wat-Tarhib 1/19.",
+        "context": "Shirk: to associate others with Allah in those things which are specific to Him. This can occur in (1) belief, e.g. to believe that other than Allah has the power to benefit or harm, (2) speech, e.g. to swear by other than Allah, and (3) action, e.g. to bow or prostrate to other than Allah."
       }
     ],
     "invocation-for-someone-who-tells-you-may-allah-bless-you": [
       {
         "id": "hisn-204",
         "arabic": "وَفِيكَ بَارَكَ اللَّهُ",
-        "translation": "Aaishah reported that the Messenger of Allah was given a sheep and he ordered for it’s distribution. When the servant would come back (from distributing it), AAaishah would ask: ‘What did they say?’, he replied: They would supplicate: (May Allah bless you all.) AAaishah would then say: (and may Allah bless them.",
-        "transliteration": "Aaishah reported that the Messenger of Allah was given a sheep and he ordered for it’s distribution. When the servant would come back (from distributing it), AAaishah would ask: ‘What did they say?’, he replied: They would supplicate: (Barakal-lahu feekum.) AAaishah would then say: (Wafeehim barakal-lah.))(we return their supplication in a similar way and our reward remains with us.",
-        "reference": "Ibn As-Sunni, p. 138, (no. 278). See also Ibn Al-Qayyim, Al-Wdbil As-Sayyib, p. 304, with checking by Basheer Muhammad ?Uyoon.",
-        "context": "we return their supplication in a similar way and our reward remains with us."
+        "translation": "And may Allah bless you.",
+        "transliteration": "Wa fikum barakallah.",
+        "reference": "Ibn As-Sunni, p. 138, (no. 278). See also Ibn Al-Qayyim, Al-Wabil As-Sayyib, p. 304, with checking by Basheer Muhammad 'Uyoon.",
+        "context": "Aishah reported that the Messenger of Allah was given a sheep and he ordered for its distribution. When the servant would come back (from distributing it), Aishah would ask: 'What did they say?' He replied: They would supplicate: 'May Allah bless you all.' Aishah would then say: 'And may Allah bless them.' We return their supplication in a similar way and our reward remains with us."
       }
     ],
     "invocation-against-evil-portent": [
       {
         "id": "hisn-205",
         "arabic": "اللَّهُمَّ لاَ طَيْرَ إِلاَّ طَيْرُكَ، وَلاَ خَيْرَ إِلاَّ خَيْرُكَ، وَلاَ إِلَهَ غَيْرُكَ",
-        "translation": "This supplication is used whenever one initially thinks a casual event or occurrence to foretell good or evil, using it as a basis to determine which action he should undertake, but he then denounces such a link, relies on Allah and then says this supplication as an expiation for this act, since it falls under the category of shirk.",
-        "transliteration": "This supplication is used whenever one initially thinks a casual event or occurrence to foretell good or evil, using it as a basis to determine which action he should undertake, but he then denounces such a link, relies on Allah and then says this supplication as an expiation for this act, since it falls under the category of shirk.)(Allahumma la tayra illa tayruk, wala khayra illa khayruk, wala ilaha ghayruk.",
-        "reference": "Ahmad 2/220, Ibn As-Sunni (no. 292). See also Al-Albani, Silsilatul-'Ahadlth As-Sahihah 3/54, (no. 1065). As for bodings of good, these used to please the Prophet (ﷺ) and so when he heard good words from someone, he used to say: \"We have taken from you a good portent from your mouth,\" Abu Dawud, Ahmad. See also Al-Albani, Silsilatul-'Ahadith As-Sahihah 2/363, and it is with Abu Ash-Shaikh Al-Asfahani in 'Akhlaqun-Nabiyy, pg. 270.",
-        "context": "O Allah, there is no omen but there is reliance on You, there is no good except Your good and none has the right to be worshipped except You."
+        "translation": "O Allah, there is no omen but there is reliance on You, there is no good except Your good, and none has the right to be worshipped except You.",
+        "transliteration": "Allahumma la tayra illa tayruk, wa la khayra illa khayruk, wa la ilaha ghayruk.",
+        "reference": "Ahmad 2/220, Ibn As-Sunni (no. 292). See also Al-Albani, Silsilatul-Ahadith As-Sahihah 3/54 (no. 1065).",
+        "context": "This supplication is used whenever one initially thinks a casual event or occurrence to foretell good or evil, using it as a basis to determine which action he should undertake, but he then denounces such a link, relies on Allah and then says this supplication as an expiation for this act, since it falls under the category of shirk.",
+        "benefits": "As for bodings of good, these used to please the Prophet (sallallahu 'alayhi wa sallam) and so when he heard good words from someone, he used to say: \"We have taken from you a good portent from your mouth.\" Abu Dawud, Ahmad. See also Al-Albani, Silsilatul-Ahadith As-Sahihah 2/363, and it is with Abu Ash-Shaikh Al-Asfahani in 'Akhlaqun-Nabiyy, pg. 270."
       }
     ],
     "invocation-for-riding-in-a-vehicle-or-on-an-animal": [
       {
         "id": "hisn-206",
-        "arabic": "بِسْمِ اللَّهِ، وَالْحَمْدُ للَّهِ ﴿سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ﴾، ((الْحَمْدُ لِلَّهِ، الْحَمْدُ لِلَّهِ، الْحَمْدُ لِلَّهِ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَكَ اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي؛ فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ",
+        "arabic": "بِسْمِ اللَّهِ، وَالْحَمْدُ للَّهِ ﴿سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ، وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ﴾، الْحَمْدُ لِلَّهِ، الْحَمْدُ لِلَّهِ، الْحَمْدُ لِلَّهِ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، سُبْحَانَكَ اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي؛ فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ",
         "translation": "In the name of Allah and all praise is for Allah. How perfect He is, the One Who has placed this (transport) at our service and we ourselves would not have been capable of that, and to our Lord is our final destiny. All praise is for Allah, All praise is for Allah, All praise is for Allah, Allah is the greatest, Allah is the greatest, Allah is the greatest. How perfect You are, O Allah, verily I have wronged my soul, so forgive me, for surely none can forgive sins except You.",
-        "transliteration": "Bismil-lah, walhamdu lillah, subhanal-lathee sakhkhara lana hatha wama kunna lahu muqrineen, wainna ila rabbina lamunqaliboon, alhamdu lillah, alhamdu lillah, alhamdu lillah, Allahu akbar, Allahu akbar, Allahu akbar, subhanakal-lahumma innee thalamtu nafsee faghfir lee fainnahu la yaghfiruth-thunooba illa ant.",
-        "reference": "Abu Dawud 3/34, At-Tirmidhi 5/501. See also Al-Albani, Sahih At-Tirmidhi3/156.",
+        "transliteration": "Bismillah, walhamdulillah, subhanal-ladhi sakhkhara lana hadha wa ma kunna lahu muqrinin, wa inna ila rabbina lamunqalibun. Alhamdulillah, alhamdulillah, alhamdulillah, Allahu akbar, Allahu akbar, Allahu akbar, subhanakal-lahumma inni dhalamtu nafsi faghfir li fa innahu la yaghfirudh-dhunuba illa ant.",
+        "reference": "Abu Dawud 3/34, At-Tirmidhi 5/501. See also Al-Albani, Sahih At-Tirmidhi 3/156.",
         "benefits": "By reciting the supplication for mounting a vehicle, our journey will always be under the protection of Allah. In addition, we will also receive rewards, help, and a calmer heart."
       }
     ],
     "invocation-for-traveling": [
       {
         "id": "hisn-207",
-        "arabic": "اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، ﴿سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ * وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ﴾ ((اللَّهُمَّ إِنّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا البِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَليفَةُ فِي الْأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ))، وإذا رَجَعَ قَالَهُنَّ وَزَادَ فِيهِنَّ: ((آيِبُونَ، تائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ)).",
-        "translation": "Allah is the greatest, Allah is the greatest, Allah is the greatest, How perfect He is, The One Who has placed this (transport) at our service, and we ourselves would not have been capable of that, and to our Lord is our final destiny. O Allah, we ask You for birr and taqwa in this journey of ours, and we ask You for deeds which please You. O Allah, facilitate our journey and let us cover it’s distance quickly. O Allah, You are The Companion on the journey and The Successor over the family, O Allah, I take refuge with You from the difficulties of travel, from having a change of hearts and being in a bad predicament, and I take refuge in You from an ill fated outcome with wealth and family.",
-        "transliteration": "Allahu akbar, Allahu akbar, Allahu akbar, subhanal-lathee sakhkhara lana hatha wama kunna lahu muqrineen, wa-inna ila rabbina lamunqaliboon, allahumma inna nas-aluka fee safarina hatha albirra wattaqwa, waminal-AAamali ma tarda, allahumma hawwin AAalayna safarana hatha, watwi AAanna buAAdah, allahumma antas-sahibu fis-safar, walkhaleefatu fil-ahl, allahumma innee aAAoothu bika min waAAtha-is-safar, waka-abatil-manthar, wasoo-il-munqalabi fil-mali wal-ahl.)(upon returning the same supplication is recited with the following addition: (Ayiboona, ta-iboona, AAabidoona, lirabbina hamidoon.",
+        "arabic": "اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، اللَّهُ أَكْبَرُ، ﴿سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ * وَإِنَّا إِلَى رَبِّنَا لَمُنقَلِبُونَ﴾ اللَّهُمَّ إِنّا نَسْأَلُكَ فِي سَفَرِنَا هَذَا البِرَّ وَالتَّقْوَى، وَمِنَ الْعَمَلِ مَا تَرْضَى، اللَّهُمَّ هَوِّنْ عَلَيْنَا سَفَرَنَا هَذَا وَاطْوِ عَنَّا بُعْدَهُ، اللَّهُمَّ أَنْتَ الصَّاحِبُ فِي السَّفَرِ، وَالْخَليفَةُ فِي الْأَهْلِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ وَعْثَاءِ السَّفَرِ، وَكَآبَةِ الْمَنْظَرِ، وَسُوءِ الْمُنْقَلَبِ فِي الْمَالِ وَالْأَهْلِ، وإذا رَجَعَ قَالَهُنَّ وَزَادَ فِيهِنَّ: آيِبُونَ، تائِبُونَ، عَابِدُونَ، لِرَبِّنَا حَامِدُونَ.",
+        "translation": "Allah is the greatest, Allah is the greatest, Allah is the greatest, How perfect He is, The One Who has placed this (transport) at our service, and we ourselves would not have been capable of that, and to our Lord is our final destiny. O Allah, we ask You for birr and taqwa in this journey of ours, and we ask You for deeds which please You. O Allah, facilitate our journey and let us cover its distance quickly. O Allah, You are The Companion on the journey and The Successor over the family, O Allah, I take refuge with You from the difficulties of travel, from having a change of hearts and being in a bad predicament, and I take refuge in You from an ill fated outcome with wealth and family.",
+        "transliteration": "Allahu akbar, Allahu akbar, Allahu akbar, subhanal-ladhi sakhkhara lana hadha wa ma kunna lahu muqrinin, wa inna ila rabbina lamunqalibun. Allahumma inna nas'aluka fi safarina hadhal-birra wat-taqwa, wa minal-'amali ma tarda. Allahumma hawwin 'alayna safarana hadha, watwi 'anna bu'dahu. Allahumma antas-sahibu fis-safar, wal-khalifatu fil-ahl. Allahumma inni a'udhu bika min wa'tha'is-safar, wa ka'abatil-mandhar, wa su'il-munqalabi fil-mali wal-ahl. Ayibun, ta'ibun, 'abidun, li rabbina hamidun.",
         "reference": "Muslim 2/978.",
         "benefits": "This supplication has two parts. The first is praise of Allah and the submission of the servant. The second is a request to Allah for ease in travel and in the affairs of what the servant has left at home.",
-        "context": "birr and taqwa: two comprehensive terms which individually, refer to all good actions and obedience i.e. performing the commanded actions and avoiding the prohibited actions. When combined together, birr refers to doing those actions which have been commanded and taqwa refers to avoiding those actions which have been prohibited.\nA successor: one who succeeds another due to the latter’s absence or death. This is the correct meaning of the word khaleefah; thus, it is incorrect to believe that Adam is the khaleefah (vicegerent, as is commonly translated) of Allah on earth because Allah is never absent, and will never die. This supplication proves the correct understanding of this term and shows that Allah succeeds us and guards whom we leave behind when we die or are absent.\nupon returning the same supplication is recited with the following addition: (We return, repent, worship and praise our Lord."
+        "context": "Birr and taqwa: two comprehensive terms which individually refer to all good actions and obedience, i.e. performing the commanded actions and avoiding the prohibited actions. When combined together, birr refers to doing those actions which have been commanded and taqwa refers to avoiding those actions which have been prohibited. A successor (khalifah): one who succeeds another due to the latter's absence or death. This is the correct meaning of the word khalifah; thus, it is incorrect to believe that Adam is the khalifah (vicegerent, as is commonly translated) of Allah on earth because Allah is never absent, and will never die. This supplication proves the correct understanding of this term and shows that Allah succeeds us and guards whom we leave behind when we die or are absent. Upon returning, the same supplication is recited with the following addition: \"We return, repent, worship and praise our Lord.\""
       }
     ],
     "invocation-for-entering-a-town-or-city": [
@@ -2813,8 +2836,8 @@
         "id": "hisn-208",
         "arabic": "اللَّهُمَّ رَبَّ السَّمَوَاتِ السَّبْعِ وَمَا أَظْلَلْنَ، وَرَبَّ الأَرَضِينَ السَّبْعِ وَمَا أَقْلَلْنَ، وَرَبَّ الشَّياطِينِ وَمَا أَضْلَلْنَ، وَرَبَّ الرِّيَاحِ وَمَا ذَرَيْنَ، أَسْأَلُكَ خَيْرَ هَذِهِ الْقَرْيَةِ، وَخَيْرَ أَهْلِهَا، وَخَيْرَ مَا فِيهَا، وَأَعُوذُ بِكَ مِنْ شَرِّهَا، وَشَرِّ أَهْلِهَا، وَشَرِّ مَا فِيهَا",
         "translation": "O Allah, Lord of the seven heavens and all that they envelop, Lord of the seven earths and all that they carry, Lord of the devils and all whom they misguide, Lord of the winds and all whom they whisk away. I ask You for the goodness of this village, the goodness of its inhabitants and for all the goodness found within it and I take refuge with You from the evil of this village, the evil of its inhabitants and from all the evil found within it.",
-        "transliteration": "Allahumma rabbas-samawatis-sabAAi wama athlaln, warabbal-aradeenas-sabAAi wama aqlaln, warabbash-shayateeni wama adlaln, warabbar-riyahi wama tharayn, as-aluka khayra hathihil-qaryah, wakhayra ahlilha wakhayra ma feeha, wa-aAAoothu bika min sharriha washarri ahliha, washarri ma feeha.",
-        "reference": "Al-Hakim who graded it authentic and Ath-Tfaahabi agreed 2/100, and Ibn As-Sunni (no. 524). Al-Hafidh graded it good in his checking of Al-'Athkdr 5/154. Ibn Baz said in Tuhfatul-'Akhydr p. 37, that An-Nasa'i recorded it with a good chain of narration."
+        "transliteration": "Allahumma rabbas-samawatis-sab'i wa ma adhlaln, wa rabbal-aradiinas-sab'i wa ma aqlaln, wa rabbash-shayatini wa ma adlaln, wa rabbar-riyahi wa ma dharayn. As'aluka khayra hadhihil-qaryah, wa khayra ahliha, wa khayra ma fiha, wa a'udhu bika min sharriha, wa sharri ahliha, wa sharri ma fiha.",
+        "reference": "Al-Hakim who graded it authentic and Ath-Thahabi agreed 2/100, and Ibn As-Sunni (no. 524). Al-Hafidh graded it good in his checking of Al-Athkar 5/154. Ibn Baz said in Tuhfatul-'Akhyar p. 37, that An-Nasa'i recorded it with a good chain of narration."
       }
     ],
     "invocation-for-entering-a-market": [
@@ -2822,7 +2845,7 @@
         "id": "hisn-209",
         "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، يُحْيِي وَيُمِيتُ، وَهُوَ حَيٌّ لاِ يَمُوتُ، بِيَدِهِ الْخَيْرُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",
         "translation": "None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise. He gives life and causes death, and He is living and does not die. In His hand is all good and He is over all things, omnipotent.",
-        "transliteration": "La ilaha illal-lah, wahdahu la shareeka lah, lahul-mulku walahul-hamd, yuhyee wayumeetu wahuwa hayyun la yamoot, biyadihil-khayru wahuwa AAala kulli shayin qadeer.",
+        "transliteration": "La ilaha illallah, wahdahu la sharika lah, lahul-mulku wa lahul-hamd, yuhyi wa yumit, wa huwa hayyun la yamut, biyadihil-khayru wa huwa 'ala kulli shay'in qadir.",
         "reference": "At-Tirmidhi 5/291, and Al-Hakim 1/538. Al-Albani graded it good in Sahih Ibn Majah 2/21 and Sahih At-Tirmidhi 3/152."
       }
     ],
@@ -2831,7 +2854,7 @@
         "id": "hisn-210",
         "arabic": "بِسْمِ اللَّهِ",
         "translation": "In the name of Allah.",
-        "transliteration": "Bismil-lah.",
+        "transliteration": "Bismillah.",
         "reference": "Abu Dawud 4/296. Al-Albani graded it authentic in Sahih Abu Dawud 3/941."
       }
     ],
@@ -2840,7 +2863,7 @@
         "id": "hisn-211",
         "arabic": "أَسْتَوْدِعُكُمُ اللَّهَ الَّذِي لاَ تَضِيعُ وَدَائِعُهُ",
         "translation": "I place you in the trust of Allah, whose trust is never misplaced.",
-        "transliteration": "AstawdiAAukumul-lah, allathee la tadeeAAu wada-iAAuh.",
+        "transliteration": "Astawdi'ukumullah, alladhi la tadi'u wada'i'uh.",
         "reference": "Ahmad 2/403, Ibn Majah 2/943. See also Al-Albani, Sahih Ibn Majah 2/133."
       }
     ],
@@ -2849,14 +2872,14 @@
         "id": "hisn-212",
         "arabic": "أَسْتَوْدِعُ اللَّهَ دِينَكَ، وَأَمَانَتَكَ، وَخَوَاتِيمَ عَمَلِكَ",
         "translation": "I place your religion, your faithfulness and the ends of your deeds in the trust of Allah.",
-        "transliteration": "AstawdiAAul-laha deenak, wa-amanatak, wakhawateema AAamalik.",
+        "transliteration": "Astawdi'ullaha dinak, wa amanatak, wa khawatima 'amalik.",
         "reference": "Ahmad 2/7, At-Tirmidhi 5/499. See also Al-Albani, Sahih At-Tirmidhi 2/155."
       },
       {
         "id": "hisn-213",
         "arabic": "زَوَّدَكَ اللَّهُ التَّقْوَى، وَغَفَرَ ذَنْبَكَ، وَيَسَّرَ لَكَ الخَيْرَ حَيْثُ ما كُنْتَ",
         "translation": "May Allah endow you with taqwa, forgive your sins and facilitate all good for you, wherever you be.",
-        "transliteration": "Zawwadakal-lahut-taqwa, waghafara thanbak, wayassara lakal-khayra haythuma kunt.",
+        "transliteration": "Zawwadakallahut-taqwa, wa ghafara dhanbak, wa yassara lakal-khayra haythuma kunt.",
         "reference": "At-Tirmidhi. See Al-Albani, Sahih At-Tirmidhi, 3/155.",
         "context": "taqwa: a comprehensive term which refers to all good actions and obedience i.e. performing the commanded actions and avoiding the prohibited actions."
       }
@@ -2864,9 +2887,11 @@
     "glorifying-and-magnifying-allah-on-the-journey": [
       {
         "id": "hisn-214",
-        "arabic": "قَالَ جَابِرٌ رضي الله عنه: ((كُنَّا إِذَا صَعَدْنَا كَبَّرْنَا، وَإِذَا نَزَلْنَا سَبَّحْنَا)).",
-        "translation": "Jabir said: Whenever we went up a hill we would say Allahu 'Akber (Allah is the Most Great) and when we descended we would say Subhaanallaah (Glory is to Allah)",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 6/135."
+        "arabic": "قَالَ جَابِرٌ رضي الله عنه: كُنَّا إِذَا صَعَدْنَا كَبَّرْنَا، وَإِذَا نَزَلْنَا سَبَّحْنَا.",
+        "translation": "Jabir said: Whenever we went up a hill we would say Allahu Akbar (Allah is the Most Great) and when we descended we would say Subhanallah (Glory is to Allah).",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 6/135.",
+        "transliteration": "Allahu akbar. Subhanallah.",
+        "context": "Allahu Akbar is said when ascending and Subhanallah when descending."
       }
     ],
     "the-traveler-s-invocation-at-dawn": [
@@ -2874,8 +2899,9 @@
         "id": "hisn-215",
         "arabic": "سَمَّعَ سَامِعٌ بِحَمْدِ اللَّهِ، وَحُسْنِ بَلاَئِهِ عَلَيْنَا، رَبَّنَا صاحِبْنَا، وَأَفْضِلْ عَلَيْنَا، عَائِذاً بِاللَّهِ مِنَ النَّارِ",
         "translation": "May a witness, be witness to our praise of Allah for His favours and bounties upon us. Our Lord, protect us, show favour on us and deliver us from every evil. I take refuge in Allah from the fire.",
-        "transliteration": "SamiAAa samiAAun bihamdil-lahi wahusni bala-ihi AAalayna. Rabbana sahibna wa-afdil AAalayna AAa-ithan billahi minan-nar.",
-        "reference": "Muslim 4/2086, the meaning of sami`a sāmi`un (who listens has heard) is that 'a witness has witnessed our praise of Allah due to His blessings and favor upon us.' It could also be read samma`a sāmi`un, in which case it means 'one who has heard this statement of mine will convey it to another and he will say it as well.' This is due to the attention given to the Thikr (remembrance of Allah) and supplications made during the early morning hours. The meaning of his saying 'Our Lord, be with us and bestow Your favor upon us' is: 'Our Lord, protect us and guard us. Bless us with Your numerous bounties, and avert from us every evil.' See An-Nawawi, Sharh Sahih Muslim 17/39."
+        "transliteration": "Sami'a sami'un bihamdillahi wa husni bala'ihi 'alayna. Rabbana sahibna wa afdil 'alayna, 'a'idhan billahi minan-nar.",
+        "reference": "Muslim 4/2086.",
+        "context": "The meaning of sami'a sami'un (who listens has heard) is that 'a witness has witnessed our praise of Allah due to His blessings and favor upon us.' It could also be read samma'a sami'un, in which case it means 'one who has heard this statement of mine will convey it to another and he will say it as well.' This is due to the attention given to the dhikr (remembrance of Allah) and supplications made during the early morning hours. The meaning of his saying 'Our Lord, be with us and bestow Your favor upon us' is: 'Our Lord, protect us and guard us. Bless us with Your numerous bounties, and avert from us every evil.' See An-Nawawi, Sharh Sahih Muslim 17/39."
       }
     ],
     "invocation-for-a-layover-stopping-along-the-way-on-the-journey": [
@@ -2883,7 +2909,7 @@
         "id": "hisn-216",
         "arabic": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",
         "translation": "I take refuge in Allah’s perfect words from the evil that He has created.",
-        "transliteration": "aAAoothu bikalimatil-lahit-tammati min sharri ma khalaq.",
+        "transliteration": "A'udhu bikalimatillahit-tammati min sharri ma khalaq.",
         "reference": "Muslim 4/2080."
       }
     ],
@@ -2891,70 +2917,72 @@
       {
         "id": "hisn-217",
         "arabic": "يُكَبِّرُ عَلَى كُلِّ شَرَفٍ ثَلاَثَ تَكْبِيرَاتٍ ثُمَّ يَقُولُ: لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، آيِبُونَ، تَائِبُونَ، عَابِدُونَ، لِرَبِّنا حَامِدُونَ، صَدَقَ اللَّهُ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ الْأَحْزابَ وَحْدَهُ",
-        "translation": "Ibn AAumar reported that the Messenger of Allah on return from a battle or from performing the pilgrimage would say at every high point: (Allah is the greatest, Allah is the greatest, Allah is the greatest.) and then he would say: (None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise, and He is over all things omnipotent. We return, repent, worship and praise our Lord. Allah fulfilled His promise, aided His Servant, and single-handedly defeated the allies.)",
-        "transliteration": "Ibn AAumar reported that the Messenger of Allah on return from a battle or from performing the pilgrimage would say at every high point: (Allahu akbar, Allahu akbar, Allahu akbar.) and then he would say: (La ilaha illal-lahu wahdahu la shareeka lah, lahul-mulku walahul-hamd, wahuwa AAala kulli shay-in qadeer, ayiboona ta-iboon, AAabidoon, lirabbina hamidoon, sadaqal-lahu waAAdah, wanasara AAabdah, wahazamal-ahzaba wahdah.",
-        "reference": "Bukhari 7/163, Muslim 2/980. The Prophet (ﷺ) used to say this when returning from a campaign or from Hajj."
+        "translation": "Allah is the greatest, Allah is the greatest, Allah is the greatest. None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise, and He is over all things omnipotent. We return, repent, worship and praise our Lord. Allah fulfilled His promise, aided His Servant, and single-handedly defeated the allies.",
+        "transliteration": "Allahu akbar, Allahu akbar, Allahu akbar. La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamd, wa huwa 'ala kulli shay'in qadir. Ayibun, ta'ibun, 'abidun, li rabbina hamidun. Sadaqallahu wa'dahu, wa nasara 'abdahu, wa hazamal-ahzaba wahdahu.",
+        "reference": "Al-Bukhari 7/163, Muslim 2/980.",
+        "context": "Ibn Umar reported that the Messenger of Allah, on return from a battle or from performing the pilgrimage, would say this at every high point."
       }
     ],
     "what-to-say-if-something-happens-to-please-you-or-to-displease-you": [
       {
         "id": "hisn-218",
-        "arabic": "كَانَ النَّبِيُّ صلى الله عليه وسلم إِذَا أَتَاهُ الْأَمْرُ يَسُرُّهُ قَالَ: ((الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ)) وَإِذَا أَتَاهُ الْأَمْرُ يَكْرَهُهُ قَالَ: ((الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ)).",
-        "translation": "When something happened that pleased him, the Prophet used to say:((Alhamdu lillaahil-lathee bini'matihi tatimmuus-saalihaat)). Praise is to Allah Who by His blessings all good things are perfected. And if something happened that displeased him, he used to say:((Alhamdulillaahi 'alaa kulli haal)).Praise is to Allah in all circumstances.",
-        "transliteration": "When something happened that pleased him, the Prophet used to say:((Alhamdu lillaahil-lathee bini'matihi tatimmuus-saalihaat)).And if something happened that displeased him, he used to say:((Alhamdulillaahi 'alaa kulli haal)).",
+        "arabic": "كَانَ النَّبِيُّ صلى الله عليه وسلم إِذَا أَتَاهُ الْأَمْرُ يَسُرُّهُ قَالَ: الْحَمْدُ لِلَّهِ الَّذِي بِنِعْمَتِهِ تَتِمُّ الصَّالِحَاتُ وَإِذَا أَتَاهُ الْأَمْرُ يَكْرَهُهُ قَالَ: الْحَمْدُ لِلَّهِ عَلَى كُلِّ حَالٍ.",
+        "translation": "Praise is to Allah Who by His blessings all good things are perfected. Praise is to Allah in all circumstances.",
+        "transliteration": "Alhamdulillahil-ladhi bi ni'matihi tatimmus-salihat. Alhamdulillahi 'ala kulli hal.",
         "reference": "Ibn As-Sunni, 'Amalul-Yawm wal-Laylah, and Al-Hakim who graded it authentic 1/499. See also Al-Albani, Sahihul-Jami' As-Saghir 4/201.",
-        "benefits": "Aisha radhiyallahu 'anha said, Rasulullah sallallahu 'alayhi wa sallam when he saw something he liked, he read the sentence above."
+        "benefits": "Aisha radhiyallahu 'anha said, Rasulullah sallallahu 'alayhi wa sallam when he saw something he liked, he read the sentence above.",
+        "context": "When something pleasing happened, the Prophet would say the first phrase. When something displeasing happened, he would say the second phrase."
       }
     ],
     "the-excellence-of-asking-for-allah-s-blessings-upon-the-prophet-pbuh": [
       {
         "id": "hisn-219",
-        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: ((مَنْ صَلَّى عَلَيَّ صَلاَةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْراً)).",
-        "translation": "The Prophet ((PBUH)) said: ‘Whoever sends a prayer upon me, Allah sends ten upon him.",
+        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: مَنْ صَلَّى عَلَيَّ صَلاَةً صَلَّى اللَّهُ عَلَيْهِ بِهَا عَشْراً.",
+        "translation": "The Prophet (sallallahu 'alayhi wa sallam) said: 'Whoever sends a prayer upon me, Allah sends ten upon him.'",
         "reference": "Muslim 1/288."
       },
       {
         "id": "hisn-220",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((لاَ تَجْعَلُوا قَبْرِي عِيداً وَصَلُّوا عَلَيَّ؛ فَإِنَّ صَلاَتَكُم تَبْلُغُنِي حَيْثُ كُنْتُمْ)).",
-        "translation": "He ((PBUH)) also said: ‘Do not take my grave as a place of habitual ceremony. Send prayers upon me, for verily your prayers reach me wherever you are.",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: لاَ تَجْعَلُوا قَبْرِي عِيداً وَصَلُّوا عَلَيَّ؛ فَإِنَّ صَلاَتَكُم تَبْلُغُنِي حَيْثُ كُنْتُمْ.",
+        "translation": "He (sallallahu 'alayhi wa sallam) also said: 'Do not take my grave as a place of habitual ceremony. Send prayers upon me, for verily your prayers reach me wherever you are.'",
         "reference": "Abu Dawud 2/218, Ahmad 2/367. Al-Albani graded it authentic in Sahih Abu Dawud 2/383."
       },
       {
         "id": "hisn-221",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((الْبَخِيلُ مَنْ ذُكِرْتُ عِنْدَهُ فَلَمْ يُصَلِّ عَلَيَّ)).",
-        "translation": "He ((PBUH)) also said: ‘A miser is one whom when I am mentioned to him, fails to send prayers upon me.",
-        "reference": "At-Tirmidhi 5/551 and others. See also Al-Albani, Sahih At-Tirmidhi 3/177 and Sahihul-Jarai' As-Saghir 3/25."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: الْبَخِيلُ مَنْ ذُكِرْتُ عِنْدَهُ فَلَمْ يُصَلِّ عَلَيَّ.",
+        "translation": "He (sallallahu 'alayhi wa sallam) also said: 'A miser is one whom when I am mentioned to him, fails to send prayers upon me.'",
+        "reference": "At-Tirmidhi 5/551 and others. See also Al-Albani, Sahih At-Tirmidhi 3/177 and Sahihul-Jami' As-Saghir 3/25."
       },
       {
         "id": "hisn-222",
-        "arabic": "وَقَالَ صلى الله عليه وسلم:((إِنَّ لِلَّهِ مَلاَئِكَةً سَيَّاحِينَ فِي الْأَرْضِ يُبَلِّغُونِي مِنْ أُمَّتِي السَّلاَمَ)).",
-        "translation": "The Prophet [(PBUH)] said:'Indeed Allah has angels who roam the earth and they convey to me the greetings (or prayers of peace) of my 'Ummah (nation).",
+        "arabic": "وَقَالَ صلى الله عليه وسلم:إِنَّ لِلَّهِ مَلاَئِكَةً سَيَّاحِينَ فِي الْأَرْضِ يُبَلِّغُونِي مِنْ أُمَّتِي السَّلاَمَ.",
+        "translation": "The Prophet (sallallahu 'alayhi wa sallam) said: 'Indeed Allah has angels who roam the earth and they convey to me the greetings (or prayers of peace) of my Ummah (nation).'",
         "reference": "An-Nasa'i, Al-Hakim 2/421. Al-Albani graded it authentic in Sahih An-Nasa'i 1/274."
       },
       {
         "id": "hisn-223",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((مَا مِنْ أَحَدٍ يُسَلِّمُ عَلَيَّ إِلاَّ رَدَّ اللَّهُ عَلَيَّ رُوحِيَ حَتَّى أَرُدَّ عَلَيْهِ السَّلاَمَ)).",
-        "translation": "The Prophet [(PBUH)] said: 'No one sends greetings (or prayers of peace) upon me but Allah returns my soul to me so that I may return his greetings",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: مَا مِنْ أَحَدٍ يُسَلِّمُ عَلَيَّ إِلاَّ رَدَّ اللَّهُ عَلَيَّ رُوحِيَ حَتَّى أَرُدَّ عَلَيْهِ السَّلاَمَ.",
+        "translation": "The Prophet (sallallahu 'alayhi wa sallam) said: 'No one sends greetings (or prayers of peace) upon me but Allah returns my soul to me so that I may return his greetings.'",
         "reference": "Abu Dawud (no. 2041). Al-Albani graded it good in Sahih Abu Dawud 1/383."
       }
     ],
     "spreading-the-greetings-of-salam-peace": [
       {
         "id": "hisn-224",
-        "arabic": "قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم: ((لاَ تَدْخُلُوا الْجَنَّةَ حَتَّى تُؤْمِنُوا، وَلاَ تُؤْمِنُوا حَتَّى تَحَابُّوا، أَوَلاَ أَدُلُّكُم عَلَى شَيْءٍ إِذَا فَعَلْتُمُوهُ تَحَابَبْتُم، أَفْشُوا السَّلاَمَ بَيْنَكُمْ)).",
-        "translation": "The Messenger of Allah said: ‘You shall not enter paradise until you believe, and you shall not believe until you love one another. Shall I not inform you of something, if you were to act upon it, you will indeed achieve mutual love for one another? Spread the greeting amongst yourselves.",
+        "arabic": "قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم: لاَ تَدْخُلُوا الْجَنَّةَ حَتَّى تُؤْمِنُوا، وَلاَ تُؤْمِنُوا حَتَّى تَحَابُّوا، أَوَلاَ أَدُلُّكُم عَلَى شَيْءٍ إِذَا فَعَلْتُمُوهُ تَحَابَبْتُم، أَفْشُوا السَّلاَمَ بَيْنَكُمْ.",
+        "translation": "The Messenger of Allah said: ‘You shall not enter paradise until you believe, and you shall not believe until you love one another. Shall I not inform you of something, if you were to act upon it, you will indeed achieve mutual love for one another? Spread the greeting amongst yourselves.'",
         "reference": "Muslim 1/74 and others."
       },
       {
         "id": "hisn-225",
         "arabic": "ثَلاَثٌ مَنْ جَمَعَهُنَّ فَقَدْ جَمَعَ الْإِيمَانَ: الْإِنْصَافُ مِنْ نَفْسِكَ، وَبَذْلُ السَّلاَمِ لِلْعَالَمِ، وَالْإِنْفَاقُ مِنَ الإِقْتَارِ",
-        "translation": "Aammar said: ‘Three characteristics, whoever combines them, has completed his faith: to be just, to spread greetings to all people and to spend (charitably) out of the little you have.",
+        "translation": "Ammar said: 'Three characteristics, whoever combines them, has completed his faith: to be just, to spread greetings to all people and to spend (charitably) out of the little you have.'",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 1/82 as a statement of the Companion 'Ammar (RA)."
       },
       {
         "id": "hisn-226",
-        "arabic": "وَعَنْ عَبْدِ اللَّهِ بْنِ عُمَرَ رَضِيَ اللَّهُ عَنْهُمَا: أنَّ رَجُلاً سَأَلَ النَّبِيَّ صلى الله عليه وسلم أيُّ الْإِسْلاَمِ خَيْرٌ قَالَ: ((تُطْعِمُ الطَّعَامَ، وَتَقْرأُ السَّلاَمَ عَلَى مَنْ عَرَفْتَ وَمَنْ لَمْ تَعْرِفْ)).",
-        "translation": "Aabdullah Ibn Aamr reported that a man asked the Prophet : ‘Which Islam is the best?’. He replied: Feed (the poor), and greet those whom you know as well as those whom you do not.",
+        "arabic": "وَعَنْ عَبْدِ اللَّهِ بْنِ عُمَرَ رَضِيَ اللَّهُ عَنْهُمَا: أنَّ رَجُلاً سَأَلَ النَّبِيَّ صلى الله عليه وسلم أيُّ الْإِسْلاَمِ خَيْرٌ قَالَ: تُطْعِمُ الطَّعَامَ، وَتَقْرأُ السَّلاَمَ عَلَى مَنْ عَرَفْتَ وَمَنْ لَمْ تَعْرِفْ.",
+        "translation": "Abdullah ibn Amr reported that a man asked the Prophet: 'Which Islam is the best?' He replied: 'Feed (the poor), and greet those whom you know as well as those whom you do not.'",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 1/55, Muslim 1/65."
       }
     ],
@@ -2962,8 +2990,9 @@
       {
         "id": "hisn-227",
         "arabic": "إذَا سَلَّمَ عَلَيْكُمْ أَهْلُ الْكِتَابِ فَقُولُوا: وَعَلَيْكُمْ",
-        "translation": "When the people of the Book greet you, reply by saying: (And upon you.)",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/42, Muslim 4/1705."
+        "translation": "When the people of the Book greet you, reply by saying: And upon you.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/42, Muslim 4/1705.",
+        "transliteration": "Wa 'alaykum."
       }
     ],
     "invocation-upon-hearing-the-cock-s-crow-or-the-bray-of-a-donkey": [
@@ -2985,17 +3014,17 @@
     "invocation-for-someone-you-have-spoken-ill-to": [
       {
         "id": "hisn-230",
-        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: ((اللَّهُمَّ فَأَيُّمَا مُؤْمِنٍ سَبَبْتُهُ فَاجْعَلْ ذَلِكَ لَهُ قُرْبَةً إِلَيْكَ يَوْمَ الْقِيَامَةِ)).",
+        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: اللَّهُمَّ فَأَيُّمَا مُؤْمِنٍ سَبَبْتُهُ فَاجْعَلْ ذَلِكَ لَهُ قُرْبَةً إِلَيْكَ يَوْمَ الْقِيَامَةِ.",
         "translation": "O Allah, to any believer whom I have insulted, let that be cause to draw him near to You on the Day of Resurrection.",
-        "transliteration": "Allahumma fa-ayyuma mu/minin sababtuhu fajAAal thalika lahu qurbatan ilayka yawmal-qiyamah.",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/171, Muslim 4/2007. The wording in Muslim's report is: 'make it a purification for him and a source of mercy."
+        "transliteration": "Allahumma fa ayyuma mu'minin sababtuhu faj'al dhalika lahu qurbatan ilayka yawmal-qiyamah.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/171, Muslim 4/2007. The wording in Muslim's report is: 'make it a purification for him and a source of mercy.\""
       }
     ],
     "how-a-muslim-should-praise-another-muslim": [
       {
         "id": "hisn-231",
-        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: ((إِذَا كَانَ أَحَدُكُم مَادِحاً صَاحِبَهُ لاَ مَحَالَةَ فَلْيَقُلْ: أَحْسِبُ فُلاَناً وَاللَّهُ حَسِيبُهُ، وَلاَ أُزَكِّي عَلَى اللَّهِ أَحَداً، أَحْسِبُهُ – إِنْ كَانَ يَعْلَمُ ذَاكَ – كَذَا وَكَذَا)).",
-        "translation": "He said: ‘If anyone of you is impelled to praise his brother, then he should say: ‘I deem so-and-so to be…and Allah is his reckoner…and I don’t praise anyone, putting it (i.e. my praising) forward, in front of Allah’s commendation, however I assume him so and so’…if he knows that of him.",
+        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: إِذَا كَانَ أَحَدُكُم مَادِحاً صَاحِبَهُ لاَ مَحَالَةَ فَلْيَقُلْ: أَحْسِبُ فُلاَناً وَاللَّهُ حَسِيبُهُ، وَلاَ أُزَكِّي عَلَى اللَّهِ أَحَداً، أَحْسِبُهُ – إِنْ كَانَ يَعْلَمُ ذَاكَ – كَذَا وَكَذَا.",
+        "translation": "He said: 'If anyone of you is impelled to praise his brother, then he should say: I deem so-and-so to be such and such, and Allah is his reckoner, and I don't praise anyone, putting it (i.e. my praising) forward, in front of Allah's commendation, however I assume him so and so - if he knows that of him.'",
         "reference": "Muslim 4/2296."
       }
     ],
@@ -3004,8 +3033,8 @@
         "id": "hisn-232",
         "arabic": "اللَّهُمَّ لاَ تُؤَاخِذْنِي بِمَا يَقُولُونَ، وَاغْفِرْ لِي مَا لاَ يَعْلَمُونَ، [وَاجْعَلْنِي خَيْراً مِمَّا يَظُّنُّونَ]",
         "translation": "O Allah, do not call me to account for what they say and forgive me for what they have no knowledge of [and make me better than they imagine].",
-        "transliteration": "Allaahumma laa tu'aakhithnee bimaa yaqooloona, waghfir lee maa laa ya'lamoona [waj'alnee khayram-mimmaa yadhunnoon]",
-        "reference": "Al-Bukhari, Al-'Adabul-Mufrad no. 761. See Al-Albani, Sahih Al-'Adabul-Mufrad (no. 585). The portion between brackets if from Al-Bayhaqi, Shu'ab Al-Iman 4/228, and comes another account."
+        "transliteration": "Allahumma la tu'akhidhni bima yaqulun, waghfir li ma la ya'lamun, [waj'alni khayram-mimma yadhunnun].",
+        "reference": "Al-Bukhari, Al-'Adabul-Mufrad no. 761. See Al-Albani, Sahih Al-'Adabul-Mufrad (no. 585). The portion between brackets if from Al-Bayhaqi, Shu'ab Al-Iman 4/228, and comes from another account."
       }
     ],
     "the-pilgrim-s-announcement-of-his-arrival-for-hajj-or-umrah": [
@@ -3013,7 +3042,7 @@
         "id": "hisn-233",
         "arabic": "لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لاَ شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ، وَالنِّعْمَةَ، لَكَ وَالْمُلْكَ، لاَ شَرِيكَ لَكَ",
         "translation": "Here I am O Allah, (in response to Your call), here I am. Here I am, You have no partner, here I am. Verily all praise, grace and sovereignty belong to You. You have no partner.",
-        "transliteration": "Labbaykal-lahumma labbayk, labbayka la shareeka laka labbayk, innal-hamda wanniAAmata laka walmulk, la shareeka lak.",
+        "transliteration": "Labbaykal-lahumma labbayk, labbayka la sharika laka labbayk, innal-hamda wan-ni'mata laka wal-mulk, la sharika lak.",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 3/408, Muslim 2/841."
       }
     ],
@@ -3021,44 +3050,49 @@
       {
         "id": "hisn-234",
         "arabic": "طَافَ النَّبيُّ صلى الله عليه وسلم بِالْبَيْتِ عَلَى بَعِيرٍ كُلَّمَا أَتَى الرُّكْنَ أَشَارَ إِلَيْهِ بِشَيْءٍ عِنْدَهُ وَكَبَّرَ",
-        "translation": "The Prophet circled the KaAAbah on a camel, every time he reached the black stone he would point to it with his staff and say: (Allah is the greatest)",
-        "transliteration": "The Prophet circled the KaAAbah on a camel, every time he reached the black stone he would point to it with his staff and say: (Allahu akbar",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 3/476. See also 472. The 'something' that was referred to in this Hadith was a cane."
+        "translation": "The Prophet circled the Ka'bah on a camel. Every time he reached the Black Stone he would point to it with his staff and say: Allahu Akbar (Allah is the greatest).",
+        "transliteration": "Allahu akbar.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 3/476. See also 472. The 'something' that was referred to in this Hadith was a cane.",
+        "context": "The Prophet circled the Ka'bah on a camel. Every time he reached the Black Stone he would point to it with his staff and say Allahu Akbar. The 'something' referred to in the hadith was a cane."
       }
     ],
     "invocation-to-be-recited-between-the-yemenite-corner-and-the-black-stone": [
       {
         "id": "hisn-235",
         "arabic": "﴿رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ﴾",
-        "translation": "The Prophet (PBUH) used to say between the Yemeni corner and the black stone: (O our Lord, grant us the best in this life and the best in the next life, and protect us from the punishment of the Fire.)",
-        "transliteration": "The Prophet (PBUH) used to say between the Yemeni corner and the black stone: (Rabbana atina fee alddunya hasanatan wafee al-akhirati hasanatan waqina AAathaba alnnar)[Al-Baqarah: 201]",
+        "translation": "O our Lord, grant us the best in this life and the best in the next life, and protect us from the punishment of the Fire.",
+        "transliteration": "Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina 'adhaban-nar.",
         "reference": "Abu Dawud 2/179, Ahmad 3/411, Al-Baghawi, Sharhus-Sunnah 7/128. Al-Albani graded it good in Sahih Abu Dawud 1/354. The Ayat is from Surat Al-Baqarah, 2:201.",
-        "benefits": "This dua is the dua most often said by the Prophet sallallahu 'alayhi wa sallam, as told by sahaba Anas bin Malik radhiallahu anhu."
+        "benefits": "This dua is the dua most often said by the Prophet sallallahu 'alayhi wa sallam, as told by sahaba Anas bin Malik radhiallahu anhu.",
+        "context": "The Prophet (sallallahu 'alayhi wa sallam) used to say this between the Yemeni corner and the Black Stone. (Al-Baqarah 2:201)"
       }
     ],
     "invocation-to-be-recited-while-standing-at-safa-and-marwah": [
       {
         "id": "hisn-236",
-        "arabic": "لَمَّا دَنَا النَّبِيُّ صلى الله عليه وسلم مِنَ الصَّفَا قَرَأَ: ﴿إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَآئِرِ اللَّهِ﴾ أَبْدَأُ بِمَا بَدَأَ اللَّهُ بِهِ)) فَبَدَأَ بِالصَّفَا فَرَقِيَ عَلَيْهِ حَتَّى رَأَى الْبَيْتَ، فَاسْتَقْبَلَ الْقِبْلَةَ، فَوَحَّدَ اللَّهَ وَكبَّرَهُ وَقَالَ: ((لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ، أَنْجَزَ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ الْأَحْزَابَ وَحْدَهُ، ثُمَّ دَعَا بَيْنَ ذلكَ. قَالَ مِثْلَ هَذَا ثَلاَثَ مَرَّاتٍ)) الْحَدِيثُ. وَفِيهِ: ((فَفَعَلَ عَلَى الْمَرْوَةِ كَمَا فَعَلَ عَلَى الصَّفَا)).",
-        "translation": "Jabir said when describing the Prophet’s pilgrimage: ‘…and when he approached mount Safa he recited: (Indeed Safa and Marwah are from the places of worship of Allah…) (I begin with what Allah began with.) so he started with Safa and climed it until he could see the KaAAbah, he then faced it and said: (Allah is the greatest, Allah is the greatest, Allah is the greatest.) and then he would say the following three times making a supplication (one should make a personal supplication) after each time: (None has the right to be worshipped except Allah, alone, without partner.To Him belongs all sovereignty and praise and He is over all things amnipotent. None has the right to be worshipped except Allah alone. He fulfilled His promise, aided His Servant and single-handedly defeated the allies.)) (he would repeat this action at Marwah.",
-        "transliteration": "Jabir said when describing the Prophet’s pilgrimage: ‘…and when he approached mount Safa he recited: ( Innas-safa wa-almarwata min shaAAa-iri Allah ….) (Abda-o bima badaal-lahu bih.) so he started with Safa and climed it until he could see the KaAAbah, he then faced it and said: (Allahu akbar, Allahu akbar, Allahu akbar",
-        "reference": "Muslim 2/888."
+        "arabic": "لَمَّا دَنَا النَّبِيُّ صلى الله عليه وسلم مِنَ الصَّفَا قَرَأَ: ﴿إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَآئِرِ اللَّهِ﴾ أَبْدَأُ بِمَا بَدَأَ اللَّهُ بِهِ فَبَدَأَ بِالصَّفَا فَرَقِيَ عَلَيْهِ حَتَّى رَأَى الْبَيْتَ، فَاسْتَقْبَلَ الْقِبْلَةَ، فَوَحَّدَ اللَّهَ وَكبَّرَهُ وَقَالَ: لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ، أَنْجَزَ وَعْدَهُ، وَنَصَرَ عَبْدَهُ، وَهَزَمَ الْأَحْزَابَ وَحْدَهُ، ثُمَّ دَعَا بَيْنَ ذلكَ. قَالَ مِثْلَ هَذَا ثَلاَثَ مَرَّاتٍ الْحَدِيثُ. وَفِيهِ: فَفَعَلَ عَلَى الْمَرْوَةِ كَمَا فَعَلَ عَلَى الصَّفَا.",
+        "translation": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent. None has the right to be worshipped except Allah alone. He fulfilled His promise, aided His Servant and single-handedly defeated the allies.",
+        "transliteration": "La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamd, wa huwa 'ala kulli shay'in qadir. La ilaha illallahu wahdahu, anjaza wa'dahu, wa nasara 'abdahu, wa hazamal-ahzaba wahdahu.",
+        "reference": "Muslim 2/888.",
+        "repeat": 3,
+        "context": "When the Prophet approached mount Safa he recited: \"Indeed Safa and Marwah are from the places of worship of Allah\" and said: \"I begin with what Allah began with.\" He started with Safa and climbed it until he could see the Ka'bah, then faced it, declared the oneness of Allah and glorified Him. He said this three times, making a personal supplication between each. He repeated the same at Marwah."
       }
     ],
     "invocation-to-be-recited-on-the-day-of-arafat": [
       {
         "id": "hisn-237",
-        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: ((خَيْرُ الدُّعَاءِ دُعَاءُ يَوْمِ عَرَفَةَ، وَخَيْرُ مَا قُلْتُ أَنَا وَالنَّبيُّونَ مِنْ قَبْلِي: لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ)).",
-        "translation": "The best of supplications is the supplication on the day of AAarafah and the best which I and the Prophets before me have said (is): (None has the right to be worshipped except Allah, alone, without partner. To Him belongs all praise and sovereignty and He is over all things omnipotent.)",
-        "transliteration": "The best of supplications is the supplication on the day of AAarafah and the best which I and the Prophets before me have said (is): (La ilaha illal-lahu wahdahu la shareeka lah, lahul-mulku walahul-hamd, wahuwa AAala kulli shayin qadeer.",
-        "reference": "At-Tirmidhi. Al-Albani graded it good in Sahih At-Tirmidhi 3/184, and also Silsilatul-'Ahadith As-Sahihah 4/6."
+        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم: خَيْرُ الدُّعَاءِ دُعَاءُ يَوْمِ عَرَفَةَ، وَخَيْرُ مَا قُلْتُ أَنَا وَالنَّبيُّونَ مِنْ قَبْلِي: لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.",
+        "translation": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs all praise and sovereignty and He is over all things omnipotent.",
+        "transliteration": "La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamd, wa huwa 'ala kulli shay'in qadir.",
+        "reference": "At-Tirmidhi. Al-Albani graded it good in Sahih At-Tirmidhi 3/184, and also Silsilatul-'Ahadith As-Sahihah 4/6.",
+        "context": "The best of supplications is the supplication on the day of Arafah, and the best which the Prophet and the Prophets before him have said is this."
       }
     ],
     "supplication-to-be-recited-at-the-sacred-area-of-muzdalifah": [
       {
         "id": "hisn-238",
         "arabic": "رَكِبَ النَّبِيُّ صلى الله عليه وسلم الْقَصْوَاءَ حَتَّى أَتَى الْمَشْعَرَ الْحَرَامَ فَاسْتَقْبَلَ الْقِبْلَةَ (فَدَعَاهُ، وَكَبَّرَهُ، وَهَللَّهُ، وَوَحَّدَهُ) فَلَمْ يَزَلْ وَاقِفاً حَتَّى أَسْفَرَ جِدَّاً فَدَفَعَ قَبْلَ أَنْ تَطْلُعَ الشَّمسُ.",
-        "translation": "The Prophet rode his camel, Al-Qaswa, until he reached the sacred area (Al-Mash aril Haraam). Then he faced the Qiblah and invoked Allah, and repeatedly said the words: Allahu Akbar (Allah is the Most Great), Allahu Ahad (Allah is One) and Laa ilaaha illallaah (There is none worthy of worship but Allah). He remained stationary until the sky became yellow with the dawn, and then pressed on before sunrise.",
+        "translation": "The Prophet rode his camel, Al-Qaswa, until he reached the sacred area (Al-Mash'aril-Haram). Then he faced the Qiblah and invoked Allah, and repeatedly said the words: Allahu Akbar (Allah is the Most Great), Allahu Ahad (Allah is One) and La ilaha illallah (There is none worthy of worship but Allah). He remained stationary until the sky became yellow with the dawn, and then pressed on before sunrise.",
         "reference": "Muslim 2/891."
       }
     ],
@@ -3066,8 +3100,8 @@
       {
         "id": "hisn-239",
         "arabic": "يُكَبِّرُ كُلَّمَا رَمَى بِحَصَاةٍ عِنْدَ الْجِمَارِ الثَّلاَثِ، ثُمَّ يَتَقَدَّمُ، ويَقِفُ يَدْعُو مُسْتَقْبِلَ الْقِبلَةِ، رَافِعاً يَدَيْهِ بَعْدَ الْجَمْرَةِ الْأُولَى وَالثَّانِيَةِ. أَمَّا جَمْرَةُ الْعَقَبَةِ فَيَرْمِيهَا وَيُكَبِّرُ عِنْدَ كُلِّ حَصَاةٍ وَيَنْصَرِفُ وَلاَ يَقِفُ عِنْدَهَا",
-        "translation": "The Prophet (PBUH) said Allahu 'Akbar (Allah is the Most Great) with each pebble he threw at the three pillars. Then he went forward, stood facing the Qiblah and raised his hands and called upon Allah. That was after (stoning) the first and second pillar As for the third, he stoned it and called out Allahu Akbar with every pebble he threw but when he was finished he left without standing at it (for supplications).",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 3/581, 3, 4, and Muslim"
+        "translation": "The Prophet (sallallahu 'alayhi wa sallam) said Allahu Akbar (Allah is the Most Great) with each pebble he threw at the three pillars. Then he went forward, stood facing the Qiblah and raised his hands and called upon Allah. That was after (stoning) the first and second pillar. As for the third, he stoned it and called out Allahu Akbar with every pebble he threw, but when he was finished he left without standing at it (for supplications).",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 3/581, 3, 4, and Muslim."
       }
     ],
     "what-to-say-when-surprised-or-startled": [
@@ -3075,7 +3109,7 @@
         "id": "hisn-240",
         "arabic": "سُبْحَانَ اللَّهِ!",
         "translation": "How perfect Allah is.",
-        "transliteration": "Subhanal-lah!.",
+        "transliteration": "Subhanallah.",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 1/210, 390, 414 and Muslim 4/1857."
       },
       {
@@ -3090,7 +3124,7 @@
       {
         "id": "hisn-242",
         "arabic": "كَانَ النَّبيُّ صلى الله عليه وسلم إِذَا أَتَاهُ أَمْرٌ يَسُرُّهُ أَوْ يُسَرُّ بِهِ خَرَّ سَاجِداً شُكْراً لِلَّهِ تَبَارَكَ وَتَعَالَى",
-        "translation": "The Prophet (PBUH) would prostrate in gratitude to Allah upon receiving news which pleased him or which caused pleasure.",
+        "translation": "The Prophet (sallallahu 'alayhi wa sallam) would prostrate in gratitude to Allah upon receiving news which pleased him or which caused pleasure.",
         "reference": "Abu Dawud, Ibn Majah, At-Tirmidhi. See also Al-Albani, Sahih Ibn Majah 1/233, and 'Irwa'ul-Ghalil 2/226."
       }
     ],
@@ -3098,9 +3132,11 @@
       {
         "id": "hisn-243",
         "arabic": "ضَعْ يَدَكَ عَلَى الَّذِي تَألَّمَ مِنْ جَسَدِكَ وَقُلْ: بِسْمِ اللَّهِ، ثَلاَثاً، وَقُلْ سَبْعَ مَرَّاتٍ: أَعُوذُ بِاللَّهِ وَقُدْرَتِهِ مِنْ شَرِّ مَا أَجِدُ وَأُحَاذِرُ",
-        "translation": "Place your hand at the site of the pain and say: (In the name of Allah(three times)) the supplicate seven times: (I take refuge in Allah and within His omnipotence from the evil that I feel and am wary of.)",
-        "transliteration": "Place your hand at the site of the pain and say: (Bismil-lah (three times)) the supplicate seven times: (aAAoothu billahi waqudratih min sharri ma ajidu wa-ohathir.",
-        "reference": "Muslim 4/1728."
+        "translation": "Place your hand at the site of the pain and say: Bismillah (three times), then supplicate seven times: I take refuge in Allah and within His omnipotence from the evil that I feel and am wary of.",
+        "transliteration": "Bismillah. A'udhu billahi wa qudratih min sharri ma ajidu wa uhadhir.",
+        "reference": "Muslim 4/1728.",
+        "repeat": 7,
+        "context": "Bismillah is said three times while placing the hand on the site of pain, then the second part is said seven times."
       }
     ],
     "what-to-say-when-you-fear-you-may-afflict-something-with-the-evil-eye": [
@@ -3116,7 +3152,7 @@
         "id": "hisn-245",
         "arabic": "لاَ إِلَهَ إِلاَّ اللَّهُ!",
         "translation": "None has the right to be worshipped except Allah.",
-        "transliteration": "La ilaha illal-lah.",
+        "transliteration": "La ilaha illallah.",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 6/181, Muslim 4/2208.",
         "benefits": "By asking Allah to grant us well-being in our bodies, we ask to be healed from all physical and spiritual illnesses, so that we have a healthy body and a pure heart, and therefore use this healthy body in a way that pleases Allah."
       }
@@ -3126,8 +3162,8 @@
         "id": "hisn-246",
         "arabic": "بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ [اللَّهُمَّ مِنْكَ وَلَكَ] اللَّهُمَّ تَقَبَّلْ مِنِّي",
         "translation": "In the name of Allah, and Allah is the greatest. O Allah, (it is) from You and belongs to You, O Allah, accept this from me.",
-        "transliteration": "Bismil-lah wallahu akbar, allahumma minka walak, allahumma taqabbal minnee.",
-        "reference": "Muslim 3/ 1557, Al-Bayhaqi 9/287."
+        "transliteration": "Bismillah wallahu akbar, allahumma minka wa lak, allahumma taqabbal minni.",
+        "reference": "Muslim 3/1557, Al-Bayhaqi 9/287."
       }
     ],
     "what-to-say-to-foil-the-devil-s-plots": [
@@ -3135,137 +3171,149 @@
         "id": "hisn-247",
         "arabic": "أَعُوذُ بكَلِمَاتِ اللَّهِ التَّامَّاتِ الَّتِي لاَ يُجَاوِزُهُنَّ بَرٌّ وَلاَ فَاجِرٌ: مِنْ شَرِّ مَا خَلَقَ، وَبَرَأَ وَذَرَأَ، وَمِنْ شَرِّ مَا يَنْزِلُ مِنَ السَّمَاءِ، وَمِنْ شَرِّ مَا يَعْرُجُ فيهَا، وَمِنْ شَرِّ مَا ذَرَأَ فِي الْأَرْضِ، وَمِنْ شَرِّ مَا يَخْرُجُ مِنْهَا، وَمِنْ شَرِّ فِتَنِ اللَّيْلِ وَالنَّهَارِ، وَمِنْ شَرِّ كُلِّ طَارِقٍ إِلاَّ طَارِقاً يَطْرُقُ بِخَيْرٍ يَا رَحْمَنُ",
         "translation": "I take refuge within Allah’s perfect words which no righteous or unrighteous person can transgress, from all the evil that He has created, made and originated. (I take refuge) from the evil that descends from the sky and the evil that rises up to it. (I take refuge) from the evil that is spread on Earth and the evil that springs from her, and I take refuge from the evil of the tribulations of night and day, and the evil of one who visits at night except the one who brings good, O Merciful One.",
-        "transliteration": "aAAoothu bikalimatil-lahit-tammat, allatee la yujawizuhunna barrun wala fajir min sharri ma khalaq, wabaraa watharaa, wamin sharri ma yanzilu minas-sama/, wamin sharri ma yaAAruju feeha, wamin sharri ma tharaa fil-ard, wamin sharri ma yakhruju minha, wamin sharri fitnanil-layli wannahar, wamin sharri kulli tariqin illa tariqan yatruqu bikhayrin ya Rahman.",
+        "transliteration": "A'udhu bikalimatillahit-tammat, allati la yujawizuhunna barrun wa la fajir, min sharri ma khalaq, wa bara'a wa dhara'a, wa min sharri ma yanzilu minas-sama'i, wa min sharri ma ya'ruju fiha, wa min sharri ma dhara'a fil-ard, wa min sharri ma yakhruju minha, wa min sharri fitnanil-layli wan-nahar, wa min sharri kulli tariqin illa tariqan yatruqu bikhayrin ya Rahman.",
         "reference": "Ahmad 3/419, with an authentic chain of narration, and Ibn As-Sunni (no. 637). Al-Arna'ut, graded its chain authentic in his checking of Al-'Aqidah At-Tahawiyyah p. 133. See also Majma'uz-Zawa'id, 10/127."
       }
     ],
     "repentance-and-seeking-forgiveness": [
       {
         "id": "hisn-248",
-        "arabic": "قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم: ((وَاللَّهِ إِنِّي لأَسْتَغفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ فِي الْيَوْمِ أَكْثَرَ مِنْ سَبْعِينَ مَرَّةٍ)).",
-        "translation": "The Messenger of Allah said: ‘By Allah, I seek forgiveness and repent to Allah, more than seventy times a day.",
+        "arabic": "قَالَ رَسُولُ اللَّهِ صلى الله عليه وسلم: وَاللَّهِ إِنِّي لأَسْتَغفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ فِي الْيَوْمِ أَكْثَرَ مِنْ سَبْعِينَ مَرَّةٍ.",
+        "translation": "The Messenger of Allah said: 'By Allah, I seek forgiveness and repent to Allah, more than seventy times a day.'",
         "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/101."
       },
       {
         "id": "hisn-249",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((يَا أَيُّهَا النَّاسُ تُوبُوا إِلَى اللَّهِ فَإِنِّي أَتُوبُ فِي الْيَوْمِ إِلَيْهِ مِائَةَ مَرَّةٍ)).",
-        "translation": "He also said: ‘O People, Repent! Verily I repent to Allah, a hundred times a day.",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: يَا أَيُّهَا النَّاسُ تُوبُوا إِلَى اللَّهِ فَإِنِّي أَتُوبُ فِي الْيَوْمِ إِلَيْهِ مِائَةَ مَرَّةٍ.",
+        "translation": "He also said: 'O People, Repent! Verily I repent to Allah, a hundred times a day.'",
         "reference": "Muslim 4/2076."
       },
       {
         "id": "hisn-250",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((مَنْ قَالَ أَسْتَغْفِرُ اللَّهَ الْعَظيمَ الَّذِي لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ القَيّوُمُ وَأَتُوبُ إِلَيهِ، غَفَرَ اللَّهُ لَهُ وَإِنْ كَانَ فَرَّ مِنَ الزَّحْفِ)).",
-        "translation": "He also said: ‘Whoever says:(I seek Allah’s forgiveness, besides whom, none has the right to be worshipped except He, The Ever Living, The Self-Subsisting and Supporter of all, and I turn to Him in repentance.) Allah would forgive him even if he was one who fled during the advance of an army.",
-        "transliteration": "He also said: ‘Whoever says:(Astaghfirul-lahal-lathee la ilaha illa huwal-hayyul-qayyoomu wa-atoobu ilayh.) Allah would forgive him even if he was one who fled during the advance of an army.",
-        "reference": "Abu Dawud 2/85, At-Tirmidhi 5/569, and Al-Hakim who declared it authentic and Ath-Thahabi agreed with him 1/511. Al-Albani graded it authentic in Sahih At-Tirmidhi 3/182. See also Jami'ul-'Usool li-'Ahdaith Ar-Rasool 4/ 389-90 checked by Al-Arna'ut."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: مَنْ قَالَ أَسْتَغْفِرُ اللَّهَ الْعَظيمَ الَّذِي لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ القَيّوُمُ وَأَتُوبُ إِلَيهِ، غَفَرَ اللَّهُ لَهُ وَإِنْ كَانَ فَرَّ مِنَ الزَّحْفِ.",
+        "translation": "Whoever says: I seek Allah's forgiveness, besides whom, none has the right to be worshipped except He, The Ever Living, The Self-Subsisting and Supporter of all, and I turn to Him in repentance - Allah would forgive him even if he was one who fled during the advance of an army.",
+        "transliteration": "Astaghfirullahal-ladhi la ilaha illa huwal-hayyul-qayyumu wa atubu ilayh.",
+        "reference": "Abu Dawud 2/85, At-Tirmidhi 5/569, and Al-Hakim who declared it authentic and Ath-Thahabi agreed with him 1/511. Al-Albani graded it authentic in Sahih At-Tirmidhi 3/182. See also Jami'ul-'Usool li-'Ahdaith Ar-Rasool 4/389-90 checked by Al-Arna'ut.",
+        "context": "The Prophet (sallallahu 'alayhi wa sallam) said that whoever says this, Allah would forgive him even if he was one who fled during the advance of an army."
       },
       {
         "id": "hisn-251",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((أَقْرَبُ مَا يَكُونُ الرَّبُّ مِنَ الْعَبْدِ فِي جَوْفِ اللَّيْلِ الآخِرِ فَإِنِ اسْتَطَعْتَ أَنْ تَكُونَ مِمَّنْ يَذْكُرُ اللَّهَ فِي تِلْكَ السَّاعَةِ فَكُنْ)).",
-        "translation": "He said: ‘The nearest the Lord comes to His servant is in the middle of the night, so if you are able to be of those who remember Allah at that time, then be so.",
-        "reference": "At-Tirmidhi, An-Nasa'i 1/279 and Al-Hakim. See also Al-Albani, Sahih At-Tirmidhi 3/183, and Jdmi'ul-'Usool with Al-Arna'ut's checking 4/144."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: أَقْرَبُ مَا يَكُونُ الرَّبُّ مِنَ الْعَبْدِ فِي جَوْفِ اللَّيْلِ الآخِرِ فَإِنِ اسْتَطَعْتَ أَنْ تَكُونَ مِمَّنْ يَذْكُرُ اللَّهَ فِي تِلْكَ السَّاعَةِ فَكُنْ.",
+        "translation": "He said: 'The nearest the Lord comes to His servant is in the middle of the night, so if you are able to be of those who remember Allah at that time, then be so.'",
+        "reference": "At-Tirmidhi, An-Nasa'i 1/279 and Al-Hakim. See also Al-Albani, Sahih At-Tirmidhi 3/183, and Jami'ul-'Usool with Al-Arna'ut's checking 4/144."
       },
       {
         "id": "hisn-252",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((أَقْرَبُ مَا يَكُونُ الْعَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ فَأَكثِرُوا الدُّعَاءَ)).",
-        "translation": "He also said: ‘The nearest a servant is to his Lord is when he is prostrating, so supplicate much therein.",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: أَقْرَبُ مَا يَكُونُ الْعَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ فَأَكثِرُوا الدُّعَاءَ.",
+        "translation": "He also said: 'The nearest a servant is to his Lord is when he is prostrating, so supplicate much therein.'",
         "reference": "Muslim 1/350."
       },
       {
         "id": "hisn-253",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((إِنَّهُ لَيُغَانُ عَلَى قَلْبِي وَإِنِّي لأَسْتَغْفِرُ اللَّهَ فِي الْيَوْمِ مِائَةَ مَرَّةٍ)).",
-        "translation": "He also said: ‘verily my heart becomes preoccupied, and verily I seek Allah’s forgiveness a hundred times a day.",
-        "reference": "Muslim 4/2075. Ibn 'Athir explains that the Prophet (ﷺ) was always vigilant in his remembrance and drawing near to Allah, and if he forgot to do any of what he normally did from time to time, or it slipped his mind, he felt as if he had wronged himself and so he would begin to seek the forgiveness of Allah. See Jami'ul-'Usool 4/386.",
-        "context": "preoccupied: i.e. in a state of ‘forgetfulness’. The Prophet always used to increase in his remembrance of his Lord, in attaining a nearness to Allah and having consciousness of Allah to the extent that if this intensity lessened in anyway, he would regard it as a sin and would then race to seek forgiveness from Allah."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: إِنَّهُ لَيُغَانُ عَلَى قَلْبِي وَإِنِّي لأَسْتَغْفِرُ اللَّهَ فِي الْيَوْمِ مِائَةَ مَرَّةٍ.",
+        "translation": "He also said: 'Verily my heart becomes preoccupied, and verily I seek Allah's forgiveness a hundred times a day.'",
+        "reference": "Muslim 4/2075. See also Jami'ul-'Usool 4/386.",
+        "context": "preoccupied: i.e. in a state of ‘forgetfulness’. The Prophet always used to increase in his remembrance of his Lord, in attaining a nearness to Allah and having consciousness of Allah to the extent that if this intensity lessened in anyway, he would regard it as a sin and would then race to seek forgiveness from Allah.",
+        "benefits": "Ibn Athir explains that the Prophet (sallallahu 'alayhi wa sallam) was always vigilant in his remembrance and drawing near to Allah, and if he forgot to do any of what he normally did from time to time, or it slipped his mind, he felt as if he had wronged himself and so he would begin to seek the forgiveness of Allah."
       }
     ],
     "the-excellence-of-remembering-allah": [
       {
         "id": "hisn-254",
-        "arabic": "قَالَ صلى الله عليه وسلم مَنْ قَالَ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ فِي يَوْمٍ مِائَةَ مَرَّةٍ حُطَّتْ خَطَايَاهُ وَلَوْ كَانَتْ مِثْلَ زَبَدِ الْبَحْر)).",
-        "translation": "Whoever says:(How perfect Allah is and I praise Him.) a hundred times during the day, his sins are wiped away, even if they are like the foam of the sea.",
-        "transliteration": "Whoever says:(Subhanal-lahi wabihamdih",
+        "arabic": "قَالَ صلى الله عليه وسلم مَنْ قَالَ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ فِي يَوْمٍ مِائَةَ مَرَّةٍ حُطَّتْ خَطَايَاهُ وَلَوْ كَانَتْ مِثْلَ زَبَدِ الْبَحْر.",
+        "translation": "Whoever says 'How perfect Allah is and I praise Him' a hundred times during the day, his sins are wiped away, even if they are like the foam of the sea.",
+        "transliteration": "Subhanallahi wa bihamdih.",
         "repeat": 100,
         "reference": "Al-Bukhari 7/168, Muslim 4/2071, see also invocation no. 91 of this book."
       },
       {
         "id": "hisn-255",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((مَنْ قَالَ لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ عَشْرَ مِرَارٍ، كَانَ كَمَنْ أَعْتَقَ أَرْبَعَةَ أَنْفُسٍ مِنْ وَلَدِ إِسْمَاعِيلَ)).",
-        "translation": "Abu Hurayrah reported that the Messenger of Allah said: ‘Whoever says: (None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent.) a hundred times during the day, has the reward of freeing ten slaves, a hundred good deeds are recorded for him and a hundred bad deeds are wiped away and he has gained refuge from the devil that day until evening and none shall come with anything better except someone who has done more.",
-        "transliteration": "Abu Hurayrah reported that the Messenger of Allah said: ‘Whoever says: (La ilaha illal-lahu wahdahu la shareeka lah, lahul-mulku walahul-hamd, wahuwa AAala kulli shayin qadeer",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: مَنْ قَالَ لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ عَشْرَ مِرَارٍ، كَانَ كَمَنْ أَعْتَقَ أَرْبَعَةَ أَنْفُسٍ مِنْ وَلَدِ إِسْمَاعِيلَ.",
+        "translation": "None has the right to be worshipped except Allah, alone, without partner. To Him belongs all sovereignty and praise and He is over all things omnipotent.",
+        "transliteration": "La ilaha illallahu wahdahu la sharika lah, lahul-mulku wa lahul-hamd, wa huwa 'ala kulli shay'in qadir.",
         "repeat": 10,
-        "reference": "Al-Bukhari 7/67, Muslim 4/2071, see also invocation no. 93 of this book."
+        "reference": "Al-Bukhari 7/67, Muslim 4/2071, see also invocation no. 93 of this book.",
+        "benefits": "Whoever says this ten times has the reward of freeing four slaves from the children of Isma'il. Whoever says it a hundred times during the day has the reward of freeing ten slaves, a hundred good deeds are recorded for him and a hundred bad deeds are wiped away, and he has gained refuge from the devil that day until evening, and none shall come with anything better except someone who has done more."
       },
       {
         "id": "hisn-256",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَنِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحانَ اللَّهِ الْعَظِيمِ)).",
-        "translation": "Aboo Hurayrah reported that the Messenger of Allah said:’(There are) Two words, (which are ) light on the tongue, heavy on the Scale and beloved to The Most Gracious: (How perfect Allah is and I praise Him. How perfect Allah is, The Supreme.)",
-        "transliteration": "Aboo Hurayrah reported that the Messenger of Allah said:’(There are) Two words, (which are ) light on the tongue, heavy on the Scale and beloved to The Most Gracious: (Subhanal-lahi wabihamdih, wasubhanal-lahil-AAatheem.",
-        "reference": "Al-Bukhari 7/168, Muslim 4/2072."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَنِ: سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، سُبْحانَ اللَّهِ الْعَظِيمِ.",
+        "translation": "Two words which are light on the tongue, heavy on the Scale and beloved to The Most Gracious: How perfect Allah is and I praise Him. How perfect Allah is, The Supreme.",
+        "transliteration": "Subhanallahi wa bihamdih, wa subhanallahil-'adhim.",
+        "reference": "Al-Bukhari 7/168, Muslim 4/2072.",
+        "context": "Abu Hurayrah reported this from the Messenger of Allah (sallallahu 'alayhi wa sallam)."
       },
       {
         "id": "hisn-257",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((لَأَنْ أَقُولَ سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ، أَحَبُّ إِلَيَّ مِمَّا طَلَعَتْ عَلَيْهِ الشَّمسُ)).",
-        "translation": "Aboo Hurayrah reported that the Messenger of Allah said: ‘Saying: (How perfect Allah is, and all praise is for Allah. None has the right to be worshipped except Allah, and Allah is the greatest.) is more beloved to me than everything the sun has risen over.",
-        "transliteration": "Aboo Hurayrah reported that the Messenger of Allah said: ‘Saying: (Subhanal-lah, walhamdu lillah, la ilaha illal-lah wallahu akbar.) is more beloved to me than everything the sun has risen over.",
-        "reference": "Muslim 4/2072."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: لَأَنْ أَقُولَ سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ، أَحَبُّ إِلَيَّ مِمَّا طَلَعَتْ عَلَيْهِ الشَّمسُ.",
+        "translation": "How perfect Allah is, and all praise is for Allah. None has the right to be worshipped except Allah, and Allah is the greatest.",
+        "transliteration": "Subhanallah, walhamdulillah, la ilaha illallah, wallahu akbar.",
+        "reference": "Muslim 4/2072.",
+        "benefits": "Abu Hurayrah reported that the Messenger of Allah said: Saying this is more beloved to me than everything the sun has risen over."
       },
       {
         "id": "hisn-258",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((أَيَعْجِزُ أَحَدُكُم أَنْ يَكْسِبَ كُلَّ يَوْمٍ أَلْفَ حَسَنَةٍ)) فَسَأَلَهُ سَائِلٌ مِنْ جُلَسَائِهِ كَيْفَ يَكْسِبُ أَحَدُنَا أَلْفَ حَسَنَةٍ؟ قَالَ: ((يُسَبِّحُ مِائَةَ تَسْبِيحَةٍ، فَيُكتَبُ لَهُ أَلْفُ حَسَنَةٍ أَوْ يُحَطُّ عَنْهُ أَلْفُ خَطِيئَةٍ)).",
-        "translation": "Sa’d said: ‘We were sitting with the Messenger of Allah , and he said: ‘Are any of you unable to gain a thousand good deeds each day?’ Somebody then asked him : How does one achieve a thousand good deeds? He replied: ‘He should say: (How perfect Allah is.) one hundred times, for a thousand good deeds are recorded for him or a thousand bad deeds are wiped away.",
-        "transliteration": "Sa’d said: ‘We were sitting with the Messenger of Allah , and he said: ‘Are any of you unable to gain a thousand good deeds each day?’ Somebody then asked him : How does one achieve a thousand good deeds? He replied: ‘He should say: (Subhanal-lah",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: أَيَعْجِزُ أَحَدُكُم أَنْ يَكْسِبَ كُلَّ يَوْمٍ أَلْفَ حَسَنَةٍ فَسَأَلَهُ سَائِلٌ مِنْ جُلَسَائِهِ كَيْفَ يَكْسِبُ أَحَدُنَا أَلْفَ حَسَنَةٍ؟ قَالَ: يُسَبِّحُ مِائَةَ تَسْبِيحَةٍ، فَيُكتَبُ لَهُ أَلْفُ حَسَنَةٍ أَوْ يُحَطُّ عَنْهُ أَلْفُ خَطِيئَةٍ.",
+        "translation": "How perfect Allah is.",
+        "transliteration": "Subhanallah.",
         "repeat": 100,
-        "reference": "Muslim 4/2073."
+        "reference": "Muslim 4/2073.",
+        "benefits": "Sa'd said: 'We were sitting with the Messenger of Allah, and he said: Are any of you unable to gain a thousand good deeds each day? Somebody then asked him: How does one achieve a thousand good deeds? He replied: He should say Subhanallah one hundred times, for a thousand good deeds are recorded for him or a thousand bad deeds are wiped away.'"
       },
       {
         "id": "hisn-259",
         "arabic": "مَنْ قَالَ: سُبْحَانَ اللَّهِ الْعَظِيمِ وَبِحَمْدِهِ غُرِسَتْ لَهُ نَخْلَةٌ فِي الْجَنَّةِ",
-        "translation": "Jabbir related that the Prophet said: ‘Whoever says: (How perfect Allah is . The Supreme, and I praise Him.) a palm tree is planted for him in paradise.",
-        "transliteration": "Jabbir related that the Prophet said: ‘Whoever says: (Subhanal-lahil-AAatheemi wabihamdih.) a palm tree is planted for him in paradise.",
-        "reference": "At-Tirmidhi 5/511, and Al-Hakim who graded it authentic and Ath-Thahabi agreed 1/501. See also Al-Albani, Sahihul-Jami' As-Saghir 5/531 and Sahih At-Tirmidhi3/160."
+        "translation": "How perfect Allah is, The Supreme, and I praise Him.",
+        "transliteration": "Subhanallahil-'adhimi wa bihamdih.",
+        "reference": "At-Tirmidhi 5/511, and Al-Hakim who graded it authentic and Ath-Thahabi agreed 1/501. See also Al-Albani, Sahihul-Jami' As-Saghir 5/531 and Sahih At-Tirmidhi 3/160.",
+        "benefits": "Jabir related that the Prophet said: Whoever says this, a palm tree is planted for him in Paradise."
       },
       {
         "id": "hisn-260",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((يَا عَبْدَ اللَّهِ بْنَ قَيْسٍ أَلاَ أَدُلُّكَ عَلَى كَنْزٍ مِنْ كُنُوزِ الْجَنَّةِ))؟ فَقُلْتُ: بَلَى يَا رَسُولَ اللَّهِ، قَالَ: ((قُلْ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ)).",
-        "translation": "AAabdullah Ibn Qays related that the Prophet said to him: ‘ O ‘AAabdullah Ibn Qays, shall I not inform you of a treasure from the treasures of paradise?’ He then said: ‘Say: (There is no might nor power except with Allah.)",
-        "transliteration": "AAabdullah Ibn Qays related that the Prophet said to him: ‘ O ‘AAabdullah Ibn Qays, shall I not inform you of a treasure from the treasures of paradise?’ He then said: ‘Say: (La hawla wala quwwata illa billah.",
-        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/213, Muslim 4/2076."
+        "arabic": "وَقَالَ صلى الله عليه وسلم: يَا عَبْدَ اللَّهِ بْنَ قَيْسٍ أَلاَ أَدُلُّكَ عَلَى كَنْزٍ مِنْ كُنُوزِ الْجَنَّةِ؟ فَقُلْتُ: بَلَى يَا رَسُولَ اللَّهِ، قَالَ: قُلْ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ.",
+        "translation": "There is no might nor power except with Allah.",
+        "transliteration": "La hawla wa la quwwata illa billah.",
+        "reference": "Al-Bukhari, cf. Al-Asqalani, Fathul-Bari 11/213, Muslim 4/2076.",
+        "benefits": "Abdullah ibn Qays related that the Prophet said to him: 'O Abdullah ibn Qays, shall I not inform you of a treasure from the treasures of Paradise?' He then said: 'Say: La hawla wa la quwwata illa billah.'"
       },
       {
         "id": "hisn-261",
-        "arabic": "وَقَالَ صلى الله عليه وسلم: ((أَحَبُّ الْكَلاَمِ إِلَى اللَّهِ أَرْبَعٌ: سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ، لاَ يَضُرُّكَ بِأَيِّهِنَّ بَدَأتَ)).",
-        "translation": "the most beloved words to Allah are four: (How perfect Allah is, all praise is for Allah. None has the right to be worshipped except Allah and Allah is the greatest.",
-        "transliteration": "the most beloved words to Allah are four: (Subhanal-lah, walhamdu lillah, wala ilaha illal-lah, wallahu akbar.))(it does not matter which of them you start with.",
+        "arabic": "وَقَالَ صلى الله عليه وسلم: أَحَبُّ الْكَلاَمِ إِلَى اللَّهِ أَرْبَعٌ: سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلاَ إِلَهَ إِلاَّ اللَّهُ، وَاللَّهُ أَكْبَرُ، لاَ يَضُرُّكَ بِأَيِّهِنَّ بَدَأتَ.",
+        "translation": "How perfect Allah is, all praise is for Allah, none has the right to be worshipped except Allah, and Allah is the greatest.",
+        "transliteration": "Subhanallah, walhamdulillah, wa la ilaha illallah, wallahu akbar.",
         "reference": "Muslim 3/1685.",
-        "context": "it does not matter which of them you start with."
+        "context": "it does not matter which of them you start with.",
+        "benefits": "The most beloved words to Allah are four: Subhanallah, Alhamdulillah, La ilaha illallah, and Allahu Akbar. It does not matter which of them you start with."
       },
       {
         "id": "hisn-262",
-        "arabic": "جَاءَ أَعْرَابِيٌّ إِلَى رَسُولِ اللَّهِ صلى الله عليه وسلم فَقَالَ: عَلِّمْنِي كَلاماً أَقُولُهُ: قَالَ: ((قُلْ: لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، اللَّهُ أَكْبَرُ كَبِيراً، وَالْحَمْدُ لِلَّهِ كَثِيراً، سُبْحَانَ اللَّهِ رَبِّ العَالَمِينَ، لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ الْعَزِيزِ الْحَكِيمِ)) قَالَ: فَهَؤُلاَءِ لِرَبِّي، فَمَا لِي؟ قَالَ: ((قُلْ: اللَّهُمَّ اغْفِرْ لِي، وَارْحَمْنِي، وَاهْدِنِي، وَارْزُقْنِي)).",
-        "translation": "SaAAd Ibn Abee Waqqas narrated that a man came to the Messenger of Allah and said to him: ‘Teach me something which I should say?’ He said: ‘Say: (None has the right to be worshipped except Allah, alone without partener. Allah is most great and much praise is for Allah. How perfect Allah is, Lord of the worlds. There is no might nor power except with Allah, The Exalted in might, The Wise.) the man then said: ‘These are for my Lord, and what is for me?’ He replied: ‘Say:(O Allah, forgive me, have mercy upon me, guide me and grant me sustenance.)",
-        "transliteration": "SaAAd Ibn Abee Waqqas narrated that a man came to the Messenger of Allah and said to him: ‘Teach me something which I should say?’ He said: ‘Say: (La ilaha illal-lah, wahdahu la shareeka lah, Allahu akbaru kabeera, walhamdu lillahi katheera, subhanal-lahi rabbil-AAalameen, la hawla wala quwwata illa billahil-AAazeezil-hakeem.) the man then said: ‘These are for my Lord, and what is for me?’ He replied: ‘Say:(Allahummagh-fir lee, warhamnee, wahdinee, warzuqnee.",
-        "reference": "Muslim 4/2072, Abu Dawud reports the same Hadith with the addition: and when the Arab left, the Prophet (ﷺ) said: \"He has filled his hands with goodness.\" 1/220."
+        "arabic": "جَاءَ أَعْرَابِيٌّ إِلَى رَسُولِ اللَّهِ صلى الله عليه وسلم فَقَالَ: عَلِّمْنِي كَلاماً أَقُولُهُ: قَالَ: قُلْ: لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، اللَّهُ أَكْبَرُ كَبِيراً، وَالْحَمْدُ لِلَّهِ كَثِيراً، سُبْحَانَ اللَّهِ رَبِّ العَالَمِينَ، لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللَّهِ الْعَزِيزِ الْحَكِيمِ قَالَ: فَهَؤُلاَءِ لِرَبِّي، فَمَا لِي؟ قَالَ: قُلْ: اللَّهُمَّ اغْفِرْ لِي، وَارْحَمْنِي، وَاهْدِنِي، وَارْزُقْنِي.",
+        "translation": "None has the right to be worshipped except Allah, alone without partner. Allah is most great and much praise is for Allah. How perfect Allah is, Lord of the worlds. There is no might nor power except with Allah, The Exalted in might, The Wise. O Allah, forgive me, have mercy upon me, guide me and grant me sustenance.",
+        "transliteration": "La ilaha illallah, wahdahu la sharika lah, Allahu akbaru kabira, walhamdulillahi kathira, subhanallahi rabbil-'alamin, la hawla wa la quwwata illa billahil-'azizil-hakim. Allahummagh-fir li, warhamni, wahdini, warzuqni.",
+        "reference": "Muslim 4/2072. Abu Dawud reports the same hadith with the addition: \"He has filled his hands with goodness.\" 1/220.",
+        "context": "Sa'd ibn Abi Waqqas narrated that a man came to the Messenger of Allah and said: 'Teach me something which I should say.' The Prophet taught him the first part (for his Lord) and the second part (for himself). When the Arab left, the Prophet said: 'He has filled his hands with goodness.'"
       },
       {
         "id": "hisn-263",
-        "arabic": "كَانَ الرَّجُلُ إِذَا أَسْلَمَ عَلَّمَهُ النَّبيُّ صلى الله عليه وسلم الصَّلاَةَ ثُمَّ أَمَرَهُ أَنْ يَدْعُوَ بِهَؤُلاَءِ الْكَلِمَاتِ: ((اللَّهُمَّ اغْفِرِ لِي، وَارْحَمْنِي، وَاهْدِنِي، وَعَافِنِي وَارْزُقْنِي)).",
-        "translation": "Tariq Al-AshjaAAee said: ‘When someone would embrace Islam, the Prophet would teach him how to perform prayer and then order him to supplicate with the following words: (O Allah, forgive me, have mercy upon me, guide me, give me health and grant me sustenance.)",
-        "transliteration": "Tariq Al-AshjaAAee said: ‘When someone would embrace Islam, the Prophet would teach him how to perform prayer and then order him to supplicate with the following words: (Allahummagh-fir lee, warhamnee, wahdinee, waAAafinee warzuqnee.",
-        "reference": "Muslim 4/2073, and in one of Muslim's reports there is the addition: 'For these words combine [the goodness of] this world and the next"
+        "arabic": "كَانَ الرَّجُلُ إِذَا أَسْلَمَ عَلَّمَهُ النَّبيُّ صلى الله عليه وسلم الصَّلاَةَ ثُمَّ أَمَرَهُ أَنْ يَدْعُوَ بِهَؤُلاَءِ الْكَلِمَاتِ: اللَّهُمَّ اغْفِرِ لِي، وَارْحَمْنِي، وَاهْدِنِي، وَعَافِنِي وَارْزُقْنِي.",
+        "translation": "O Allah, forgive me, have mercy upon me, guide me, give me health and grant me sustenance.",
+        "transliteration": "Allahummagh-fir li, warhamni, wahdini, wa 'afini warzuqni.",
+        "reference": "Muslim 4/2073.",
+        "context": "Tariq Al-Ashja'i said: 'When someone would embrace Islam, the Prophet would teach him how to perform prayer and then order him to supplicate with these words.' In one of Muslim's reports there is the addition: 'For these words combine the goodness of this world and the next.'"
       },
       {
         "id": "hisn-264",
         "arabic": "إِنَّ أَفْضَلَ الدُّعَاءِ الْحَمْدُ لِلَّهِ، وَأَفْضَلَ الذِّكْرِ لاَ إِلَهَ إِلاَّ اللَّهُ",
-        "translation": "Jabir Ibn ‘AAabdullah related that the Messenger of Allah said: ‘Verily, the best supplication is: (All praise is for Allah.) and indeed, the best form of remembrance is: (None has the right to be worshipped except Allah.)",
-        "transliteration": "Jabir Ibn ‘AAabdullah related that the Messenger of Allah said: ‘Verily, the best supplication is: (Alhamdu lillah) and indeed, the best form of remembrance is: (La ilaha illal-lah.",
-        "reference": "At-Tirmidhi 5/462, Ibn Majah 2/1249, and Al-Hakim who graded it authentic and Ath-Tbahabi agreed 1/503. See Al-Albani, Sahihul-Jami' As-Saghir 1/362."
+        "translation": "Verily, the best supplication is: All praise is for Allah. And indeed, the best form of remembrance is: None has the right to be worshipped except Allah.",
+        "transliteration": "Alhamdulillah. La ilaha illallah.",
+        "reference": "At-Tirmidhi 5/462, Ibn Majah 2/1249, and Al-Hakim who graded it authentic and Ath-Thahabi agreed 1/503. See Al-Albani, Sahihul-Jami' As-Saghir 1/362.",
+        "context": "Jabir ibn Abdullah related this from the Messenger of Allah (sallallahu 'alayhi wa sallam)."
       },
       {
         "id": "hisn-265",
         "arabic": "الباقيات الصالحات : سبحان الله والحمد لله ، ولا إله إلا الله ،والله أكبر ،و لا حول ولا قوة إلا بالله",
-        "translation": "The good deeds which endure are 'Glorified is Allah', and 'The praise is for Allah', and 'but There is none worthy of worship Allah', and 'Allah is the Most Great', and 'There is no power and no might except by Allah",
-        "transliteration": "The good deeds which endure are 'Subhaanallaah.', and 'Walhamdulillaah.', and 'Wa laa ilaaha illallaah'., and 'Wallaahu Akbar',and 'Wa laa hawla wa laa guwawala illaa billaah'.",
+        "translation": "The good deeds which endure are: Glorified is Allah, The praise is for Allah, There is none worthy of worship except Allah, Allah is the Most Great, and There is no power and no might except by Allah.",
+        "transliteration": "Subhanallah, walhamdulillah, wa la ilaha illallah, wallahu akbar, wa la hawla wa la quwwata illa billah.",
         "reference": "Ahmad (no. 513) (Ahmad Shakir, ed.) and its chain of narration is authentic. See Majma'uz-Zawa'id 1/297. Ibn Hajar mentions it in Bulughul-Maram saying that Ibn Hibban and Al-Hakim considered it authentic."
       }
     ],
@@ -3273,14 +3321,16 @@
       {
         "id": "hisn-266",
         "arabic": "عَنْ عَبْدِ اللَّهِ بْنِ عَمْرٍو رضي الله عنه قَالَ: ((رَأَيْتُ النَّبيَّ صلى الله عليه وسلم يَعْقِدُ التَّسْبِيحَ)) وفي زيادةٍ: ((بِيَمِينِهِ)).",
-        "translation": "Tasbeeh, it means here, to say: (Subhanal-lah, alhamdu lillah, Allahu akbar.)) (AAabdullah Ibn AAamr said: ’I saw the prophet make tasbeeh with his right hand.",
-        "reference": "Abu Dawud with a different wording 2/81, and At-Tirmidhi 5/521. See also Al-Albani, Sahihul-Jami'As-Saghir 4/271 (no. 4865)."
+        "translation": "How perfect Allah is, all praise is for Allah, Allah is the greatest.",
+        "reference": "Abu Dawud with a different wording 2/81, and At-Tirmidhi 5/521. See also Al-Albani, Sahihul-Jami' As-Saghir 4/271 (no. 4865).",
+        "transliteration": "Subhanallah, alhamdulillah, Allahu akbar.",
+        "context": "Tasbeeh here means to say: Subhanallah, Alhamdulillah, Allahu Akbar. Abdullah ibn Amr said: 'I saw the Prophet make tasbeeh with his right hand.'"
       }
     ],
     "types-of-goodness-and-good-etiquette-for-community-life": [
       {
         "id": "hisn-267",
-        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم ((إِذَا كَانَ جُنْحُ اللَّيْلِ – أَوْ أَمْسَيْتُم – فَـكُفُّوا صِبْيانَـكُم، فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اسْمَ اللَّهِ؛ فَإِنَّ الشَّيطَانَ لاَ يَفْتَحُ بَاباً مُغلَقاً، وَأَوْكُوا قِرَبَكُمْ، وَاذْكُرُوا اسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُم، وَاذْكُرُوا اسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئاً، وَأَطْفِئُوا مَصَابِيحَكُمْ)).",
+        "arabic": "قَالَ النَّبِيُّ صلى الله عليه وسلم إِذَا كَانَ جُنْحُ اللَّيْلِ – أَوْ أَمْسَيْتُم – فَـكُفُّوا صِبْيانَـكُم، فَإِنَّ الشَّيَاطِينَ تَنْتَشِرُ حِينَئِذٍ، فَإِذَا ذَهَبَ سَاعَةٌ مِنَ اللَّيلِ فَخَلُّوهُمْ، وَأَغْلِقُوا الأَبْوَابَ وَاذْكُرُوا اسْمَ اللَّهِ؛ فَإِنَّ الشَّيطَانَ لاَ يَفْتَحُ بَاباً مُغلَقاً، وَأَوْكُوا قِرَبَكُمْ، وَاذْكُرُوا اسْمَ اللَّهِ، وَخَمِّرُوا آنِيَتَكُم، وَاذْكُرُوا اسْمَ اللَّهِ، وَلَوْ أَنْ تَعْرُضُوا عَلَيْهَا شَيْئاً، وَأَطْفِئُوا مَصَابِيحَكُمْ.",
         "translation": "When evening descends, bring your children indoors for the devils scatter out at this hour. Then after the passing of an hour (i.e. the first hour) of the night, (you may) let them (the children) go. Close your doors while mentioning the Name of Allah, for the devil may not open a closed door. Fasten your waterskins mentioning the Name of Allah. Cover your eating vessels mentioning the Name of Allah even if you just put something over it, and extinguish your lamps. Peace and blessing be upon our Prophet, Muhammad, and upon his family and his Companions, all of them.",
         "reference": "Al-Bukhari with Al-Fath 10/88 and Muslim 3/1595."
       }
@@ -3290,104 +3340,104 @@
         "id": "fh-1",
         "arabic": "غُفْرَانَكَ",
         "translation": "I ask for Your forgiveness (O Allah).",
-        "transliteration": "ghufranak",
-        "reference": "HR. at-Tirmidzi",
+        "transliteration": "Ghufranak.",
+        "reference": "At-Tirmidhi.",
         "benefits": "The bathroom is one of the homes of the jinn and devils, so it is recommended to ask for forgiveness for any mistakes, intentional or unintentional, made while in the bathroom."
       },
       {
         "id": "fh-2",
         "arabic": "اللَّهُمَّ إِنِّى أَعُوذُ بِكَ أَنْ أَضِلَّ أَوْ أُضَلَّ أَوْ أَزِلَّ أَوْ أُزَلَّ أَوْ أَظْلِمَ أَوْ أُظْلَمَ أَوْ أَجْهَلَ أَوْ يُجْهَلَ عَلَىَّ",
         "translation": "O Allah, I seek refuge in You lest I should stray or be led astray, slip or be tripped, wrong or be wronged, or act foolishly or have foolishness done to me.",
-        "transliteration": "allahumma inni a'udhu bika an adilla aw udalla, aw azilla aw uzalla, aw adhlima aw udhlama, aw ajhala aw yujhala 'alayya",
-        "reference": "HR. Abu Dawud, at-Tirmidzi, Ibn Majah and an-Nasa'i",
+        "transliteration": "Allahumma inni a'udhu bika an adilla aw udalla, aw azilla aw uzalla, aw adhlima aw udhlama, aw ajhala aw yujhala 'alayya.",
+        "reference": "Abu Dawud, At-Tirmidhi, Ibn Majah, and An-Nasa'i.",
         "benefits": "When a person leaves the house, they will encounter all kinds of things, both good and bad, especially harm caused by themselves. Therefore, it is commanded to seek refuge from oneself and from others."
       },
       {
         "id": "fh-3",
         "arabic": "أَسْتَوْدِعُ اللَّهَ دِينَكَ وَأَمَانَتَكَ وَخَوَاتِيمَ عَمَلِكَ",
         "translation": "I entrust your religion, your trust, and the end of your deeds to Allah.",
-        "transliteration": "astawdi'ullaha dinaka, wa amanataka, wa khawatima 'amalik",
-        "reference": "HR. Abu Dawud: 2601",
+        "transliteration": "Astawdi'ullaha dinaka, wa amanataka, wa khawatima 'amalik.",
+        "reference": "Abu Dawud 2601.",
         "benefits": "Three priorities of a servant that must be maintained everywhere: religion, trust, and deeds, because a person will be resurrected according to their deeds."
       },
       {
         "id": "fh-4",
         "arabic": "زَوَّدَكَ اللَّهُ التَّقْوَى وَغَفَرَ ذَنْبَكَ  وَيَسَّرَ لَكَ الْخَيْرَ حَيْثُمَا كُنْتَ",
         "translation": "May Allah provide you with piety, forgive your sins, and ease goodness for you wherever you are.",
-        "transliteration": "zawwadakallahut-taqwa, wa ghafara dhanbaka, wa yassara lakal-khayra haythuma kunta",
-        "reference": "HR. at-Tirmidzi",
+        "transliteration": "Zawwadakallahut-taqwa, wa ghafara dhanbaka, wa yassara lakal-khayra haythuma kunta.",
+        "reference": "At-Tirmidhi.",
         "benefits": "Piety is the best provision that a servant must prepare for the Hereafter, because there is no salvation except through piety."
       },
       {
         "id": "fh-5",
         "arabic": "اَللّٰهُمَّ إِنِّى أَعُوْذُبِكَ مِنَ الْهَمِّ وَالْحَزْنِ وَأَعُوْذُبِكَ مِنَ الْعَجْزِ وَالْكَسَلِ وَأَعُوْذُبِكَ مِنَ الْجُبْنِ وَالْبُخْلِ وَأَعُوْذُبِكَ مِنْ غَلَبَتِ الدَّيْنِ وَقَهْرِ الرجال",
         "translation": "O Allah, I seek refuge in You from anxiety and grief, and I seek refuge in You from incapacity and laziness, and I seek refuge in You from cowardice and miserliness, and I seek refuge in You from being overpowered by debt and from being overcome by men.",
-        "transliteration": "allahumma inni a'udhu bika minal-hammi wal-hazan. wa a'udhu bika minal-'ajzi wal-kasal. wa a'udhu bika minal-jubni wal-bukhl. wa a'udhu bika min ghalabatid-dayni wa qahrir-rijal",
-        "reference": "HR. Abu Dawud No. 1555",
+        "transliteration": "Allahumma inni a'udhu bika minal-hammi wal-hazan, wa a'udhu bika minal-'ajzi wal-kasal, wa a'udhu bika minal-jubni wal-bukhl, wa a'udhu bika min ghalabatid-dayni wa qahrir-rijal.",
+        "reference": "Abu Dawud no. 1555.",
         "benefits": "Abu Umamah then narrated: After I practiced this supplication, Allah truly removed my anxiety and gave me the ability to repay my debt."
       },
       {
         "id": "fh-6",
         "arabic": "اللَّهُمَّ كَمَا حَسَّنْتَ خَلْقِي فَحَسِّنْ خُلُقِي",
         "translation": "O Allah, just as You have made my external form good, make my character good as well.",
-        "transliteration": "allahumma kama hassanta khalqi fahassin khuluqi",
-        "reference": "HR. Ahmad, authenticated by al-Albani in al-Irwa', 1/115",
+        "transliteration": "Allahumma kama hassanta khalqi fahassin khuluqi.",
+        "reference": "Ahmad. Authenticated by Al-Albani in Al-Irwa' 1/115.",
         "benefits": "A charming appearance is not enough provision for a Muslim, but it must be accompanied by noble character. Therefore, a Muslim should constantly ask for their character to be improved and beautified."
       },
       {
         "id": "fh-7",
         "arabic": "رَبَّنَا ٱغْفِرْ لِى وَلِوَٰلِدَىَّ وَلِلْمُؤْمِنِينَ يَوْمَ يَقُومُ ٱلْحِسَابُ",
         "translation": "Our Lord, forgive me and my parents and all the believers on the Day the account is established.",
-        "transliteration": "rabbanaghfir li wa liwalidayya wa lil-mu'minina yawma yaqumul-hisab",
-        "reference": "QS. Ibrahim: 41",
+        "transliteration": "Rabbanaghfir li wa liwalidayya wa lil-mu'minina yawma yaqumul-hisab.",
+        "reference": "Quran, Ibrahim 14:41.",
         "benefits": "This is a prayer of Prophet Ibrahim (peace be upon him), teaching us to honor and love our parents, remember the Day of Judgment, and care for fellow believers. By making this prayer, we hope that Allah will forgive our sins and make us among the faithful."
       },
       {
         "id": "fh-8",
         "arabic": "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ (1) مِن شَرِّ مَا خَلَقَ (2) وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ (3) وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِى ٱلْعُقَدِ (4) وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ (5)",
         "translation": "Say, \"I seek refuge in the Lord of daybreak (1) From the evil of that which He created (2) And from the evil of darkness when it settles (3) And from the evil of the blowers in knots (4) And from the evil of an envier when he envies.\" (5)",
-        "transliteration": "qul a'udhu birabbil-falaq (1) min sharri ma khalaq (2) wa min sharri ghasiqin idha waqab (3) wa min sharri naffathati fil-'uqad (4) wa min sharri hasidin idha hasad (5)",
-        "reference": "HR. Abu Dawud No. 1523 and an-Nasa'i No. 1337. Al-Hafiz Abu Tahir said that the chain of this hadith is hasan",
+        "transliteration": "Qul a'udhu birabbil-falaq (1) min sharri ma khalaq (2) wa min sharri ghasiqin idha waqab (3) wa min sharri naffathati fil-'uqad (4) wa min sharri hasidin idha hasad (5).",
+        "reference": "Abu Dawud no. 1523 and An-Nasa'i no. 1337. Al-Hafiz Abu Tahir said that the chain of this hadith is hasan.",
         "benefits": "The Messenger of Allah, sallallahu 'alayhi wa sallam, said: Recite Qul huwallahu ahad, and Al-Mu'awwidhatayn (Al-Falaq and An-Nas) in the evening and morning three times, and it will suffice you (protect you) from everything."
       },
       {
         "id": "fh-9",
         "arabic": "يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِى عَلَى دِينِكَ",
         "translation": "O Changer of the hearts, make my heart firm upon Your religion.",
-        "transliteration": "ya muqallibal-qulubi thabbit qalbi 'ala dinik",
-        "reference": "HR. at-Tirmidzi, No. 3522 and Ahmad, 6: 315",
+        "transliteration": "Ya muqallibal-qulubi thabbit qalbi 'ala dinik.",
+        "reference": "At-Tirmidhi no. 3522, and Ahmad 6/315.",
         "benefits": "A person's heart is between the fingers of Allah ta'ala, and He turns it back and forth according to his will. So, it is appropriate for someone to always ask that Allah will set their heart on goodness, and always be istiqamah in the truth."
       },
       {
         "id": "fh-10",
         "arabic": "اللَّهُمَّ مُصَرِّفَ الْقُلُوبِ صَرِّفْ قُلُوبَنَا عَلَى طَاعَتِكَ",
         "translation": "O Allah! Controller of the hearts, direct our hearts to Your obedience.",
-        "transliteration": "allahumma musarrifal-qulubi sarrif qulubana 'ala ta'atik",
-        "reference": "HR. Muslim No. 2654",
+        "transliteration": "Allahumma musarrifal-qulubi sarrif qulubana 'ala ta'atik.",
+        "reference": "Muslim no. 2654.",
         "benefits": "A person's heart is between the fingers of Allah ta'ala, and He turns it back and forth according to his will. So, it is appropriate for someone to always ask that Allah will set their heart on goodness, and always be istiqamah in the truth."
       },
       {
         "id": "fh-11",
         "arabic": "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا",
         "translation": "O our Lord, do not make our hearts incline to error after You have guided us.",
-        "transliteration": "rabbana la tuzigh qulubana ba'da idh hadaytana",
-        "reference": "QS. Ali Imran: 8",
+        "transliteration": "Rabbana la tuzigh qulubana ba'da idh hadaytana.",
+        "reference": "Quran, Aal-'Imran 3:8.",
         "benefits": "A person's heart is between the fingers of Allah ta'ala, and He turns it back and forth according to his will. So, it is appropriate for someone to always ask that Allah will set their heart on goodness, and always be istiqamah in the truth."
       },
       {
         "id": "fh-12",
         "arabic": "اللَّهُمَّ إِنِّى أَعُوذُ بِكَ مِنْ زَوَالِ نِعْمَتِكَ وَتَحَوُّلِ عَافِيَتِكَ وَفُجَاءَةِ نِقْمَتِكَ وَجَمِيعِ سَخَطِكَ",
         "translation": "O Allah, I seek refuge in You from the loss of the pleasures that You have bestowed, from changes in the health that You have bestowed, from Your sudden torment, and from all Your wrath.",
-        "transliteration": "allahumma inni a'udhu bika min zawali ni'matik, wa tahawwuli 'afiyatik, wa fuja'ati niqmatik, wa jami'i sakhatik",
-        "reference": "HR. Muslim No. 2739",
+        "transliteration": "Allahumma inni a'udhu bika min zawali ni'matik, wa tahawwuli 'afiyatik, wa fuja'ati niqmatik, wa jami'i sakhatik.",
+        "reference": "Muslim no. 2739.",
         "benefits": "The pleasures of being present at this time are very likely to be lost, the health of our souls and bodies in a blink of an eye can turn into illness, and only Allah can prevent that from happening."
       },
       {
         "id": "fh-13",
         "arabic": "اللَّهُمَّ إِنِّي أَعُوْذُ بِكَ مِنْ جَهْدِ البَلاَءِ ، وَدَرَكِ الشَّقَاءِ ، وَسُوءِ القَضَاءِ ، وَشَمَاتَةِ الأَعْدَاء",
         "translation": "O Allah, I seek refuge in You from severe calamity, being overtaken by misery, evil destiny, and the triumphant mockery of enemies.",
-        "transliteration": "allahumma inni a'udhu bika min jahdil-bala', wa darakish-shaqa', wa su'il-qada', wa shamatatil-a'da'",
-        "reference": "HR. al-Bukhari: 6616, Muslim: 2707",
+        "transliteration": "Allahumma inni a'udhu bika min jahdil-bala', wa darakish-shaqa', wa su'il-qada', wa shamatatil-a'da'.",
+        "reference": "Al-Bukhari no. 6616, Muslim no. 2707.",
         "benefits": "Taking refuge from the provisions of fate that have a bad impact, does not contradict the attitude of being pleased with the provisions of the destiny of Allah azza wa jalla. Because asking for protection from the provision of Allah's destiny. Allah azza wa jalla could have predestined a disaster for someone, but Allah azza wa jalla also predestined that if he prays, Allah will remove the disaster."
       }
     ],
