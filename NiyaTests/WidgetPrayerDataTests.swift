@@ -61,14 +61,39 @@ struct WidgetPrayerDataTests {
         #expect(abbrevs == ["FJR", "SHR", "DHR", "ASR", "MGB", "ISH"])
     }
 
-    @Test("Abbreviation static method")
+    private var utcCalendar: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal
+    }
+
+    private func fixedDate(_ year: Int, _ month: Int, _ day: Int) -> Date {
+        utcCalendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12))!
+    }
+
+    @Test("Abbreviation static method on non-Friday")
     func staticAbbreviation() {
-        #expect(WidgetPrayerData.abbreviation(for: .fajr) == "FJR")
-        #expect(WidgetPrayerData.abbreviation(for: .sunrise) == "SHR")
-        #expect(WidgetPrayerData.abbreviation(for: .dhuhr) == "DHR")
-        #expect(WidgetPrayerData.abbreviation(for: .asr) == "ASR")
-        #expect(WidgetPrayerData.abbreviation(for: .maghrib) == "MGB")
-        #expect(WidgetPrayerData.abbreviation(for: .isha) == "ISH")
+        // 2026-03-28 is a Saturday
+        let saturday = fixedDate(2026, 3, 28)
+        #expect(WidgetPrayerData.abbreviation(for: .fajr, on: saturday, calendar: utcCalendar) == "FJR")
+        #expect(WidgetPrayerData.abbreviation(for: .sunrise, on: saturday, calendar: utcCalendar) == "SHR")
+        #expect(WidgetPrayerData.abbreviation(for: .dhuhr, on: saturday, calendar: utcCalendar) == "DHR")
+        #expect(WidgetPrayerData.abbreviation(for: .asr, on: saturday, calendar: utcCalendar) == "ASR")
+        #expect(WidgetPrayerData.abbreviation(for: .maghrib, on: saturday, calendar: utcCalendar) == "MGB")
+        #expect(WidgetPrayerData.abbreviation(for: .isha, on: saturday, calendar: utcCalendar) == "ISH")
+    }
+
+    @Test("Abbreviation returns JMH for dhuhr on Friday")
+    func abbreviationDhuhrFriday() {
+        // 2026-03-27 is a Friday
+        let friday = fixedDate(2026, 3, 27)
+        #expect(WidgetPrayerData.abbreviation(for: .dhuhr, on: friday, calendar: utcCalendar) == "JMH")
+    }
+
+    @Test("Abbreviation returns FJR for fajr on Friday")
+    func abbreviationFajrFriday() {
+        let friday = fixedDate(2026, 3, 27)
+        #expect(WidgetPrayerData.abbreviation(for: .fajr, on: friday, calendar: utcCalendar) == "FJR")
     }
 
     @Test("currentPrayer at midday returns Dhuhr")

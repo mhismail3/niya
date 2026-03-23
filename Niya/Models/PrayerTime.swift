@@ -20,6 +20,13 @@ enum PrayerName: String, CaseIterable, Codable, Sendable {
         }
     }
 
+    func displayName(on date: Date, calendar: Calendar = .current) -> String {
+        if self == .dhuhr && calendar.component(.weekday, from: date) == 6 {
+            return "Jumuah"
+        }
+        return displayName
+    }
+
     var icon: String {
         switch self {
         case .fajr: return "sun.horizon"

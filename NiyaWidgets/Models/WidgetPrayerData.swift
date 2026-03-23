@@ -52,7 +52,10 @@ struct WidgetPrayerData: Codable, Sendable, Equatable {
         return max(0, min(1, elapsed / total))
     }
 
-    static func abbreviation(for prayerName: PrayerName) -> String {
+    static func abbreviation(for prayerName: PrayerName, on date: Date, calendar: Calendar = .current) -> String {
+        if prayerName == .dhuhr && calendar.component(.weekday, from: date) == 6 {
+            return "JMH"
+        }
         switch prayerName {
         case .fajr: return "FJR"
         case .sunrise: return "SHR"
@@ -76,22 +79,25 @@ struct WidgetPrayerData: Codable, Sendable, Equatable {
             hijriDate: hijriDate,
             prayers: today.times.map { pt in
                 WidgetPrayer(
-                    name: pt.prayer.displayName,
-                    abbreviation: abbreviation(for: pt.prayer),
+                    name: pt.prayer.displayName(on: today.date),
+                    abbreviation: abbreviation(for: pt.prayer, on: today.date),
                     time: pt.time,
                     icon: pt.prayer.icon,
                     isActualPrayer: pt.prayer.isActualPrayer
                 )
             },
-            tomorrowPrayers: (tomorrow?.times ?? []).map { pt in
-                WidgetPrayer(
-                    name: pt.prayer.displayName,
-                    abbreviation: abbreviation(for: pt.prayer),
-                    time: pt.time,
-                    icon: pt.prayer.icon,
-                    isActualPrayer: pt.prayer.isActualPrayer
-                )
-            },
+            tomorrowPrayers: {
+                let day = tomorrow?.date ?? today.date
+                return (tomorrow?.times ?? []).map { pt in
+                    WidgetPrayer(
+                        name: pt.prayer.displayName(on: day),
+                        abbreviation: abbreviation(for: pt.prayer, on: day),
+                        time: pt.time,
+                        icon: pt.prayer.icon,
+                        isActualPrayer: pt.prayer.isActualPrayer
+                    )
+                }
+            }(),
             latitude: location.latitude,
             longitude: location.longitude,
             timezoneIdentifier: location.timezoneIdentifier,

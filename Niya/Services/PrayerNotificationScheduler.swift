@@ -29,8 +29,9 @@ enum PrayerNotificationScheduler {
                 guard pt.prayer.isActualPrayer, pt.time > now else { continue }
 
                 let content = UNMutableNotificationContent()
-                content.title = "\(pt.prayer.displayName) Prayer"
-                content.body = "It's time for \(pt.prayer.displayName) - \(formatter.string(from: pt.time))"
+                let name = pt.prayer.displayName(on: date, calendar: cal)
+                content.title = "\(name) Prayer"
+                content.body = "It's time for \(name) - \(formatter.string(from: pt.time))"
                 content.sound = .default
                 content.interruptionLevel = .timeSensitive
                 content.categoryIdentifier = "prayerTime"

@@ -112,6 +112,32 @@ struct PrayerNotificationSchedulerTests {
         #expect(trigger.dateComponents.minute == expectedMinute)
     }
 
+    @Test("Friday Dhuhr notification says Jumuah")
+    func fridayDhuhrNotification() {
+        let tz = TimeZone(identifier: "America/New_York")!
+        // 2026-03-27 is a Friday
+        let friday = fixedDate(2026, 3, 27, 0, 0, tz: tz)
+        let requests = PrayerNotificationScheduler.buildRequests(
+            location: nyc, method: .isna, asrFactor: 1, now: friday
+        )
+        let dhuhr = requests.first { $0.identifier == "prayer_dhuhr_2026_3_27" }
+        #expect(dhuhr?.content.title == "Jumuah Prayer")
+        #expect(dhuhr?.content.body.contains("Jumuah") == true)
+    }
+
+    @Test("Non-Friday Dhuhr notification says Dhuhr")
+    func saturdayDhuhrNotification() {
+        let tz = TimeZone(identifier: "America/New_York")!
+        // 2026-03-28 is a Saturday
+        let saturday = fixedDate(2026, 3, 28, 0, 0, tz: tz)
+        let requests = PrayerNotificationScheduler.buildRequests(
+            location: nyc, method: .isna, asrFactor: 1, now: saturday
+        )
+        // First dhuhr is Saturday's
+        let dhuhr = requests.first { $0.identifier == "prayer_dhuhr_2026_3_28" }
+        #expect(dhuhr?.content.title == "Dhuhr Prayer")
+    }
+
     @Test func emptyWhenNotificationsDisabled() {
         let requests = PrayerNotificationScheduler.buildRequests(
             location: nyc, method: .isna, asrFactor: 1, enabled: false

@@ -67,6 +67,38 @@ struct PrayerTimeModelTests {
         #expect(interval! > 0)
     }
 
+    private func makeDate(year: Int, month: Int, day: Int) -> Date {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal.date(from: DateComponents(year: year, month: month, day: day, hour: 12))!
+    }
+
+    private var utcCalendar: Calendar {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal
+    }
+
+    @Test("displayName on Friday returns Jumuah for dhuhr")
+    func dhuhrOnFriday() {
+        // 2026-03-27 is a Friday
+        let friday = makeDate(year: 2026, month: 3, day: 27)
+        #expect(PrayerName.dhuhr.displayName(on: friday, calendar: utcCalendar) == "Jumuah")
+    }
+
+    @Test("displayName on non-Friday returns Dhuhr for dhuhr")
+    func dhuhrOnSaturday() {
+        // 2026-03-28 is a Saturday
+        let saturday = makeDate(year: 2026, month: 3, day: 28)
+        #expect(PrayerName.dhuhr.displayName(on: saturday, calendar: utcCalendar) == "Dhuhr")
+    }
+
+    @Test("displayName on Friday returns normal name for non-dhuhr")
+    func fajrOnFriday() {
+        let friday = makeDate(year: 2026, month: 3, day: 27)
+        #expect(PrayerName.fajr.displayName(on: friday, calendar: utcCalendar) == "Fajr")
+    }
+
     @Test func timeUntilNextNilWhenAllPassed() {
         let now = Date()
         let times = [
