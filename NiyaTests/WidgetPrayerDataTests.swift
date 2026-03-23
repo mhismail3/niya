@@ -182,14 +182,15 @@ struct WidgetPrayerDataTests {
         #expect(next?.name == "Fajr")
     }
 
-    @Test("nextPrayer after all tomorrow prayers returns nil")
+    @Test("nextPrayer after all tomorrow prayers falls back to first tomorrow prayer")
     func nextPrayerAfterAllTomorrow() {
         let base = cal.startOfDay(for: Date())
         let data = sampleData(baseDate: base)
         let tomorrow = cal.date(byAdding: .day, value: 1, to: base)!
         let lateNextDay = cal.date(bySettingHour: 23, minute: 59, second: 0, of: tomorrow)!
         let next = data.nextPrayer(at: lateNextDay)
-        #expect(next == nil)
+        #expect(next != nil)
+        #expect(next?.name == "Fajr")
     }
 
     @Test("nextPrayer with empty tomorrowPrayers returns nil after today")
@@ -210,6 +211,36 @@ struct WidgetPrayerDataTests {
         )
         let afterAll = makeDate(hour: 23, minute: 0, on: base)
         #expect(data.nextPrayer(at: afterAll) == nil)
+    }
+
+    @Test("nextPrayer never returns nil when tomorrowPrayers exist")
+    func nextPrayerNeverNilWithTomorrow() {
+        let base = cal.startOfDay(for: Date())
+        let data = sampleData(baseDate: base)
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: base)!
+        let tomorrowIsha = cal.date(bySettingHour: 19, minute: 24, second: 0, of: tomorrow)!
+        #expect(data.nextPrayer(at: tomorrowIsha) != nil)
+    }
+
+    @Test("nextPrayer just after today Isha returns tomorrow Fajr")
+    func nextPrayerJustAfterIsha() {
+        let base = cal.startOfDay(for: Date())
+        let data = sampleData(baseDate: base)
+        let justAfterIsha = makeDate(hour: 19, minute: 24, on: base)
+        let next = data.nextPrayer(at: justAfterIsha)
+        #expect(next?.name == "Fajr")
+    }
+
+    @Test("nextPrayer with empty tomorrowPrayers AND all today passed returns nil")
+    func nextPrayerEmptyTomorrowAllPassed() {
+        let base = cal.startOfDay(for: Date())
+        let data = WidgetPrayerData(
+            computedAt: base, locationName: "Test", hijriDate: "Test",
+            prayers: [WidgetPrayer(name: "Fajr", abbreviation: "FJR", time: makeDate(hour: 5, minute: 0, on: base), icon: "sun.horizon", isActualPrayer: true)],
+            tomorrowPrayers: [],
+            latitude: 0, longitude: 0, timezoneIdentifier: "UTC", calculationMethod: "isna", asrFactor: 1
+        )
+        #expect(data.nextPrayer(at: makeDate(hour: 23, minute: 0, on: base)) == nil)
     }
 
     @Test("isActualPrayer - sunrise is false, others true")

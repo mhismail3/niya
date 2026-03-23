@@ -16,8 +16,12 @@ struct PrayerTimelineProvider: TimelineProvider {
         let (data, isFallback) = Self.loadOrComputeData()
         let now = Date()
         let entries = Self.makeEntries(from: data, now: now, isFallback: isFallback)
-        let lastDate = entries.last?.date ?? now
-        let refreshDate = Calendar.current.date(byAdding: .minute, value: 30, to: lastDate) ?? lastDate
+        // Refresh after today's last prayer + 30 min — ensures fresh data each evening
+        // rather than running a stale 2-day timeline.
+        let todayLastPrayer = data.prayers.last?.time ?? now
+        let refreshBase = max(todayLastPrayer, now)
+        let refreshDate = Calendar.current.date(byAdding: .minute, value: 30, to: refreshBase)
+            ?? Calendar.current.date(byAdding: .hour, value: 1, to: now) ?? now
         let timeline = Timeline(entries: entries, policy: .after(refreshDate))
         completion(timeline)
     }
@@ -56,7 +60,10 @@ struct PrayerTimelineProvider: TimelineProvider {
             entries.append(PrayerTimeEntry(date: prayer.time, data: data, isFallback: isFallback))
         }
 
-        for prayer in data.tomorrowPrayers where prayer.time > now {
+        // Add tomorrow entries, but drop the last prayer — at that entry time,
+        // nextPrayer would need day-after-tomorrow data we don't have.
+        let tomorrowFuture = data.tomorrowPrayers.filter { $0.time > now }
+        for prayer in tomorrowFuture.dropLast() {
             entries.append(PrayerTimeEntry(date: prayer.time, data: data, isFallback: isFallback))
         }
 

@@ -32,6 +32,18 @@ struct SmallWidgetView: View {
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            VStack(alignment: .leading, spacing: 0) {
+                Text(HijriFormatter.format(date: entry.date, includeYear: true))
+                    .font(.system(.caption2, design: .serif))
+                    .foregroundStyle(Color.niyaSecondary)
+                Spacer()
+                Text(entry.data.locationName)
+                    .font(.system(.caption2, design: .serif))
+                    .foregroundStyle(Color.niyaSecondary)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

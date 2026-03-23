@@ -20,6 +20,10 @@ struct RectangularAccessoryView: View {
                     .font(.system(size: 10.5, design: .serif))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+            } else {
+                Text(verbatim: HijriFormatter.format(date: entry.date, includeYear: true))
+                    .font(.system(size: 10.5, design: .serif))
+                    .foregroundStyle(.secondary)
             }
         }
     }

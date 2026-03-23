@@ -36,7 +36,12 @@ struct WidgetPrayerData: Codable, Sendable, Equatable {
         if let next = prayers.first(where: { $0.time > date }) {
             return next
         }
-        return tomorrowPrayers.first(where: { $0.time > date })
+        if let next = tomorrowPrayers.first(where: { $0.time > date }) {
+            return next
+        }
+        // Stale timeline fallback: all tomorrow prayers are past — return first tomorrow prayer.
+        // Shows briefly until timeline refresh; avoids blank widget.
+        return tomorrowPrayers.first
     }
 
     func dayProgress(at date: Date) -> Double {

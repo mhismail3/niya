@@ -116,7 +116,7 @@ struct PrayerTimelineProviderTests {
         let entries = PrayerTimelineProvider.makeEntries(from: data, now: lateNight)
         let tomorrow = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: Date()))!
         let tomorrowEntries = entries.filter { cal.isDate($0.date, inSameDayAs: tomorrow) && cal.component(.hour, from: $0.date) > 0 }
-        #expect(tomorrowEntries.count >= 6)
+        #expect(tomorrowEntries.count >= 5)
     }
 
     @Test("makeEntries at midnight includes tomorrow entries")
@@ -124,7 +124,7 @@ struct PrayerTimelineProviderTests {
         let data = sampleData()
         let midnight = cal.startOfDay(for: cal.date(byAdding: .day, value: 1, to: Date())!)
         let entries = PrayerTimelineProvider.makeEntries(from: data, now: midnight)
-        #expect(entries.count >= 7)
+        #expect(entries.count >= 6)
     }
 
     @Test("makeEntries late evening - entry exists for each transition point")
@@ -132,7 +132,7 @@ struct PrayerTimelineProviderTests {
         let data = sampleData()
         let lateEvening = cal.date(bySettingHour: 20, minute: 0, second: 0, of: cal.startOfDay(for: Date()))!
         let entries = PrayerTimelineProvider.makeEntries(from: data, now: lateEvening)
-        #expect(entries.count >= 8)
+        #expect(entries.count >= 7)
     }
 
     @Test("makeEntries does not crash at year boundary")
@@ -158,6 +158,45 @@ struct PrayerTimelineProviderTests {
         let future = cal.date(from: DateComponents(year: 2099, month: 6, day: 15, hour: 14, minute: 30))!
         let entries = PrayerTimelineProvider.makeEntries(from: data, now: future)
         #expect(!entries.isEmpty)
+    }
+
+    @Test("Every timeline entry has non-nil nextPrayer")
+    func allEntriesHaveNextPrayer() {
+        let data = sampleData()
+        let base = cal.startOfDay(for: Date())
+        for hour in [0, 6, 12, 18, 22] {
+            let now = cal.date(bySettingHour: hour, minute: 0, second: 0, of: base)!
+            let entries = PrayerTimelineProvider.makeEntries(from: data, now: now)
+            for entry in entries {
+                #expect(entry.nextPrayer != nil,
+                    "Entry at \(entry.date) has nil nextPrayer (now=\(now))")
+            }
+        }
+    }
+
+    @Test("Timeline entries after Isha all have valid nextPrayer")
+    func entriesAfterIshaHaveNextPrayer() {
+        let data = sampleData()
+        let base = cal.startOfDay(for: Date())
+        let afterIsha = cal.date(bySettingHour: 20, minute: 0, second: 0, of: base)!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: afterIsha)
+        for entry in entries {
+            #expect(entry.nextPrayer != nil,
+                "Entry at \(entry.date) has nil nextPrayer (evening)")
+        }
+    }
+
+    @Test("No tomorrow entries past tomorrow's last prayer")
+    func noStaleTrailingEntries() {
+        let data = sampleData()
+        let base = cal.startOfDay(for: Date())
+        let now = cal.date(bySettingHour: 8, minute: 0, second: 0, of: base)!
+        let entries = PrayerTimelineProvider.makeEntries(from: data, now: now)
+        let tomorrow = cal.date(byAdding: .day, value: 1, to: base)!
+        let tomorrowIshaTime = cal.date(bySettingHour: 19, minute: 24, second: 0, of: tomorrow)!
+        let staleEntries = entries.filter { $0.date >= tomorrowIshaTime }
+        #expect(staleEntries.isEmpty,
+            "Found \(staleEntries.count) entries at/after tomorrow's Isha")
     }
 
     @Test("Entry at tomorrow Fajr time - nextPrayer transitions to Sunrise")

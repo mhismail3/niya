@@ -31,6 +31,10 @@ struct MediumWidgetView: View {
                 Text("Open Niya to configure")
                     .font(.system(.caption2, design: .serif))
                     .foregroundStyle(Color.niyaSecondary)
+            } else {
+                Text("Open Niya to refresh")
+                    .font(.system(.caption2, design: .serif))
+                    .foregroundStyle(Color.niyaSecondary)
             }
 
             Spacer()
