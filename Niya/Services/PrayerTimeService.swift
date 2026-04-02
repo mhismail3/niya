@@ -57,6 +57,10 @@ final class PrayerTimeService {
         lastCalculationDate = now
         startCountdown()
 
+        if let encoded = try? JSONEncoder().encode(location) {
+            UserDefaults.standard.set(encoded, forKey: StorageKey.lastCalculatedLocation)
+        }
+
         WidgetDataWriter.shared.write(today: result, tomorrow: tomorrowTimes, location: location, asrFactor: asrJuristic)
         WidgetDataWriter.shared.reloadTimelines()
 

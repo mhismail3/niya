@@ -1,10 +1,13 @@
 import SwiftUI
+import UserNotifications
 
 struct SalahSheetView: View {
     @Environment(LocationService.self) private var locationService
     @Environment(PrayerTimeService.self) private var prayerTimeService
+    @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications = false
     @State private var showLocationPicker = false
     @State private var showCalendar = false
+    @State private var showNotificationDeniedAlert = false
     @State private var selectedDetent: PresentationDetent = .medium
 
     private var location: UserLocation? {
@@ -46,6 +49,34 @@ struct SalahSheetView: View {
                             compact: selectedDetent == .medium
                         )
                         .padding(.horizontal)
+
+                        Toggle("Prayer Notifications", isOn: $prayerNotifications)
+                            .font(selectedDetent == .medium ? .niyaCaption : .niyaBody)
+                            .tint(Color.niyaTeal)
+                            .padding(.horizontal)
+                            .onChange(of: prayerNotifications) { _, enabled in
+                                if enabled {
+                                    Task {
+                                        let center = UNUserNotificationCenter.current()
+                                        let settings = await center.notificationSettings()
+                                        if settings.authorizationStatus == .denied {
+                                            prayerNotifications = false
+                                            showNotificationDeniedAlert = true
+                                        } else if settings.authorizationStatus == .notDetermined {
+                                            let granted = try? await center.requestAuthorization(options: [.alert, .sound])
+                                            if granted != true {
+                                                prayerNotifications = false
+                                                return
+                                            }
+                                            prayerTimeService.recalculate(location: loc)
+                                        } else {
+                                            prayerTimeService.recalculate(location: loc)
+                                        }
+                                    }
+                                } else {
+                                    PrayerNotificationScheduler.cancelAll()
+                                }
+                            }
                     } else if locationService.authorizationStatus == .denied ||
                               locationService.authorizationStatus == .restricted {
                         locationDeniedView
@@ -81,6 +112,14 @@ struct SalahSheetView: View {
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.hidden)
             }
+        }
+        .alert("Notifications Disabled", isPresented: $showNotificationDeniedAlert) {
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                Link("Open Settings", destination: url)
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Enable notifications in Settings to receive prayer time alerts.")
         }
         .onAppear {
             locationService.startHeading()

@@ -49,13 +49,18 @@ enum PrayerNotificationScheduler {
 
     static func scheduleAll(location: UserLocation, method: CalculationMethod, asrFactor: Int) {
         let center = UNUserNotificationCenter.current()
-        center.removeAllPendingNotificationRequests()
-        let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
-        for request in requests {
-            let requestID = request.identifier
-            center.add(request) { error in
-                if let error {
-                    AppLogger.notification.error("Failed to schedule \(requestID): \(error.localizedDescription)")
+        center.getNotificationSettings { settings in
+            guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
+                return
+            }
+            center.removeAllPendingNotificationRequests()
+            let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
+            for request in requests {
+                let requestID = request.identifier
+                center.add(request) { error in
+                    if let error {
+                        AppLogger.notification.error("Failed to schedule \(requestID): \(error.localizedDescription)")
+                    }
                 }
             }
         }
@@ -66,9 +71,14 @@ enum PrayerNotificationScheduler {
     }
 
     static func locationFromDefaults(userDefaults: UserDefaults = .standard) -> UserLocation? {
-        guard let data = userDefaults.data(forKey: StorageKey.manualLocationData) else {
-            return nil
+        if let data = userDefaults.data(forKey: StorageKey.manualLocationData),
+           let loc = try? JSONDecoder().decode(UserLocation.self, from: data) {
+            return loc
         }
-        return try? JSONDecoder().decode(UserLocation.self, from: data)
+        if let data = userDefaults.data(forKey: StorageKey.lastCalculatedLocation),
+           let loc = try? JSONDecoder().decode(UserLocation.self, from: data) {
+            return loc
+        }
+        return nil
     }
 }
