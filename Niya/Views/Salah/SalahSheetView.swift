@@ -143,7 +143,7 @@ struct SalahSheetView: View {
     private var countdownView: some View {
         VStack(spacing: 4) {
             if let next = prayerTimeService.activeTimes?.nextPrayer(after: Date()) {
-                Text("Next: \(next.prayer.displayName)")
+                Text("Next: \(next.prayer.displayName(on: Date()))")
                     .font(.niyaCaption)
                     .foregroundStyle(Color.niyaSecondary)
             }

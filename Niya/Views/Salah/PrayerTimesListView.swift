@@ -81,7 +81,7 @@ struct PrayerTimesListView: View {
                 .frame(width: 24)
                 .foregroundStyle(rowColor(pt))
 
-            Text(pt.prayer.displayName)
+            Text(pt.prayer.displayName(on: times.date))
                 .font(compact ? .niyaCaption : .niyaBody)
                 .fontWeight(isCurrent(pt) || isNext(pt) ? .semibold : .regular)
                 .foregroundStyle(rowColor(pt))
