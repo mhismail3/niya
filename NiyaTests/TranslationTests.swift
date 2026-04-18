@@ -7,12 +7,7 @@ import Testing
 struct TranslationTests {
 
     @Test func translationIndexDecodes() throws {
-        guard let url = Bundle.main.url(forResource: "translations_index", withExtension: "json") else {
-            Issue.record("translations_index.json missing from bundle")
-            return
-        }
-        let data = try Data(contentsOf: url)
-        let editions = try JSONDecoder().decode([TranslationEdition].self, from: data)
+        let editions = try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
         #expect(editions.count >= 13)
         #expect(editions.allSatisfy { !$0.id.isEmpty && !$0.filename.isEmpty })
     }
@@ -29,44 +24,24 @@ struct TranslationTests {
     }
 
     @Test func translationOverlayDecodes() throws {
-        guard let url = Bundle.main.url(forResource: "translation_en_sahih", withExtension: "json") else {
-            Issue.record("translation_en_sahih.json missing from bundle")
-            return
-        }
-        let data = try Data(contentsOf: url)
-        let overlay = try JSONDecoder().decode([String: String].self, from: data)
+        let overlay = try CompressedJSON.decode([String: String].self, resource: "translation_en_sahih")
         #expect(overlay.count == 6236)
         #expect(overlay["1:1"] != nil)
         #expect(overlay["114:6"] != nil)
     }
 
     @Test func allBundledTranslationsLoad() throws {
-        guard let indexUrl = Bundle.main.url(forResource: "translations_index", withExtension: "json") else {
-            Issue.record("translations_index.json missing from bundle")
-            return
-        }
-        let indexData = try Data(contentsOf: indexUrl)
-        let editions = try JSONDecoder().decode([TranslationEdition].self, from: indexData)
+        let editions = try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
 
         for edition in editions {
             let name = edition.filename.replacingOccurrences(of: ".json", with: "")
-            guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
-                Issue.record("\(edition.filename) missing from bundle")
-                continue
-            }
-            let data = try Data(contentsOf: url)
-            let overlay = try JSONDecoder().decode([String: String].self, from: data)
+            let overlay = try CompressedJSON.decode([String: String].self, resource: name)
             #expect(overlay.count == 6236, "Expected 6236 verses in \(edition.id), got \(overlay.count)")
         }
     }
 
     @Test func translationOverlayHasAllVerses() throws {
-        guard let url = Bundle.main.url(forResource: "translation_en_sahih", withExtension: "json") else {
-            Issue.record("translation_en_sahih.json missing from bundle")
-            return
-        }
-        let data = try Data(contentsOf: url)
-        let overlay = try JSONDecoder().decode([String: String].self, from: data)
+        let overlay = try CompressedJSON.decode([String: String].self, resource: "translation_en_sahih")
 
         let surahVerseCounts = [7, 286, 200, 176, 120, 165, 206, 75, 129, 109,
                                 123, 111, 43, 52, 99, 128, 111, 110, 98, 135,

@@ -14,20 +14,16 @@ struct TafsirDataIntegrityTests {
             for surahN in 1...113 {
                 let surahNext = surahN + 1
 
-                guard let url1 = Bundle.main.url(
-                    forResource: String(surahN),
-                    withExtension: "json",
+                guard let dict1 = try? CompressedJSON.decode(
+                    [String: String].self,
+                    resource: String(surahN),
                     subdirectory: edition.bundleDirectory
                 ),
-                let data1 = try? Data(contentsOf: url1),
-                let dict1 = try? JSONDecoder().decode([String: String].self, from: data1),
-                let url2 = Bundle.main.url(
-                    forResource: String(surahNext),
-                    withExtension: "json",
+                let dict2 = try? CompressedJSON.decode(
+                    [String: String].self,
+                    resource: String(surahNext),
                     subdirectory: edition.bundleDirectory
-                ),
-                let data2 = try? Data(contentsOf: url2),
-                let dict2 = try? JSONDecoder().decode([String: String].self, from: data2)
+                )
                 else { continue }
 
                 let prevTexts = Set(dict1.values)

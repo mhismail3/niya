@@ -366,6 +366,20 @@ final class AudioService: AudioPlaying {
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 
+    func addPeriodicTimeObserver(intervalMs: Int, callback: @escaping @Sendable (Int) -> Void) -> Any? {
+        guard let player else { return nil }
+        let interval = CMTime(value: Int64(intervalMs), timescale: 1000)
+        return player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { time in
+            let ms = Int(CMTimeGetSeconds(time) * 1000)
+            guard ms >= 0 else { return }
+            callback(ms)
+        }
+    }
+
+    func removeTimeObserver(_ observer: Any) {
+        player?.removeTimeObserver(observer)
+    }
+
     @objc private func playerDidFinish() {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in self?.playerDidFinish() }

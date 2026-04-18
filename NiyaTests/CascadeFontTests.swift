@@ -11,10 +11,8 @@ struct CascadeFontTests {
     /// Verifies that the cascade Quran font produces non-zero glyphs for every
     /// Arabic character and mark found in the verse data and word data.
     @Test func cascadeFontRendersAllHafsCharacters() throws {
-        let url = try #require(Bundle.main.url(forResource: "verses_hafs", withExtension: "json"))
-        let data = try Data(contentsOf: url)
         struct V: Decodable { let text: String }
-        let surahs = try JSONDecoder().decode([String: [V]].self, from: data)
+        let surahs = try CompressedJSON.decode([String: [V]].self, resource: "verses_hafs")
 
         // Collect all unique non-ASCII scalars from verse text
         var uniqueScalars = Set<UInt32>()
@@ -51,7 +49,6 @@ struct CascadeFontTests {
     /// Verifies cascade font renders a string containing U+06ED without producing .notdef glyphs.
     @Test func cascadeFontRendersSmallLowMeem() {
         let font = UIFont.quranFont(script: .hafs, size: 28)
-        let ctFont = font as CTFont
 
         // Create a line with text containing U+06ED in context (attached to a base letter)
         let testText = "صَبْرًۭا"  // U+06ED between ra-tanween and alef

@@ -4,7 +4,8 @@ import Foundation
 @MainActor
 final class TafsirService {
     @ObservationIgnored private var cache: [String: [String: String]] = [:]
-    @ObservationIgnored private var accessOrder: [String] = []
+    @ObservationIgnored private var accessCounter: UInt64 = 0
+    @ObservationIgnored private var accessTimes: [String: UInt64] = [:]
     private let maxCachedSurahs = 10
 
     func text(edition: TafsirEdition, surahId: Int, ayahId: Int) -> String? {
@@ -19,18 +20,17 @@ final class TafsirService {
 
     func clearCache() {
         cache.removeAll()
-        accessOrder.removeAll()
+        accessTimes.removeAll()
+        accessCounter = 0
     }
 
     private func loadSurah(edition: TafsirEdition, surahId: Int) -> [String: String] {
         let key = "\(edition.rawValue):\(surahId)"
-        guard let url = Bundle.main.url(
-            forResource: String(surahId),
-            withExtension: "json",
+        guard let dict = try? CompressedJSON.decode(
+            [String: String].self,
+            resource: String(surahId),
             subdirectory: edition.bundleDirectory
-        ),
-        let data = try? Data(contentsOf: url),
-        let dict = try? JSONDecoder().decode([String: String].self, from: data) else {
+        ) else {
             return [:]
         }
         cache[key] = dict
@@ -40,16 +40,15 @@ final class TafsirService {
     }
 
     private func touchKey(_ key: String) {
-        if let idx = accessOrder.firstIndex(of: key) {
-            accessOrder.remove(at: idx)
-        }
-        accessOrder.append(key)
+        accessCounter += 1
+        accessTimes[key] = accessCounter
     }
 
     private func evictIfNeeded() {
         while cache.count > maxCachedSurahs {
-            let oldest = accessOrder.removeFirst()
+            guard let oldest = accessTimes.min(by: { $0.value < $1.value })?.key else { break }
             cache.removeValue(forKey: oldest)
+            accessTimes.removeValue(forKey: oldest)
         }
     }
 }

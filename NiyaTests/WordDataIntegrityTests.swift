@@ -6,9 +6,7 @@ import Testing
 struct WordDataIntegrityTests {
 
     private static let allData: [Int: [Int: VerseWordData]] = {
-        guard let url = Bundle.main.url(forResource: "word_data", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let raw = try? JSONDecoder().decode([String: [String: VerseWordData]].self, from: data) else {
+        guard let raw = try? CompressedJSON.decode([String: [String: VerseWordData]].self, resource: "word_data") else {
             return [:]
         }
         var result: [Int: [Int: VerseWordData]] = [:]

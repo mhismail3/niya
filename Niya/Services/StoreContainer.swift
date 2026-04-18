@@ -32,7 +32,12 @@ final class StoreContainer {
 
 private struct StoreContainerKey: @preconcurrency EnvironmentKey {
     @MainActor static let defaultValue: StoreContainer = {
-        let container = try! ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
+        let container: ModelContainer
+        do {
+            container = try ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
+        } catch {
+            fatalError("Failed to create fallback ModelContainer: \(error)")
+        }
         return StoreContainer(modelContext: container.mainContext)
     }()
 }

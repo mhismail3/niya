@@ -24,12 +24,8 @@ final class HadithDataService {
         guard !isLoaded else { return }
         loadError = nil
         do {
-            guard let url = Bundle.main.url(forResource: "hadith_collections", withExtension: "json") else {
-                throw DataError.missingResource("hadith_collections.json")
-            }
             let all = try await Task.detached {
-                let data = try Data(contentsOf: url)
-                return try JSONDecoder().decode([HadithCollection].self, from: data)
+                try CompressedJSON.decode([HadithCollection].self, resource: "hadith_collections")
             }.value
             collections = all.filter { Self.enabledCollections.contains($0.id) }
             isLoaded = true
@@ -44,15 +40,10 @@ final class HadithDataService {
 
     func loadCollection(_ id: String) async {
         guard loadedCollections[id] == nil else { return }
-        guard let url = Bundle.main.url(forResource: "hadith_\(id)", withExtension: "json") else {
-            loadError = "Missing resource: hadith_\(id).json"
-            return
-        }
         loadError = nil
         do {
             let decoded = try await Task.detached {
-                let data = try Data(contentsOf: url)
-                return try JSONDecoder().decode(RawCollectionFile.self, from: data)
+                try CompressedJSON.decode(RawCollectionFile.self, resource: "hadith_\(id)")
             }.value
             let chapterIndex = Dictionary(grouping: decoded.hadiths, by: \.chapterId)
             loadedCollections[id] = HadithCollectionData(

@@ -53,11 +53,9 @@ struct NiyaApp: App {
         _storeContainer = State(wrappedValue: sc)
 
         let dm = DownloadManager(downloadStore: sc.downloads)
-        dm.reconcile()
         _downloadManager = State(wrappedValue: dm)
 
         as_.configureSession()
-        Self.migrateAudioFilenames()
         Self.resetTipsIfVersionChanged()
         try? Tips.configure([.displayFrequency(.immediate)])
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
@@ -93,7 +91,12 @@ struct NiyaApp: App {
                 .accentColor(Color.niyaTeal)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
-                    await wordDataService.load(reciter: selectedReciter)
+                    Self.migrateAudioFilenames()
+                    downloadManager.reconcile()
+                    async let loadWords: () = wordDataService.load(reciter: selectedReciter)
+                    async let loadTajweed: () = tajweedService.ensureLoaded()
+                    await loadWords
+                    await loadTajweed
                     let lang = dataService.selectedTranslations.first?.language ?? "en"
                     await wordDataService.loadMeanings(language: lang)
                 }
@@ -133,6 +136,7 @@ struct NiyaApp: App {
                     tafsirService.clearCache()
                     tajweedService.clearCache()
                     morphologyService.clearCache()
+                    wordDataService.clearOverlaidCache()
                 }
         }
     }

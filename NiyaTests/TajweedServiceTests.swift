@@ -6,8 +6,14 @@ import Testing
 @Suite("TajweedService")
 struct TajweedServiceTests {
 
-    @Test func allSurahsLoad() {
+    private func loadedService() async -> TajweedService {
         let service = TajweedService()
+        await service.ensureLoaded()
+        return service
+    }
+
+    @Test func allSurahsLoad() async {
+        let service = await loadedService()
         for surahId in 1...114 {
             let verse = service.verse(surahId: surahId, ayahId: 1)
             #expect(verse != nil, "Surah \(surahId) ayah 1 should exist")
@@ -15,8 +21,8 @@ struct TajweedServiceTests {
         }
     }
 
-    @Test func annotationRangesWithinBounds() {
-        let service = TajweedService()
+    @Test func annotationRangesWithinBounds() async {
+        let service = await loadedService()
         for surahId in 1...114 {
             var ayahId = 1
             while let verse = service.verse(surahId: surahId, ayahId: ayahId) {
@@ -31,8 +37,8 @@ struct TajweedServiceTests {
         }
     }
 
-    @Test func knownVerseHasExpectedRules() {
-        let service = TajweedService()
+    @Test func knownVerseHasExpectedRules() async {
+        let service = await loadedService()
         // Al-Fatiha ayah 1 should have annotations
         let verse = service.verse(surahId: 1, ayahId: 1)!
         #expect(!verse.annotations.isEmpty)
@@ -40,22 +46,23 @@ struct TajweedServiceTests {
         #expect(rules.contains(.hamzatWasl))
     }
 
-    @Test func clearCacheAndReload() {
-        let service = TajweedService()
+    @Test func clearCacheAndReload() async {
+        let service = await loadedService()
         _ = service.verse(surahId: 1, ayahId: 1)
         service.clearCache()
-        // After clear, next call re-loads from bundle
+        // After clear, need to reload
+        await service.ensureLoaded()
         let verse = service.verse(surahId: 1, ayahId: 1)
         #expect(verse != nil)
     }
 
-    @Test func invalidSurahReturnsNil() {
-        let service = TajweedService()
+    @Test func invalidSurahReturnsNil() async {
+        let service = await loadedService()
         #expect(service.verse(surahId: 999, ayahId: 1) == nil)
     }
 
-    @Test func lamJalalahAnnotated() {
-        let service = TajweedService()
+    @Test func lamJalalahAnnotated() async {
+        let service = await loadedService()
         // Al-Fatiha 1:1 "بِسْمِ ٱللَّهِ" contains Allah
         let v1 = service.verse(surahId: 1, ayahId: 1)!
         let jRules1 = v1.annotations.filter { $0.rule == .lamJalalah }
@@ -67,8 +74,8 @@ struct TajweedServiceTests {
         #expect(!jRules2.isEmpty, "2:7 should have Lam al-Jalalah annotation")
     }
 
-    @Test func idhaarNoonSakinahAnnotated() {
-        let service = TajweedService()
+    @Test func idhaarNoonSakinahAnnotated() async {
+        let service = await loadedService()
         // 2:4 "وَبِٱلْـَٔاخِرَةِ" — but let's find a clear noon sakinah + throat letter
         // 1:7 "أَنْعَمْتَ" — noon sakinah followed by ع (ain, a throat letter) = idhaar
         let verse = service.verse(surahId: 1, ayahId: 7)!
@@ -76,8 +83,8 @@ struct TajweedServiceTests {
         #expect(!zRules.isEmpty, "1:7 should have Idhaar annotation (أَنْعَمْتَ)")
     }
 
-    @Test func idhaarTanweenAnnotated() {
-        let service = TajweedService()
+    @Test func idhaarTanweenAnnotated() async {
+        let service = await loadedService()
         // 2:7 has عَذَابٌ عَظِيمٌ — dammatan on ب followed by ع (throat letter) = idhaar
         let verse = service.verse(surahId: 2, ayahId: 7)!
         let zRules = verse.annotations.filter { $0.rule == .idhaar }
@@ -92,24 +99,24 @@ struct TajweedServiceTests {
                 "No characters should be removed")
     }
 
-    @Test func raTafkheemAnnotated() {
-        let service = TajweedService()
+    @Test func raTafkheemAnnotated() async {
+        let service = await loadedService()
         // 1:1 "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ" — Ra + shadda + fatha = tafkheem
         let verse = service.verse(surahId: 1, ayahId: 1)!
         let rRules = verse.annotations.filter { $0.rule == .raTafkheem }
         #expect(!rRules.isEmpty, "1:1 should have Ra Tafkheem annotation")
     }
 
-    @Test func raTarqeeqAnnotated() {
-        let service = TajweedService()
+    @Test func raTarqeeqAnnotated() async {
+        let service = await loadedService()
         // 2:26 contains "رِزْقًا" — Ra + kasra = tarqeeq
         let verse = service.verse(surahId: 2, ayahId: 25)!
         let eRules = verse.annotations.filter { $0.rule == .raTarqeeq }
         #expect(!eRules.isEmpty, "2:25 should have Ra Tarqeeq annotation")
     }
 
-    @Test func raSakinAfterKasraWithIstila() {
-        let service = TajweedService()
+    @Test func raSakinAfterKasraWithIstila() async {
+        let service = await loadedService()
         // 78:21 "مِرْصَادًا" — Ra sakin after kasra, followed by ص (isti'la) = tafkheem
         let verse = service.verse(surahId: 78, ayahId: 21)!
         let rRules = verse.annotations.filter { $0.rule == .raTafkheem }

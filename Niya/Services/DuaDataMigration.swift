@@ -22,12 +22,7 @@ enum DuaDataMigration {
     }
 
     private static func loadMigrationMap() -> [String: String]? {
-        guard let url = Bundle.main.url(forResource: "dua_id_migration", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let map = try? JSONDecoder().decode([String: String].self, from: data) else {
-            return nil
-        }
-        return map
+        try? CompressedJSON.decode([String: String].self, resource: "dua_id_migration")
     }
 
     private static func migrateBookmarks(modelContext: ModelContext, map: [String: String]) {

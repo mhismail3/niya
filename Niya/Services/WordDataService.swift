@@ -9,16 +9,17 @@ final class WordDataService: WordDataProviding {
     private var cache: [Int: [Int: VerseWordData]]?
     private var meaningsOverlay: [String: String]?
     @ObservationIgnored private var overlaidCache: [Int: [Int: VerseWordData]] = [:]
+    @ObservationIgnored private var overlaidSurahOrder: [Int] = []
+    private let maxOverlaidSurahs = 10
 
     nonisolated static let supportedMeaningLanguages: Set<String> = ["ur", "bn", "tr", "id", "fa", "hi", "ta"]
 
     func load(reciter: Reciter = .alAfasy) async {
         if isLoaded && currentReciter == reciter { return }
         let filename = reciter.wordDataFilename
-        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else { return }
         do {
-            let jsonData = try Data(contentsOf: url)
             let result = try await Task.detached {
+                let jsonData = try CompressedJSON.load(resource: filename)
                 let raw = try JSONDecoder().decode([String: [String: VerseWordData]].self, from: jsonData)
                 var result: [Int: [Int: VerseWordData]] = [:]
                 for (surahKey, verses) in raw {
@@ -33,7 +34,7 @@ final class WordDataService: WordDataProviding {
                 return result
             }.value
             cache = result
-            overlaidCache.removeAll()
+            clearOverlaidCache()
             currentReciter = reciter
             isLoaded = true
         } catch {
@@ -44,31 +45,24 @@ final class WordDataService: WordDataProviding {
     func loadMeanings(language: String) async {
         if !Self.supportedMeaningLanguages.contains(language) {
             meaningsOverlay = nil
-            overlaidCache.removeAll()
+            clearOverlaidCache()
             currentMeaningLanguage = nil
             return
         }
         if language == currentMeaningLanguage { return }
 
         let filename = "word_meanings_\(language)"
-        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
-            meaningsOverlay = nil
-            overlaidCache.removeAll()
-            currentMeaningLanguage = nil
-            return
-        }
         do {
             let overlay = try await Task.detached {
-                let data = try Data(contentsOf: url)
-                return try JSONDecoder().decode([String: String].self, from: data)
+                try CompressedJSON.decode([String: String].self, resource: filename)
             }.value
             meaningsOverlay = overlay
-            overlaidCache.removeAll()
+            clearOverlaidCache()
             currentMeaningLanguage = language
         } catch {
             AppLogger.data.error("WordDataService loadMeanings failed: \(error)")
             meaningsOverlay = nil
-            overlaidCache.removeAll()
+            clearOverlaidCache()
             currentMeaningLanguage = nil
         }
     }
@@ -82,6 +76,7 @@ final class WordDataService: WordDataProviding {
             words[i].meaning = overlay["\(surahId):\(ayahId):\(words[i].p)"]
         }
         let result = VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words)
+        trackOverlaidSurah(surahId)
         overlaidCache[surahId, default: [:]][ayahId] = result
         return result
     }
@@ -91,6 +86,7 @@ final class WordDataService: WordDataProviding {
         guard let overlay = meaningsOverlay else {
             return verses.sorted(by: { $0.key < $1.key }).map { ($0.key, $0.value) }
         }
+        trackOverlaidSurah(surahId)
         return verses.sorted(by: { $0.key < $1.key }).map { (ayahId, data) in
             if let cached = overlaidCache[surahId]?[ayahId] { return (ayahId, cached) }
             var words = data.w
@@ -100,6 +96,27 @@ final class WordDataService: WordDataProviding {
             let result = VerseWordData(au: data.au, vs: data.vs, ve: data.ve, w: words)
             overlaidCache[surahId, default: [:]][ayahId] = result
             return (ayahId, result)
+        }
+    }
+
+    func clearOverlaidCache() {
+        overlaidCache.removeAll()
+        overlaidSurahOrder.removeAll()
+    }
+
+    private func trackOverlaidSurah(_ surahId: Int) {
+        if overlaidCache[surahId] != nil {
+            // Already tracked, move to end
+            if let idx = overlaidSurahOrder.firstIndex(of: surahId) {
+                overlaidSurahOrder.remove(at: idx)
+            }
+            overlaidSurahOrder.append(surahId)
+            return
+        }
+        overlaidSurahOrder.append(surahId)
+        while overlaidSurahOrder.count > maxOverlaidSurahs {
+            let evicted = overlaidSurahOrder.removeFirst()
+            overlaidCache.removeValue(forKey: evicted)
         }
     }
 }

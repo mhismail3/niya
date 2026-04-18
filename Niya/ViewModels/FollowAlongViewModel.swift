@@ -17,7 +17,7 @@ final class FollowAlongViewModel {
 
     private var currentLoop = 0
     private var seekingToStart = false
-    private var trackingTask: Task<Void, Never>?
+    private var timeObserver: Any?
     private var wordPlayer: AVPlayer?
     private var tapObserver: NSObjectProtocol?
     private let audioService: any AudioPlaying
@@ -68,7 +68,7 @@ final class FollowAlongViewModel {
         guard let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId),
               !verseData.w.isEmpty else { return }
 
-        trackingTask?.cancel()
+        removeCurrentTimeObserver()
         currentSurahId = surahId
         currentVerseId = ayahId
         currentWordIndex = 0
@@ -84,8 +84,7 @@ final class FollowAlongViewModel {
     }
 
     func stopTracking() {
-        trackingTask?.cancel()
-        trackingTask = nil
+        removeCurrentTimeObserver()
         isPlaying = false
         currentWordIndex = nil
         currentSurahId = nil
@@ -103,8 +102,7 @@ final class FollowAlongViewModel {
     }
 
     func pauseTracking() {
-        trackingTask?.cancel()
-        trackingTask = nil
+        removeCurrentTimeObserver()
         tappedWordPosition = nil
         tappedVerseId = nil
         if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
@@ -200,7 +198,7 @@ final class FollowAlongViewModel {
     private func seekToVerseInPlace(surahId: Int, ayahId: Int) -> Bool {
         guard let reciter = wordDataService.currentReciter, !reciter.hasPerVerseAudio,
               let verseData = wordDataService.words(surahId: surahId, ayahId: ayahId) else { return false }
-        trackingTask?.cancel()
+        removeCurrentTimeObserver()
         currentVerseId = ayahId
         currentWordIndex = 0
         currentLoop = 0
@@ -213,38 +211,43 @@ final class FollowAlongViewModel {
     }
 
     private func startWordTracking() {
-        trackingTask?.cancel()
-        trackingTask = Task { [weak self] in
-            while !Task.isCancelled {
-                guard let self else { return }
-                let timeMs = self.audioService.currentTimeMs
-                guard let surahId = self.currentSurahId,
-                      let verseId = self.currentVerseId,
-                      let verseData = self.wordDataService.words(surahId: surahId, ayahId: verseId) else {
-                    return
-                }
-
-                if self.seekingToStart {
-                    if timeMs < verseData.ve {
-                        self.seekingToStart = false
-                    } else {
-                        try? await Task.sleep(for: .milliseconds(30))
-                        continue
-                    }
-                }
-
-                if timeMs >= verseData.ve {
-                    self.handleVerseEnd()
-                    return
-                }
-
-                let idx = Self.wordIndex(for: timeMs, in: verseData.w)
-                if idx != self.currentWordIndex {
-                    self.currentWordIndex = idx
-                }
-
-                try? await Task.sleep(for: .milliseconds(30))
+        removeCurrentTimeObserver()
+        timeObserver = audioService.addPeriodicTimeObserver(intervalMs: 50) { [weak self] timeMs in
+            Task { @MainActor in
+                self?.handleTimeUpdate(timeMs)
             }
+        }
+    }
+
+    private func handleTimeUpdate(_ timeMs: Int) {
+        guard let surahId = currentSurahId,
+              let verseId = currentVerseId,
+              let verseData = wordDataService.words(surahId: surahId, ayahId: verseId) else { return }
+
+        if seekingToStart {
+            if timeMs < verseData.ve {
+                seekingToStart = false
+            } else {
+                return
+            }
+        }
+
+        if timeMs >= verseData.ve {
+            removeCurrentTimeObserver()
+            handleVerseEnd()
+            return
+        }
+
+        let idx = Self.wordIndex(for: timeMs, in: verseData.w)
+        if idx != currentWordIndex {
+            currentWordIndex = idx
+        }
+    }
+
+    private func removeCurrentTimeObserver() {
+        if let obs = timeObserver {
+            audioService.removeTimeObserver(obs)
+            timeObserver = nil
         }
     }
 
@@ -281,8 +284,6 @@ final class FollowAlongViewModel {
             let nextAyah = verseId + 1
             if let reciter = wordDataService.currentReciter, !reciter.hasPerVerseAudio,
                wordDataService.words(surahId: surahId, ayahId: nextAyah) != nil {
-                // Per-surah reciter: audio is already playing at the right position,
-                // just transition tracking without seeking.
                 currentVerseId = nextAyah
                 currentWordIndex = 0
                 currentLoop = 0

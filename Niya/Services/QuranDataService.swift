@@ -17,7 +17,8 @@ final class QuranDataService: QuranDataProviding {
     @ObservationIgnored private var surahLookup: [Int: Surah] = [:]
     private var translationOverlays: [(edition: TranslationEdition, overlay: [String: String])] = []
     @ObservationIgnored private var versesCache: [String: [Verse]] = [:]
-    @ObservationIgnored private var cacheOrder: [String] = []
+    @ObservationIgnored private var cacheAccessCounter: UInt64 = 0
+    @ObservationIgnored private var cacheAccessTimes: [String: UInt64] = [:]
     private let maxCacheEntries = 20
 
     func load() async {
@@ -80,13 +81,12 @@ final class QuranDataService: QuranDataProviding {
             return v
         }
         versesCache[cacheKey] = result
-        if let idx = cacheOrder.firstIndex(of: cacheKey) {
-            cacheOrder.remove(at: idx)
-        }
-        cacheOrder.append(cacheKey)
-        while versesCache.count > maxCacheEntries, let oldest = cacheOrder.first {
-            cacheOrder.removeFirst()
+        cacheAccessCounter += 1
+        cacheAccessTimes[cacheKey] = cacheAccessCounter
+        while versesCache.count > maxCacheEntries {
+            guard let oldest = cacheAccessTimes.min(by: { $0.value < $1.value })?.key else { break }
             versesCache.removeValue(forKey: oldest)
+            cacheAccessTimes.removeValue(forKey: oldest)
         }
         return result
     }
@@ -130,11 +130,9 @@ final class QuranDataService: QuranDataProviding {
     func addTranslation(_ edition: TranslationEdition) async throws {
         guard !selectedTranslations.contains(where: { $0.id == edition.id }) else { return }
         let name = edition.filename.replacingOccurrences(of: ".json", with: "")
-        guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
-            throw DataError.missingResource(edition.filename)
-        }
-        let data = try Data(contentsOf: url)
-        let overlay = try JSONDecoder().decode([String: String].self, from: data)
+        let overlay = try await Task.detached {
+            try CompressedJSON.decode([String: String].self, resource: name)
+        }.value
         translationOverlays.append((edition: edition, overlay: overlay))
         selectedTranslations.append(edition)
         versesCache.removeAll()
@@ -154,7 +152,8 @@ final class QuranDataService: QuranDataProviding {
 
     func clearCache() {
         versesCache.removeAll()
-        cacheOrder.removeAll()
+        cacheAccessTimes.removeAll()
+        cacheAccessCounter = 0
     }
 
     private func saveSelectedIds() {
@@ -165,30 +164,20 @@ final class QuranDataService: QuranDataProviding {
     }
 
     private func loadTranslationIndex() async throws -> [TranslationEdition] {
-        guard let url = Bundle.main.url(forResource: "translations_index", withExtension: "json") else { return [] }
-        return try await Task.detached {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode([TranslationEdition].self, from: data)
+        try await Task.detached {
+            try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
         }.value
     }
 
     private func loadSurahs() async throws -> [Surah] {
-        guard let url = Bundle.main.url(forResource: "surahs", withExtension: "json") else {
-            throw DataError.missingResource("surahs.json")
-        }
-        return try await Task.detached {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode([Surah].self, from: data)
+        try await Task.detached {
+            try CompressedJSON.decode([Surah].self, resource: "surahs")
         }.value
     }
 
     private func loadVerses(filename: String) async throws -> [String: [Verse]] {
-        guard let url = Bundle.main.url(forResource: filename, withExtension: "json") else {
-            throw DataError.missingResource("\(filename).json")
-        }
-        return try await Task.detached {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode([String: [Verse]].self, from: data)
+        try await Task.detached {
+            try CompressedJSON.decode([String: [Verse]].self, resource: filename)
         }.value
     }
 

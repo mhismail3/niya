@@ -25,6 +25,13 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
 
     private var config: Config { Self.configs[self]! }
 
+    private static func makeURL(_ string: String) -> URL {
+        guard let url = URL(string: string) else {
+            preconditionFailure("Invalid URL literal: \(string)")
+        }
+        return url
+    }
+
     private static let configs: [Reciter: Config] = {
         func islamicNetworkReciter(
             displayName: String,
@@ -42,10 +49,10 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
                 wordDataFilename: "word_data_\(filenameSlug)",
                 surahStreamURL: { surahId in
                     let sid = surahZeroPad ? String(format: "%03d", surahId) : "\(surahId)"
-                    return URL(string: "https://download.quranicaudio.com/qdc/\(surahPath)/\(sid).mp3")!
+                    return makeURL("https://download.quranicaudio.com/qdc/\(surahPath)/\(sid).mp3")
                 },
                 verseStreamURL: { absoluteVerseNumber in
-                    URL(string: "https://cdn.islamic.network/quran/audio/\(bitrate)/\(networkId)/\(absoluteVerseNumber).mp3")!
+                    makeURL("https://cdn.islamic.network/quran/audio/\(bitrate)/\(networkId)/\(absoluteVerseNumber).mp3")
                 },
                 localFilenamePrefix: "audio_\(filenameSlug)_surah_"
             )
@@ -58,10 +65,10 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
                 hasPerVerseAudio: true,
                 wordDataFilename: "word_data",
                 surahStreamURL: { surahId in
-                    URL(string: "https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/\(surahId).mp3")!
+                    makeURL("https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/\(surahId).mp3")
                 },
                 verseStreamURL: { absoluteVerseNumber in
-                    URL(string: "https://cdn.islamic.network/quran/audio/128/ar.alafasy/\(absoluteVerseNumber).mp3")!
+                    makeURL("https://cdn.islamic.network/quran/audio/128/ar.alafasy/\(absoluteVerseNumber).mp3")
                 },
                 localFilenamePrefix: "audio_alafasy_surah_"
             ),
@@ -71,7 +78,7 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
                 hasPerVerseAudio: false,
                 wordDataFilename: "noreen_word_data",
                 surahStreamURL: { surahId in
-                    URL(string: "https://download.quranicaudio.com/quran/noreen_siddiq/\(String(format: "%03d", surahId)).mp3")!
+                    makeURL("https://download.quranicaudio.com/quran/noreen_siddiq/\(String(format: "%03d", surahId)).mp3")
                 },
                 verseStreamURL: nil,
                 localFilenamePrefix: "audio_noreen_surah_"
@@ -136,7 +143,7 @@ enum Reciter: String, CaseIterable, Identifiable, Codable {
                 hasPerVerseAudio: false,
                 wordDataFilename: "word_data_bukhatir",
                 surahStreamURL: { surahId in
-                    URL(string: "https://download.quranicaudio.com/quran/salaah_bukhaatir/\(String(format: "%03d", surahId)).mp3")!
+                    makeURL("https://download.quranicaudio.com/quran/salaah_bukhaatir/\(String(format: "%03d", surahId)).mp3")
                 },
                 verseStreamURL: nil,
                 localFilenamePrefix: "audio_bukhatir_surah_"

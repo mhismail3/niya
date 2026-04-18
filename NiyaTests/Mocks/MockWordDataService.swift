@@ -30,4 +30,6 @@ final class MockWordDataService: WordDataProviding {
     func allVerseData(surahId: Int) -> [(ayahId: Int, data: VerseWordData)]? {
         allVerseDataResult
     }
+
+    func clearOverlaidCache() {}
 }

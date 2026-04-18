@@ -6,15 +6,11 @@ import Testing
 struct IndoPakDataIntegrityTests {
 
     private static let indoPakData: [String: [Verse]] = {
-        guard let url = Bundle.main.url(forResource: "verses_indopak", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return [:] }
-        return (try? JSONDecoder().decode([String: [Verse]].self, from: data)) ?? [:]
+        (try? CompressedJSON.decode([String: [Verse]].self, resource: "verses_indopak")) ?? [:]
     }()
 
     private static let hafsData: [String: [Verse]] = {
-        guard let url = Bundle.main.url(forResource: "verses_hafs", withExtension: "json"),
-              let data = try? Data(contentsOf: url) else { return [:] }
-        return (try? JSONDecoder().decode([String: [Verse]].self, from: data)) ?? [:]
+        (try? CompressedJSON.decode([String: [Verse]].self, resource: "verses_hafs")) ?? [:]
     }()
 
     @Test func allSurahsPresent() {

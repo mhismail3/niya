@@ -8,8 +8,14 @@ struct TajweedMappingWaqfTests {
 
     private let waqfRange: ClosedRange<UInt32> = 0x06D6...0x06DC
 
-    @Test func mappingPreservesAnnotationsWhenTargetHasWaqfMarks() {
+    private func loadedService() async -> TajweedService {
         let service = TajweedService()
+        await service.ensureLoaded()
+        return service
+    }
+
+    @Test func mappingPreservesAnnotationsWhenTargetHasWaqfMarks() async {
+        let service = await loadedService()
         // Surah 5 has waqf marks; verify annotations map correctly
         guard let verse = service.verse(surahId: 5, ayahId: 1) else {
             Issue.record("Surah 5:1 should exist in tajweed data")
@@ -22,8 +28,8 @@ struct TajweedMappingWaqfTests {
         }
     }
 
-    @Test func annotationsValidForVersesWithWaqfMarks() {
-        let service = TajweedService()
+    @Test func annotationsValidForVersesWithWaqfMarks() async {
+        let service = await loadedService()
         let surahsToCheck = [2, 3, 4, 5, 18, 36]
         for surahId in surahsToCheck {
             var ayahId = 1
@@ -42,8 +48,8 @@ struct TajweedMappingWaqfTests {
         }
     }
 
-    @Test func tajweedTextContainsWaqfMarks() {
-        let service = TajweedService()
+    @Test func tajweedTextContainsWaqfMarks() async {
+        let service = await loadedService()
         // Verify that tajweed-processed text preserves waqf marks
         var foundWaqf = false
         for surahId in 1...10 {

@@ -20,11 +20,8 @@ struct HadithDataIntegrityTests {
 
     private static let loaded: [String: CollectionFile] = {
         var result: [String: CollectionFile] = [:]
-        let decoder = JSONDecoder()
         for cid in enabledCollections {
-            guard let url = Bundle.main.url(forResource: "hadith_\(cid)", withExtension: "json"),
-                  let data = try? Data(contentsOf: url),
-                  let file = try? decoder.decode(CollectionFile.self, from: data) else {
+            guard let file = try? CompressedJSON.decode(CollectionFile.self, resource: "hadith_\(cid)") else {
                 continue
             }
             result[cid] = file

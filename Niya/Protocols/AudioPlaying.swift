@@ -26,4 +26,6 @@ import Foundation
     func streamURL(absoluteVerseNumber: Int, reciter: Reciter) -> URL?
     func surahStreamURL(surahId: Int, reciter: Reciter) -> URL
     func localSurahURL(surahId: Int, reciter: Reciter) -> URL?
+    func addPeriodicTimeObserver(intervalMs: Int, callback: @escaping @Sendable (Int) -> Void) -> Any?
+    func removeTimeObserver(_ observer: Any)
 }

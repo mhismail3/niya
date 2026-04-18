@@ -47,7 +47,11 @@ enum ModelContainerFactory {
         if let container = try? makeContainer(cloudKit: .none) {
             return container
         }
-        return try! makeContainer(cloudKit: .none, inMemory: true)
+        do {
+            return try makeContainer(cloudKit: .none, inMemory: true)
+        } catch {
+            fatalError("Failed to create in-memory ModelContainer: \(error)")
+        }
     }
 
     static func makeContainer(

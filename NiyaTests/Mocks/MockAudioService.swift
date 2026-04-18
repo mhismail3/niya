@@ -122,4 +122,18 @@ final class MockAudioService: AudioPlaying {
     func localSurahURL(surahId: Int, reciter: Reciter) -> URL? {
         nil
     }
+
+    var addTimeObserverCallCount = 0
+    var removeTimeObserverCallCount = 0
+    var lastTimeObserverCallback: (@Sendable (Int) -> Void)?
+
+    func addPeriodicTimeObserver(intervalMs: Int, callback: @escaping @Sendable (Int) -> Void) -> Any? {
+        addTimeObserverCallCount += 1
+        lastTimeObserverCallback = callback
+        return "mock-observer-\(addTimeObserverCallCount)" as NSString
+    }
+
+    func removeTimeObserver(_ observer: Any) {
+        removeTimeObserverCallCount += 1
+    }
 }

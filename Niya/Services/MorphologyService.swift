@@ -29,9 +29,7 @@ final class MorphologyService {
 
     private func loadIfNeeded() {
         guard data == nil else { return }
-        guard let url = Bundle.main.url(forResource: "word_morphology", withExtension: "json"),
-              let raw = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode(MorphologyData.self, from: raw) else {
+        guard let decoded = try? CompressedJSON.decode(MorphologyData.self, resource: "word_morphology") else {
             return
         }
         data = decoded
@@ -39,9 +37,7 @@ final class MorphologyService {
 
     private func loadMeaningsIfNeeded() {
         guard meanings == nil else { return }
-        guard let url = Bundle.main.url(forResource: "root_meanings", withExtension: "json"),
-              let raw = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode([String: [RootMeaning]].self, from: raw) else {
+        guard let decoded = try? CompressedJSON.decode([String: [RootMeaning]].self, resource: "root_meanings") else {
             return
         }
         meanings = decoded

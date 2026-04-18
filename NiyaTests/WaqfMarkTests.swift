@@ -11,9 +11,7 @@ struct WaqfMarkTests {
     // MARK: - Data integrity
 
     @Test func hafsDataContainsWaqfMarks() throws {
-        let url = try #require(Bundle.main.url(forResource: "verses_hafs", withExtension: "json"))
-        let data = try Data(contentsOf: url)
-        let surahs = try JSONDecoder().decode([String: [VerseEntry]].self, from: data)
+        let surahs = try CompressedJSON.decode([String: [VerseEntry]].self, resource: "verses_hafs")
         let verses = try #require(surahs["5"])
         let verse = verses[0]
         let waqfCount = verse.text.unicodeScalars.filter { waqfRange.contains($0.value) }.count
@@ -21,9 +19,7 @@ struct WaqfMarkTests {
     }
 
     @Test func indoPakDataContainsWaqfMarks() throws {
-        let url = try #require(Bundle.main.url(forResource: "verses_indopak", withExtension: "json"))
-        let data = try Data(contentsOf: url)
-        let surahs = try JSONDecoder().decode([String: [VerseEntry]].self, from: data)
+        let surahs = try CompressedJSON.decode([String: [VerseEntry]].self, resource: "verses_indopak")
         var surahsWithWaqf = 0
         for (_, verses) in surahs {
             let hasWaqf = verses.contains { verse in

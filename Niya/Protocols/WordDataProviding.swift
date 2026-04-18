@@ -8,4 +8,5 @@ import Foundation
     func loadMeanings(language: String) async
     func words(surahId: Int, ayahId: Int) -> VerseWordData?
     func allVerseData(surahId: Int) -> [(ayahId: Int, data: VerseWordData)]?
+    func clearOverlaidCache()
 }

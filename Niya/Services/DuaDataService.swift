@@ -16,11 +16,9 @@ final class DuaDataService {
         guard !isLoaded else { return }
         loadError = nil
         do {
-            guard let url = Bundle.main.url(forResource: "dua_all", withExtension: "json") else {
-                throw DataError.missingResource("dua_all.json")
-            }
-            let data = try Data(contentsOf: url)
-            let decoded = try JSONDecoder().decode(RawDuaFile.self, from: data)
+            let decoded = try await Task.detached {
+                try CompressedJSON.decode(RawDuaFile.self, resource: "dua_all")
+            }.value
             sections = decoded.sections
             categories = decoded.categories
             duasByCategory = decoded.duas
