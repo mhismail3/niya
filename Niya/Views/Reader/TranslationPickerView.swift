@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TranslationPickerView: View {
     @Environment(QuranDataService.self) private var dataService
+    @State private var errorMessage: String?
 
     private var grouped: [(language: String, editions: [TranslationEdition])] {
         let byLang = Dictionary(grouping: dataService.availableTranslations, by: \.languageName)
@@ -19,7 +20,11 @@ struct TranslationPickerView: View {
                                 if isSelected {
                                     dataService.removeTranslation(edition)
                                 } else {
-                                    try? await dataService.addTranslation(edition)
+                                    do {
+                                        try await dataService.addTranslation(edition)
+                                    } catch {
+                                        errorMessage = "Couldn't load \(edition.name): \(error.localizedDescription)"
+                                    }
                                 }
                             }
                         } label: {
@@ -55,5 +60,13 @@ struct TranslationPickerView: View {
         }
         .navigationTitle("Translations")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Translation Error", isPresented: Binding(
+            get: { errorMessage != nil },
+            set: { if !$0 { errorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { errorMessage = nil }
+        } message: {
+            Text(errorMessage ?? "")
+        }
     }
 }

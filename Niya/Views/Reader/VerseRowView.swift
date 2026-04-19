@@ -20,7 +20,6 @@ struct VerseRowView: View {
     @Environment(TajweedService.self) private var tajweedService
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
-    @Environment(\.highlightedAyahId) private var highlightedAyahId
     @Environment(\.showTajweedGuide) private var showTajweedGuide
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.showTajweed) private var showTajweed: Bool = true
@@ -47,7 +46,7 @@ struct VerseRowView: View {
             }
 
             if showTajweed && script == .hafs, let tv = tajweedService.verse(surahId: surahId, ayahId: verse.id) {
-                TajweedTextView(verse: tv, fontSize: arabicFontSize) { tap in
+                TajweedTextView(surahId: surahId, verse: tv, fontSize: arabicFontSize) { tap in
                     handleTajweedTap(tap)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -103,15 +102,8 @@ struct VerseRowView: View {
         .padding(.vertical, 12)
         .padding(.horizontal, 4)
         .background {
-            if isPlaying {
-                Color.niyaGold.opacity(0.06)
-                    .padding(.horizontal, -16)
-            } else if highlightedAyahId == verse.id {
-                Color.niyaGold.opacity(0.15)
-                    .padding(.horizontal, -16)
-            }
+            VerseHighlightBackground(verseId: verse.id, isPlaying: isPlaying)
         }
-        .animation(.easeOut(duration: 0.5), value: highlightedAyahId)
         .onChange(of: showTajweed) { _, on in
             if !on { dismissTooltip() }
         }

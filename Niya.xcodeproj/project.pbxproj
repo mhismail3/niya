@@ -113,6 +113,7 @@
 		F0D207CC01AE4C0993644C9F /* BookmarkColorMenuContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B4AB2A552E6402488262545 /* BookmarkColorMenuContent.swift */; };
 		803466C9A4E6452399C6D6C5 /* TranslationBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0983E3D51D44FB924C77A4 /* TranslationBlockView.swift */; };
 		DED405083BF24C1593668E37 /* VerseNumberBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DD399D919B7448CB00A4EB4 /* VerseNumberBadge.swift */; };
+		A1F2E3D4C5B6A7089A1B2C3D /* VerseHighlightBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F1E2D3C4B5A60697081920 /* VerseHighlightBackground.swift */; };
 		B29A2E4BC89242B6A319C55F /* BookmarksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F599B2629B24D69B61D5AB5 /* BookmarksView.swift */; };
 		4DB6E90F3CFB4F5787B1B294 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B1A94A79034879A4B15313 /* SettingsView.swift */; };
 		27A3529F85454D9D977105D8 /* SharedSettingsSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C74AA27A64A42C6AE7AB652 /* SharedSettingsSections.swift */; };
@@ -440,6 +441,7 @@
 		3B4AB2A552E6402488262545 /* BookmarkColorMenuContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkColorMenuContent.swift; sourceTree = "<group>"; };
 		8E0983E3D51D44FB924C77A4 /* TranslationBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationBlockView.swift; sourceTree = "<group>"; };
 		8DD399D919B7448CB00A4EB4 /* VerseNumberBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseNumberBadge.swift; sourceTree = "<group>"; };
+		A0F1E2D3C4B5A60697081920 /* VerseHighlightBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerseHighlightBackground.swift; sourceTree = "<group>"; };
 		4F599B2629B24D69B61D5AB5 /* BookmarksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksView.swift; sourceTree = "<group>"; };
 		A8B1A94A79034879A4B15313 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5C74AA27A64A42C6AE7AB652 /* SharedSettingsSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSettingsSections.swift; sourceTree = "<group>"; };
@@ -900,6 +902,7 @@
 				3B4AB2A552E6402488262545 /* BookmarkColorMenuContent.swift */,
 				8E0983E3D51D44FB924C77A4 /* TranslationBlockView.swift */,
 				8DD399D919B7448CB00A4EB4 /* VerseNumberBadge.swift */,
+				A0F1E2D3C4B5A60697081920 /* VerseHighlightBackground.swift */,
 			);
 			name = Shared;
 			path = Shared;
@@ -1493,6 +1496,7 @@
 				F0D207CC01AE4C0993644C9F /* BookmarkColorMenuContent.swift in Sources */,
 				803466C9A4E6452399C6D6C5 /* TranslationBlockView.swift in Sources */,
 				DED405083BF24C1593668E37 /* VerseNumberBadge.swift in Sources */,
+				A1F2E3D4C5B6A7089A1B2C3D /* VerseHighlightBackground.swift in Sources */,
 				B29A2E4BC89242B6A319C55F /* BookmarksView.swift in Sources */,
 				4DB6E90F3CFB4F5787B1B294 /* SettingsView.swift in Sources */,
 				27A3529F85454D9D977105D8 /* SharedSettingsSections.swift in Sources */,

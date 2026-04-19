@@ -19,7 +19,6 @@ struct FollowAlongVerseView: View {
     @Environment(FollowAlongViewModel.self) private var followAlongVM
     @Environment(QuranDataService.self) private var dataService
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
-    @Environment(\.highlightedAyahId) private var highlightedAyahId
     @AppStorage(StorageKey.showTranslation) private var showTranslation: Bool = true
     @AppStorage(StorageKey.followAlongTransliteration) private var showTransliteration = true
     @AppStorage(StorageKey.followAlongMeaning) private var showMeaning = true
@@ -80,15 +79,8 @@ struct FollowAlongVerseView: View {
         .padding(.vertical, 12)
         .padding(.horizontal, 4)
         .background {
-            if isActiveVerse {
-                Color.niyaGold.opacity(0.06)
-                    .padding(.horizontal, -16)
-            } else if highlightedAyahId == verse.id {
-                Color.niyaGold.opacity(0.15)
-                    .padding(.horizontal, -16)
-            }
+            VerseHighlightBackground(verseId: verse.id, isPlaying: isActiveVerse)
         }
-        .animation(.easeOut(duration: 0.5), value: highlightedAyahId)
     }
 
     @ViewBuilder

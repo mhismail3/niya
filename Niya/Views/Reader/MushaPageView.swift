@@ -23,16 +23,27 @@ struct MushaPageView: View {
         _bookmarks = Query(filter: #Predicate<QuranBookmark> { $0.surahId == surahId })
     }
 
-    private var bookmarkedAyahSet: Set<Int> {
-        Set(bookmarks.map(\.ayahId))
-    }
+    @State private var bookmarkedAyahSet: Set<Int> = []
+    @State private var bookmarkColors: [Int: BookmarkColor] = [:]
 
-    private var bookmarkColors: [Int: BookmarkColor] {
+    private func refreshBookmarkState() {
+        var set: Set<Int> = []
         var colors: [Int: BookmarkColor] = [:]
         for b in bookmarks {
+            set.insert(b.ayahId)
             if let c = b.bookmarkColor { colors[b.ayahId] = c }
         }
-        return colors
+        if bookmarkedAyahSet != set { bookmarkedAyahSet = set }
+        if bookmarkColors != colors { bookmarkColors = colors }
+    }
+
+    private var bookmarkSignature: Int {
+        var hasher = Hasher()
+        for b in bookmarks {
+            hasher.combine(b.ayahId)
+            hasher.combine(b.colorTag ?? "")
+        }
+        return hasher.finalize()
     }
 
     var body: some View {
@@ -41,7 +52,7 @@ struct MushaPageView: View {
                 if showBismillah, verses.first?.id == 1 {
                     bismillahHeader
                 }
-                ForEach(verses) { verse in
+                ForEach(verses, id: \.id) { verse in
                     VerseCellView(
                         verse: verse,
                         surahId: surahId,
@@ -72,6 +83,8 @@ struct MushaPageView: View {
             .padding(.bottom, 100)
         }
         .environment(\.layoutDirection, .leftToRight)
+        .onAppear { refreshBookmarkState() }
+        .onChange(of: bookmarkSignature) { _, _ in refreshBookmarkState() }
         .sheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: surahId, ayahId: item.value, surahName: surahName)
                 .presentationDetents([.medium, .large])

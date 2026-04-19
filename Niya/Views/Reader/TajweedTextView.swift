@@ -124,10 +124,10 @@ private final class TajweedTextLayout {
         textStorage.addLayoutManager(layoutManager)
     }
 
-    func apply(attributedString: NSAttributedString) {
+    func apply(attributedString: NSAttributedString, framesetter: CTFramesetter? = nil) {
         textStorage.setAttributedString(attributedString)
         self.attributedString = attributedString
-        framesetter = CTFramesetterCreateWithAttributedString(attributedString)
+        self.framesetter = framesetter ?? CTFramesetterCreateWithAttributedString(attributedString)
         cachedLineSlices = nil
         cachedFrameHeight = nil
     }
@@ -219,16 +219,22 @@ final class TajweedRenderView: UIView {
     private let baseLayout = TajweedTextLayout()
     private var overlayLayouts: [TajweedRule: TajweedTextLayout] = [:]
     private var tapHandler: ((TajweedTap?) -> Void)?
-    private var paragraphStyle = NSMutableParagraphStyle()
-    private var baseTextColor: UIColor = UIColor(named: "niyaText") ?? .label
+    private let paragraphStyle: NSParagraphStyle
+
+    /// The last applied content reference. When SwiftUI re-invokes updateUIView with the same
+    /// prepared content (common during scroll and parent re-renders), we skip the expensive
+    /// TextKit apply and just update the tap handler.
+    private var appliedContent: TajweedPreparedContent?
 
     override init(frame: CGRect) {
+        let style = NSMutableParagraphStyle()
+        style.alignment = .right
+        style.baseWritingDirection = .rightToLeft
+        style.lineSpacing = Self.lineSpacing
+        self.paragraphStyle = style
         super.init(frame: frame)
         isOpaque = false
         backgroundColor = .clear
-        paragraphStyle.alignment = .right
-        paragraphStyle.baseWritingDirection = .rightToLeft
-        paragraphStyle.lineSpacing = Self.lineSpacing
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         addGestureRecognizer(tapGesture)
@@ -238,29 +244,36 @@ final class TajweedRenderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    var effectiveParagraphStyle: NSParagraphStyle { paragraphStyle }
+
     func configure(
-        verse: TajweedVerse,
-        fontSize: CGFloat,
-        showSupplementalRules: Bool,
-        baseTextColor: UIColor = UIColor(named: "niyaText") ?? .label,
+        preparedContent: TajweedPreparedContent,
         onTap: @escaping (TajweedTap?) -> Void
     ) {
-        text = verse.text
+        // Always capture the latest tap handler — the closure identity changes per SwiftUI render.
         tapHandler = onTap
-        self.baseTextColor = baseTextColor
-        resolvedSegments = TajweedTextResolver.resolveSegments(
-            text: verse.text,
-            annotations: verse.annotations,
-            showSupplementalRules: showSupplementalRules
+
+        // Fast path: same prepared content object → all TextKit state is still valid.
+        if appliedContent === preparedContent {
+            return
+        }
+
+        text = preparedContent.text
+        resolvedSegments = preparedContent.resolvedSegments
+
+        baseLayout.apply(
+            attributedString: preparedContent.baseAttributedString,
+            framesetter: preparedContent.baseFramesetter
         )
 
-        let font = UIFont.quranFont(script: .hafs, size: fontSize)
-        apply(text: verse.text, font: font, color: baseTextColor, to: baseLayout)
-
-        let visibleRules = Set(resolvedSegments.map(\.rule))
-        overlayLayouts = Dictionary(uniqueKeysWithValues: visibleRules.map { rule in
+        // Build overlay layouts for each visible rule. NSLayoutManager/NSTextContainer state is
+        // per-UIView, but the CTFramesetter and NSAttributedString are shared from the cache.
+        overlayLayouts = Dictionary(uniqueKeysWithValues: preparedContent.overlayAttributedStrings.map { rule, attr in
             let layout = TajweedTextLayout()
-            apply(text: verse.text, font: font, color: UIColor(rule.color), to: layout)
+            layout.apply(
+                attributedString: attr,
+                framesetter: preparedContent.overlayFramesetters[rule]
+            )
             return (rule, layout)
         })
 
@@ -268,6 +281,8 @@ final class TajweedRenderView: UIView {
         invalidateIntrinsicContentSize()
         setNeedsLayout()
         setNeedsDisplay()
+
+        appliedContent = preparedContent
     }
 
     override func layoutSubviews() {
@@ -384,15 +399,6 @@ final class TajweedRenderView: UIView {
         resolvedSegments.first { $0.contains(utf16Index: utf16Index) }
     }
 
-    private func apply(text: String, font: UIFont, color: UIColor, to layout: TajweedTextLayout) {
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: font,
-            .foregroundColor: color,
-            .paragraphStyle: paragraphStyle,
-        ]
-        layout.apply(attributedString: NSAttributedString(string: text, attributes: attributes))
-    }
-
     private func segmentRects(for segment: TajweedResolvedSegment) -> [CGRect] {
         let drawingHeight = baseLayout.drawingHeight()
         let rects = coreTextRects(for: segment).map { rect in
@@ -497,6 +503,8 @@ final class TajweedRenderView: UIView {
 
 struct TajweedTextView: UIViewRepresentable {
     @AppStorage(StorageKey.showSupplementalTajweedRules) private var showSupplementalTajweedRules: Bool = false
+    @Environment(TajweedService.self) private var tajweedService
+    let surahId: Int
     let verse: TajweedVerse
     let fontSize: CGFloat
     let onTap: (TajweedTap?) -> Void
@@ -508,12 +516,14 @@ struct TajweedTextView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: TajweedRenderView, context: Context) {
-        uiView.configure(
+        let prepared = tajweedService.preparedContent(
             verse: verse,
+            surahId: surahId,
             fontSize: fontSize,
             showSupplementalRules: showSupplementalTajweedRules,
-            onTap: onTap
+            paragraphStyle: uiView.effectiveParagraphStyle
         )
+        uiView.configure(preparedContent: prepared, onTap: onTap)
     }
 
     func sizeThatFits(

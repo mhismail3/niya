@@ -137,6 +137,8 @@ struct NiyaApp: App {
                     tajweedService.clearCache()
                     morphologyService.clearCache()
                     wordDataService.clearOverlaidCache()
+                    TajweedService.clearCleanedTextCache()
+                    UIFont.clearQuranFontCache()
                 }
         }
     }

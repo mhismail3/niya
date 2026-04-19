@@ -3,7 +3,7 @@ import Testing
 @testable import Niya
 
 @MainActor
-@Suite("QuranDataService")
+@Suite("QuranDataService", .serialized)
 struct QuranDataServiceTests {
 
     private func makeLoadedService() async -> QuranDataService {
@@ -65,5 +65,27 @@ struct QuranDataServiceTests {
         let service = await makeLoadedService()
         let results = service.searchSurahs(query: "zzzzz")
         #expect(results.isEmpty)
+    }
+
+    @Test func addTranslation_isIdempotentUnderConcurrency() async throws {
+        let service = await makeLoadedService()
+        guard let clearQuran = service.availableTranslations.first(where: { $0.id == "en_clearquran" }) else {
+            Issue.record("Expected en_clearquran in availableTranslations")
+            return
+        }
+        // Two concurrent adds of the same edition must result in exactly one entry.
+        async let a: () = try service.addTranslation(clearQuran)
+        async let b: () = try service.addTranslation(clearQuran)
+        _ = try await (a, b)
+        let matching = service.selectedTranslations.filter { $0.id == clearQuran.id }
+        #expect(matching.count == 1)
+    }
+
+    @Test func load_deduplicatesSavedIds() async {
+        UserDefaults.standard.set("en_sahih,en_sahih,en_clearquran", forKey: StorageKey.selectedTranslations)
+        defer { UserDefaults.standard.removeObject(forKey: StorageKey.selectedTranslations) }
+        let service = await makeLoadedService()
+        #expect(service.selectedTranslations.count == 2)
+        #expect(service.selectedTranslations.map(\.id) == ["en_sahih", "en_clearquran"])
     }
 }

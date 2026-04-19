@@ -38,15 +38,19 @@ final class QuranDataService: QuranDataProviding {
 
             // Migrate from old single-translation key
             let savedRaw: String
-            if let multi = UserDefaults.standard.string(forKey: StorageKey.selectedTranslations) {
+            if let multi = UserDefaults.standard.string(forKey: StorageKey.selectedTranslations), !multi.isEmpty {
                 savedRaw = multi
-            } else if let single = UserDefaults.standard.string(forKey: StorageKey.selectedTranslationLegacy) {
+            } else if let single = UserDefaults.standard.string(forKey: StorageKey.selectedTranslationLegacy), !single.isEmpty {
                 savedRaw = single
                 UserDefaults.standard.removeObject(forKey: StorageKey.selectedTranslationLegacy)
             } else {
                 savedRaw = "en_sahih"
             }
-            let savedIds = savedRaw.split(separator: ",").map(String.init)
+            var seenIds = Set<String>()
+            let savedIds = savedRaw
+                .split(separator: ",")
+                .map(String.init)
+                .filter { seenIds.insert($0).inserted }
             for id in savedIds {
                 if let edition = translations.first(where: { $0.id == id }) {
                     try await addTranslation(edition)
@@ -128,14 +132,18 @@ final class QuranDataService: QuranDataProviding {
     }
 
     func addTranslation(_ edition: TranslationEdition) async throws {
-        guard !selectedTranslations.contains(where: { $0.id == edition.id }) else { return }
+        if selectedTranslations.contains(where: { $0.id == edition.id }) { return }
         let name = edition.filename.replacingOccurrences(of: ".json", with: "")
         let overlay = try await Task.detached {
             try CompressedJSON.decode([String: String].self, resource: name)
         }.value
+        // Re-check after await: a concurrent call may have added this edition while we were decoding.
+        guard !selectedTranslations.contains(where: { $0.id == edition.id }) else { return }
         translationOverlays.append((edition: edition, overlay: overlay))
         selectedTranslations.append(edition)
         versesCache.removeAll()
+        cacheAccessTimes.removeAll()
+        cacheAccessCounter = 0
         saveSelectedIds()
     }
 
@@ -143,6 +151,8 @@ final class QuranDataService: QuranDataProviding {
         translationOverlays.removeAll { $0.edition.id == edition.id }
         selectedTranslations.removeAll { $0.id == edition.id }
         versesCache.removeAll()
+        cacheAccessTimes.removeAll()
+        cacheAccessCounter = 0
         saveSelectedIds()
     }
 
@@ -157,7 +167,11 @@ final class QuranDataService: QuranDataProviding {
     }
 
     private func saveSelectedIds() {
-        let ids = selectedTranslations.map(\.id).joined(separator: ",")
+        var seen = Set<String>()
+        let ids = selectedTranslations
+            .map(\.id)
+            .filter { seen.insert($0).inserted }
+            .joined(separator: ",")
         UserDefaults.standard.set(ids, forKey: StorageKey.selectedTranslations)
         let hasRTL = selectedTranslations.contains { $0.isRTL }
         UserDefaults.standard.set(hasRTL, forKey: StorageKey.translationIsRTL)

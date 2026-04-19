@@ -21,22 +21,34 @@ struct ScrollReaderView: View {
         _bookmarks = Query(filter: #Predicate<QuranBookmark> { $0.surahId == surahId })
     }
 
-    private var bookmarkedAyahSet: Set<Int> {
-        Set(bookmarks.map(\.ayahId))
-    }
+    @State private var bookmarkedAyahSet: Set<Int> = []
+    @State private var bookmarkColors: [Int: BookmarkColor] = [:]
 
-    private var bookmarkColors: [Int: BookmarkColor] {
+    private func refreshBookmarkState() {
+        var set: Set<Int> = []
         var colors: [Int: BookmarkColor] = [:]
         for b in bookmarks {
+            set.insert(b.ayahId)
             if let c = b.bookmarkColor { colors[b.ayahId] = c }
         }
-        return colors
+        if bookmarkedAyahSet != set { bookmarkedAyahSet = set }
+        if bookmarkColors != colors { bookmarkColors = colors }
+    }
+
+    private var bookmarkSignature: Int {
+        var hasher = Hasher()
+        for b in bookmarks {
+            hasher.combine(b.ayahId)
+            hasher.combine(b.colorTag ?? "")
+        }
+        return hasher.finalize()
     }
 
     var body: some View {
         ScrollViewReader { proxy in
             scrollContent
             .onAppear {
+                refreshBookmarkState()
                 if let target = vm.initialAyahId, target > 1 {
                     Task { @MainActor in
                         withAnimation(.easeInOut(duration: 0.4)) {
@@ -49,6 +61,7 @@ struct ScrollReaderView: View {
                     vm.isSettled = true
                 }
             }
+            .onChange(of: bookmarkSignature) { _, _ in refreshBookmarkState() }
             .onChange(of: audioPlayerVM.currentVerseID) { _, vid in
                 guard let vid, vid.surahId == vm.surah.id else { return }
                 withAnimation(.easeInOut(duration: 0.4)) {
@@ -118,7 +131,7 @@ struct ScrollReaderView: View {
                 if vm.showBismillah {
                     bismillahHeader
                 }
-                ForEach(vm.verses) { verse in
+                ForEach(vm.verses, id: \.id) { verse in
                     VerseCellView(
                         verse: verse,
                         surahId: vm.surah.id,
