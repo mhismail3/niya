@@ -246,16 +246,18 @@ enum PrayerRefreshBackgroundTask {
             return
         }
 
-        PrayerNotificationScheduler.scheduleAll(
-            location: configuration.location,
-            method: configuration.method,
-            asrFactor: configuration.asrFactor
-        )
-        completion.finish(success: true)
+        Task {
+            await PrayerNotificationScheduler.scheduleAll(
+                location: configuration.location,
+                method: configuration.method,
+                asrFactor: configuration.asrFactor
+            )
+            completion.finish(success: true)
+        }
     }
 }
 
-private final class PrayerRefreshTaskCompletion {
+private final class PrayerRefreshTaskCompletion: @unchecked Sendable {
     private let lock = NSLock()
     private let task: BGTask
     private var hasCompleted = false

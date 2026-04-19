@@ -47,21 +47,19 @@ enum PrayerNotificationScheduler {
         return requests
     }
 
-    static func scheduleAll(location: UserLocation, method: CalculationMethod, asrFactor: Int) {
+    static func scheduleAll(location: UserLocation, method: CalculationMethod, asrFactor: Int) async {
         let center = UNUserNotificationCenter.current()
-        center.getNotificationSettings { settings in
-            guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
-                return
-            }
-            center.removeAllPendingNotificationRequests()
-            let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
-            for request in requests {
-                let requestID = request.identifier
-                center.add(request) { error in
-                    if let error {
-                        AppLogger.notification.error("Failed to schedule \(requestID): \(error.localizedDescription)")
-                    }
-                }
+        let settings = await center.notificationSettings()
+        guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
+            return
+        }
+        center.removeAllPendingNotificationRequests()
+        let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
+        for request in requests {
+            do {
+                try await center.add(request)
+            } catch {
+                AppLogger.notification.error("Failed to schedule \(request.identifier): \(error.localizedDescription)")
             }
         }
     }

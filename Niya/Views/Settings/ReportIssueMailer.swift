@@ -66,12 +66,15 @@ struct MailComposeView: UIViewControllerRepresentable {
 
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
+    @MainActor
     final class Coordinator: NSObject, MFMailComposeViewControllerDelegate {
         let parent: MailComposeView
         init(_ parent: MailComposeView) { self.parent = parent }
 
-        func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-            parent.isPresented = false
+        nonisolated func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+            MainActor.assumeIsolated {
+                parent.isPresented = false
+            }
         }
     }
 }

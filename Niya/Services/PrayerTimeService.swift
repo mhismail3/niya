@@ -65,7 +65,9 @@ final class PrayerTimeService {
         WidgetDataWriter.shared.reloadTimelines()
 
         if notificationsEnabled {
-            PrayerNotificationScheduler.scheduleAll(location: location, method: calculationMethod, asrFactor: asrJuristic)
+            Task {
+                await PrayerNotificationScheduler.scheduleAll(location: location, method: calculationMethod, asrFactor: asrJuristic)
+            }
         }
 
         Task {
