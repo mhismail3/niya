@@ -335,7 +335,7 @@ struct DedicationFooter: View {
     var body: some View {
         Section {
             VStack(spacing: 2) {
-                Text("Dedicated to the memory of Hashim Ismail.")
+                Text("Dedicated to the memory of my father.")
                 Text("May Allah (SWT) grant him Jannah.")
             }
             .font(.niyaCaption)
