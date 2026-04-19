@@ -1,21 +1,21 @@
 import Foundation
 import SwiftData
 
-@MainActor
 enum DuaDataMigration {
     private static let migrationKey = "duaV2MigrationCompleted"
 
-    static func migrateIfNeeded(modelContext: ModelContext) {
+    static func migrateIfNeeded(container: ModelContainer) {
         guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
         defer { UserDefaults.standard.set(true, forKey: migrationKey) }
 
         guard let map = loadMigrationMap() else { return }
 
-        migrateBookmarks(modelContext: modelContext, map: map)
-        migrateRecents(modelContext: modelContext, map: map)
+        let context = ModelContext(container)
+        migrateBookmarks(modelContext: context, map: map)
+        migrateRecents(modelContext: context, map: map)
 
         do {
-            try modelContext.save()
+            try context.save()
         } catch {
             AppLogger.store.error("DuaDataMigration save failed: \(error)")
         }

@@ -2,7 +2,6 @@ import Foundation
 import SwiftData
 import os
 
-@MainActor
 enum CloudSyncMigration {
     private static let migrationKey = StorageKey.cloudSyncMigrationCompleted
 
@@ -26,8 +25,6 @@ enum CloudSyncMigration {
                 configurations: oldConfig
             )
             let oldContext = ModelContext(oldContainer)
-
-            // Use a separate context so failed saves don't pollute mainContext
             let newContext = ModelContext(container)
 
             var counts: [String: Int] = [:]

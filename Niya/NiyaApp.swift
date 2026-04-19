@@ -46,9 +46,6 @@ struct NiyaApp: App {
 
         container = ModelContainerFactory.create()
 
-        CloudSyncMigration.migrateIfNeeded(container: container)
-        DuaDataMigration.migrateIfNeeded(modelContext: container.mainContext)
-
         let sc = StoreContainer(modelContext: container.mainContext)
         _storeContainer = State(wrappedValue: sc)
 
@@ -91,10 +88,12 @@ struct NiyaApp: App {
                 .accentColor(Color.niyaTeal)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
+                    async let migrations: () = Self.runStartupMigrations(container: container)
                     Self.migrateAudioFilenames()
                     downloadManager.reconcile()
                     async let loadWords: () = wordDataService.load(reciter: selectedReciter)
                     async let loadTajweed: () = tajweedService.ensureLoaded()
+                    await migrations
                     await loadWords
                     await loadTajweed
                     let lang = dataService.selectedTranslations.first?.language ?? "en"
@@ -141,6 +140,13 @@ struct NiyaApp: App {
                     UIFont.clearQuranFontCache()
                 }
         }
+    }
+
+    private static func runStartupMigrations(container: ModelContainer) async {
+        await Task.detached(priority: .userInitiated) {
+            CloudSyncMigration.migrateIfNeeded(container: container)
+            DuaDataMigration.migrateIfNeeded(container: container)
+        }.value
     }
 
     private static func resetTipsIfVersionChanged() {
