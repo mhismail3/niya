@@ -153,6 +153,7 @@ SWIFT_FILES = [
     "Niya/Views/Shared/ErrorBannerView.swift",
     "Niya/Views/Shared/BookmarkColorMenuContent.swift",
     "Niya/Views/Shared/TranslationBlockView.swift",
+    "Niya/Views/Shared/VerseHighlightBackground.swift",
     "Niya/Views/Shared/VerseNumberBadge.swift",
     "Niya/Views/BookmarksView.swift",
     # Views/Settings
@@ -186,7 +187,6 @@ SWIFT_FILES = [
     # Onboarding
     "Niya/Onboarding/ReaderTips.swift",
     # Design
-    "Niya/Design/NiyaColors.swift",
     "Niya/Design/NiyaFonts.swift",
     "Niya/Design/NiyaTheme.swift",
     "Niya/Design/NiyaExtensions.swift",
@@ -246,8 +246,14 @@ RESOURCE_FILES = [
     "Niya/Resources/Data/translation_en_hilali.json.zlib",
     "Niya/Resources/Data/translation_fr_hamidullah.json.zlib",
     "Niya/Resources/Data/translation_es_abboud.json.zlib",
+    "Niya/Resources/Data/translation_it_piccardo.json.zlib",
     "Niya/Resources/Data/translation_tr_diyanet.json.zlib",
     "Niya/Resources/Data/translation_ur_maududi.json.zlib",
+    "Niya/Resources/Data/translation_ps_abdulwali.json.zlib",
+    "Niya/Resources/Data/translation_ps_rwwad.json.zlib",
+    "Niya/Resources/Data/translation_fa_makarem.json.zlib",
+    "Niya/Resources/Data/translation_fa_fooladvand.json.zlib",
+    "Niya/Resources/Data/translation_el_rwwad.json.zlib",
     "Niya/Resources/Data/translation_id_indonesian.json.zlib",
     "Niya/Resources/Data/translation_bn_bengali.json.zlib",
     "Niya/Resources/Data/translation_de_bubenheim.json.zlib",
@@ -361,7 +367,6 @@ WIDGET_SHARED_FILES = [
     "Niya/Models/UserLocation.swift",
     "Niya/Models/CalculationMethod.swift",
     "Niya/Shared/SharedConstants.swift",
-    "Niya/Design/NiyaColors.swift",
 ]
 
 # Files from widget compiled also into main app target
@@ -398,9 +403,13 @@ FRAMEWORKS = [
 
 # Top-level structural objects
 ID_PROJECT          = new_id()
-ID_TARGET           = new_id()
-ID_TEST_TARGET      = new_id()
-ID_WIDGET_TARGET    = new_id()
+# Target IDs are PINNED so the .xcscheme files (which reference them as
+# BlueprintIdentifier) do not drift on every regeneration. If you change these,
+# also update the BlueprintIdentifier values in
+# Niya.xcodeproj/xcshareddata/xcschemes/*.xcscheme.
+ID_TARGET           = "3799D0E3446C4B78A3A402EF"
+ID_TEST_TARGET      = "9956863384FD46B0AED83771"
+ID_WIDGET_TARGET    = "59F489B98A634BD7AE420110"
 ID_PRODUCTS_GROUP   = new_id()
 ID_MAIN_GROUP       = new_id()
 ID_NIYA_GROUP       = new_id()   # "Niya" source group
@@ -620,7 +629,7 @@ def section_pbx_build_file():
     lines.append(f"\t\t{ID_WIDGET_PRIVACY_BUILD} /* PrivacyInfo.xcprivacy in Resources */ = {{isa = PBXBuildFile; fileRef = {ID_WIDGET_PRIVACY} /* PrivacyInfo.xcprivacy */; }};")
 
     # Widget embed in app
-    lines.append(f"\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed App Extensions */ = {{isa = PBXBuildFile; fileRef = {ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};")
+    lines.append(f"\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed Foundation Extensions */ = {{isa = PBXBuildFile; fileRef = {ID_WIDGET_PRODUCT_REF} /* NiyaWidgets.appex */; settings = {{ATTRIBUTES = (RemoveHeadersOnCopy, ); }}; }};")
 
     lines.append("/* End PBXBuildFile section */")
     return "\n".join(lines)
@@ -956,6 +965,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Views/Shared/ErrorBannerView.swift"], "ErrorBannerView.swift"),
         (swift_file_ids["Niya/Views/Shared/BookmarkColorMenuContent.swift"], "BookmarkColorMenuContent.swift"),
         (swift_file_ids["Niya/Views/Shared/TranslationBlockView.swift"], "TranslationBlockView.swift"),
+        (swift_file_ids["Niya/Views/Shared/VerseHighlightBackground.swift"], "VerseHighlightBackground.swift"),
         (swift_file_ids["Niya/Views/Shared/VerseNumberBadge.swift"], "VerseNumberBadge.swift"),
     ], path_str="Shared")
 
@@ -1006,7 +1016,6 @@ def section_pbx_group():
 
     # Design
     emit_subgroup(SUBGROUP_IDS["Design"], "Design", "Design", [
-        (swift_file_ids["Niya/Design/NiyaColors.swift"], "NiyaColors.swift"),
         (swift_file_ids["Niya/Design/NiyaFonts.swift"],  "NiyaFonts.swift"),
         (swift_file_ids["Niya/Design/NiyaTheme.swift"],  "NiyaTheme.swift"),
         (swift_file_ids["Niya/Design/NiyaExtensions.swift"], "NiyaExtensions.swift"),
@@ -1053,9 +1062,10 @@ def section_pbx_group():
         (resource_file_ids["Niya/Resources/Data/translations_index.json.zlib"], "translations_index.json.zlib"),
     ]
     for tid in ["en_sahih", "en_clearquran", "en_hilali", "fr_hamidullah",
-                 "es_abboud", "tr_diyanet", "ur_maududi", "id_indonesian",
-                 "bn_bengali", "de_bubenheim", "ru_kuliev", "ms_basmeih", "zh_jian",
-                 "my_ghazi"]:
+                 "es_abboud", "it_piccardo", "tr_diyanet", "ur_maududi",
+                 "ps_abdulwali", "ps_rwwad", "fa_makarem", "fa_fooladvand",
+                 "el_rwwad", "id_indonesian", "bn_bengali", "de_bubenheim",
+                 "ru_kuliev", "ms_basmeih", "zh_jian", "my_ghazi"]:
         fname = f"translation_{tid}.json.zlib"
         data_children.append((resource_file_ids[f"Niya/Resources/Data/{fname}"], fname))
     for coll_id in ["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah",
@@ -1176,7 +1186,7 @@ def section_pbx_native_target():
         f"\t\t\t\t{ID_SOURCES_PHASE} /* Sources */,",
         f"\t\t\t\t{ID_RESOURCES_PHASE} /* Resources */,",
         f"\t\t\t\t{ID_FRAMEWORKS_PHASE} /* Frameworks */,",
-        f"\t\t\t\t{ID_EMBED_EXTENSIONS_PHASE} /* Embed App Extensions */,",
+        f"\t\t\t\t{ID_EMBED_EXTENSIONS_PHASE} /* Embed Foundation Extensions */,",
         "\t\t\t);",
         "\t\t\tbuildRules = (",
         "\t\t\t);",
@@ -1396,15 +1406,15 @@ def section_widget_frameworks_build_phase():
 
 def section_embed_extensions_build_phase():
     lines = [
-        f"\t\t{ID_EMBED_EXTENSIONS_PHASE} /* Embed App Extensions */ = {{",
+        f"\t\t{ID_EMBED_EXTENSIONS_PHASE} /* Embed Foundation Extensions */ = {{",
         "\t\t\tisa = PBXCopyFilesBuildPhase;",
         "\t\t\tbuildActionMask = 2147483647;",
         "\t\t\tdstPath = \"\";",
         "\t\t\tdstSubfolderSpec = 13;",
         "\t\t\tfiles = (",
-        f"\t\t\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed App Extensions */,",
+        f"\t\t\t\t{ID_WIDGET_EMBED_BUILD} /* NiyaWidgets.appex in Embed Foundation Extensions */,",
         "\t\t\t);",
-        "\t\t\tname = \"Embed App Extensions\";",
+        "\t\t\tname = \"Embed Foundation Extensions\";",
         "\t\t\trunOnlyForDeploymentPostprocessing = 0;",
         "\t\t};",
     ]
@@ -1413,6 +1423,7 @@ def section_embed_extensions_build_phase():
 
 def build_settings_widget_target(config):
     lines = [
+        f"\t\t\t\tASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;",
         f"\t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;",
         f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = NiyaWidgets/NiyaWidgets.entitlements;",
         "\t\t\t\tCODE_SIGN_STYLE = Automatic;",
@@ -1499,6 +1510,7 @@ def build_settings_target(config):
     is_debug = config == "Debug"
     lines = [
         "\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;",
+        "\t\t\t\tASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;",
         f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = Niya/Niya.entitlements;",
         f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = {BUNDLE_ID};",
         f"\t\t\t\tINFOPLIST_FILE = Niya/Info.plist;",
@@ -1688,7 +1700,7 @@ def generate():
 \tarchiveVersion = 1;
 \tclasses = {{
 \t}};
-\tobjectVersion = 77;
+\tobjectVersion = 56;
 \tobjects = {{
 
 {body}

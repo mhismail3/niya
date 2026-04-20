@@ -8,19 +8,38 @@ struct TranslationTests {
 
     @Test func translationIndexDecodes() throws {
         let editions = try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
-        #expect(editions.count >= 13)
+        #expect(editions.count >= 20)
         #expect(editions.allSatisfy { !$0.id.isEmpty && !$0.filename.isEmpty })
     }
 
     @Test func translationEditionRTL() {
-        let urdu = TranslationEdition(id: "ur_jalandhry", language: "ur", languageName: "Urdu",
-                                       name: "Jalandhry", author: "Jalandhry", filename: "translation_ur_jalandhry.json")
+        let urdu = TranslationEdition(id: "ur_maududi", language: "ur", languageName: "Urdu",
+                                       name: "Maududi", author: "Syed Abul Aala Maududi",
+                                       filename: "translation_ur_maududi.json")
         #expect(urdu.isRTL == true)
 
         let english = TranslationEdition(id: "en_sahih", language: "en", languageName: "English",
                                           name: "Sahih International", author: "Saheeh International",
                                           filename: "translation_en_sahih.json")
         #expect(english.isRTL == false)
+    }
+
+    @Test func translationEditionRTLPashto() {
+        let pashto = TranslationEdition(id: "ps_abdulwali", language: "ps", languageName: "Pashto",
+                                         name: "Abdulwali Khan", author: "Mufti Abdul Wali Khan al-Darwazi",
+                                         filename: "translation_ps_abdulwali.json")
+        #expect(pashto.isRTL == true)
+    }
+
+    @Test func translationEditionLTRItalianGreek() {
+        let italian = TranslationEdition(id: "it_piccardo", language: "it", languageName: "Italian",
+                                          name: "Piccardo", author: "Hamza Roberto Piccardo",
+                                          filename: "translation_it_piccardo.json")
+        let greek = TranslationEdition(id: "el_rwwad", language: "el", languageName: "Greek",
+                                        name: "Rowwad", author: "Rowwad Translation Center / KFGQPC",
+                                        filename: "translation_el_rwwad.json")
+        #expect(italian.isRTL == false)
+        #expect(greek.isRTL == false)
     }
 
     @Test func translationOverlayDecodes() throws {
@@ -60,6 +79,51 @@ struct TranslationTests {
             for ayah in 1...count {
                 #expect(overlay["\(surahId):\(ayah)"] != nil, "Missing \(surahId):\(ayah)")
             }
+        }
+    }
+
+    @Test func requiredEditionsBundled() throws {
+        let editions = try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
+        let byId = Dictionary(uniqueKeysWithValues: editions.map { ($0.id, $0) })
+
+        let expected: [(id: String, language: String, languageName: String)] = [
+            ("ps_abdulwali",  "ps", "Pashto"),
+            ("ps_rwwad",      "ps", "Pashto"),
+            ("fa_makarem",    "fa", "Persian"),
+            ("fa_fooladvand", "fa", "Persian"),
+            ("it_piccardo",   "it", "Italian"),
+            ("el_rwwad",      "el", "Greek"),
+        ]
+
+        for entry in expected {
+            let edition = try #require(byId[entry.id], "Missing edition \(entry.id) in index")
+            #expect(edition.language == entry.language)
+            #expect(edition.languageName == entry.languageName)
+        }
+    }
+
+    @Test func newEditionTextUsesExpectedScript() throws {
+        // Quick sanity check that the bundled overlay for each new edition
+        // contains characters from the expected Unicode block at 1:2 (or 1:1
+        // as fallback). Catches accidental file swaps.
+        let arabicRange: ClosedRange<UInt32> = 0x0600...0x06FF
+        let greekRange: ClosedRange<UInt32> = 0x0370...0x03FF
+        let latinRange: ClosedRange<UInt32> = 0x0041...0x024F
+
+        let cases: [(id: String, range: ClosedRange<UInt32>)] = [
+            ("translation_ps_abdulwali",  arabicRange),
+            ("translation_ps_rwwad",      arabicRange),
+            ("translation_fa_makarem",    arabicRange),
+            ("translation_fa_fooladvand", arabicRange),
+            ("translation_it_piccardo",   latinRange),
+            ("translation_el_rwwad",      greekRange),
+        ]
+
+        for c in cases {
+            let overlay = try CompressedJSON.decode([String: String].self, resource: c.id)
+            let sample = overlay["1:2"] ?? overlay["1:1"] ?? ""
+            let inRange = sample.unicodeScalars.contains { c.range.contains($0.value) }
+            #expect(inRange, "\(c.id): '1:2' contains no characters in expected script range")
         }
     }
 }

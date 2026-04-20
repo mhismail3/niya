@@ -9,7 +9,7 @@ struct TranslationEdition: Codable, Identifiable, Hashable, Sendable {
     let filename: String
 
     var isRTL: Bool {
-        ["ur", "fa", "ar"].contains(language)
+        ["ur", "fa", "ar", "ps"].contains(language)
     }
 
     var hasWordByWord: Bool {

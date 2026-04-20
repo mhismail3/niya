@@ -103,12 +103,25 @@ struct HadithDataIntegrityTests {
     }
 
     @Test func everyHadithHasArabic() {
+        // Per-collection thresholds for upstream-known empty-Arabic gaps:
+        //   - Malik: ~6% (some entries cite athar without Arabic chain in source)
+        //   - Mishkat: ~16% (supplementary entries from sunnah.com cite primary
+        //     collections — "Bukhari transmitted it" — without re-quoting Arabic)
+        //   - Shamail: ~4% (similar supplementary entries from sunnah.com)
+        // All other collections must be near-zero (<2%).
+        let thresholds: [String: Double] = [
+            "malik":   0.10,
+            "mishkat": 0.20,
+            "shamail": 0.05,
+        ]
+        let defaultThreshold = 0.02
+
         for (cid, file) in Self.loaded {
             let empty = file.hadiths.filter { $0.arabic.isEmpty }.count
             let total = file.hadiths.count
-            // Malik has ~6% empty arabic in source data
-            #expect(Double(empty) / Double(max(total, 1)) < 0.10,
-                "\(cid): \(empty)/\(total) hadiths have empty arabic")
+            let limit = thresholds[cid] ?? defaultThreshold
+            #expect(Double(empty) / Double(max(total, 1)) < limit,
+                "\(cid): \(empty)/\(total) hadiths have empty arabic (limit \(limit))")
         }
     }
 }
