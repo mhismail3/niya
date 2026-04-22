@@ -7,36 +7,36 @@ import time
 import urllib.request
 
 _HTML_TAG_RE = re.compile(r"<[a-zA-Z/][^>]*>")
+_DOUBLE_BRACKET_RE = re.compile(r"\s*\[\[.*?\]\]\s*", re.DOTALL)
 _TRAILING_GARBAGE_RE = re.compile(r"[\s\u3000\ufffd]+$")
 
 
 def _normalize(text):
-    """Strip upstream HTML tag artefacts and trailing whitespace/replacement chars.
+    """Strip upstream artefacts that don't belong in the verse text.
 
-    AlQuran.cloud occasionally serves translations with stray <br> tags (seen
-    in zh.jian 4:12) and trailing ideographic spaces. Normalise on fetch so
-    re-runs do not re-introduce the artefacts.
+    Handles three patterns we have seen on AlQuran.cloud:
+      - HTML tags (zh.jian 4:12 had a stray <br>)
+      - Inline tafsir wrapped in [[...]] (fa.khorramdel uses these for the
+        Tafsir Noor commentary that follows each verse)
+      - Trailing ideographic spaces / replacement chars
     """
     text = _HTML_TAG_RE.sub("", text)
+    text = _DOUBLE_BRACKET_RE.sub(" ", text)
     text = _TRAILING_GARBAGE_RE.sub("", text)
-    return text
+    return text.strip()
 
 EDITIONS = [
     ("en.sahih",      "en_sahih",      "en", "English",    "Sahih International",        "Saheeh International"),
     ("MANUAL",        "en_clearquran", "en", "English",    "The Clear Quran",            "Dr. Mustafa Khattab"),
     ("en.hilali",     "en_hilali",     "en", "English",    "Al-Hilali & Khan",           "Muhammad Taqi-ud-Din al-Hilali and Muhammad Muhsin Khan"),
     ("fr.hamidullah", "fr_hamidullah", "fr", "French",     "Muhammad Hamidullah",        "Muhammad Hamidullah"),
-    # es.abboud was removed from AlQuran.cloud (API now silently returns
-    # Arabic). The bundled Spanish predates that change; mark PRESERVED so
-    # re-runs neither re-fetch nor overwrite it.
-    ("PRESERVED",     "es_abboud",     "es", "Spanish",    "Abboud & Castellanos",       "Ahmad Abboud & Rafael Castellanos"),
+    ("es.garcia",     "es_garcia",     "es", "Spanish",    "Isa Garcia",                 "Isa Garcia"),
     ("it.piccardo",   "it_piccardo",   "it", "Italian",    "Hamza Roberto Piccardo",     "Hamza Roberto Piccardo"),
     ("tr.diyanet",    "tr_diyanet",    "tr", "Turkish",    "Diyanet Isleri",             "Diyanet Isleri Baskanligi"),
     ("ur.maududi",    "ur_maududi",    "ur", "Urdu",       "Syed Abul Aala Maududi",    "Syed Abul Aala Maududi"),
     ("ps.abdulwali",  "ps_abdulwali",  "ps", "Pashto",     "Abdulwali Khan",             "Mufti Abdul Wali Khan al-Darwazi"),
     ("QURANENC",      "ps_rwwad",      "ps", "Pashto",     "Rowwad Translation Center",  "Rowwad Translation Center / KFGQPC"),
-    ("fa.makarem",    "fa_makarem",    "fa", "Persian",    "Makarem Shirazi",            "Naser Makarem Shirazi"),
-    ("fa.fooladvand", "fa_fooladvand", "fa", "Persian",    "Fooladvand",                 "Mohammad Mahdi Fooladvand"),
+    ("fa.khorramdel", "fa_khorramdel", "fa", "Persian",    "Khorramdel",                 "Mostafa Khorramdel"),
     ("QURANENC",      "el_rwwad",      "el", "Greek",      "Rowwad Translation Center",  "Rowwad Translation Center / KFGQPC"),
     ("id.indonesian", "id_indonesian", "id", "Indonesian", "Kemenag",                    "Indonesian Ministry of Religious Affairs"),
     ("bn.bengali",    "bn_bengali",    "bn", "Bengali",    "Muhiuddin Khan",             "Muhiuddin Khan"),
@@ -49,13 +49,10 @@ EDITIONS = [
 
 # Sentinel api_id values mean "this edition is not fetched by this script".
 # When seen, fetch_translations.py just registers the edition in the index
-# (provided the file already exists on disk). The value is either the name
-# of the producer script, or None for editions with no producer (preserved
-# from a prior fetch).
+# (provided the file already exists on disk).
 EXTERNAL_SENTINELS = {
     "MANUAL":    "fetch_khattab.py",
     "QURANENC":  "fetch_quranenc.py",
-    "PRESERVED": None,
 }
 
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "output", "translations")
@@ -69,8 +66,7 @@ for api_id, output_id, lang, lang_name, name, author in EDITIONS:
     if api_id in EXTERNAL_SENTINELS:
         producer = EXTERNAL_SENTINELS[api_id]
         if not os.path.exists(out_path):
-            hint = f"run {producer}" if producer else "restore from git or rebundle manually"
-            print(f"  WARNING: {output_id} is {api_id} — {hint}")
+            print(f"  WARNING: {output_id} is {api_id} — run {producer} first")
         else:
             print(f"  {output_id}: {api_id} (already built)")
         index.append({

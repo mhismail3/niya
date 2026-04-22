@@ -8,7 +8,7 @@ struct TranslationTests {
 
     @Test func translationIndexDecodes() throws {
         let editions = try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
-        #expect(editions.count >= 20)
+        #expect(editions.count >= 19)
         #expect(editions.allSatisfy { !$0.id.isEmpty && !$0.filename.isEmpty })
     }
 
@@ -51,6 +51,7 @@ struct TranslationTests {
 
     @Test func allBundledTranslationsLoad() throws {
         let editions = try CompressedJSON.decode([TranslationEdition].self, resource: "translations_index")
+        #expect(editions.count >= 19)
 
         for edition in editions {
             let name = edition.filename.replacingOccurrences(of: ".json", with: "")
@@ -89,9 +90,9 @@ struct TranslationTests {
         let expected: [(id: String, language: String, languageName: String)] = [
             ("ps_abdulwali",  "ps", "Pashto"),
             ("ps_rwwad",      "ps", "Pashto"),
-            ("fa_makarem",    "fa", "Persian"),
-            ("fa_fooladvand", "fa", "Persian"),
+            ("fa_khorramdel", "fa", "Persian"),
             ("it_piccardo",   "it", "Italian"),
+            ("es_garcia",     "es", "Spanish"),
             ("el_rwwad",      "el", "Greek"),
         ]
 
@@ -113,9 +114,9 @@ struct TranslationTests {
         let cases: [(id: String, range: ClosedRange<UInt32>)] = [
             ("translation_ps_abdulwali",  arabicRange),
             ("translation_ps_rwwad",      arabicRange),
-            ("translation_fa_makarem",    arabicRange),
-            ("translation_fa_fooladvand", arabicRange),
+            ("translation_fa_khorramdel", arabicRange),
             ("translation_it_piccardo",   latinRange),
+            ("translation_es_garcia",     latinRange),
             ("translation_el_rwwad",      greekRange),
         ]
 

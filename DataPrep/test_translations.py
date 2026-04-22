@@ -11,26 +11,27 @@ EXPECTED_VERSES = 6236
 
 REQUIRED_EDITION_IDS = {
     "ps_abdulwali", "ps_rwwad",
-    "fa_makarem", "fa_fooladvand",
+    "fa_khorramdel",
     "it_piccardo",
     "el_rwwad",
+    "es_garcia",
 }
 
-EXPECTED_LANGUAGE_COUNTS = {"ps": 2, "fa": 2, "it": 1, "el": 1}
+EXPECTED_LANGUAGE_COUNTS = {"ps": 2, "fa": 1, "it": 1, "el": 1, "es": 1}
 
 # Unicode block ranges for spot-checking that text is in the expected script.
 SCRIPT_RANGES = {
     "arabic": (0x0600, 0x06FF),   # ps, fa
-    "latin":  (0x0041, 0x024F),   # it
+    "latin":  (0x0041, 0x024F),   # it, es
     "greek":  (0x0370, 0x03FF),   # el
 }
 
 EDITION_SCRIPT = {
     "ps_abdulwali":   "arabic",
     "ps_rwwad":       "arabic",
-    "fa_makarem":     "arabic",
-    "fa_fooladvand":  "arabic",
+    "fa_khorramdel":  "arabic",
     "it_piccardo":    "latin",
+    "es_garcia":      "latin",
     "el_rwwad":       "greek",
 }
 
@@ -52,7 +53,7 @@ class TestTranslations(unittest.TestCase):
             self.index = json.load(f)
 
     def test_index_has_entries(self):
-        self.assertGreaterEqual(len(self.index), 20)
+        self.assertGreaterEqual(len(self.index), 19)
 
     def test_index_fields(self):
         required = {"id", "language", "languageName", "name", "author", "filename"}
