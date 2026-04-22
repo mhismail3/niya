@@ -23,6 +23,7 @@ struct SettingsView: View {
     @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications: Bool = false
     @State private var showGuide = false
     @State private var showReportIssue = false
+    @State private var showCredits = false
 
     private var modeBinding: Binding<ReaderMode> {
         if let vm = readerVM {
@@ -83,6 +84,17 @@ struct SettingsView: View {
                 }
                 PrayerTimesSettingsSection(prayerNotifications: $prayerNotifications)
                 DataSettingsSection()
+                Section {
+                    Button {
+                        showCredits = true
+                    } label: {
+                        Label {
+                            Text("Sources & Credits").fontWeight(.semibold)
+                        } icon: {
+                            Image(systemName: "info.circle")
+                        }
+                    }
+                }
                 DedicationFooter()
             }
             .navigationTitle("Settings")
@@ -93,6 +105,9 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showReportIssue) {
                 MailComposeView(isPresented: $showReportIssue)
+            }
+            .sheet(isPresented: $showCredits) {
+                CreditsView()
             }
         }
     }
