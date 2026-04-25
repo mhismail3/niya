@@ -71,6 +71,7 @@
 		88546A5E436F42B084B66648 /* PrayerTimeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9735F606C1714964AA4C61C6 /* PrayerTimeCalculator.swift */; };
 		41DE61EAE91244AA99CC8040 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4762898A2457451AACA50F8D /* LocationService.swift */; };
 		C558057E02FD46AF9DE7ED36 /* PrayerNotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ABADB86A6A416F9215BFA3 /* PrayerNotificationScheduler.swift */; };
+		AB12CD34EF56AB78CD90EF12 /* AppUpdateReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56AB78CD90EF13 /* AppUpdateReminderScheduler.swift */; };
 		E4A1278CEFDB43E98E4C28A9 /* PrayerTimeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B3F48DDD01433CA9C21EE3 /* PrayerTimeService.swift */; };
 		DDB55FC6614C4D34972E9763 /* WidgetDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3F74A2BC8FB48D3BB028D89 /* WidgetDataWriter.swift */; };
 		12BDF1D691D14CA0BA4B2E7B /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE769767BB12481BBB1E830A /* NetworkClient.swift */; };
@@ -254,6 +255,7 @@
 		E57E251CF53E4BCF9DCC7A22 /* PrayerTimeCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8595AE6C6D0F4D25A26FDA3B /* PrayerTimeCalculatorTests.swift */; };
 		46A77F70DB394EDDB82B5C30 /* QiblahBearingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6339D6E989C4AFEA7661080 /* QiblahBearingTests.swift */; };
 		22E2F2CC621C49F89327AD17 /* PrayerNotificationSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C038BB45B304B2194FBD4F8 /* PrayerNotificationSchedulerTests.swift */; };
+		AB12CD34EF56AB78CD90EF14 /* AppUpdateReminderSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB12CD34EF56AB78CD90EF15 /* AppUpdateReminderSchedulerTests.swift */; };
 		C700760063E24AB8931AAA8F /* NavigationCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DBACED9A5A744B2A9BD1652 /* NavigationCoordinatorTests.swift */; };
 		01A1A6A98E1A4C26AE87BFE9 /* AutoScrollViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3A95B201614711A0602608 /* AutoScrollViewModelTests.swift */; };
 		96ACE01C209B4406B2559F68 /* SurahListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CF771356814D4692A10083 /* SurahListViewModelTests.swift */; };
@@ -403,6 +405,7 @@
 		9735F606C1714964AA4C61C6 /* PrayerTimeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimeCalculator.swift; sourceTree = "<group>"; };
 		4762898A2457451AACA50F8D /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		F7ABADB86A6A416F9215BFA3 /* PrayerNotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationScheduler.swift; sourceTree = "<group>"; };
+		AB12CD34EF56AB78CD90EF13 /* AppUpdateReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateReminderScheduler.swift; sourceTree = "<group>"; };
 		C0B3F48DDD01433CA9C21EE3 /* PrayerTimeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimeService.swift; sourceTree = "<group>"; };
 		A3F74A2BC8FB48D3BB028D89 /* WidgetDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataWriter.swift; sourceTree = "<group>"; };
 		DE769767BB12481BBB1E830A /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
@@ -604,6 +607,7 @@
 		8595AE6C6D0F4D25A26FDA3B /* PrayerTimeCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimeCalculatorTests.swift; sourceTree = "<group>"; };
 		F6339D6E989C4AFEA7661080 /* QiblahBearingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblahBearingTests.swift; sourceTree = "<group>"; };
 		7C038BB45B304B2194FBD4F8 /* PrayerNotificationSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerNotificationSchedulerTests.swift; sourceTree = "<group>"; };
+		AB12CD34EF56AB78CD90EF15 /* AppUpdateReminderSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdateReminderSchedulerTests.swift; sourceTree = "<group>"; };
 		0DBACED9A5A744B2A9BD1652 /* NavigationCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinatorTests.swift; sourceTree = "<group>"; };
 		BC3A95B201614711A0602608 /* AutoScrollViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoScrollViewModelTests.swift; sourceTree = "<group>"; };
 		A7CF771356814D4692A10083 /* SurahListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurahListViewModelTests.swift; sourceTree = "<group>"; };
@@ -803,6 +807,7 @@
 				9735F606C1714964AA4C61C6 /* PrayerTimeCalculator.swift */,
 				4762898A2457451AACA50F8D /* LocationService.swift */,
 				F7ABADB86A6A416F9215BFA3 /* PrayerNotificationScheduler.swift */,
+				AB12CD34EF56AB78CD90EF13 /* AppUpdateReminderScheduler.swift */,
 				C0B3F48DDD01433CA9C21EE3 /* PrayerTimeService.swift */,
 				A3F74A2BC8FB48D3BB028D89 /* WidgetDataWriter.swift */,
 				DE769767BB12481BBB1E830A /* NetworkClient.swift */,
@@ -1129,6 +1134,7 @@
 				8595AE6C6D0F4D25A26FDA3B /* PrayerTimeCalculatorTests.swift */,
 				F6339D6E989C4AFEA7661080 /* QiblahBearingTests.swift */,
 				7C038BB45B304B2194FBD4F8 /* PrayerNotificationSchedulerTests.swift */,
+				AB12CD34EF56AB78CD90EF15 /* AppUpdateReminderSchedulerTests.swift */,
 				0DBACED9A5A744B2A9BD1652 /* NavigationCoordinatorTests.swift */,
 				BC3A95B201614711A0602608 /* AutoScrollViewModelTests.swift */,
 				A7CF771356814D4692A10083 /* SurahListViewModelTests.swift */,
@@ -1473,6 +1479,7 @@
 				88546A5E436F42B084B66648 /* PrayerTimeCalculator.swift in Sources */,
 				41DE61EAE91244AA99CC8040 /* LocationService.swift in Sources */,
 				C558057E02FD46AF9DE7ED36 /* PrayerNotificationScheduler.swift in Sources */,
+				AB12CD34EF56AB78CD90EF12 /* AppUpdateReminderScheduler.swift in Sources */,
 				E4A1278CEFDB43E98E4C28A9 /* PrayerTimeService.swift in Sources */,
 				DDB55FC6614C4D34972E9763 /* WidgetDataWriter.swift in Sources */,
 				12BDF1D691D14CA0BA4B2E7B /* NetworkClient.swift in Sources */,
@@ -1609,6 +1616,7 @@
 				E57E251CF53E4BCF9DCC7A22 /* PrayerTimeCalculatorTests.swift in Sources */,
 				46A77F70DB394EDDB82B5C30 /* QiblahBearingTests.swift in Sources */,
 				22E2F2CC621C49F89327AD17 /* PrayerNotificationSchedulerTests.swift in Sources */,
+				AB12CD34EF56AB78CD90EF14 /* AppUpdateReminderSchedulerTests.swift in Sources */,
 				C700760063E24AB8931AAA8F /* NavigationCoordinatorTests.swift in Sources */,
 				01A1A6A98E1A4C26AE87BFE9 /* AutoScrollViewModelTests.swift in Sources */,
 				96ACE01C209B4406B2559F68 /* SurahListViewModelTests.swift in Sources */,
@@ -1853,7 +1861,7 @@
 				INFOPLIST_FILE = Niya/Info.plist;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MYGKXH6TY4;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1878,7 +1886,7 @@
 				INFOPLIST_FILE = Niya/Info.plist;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MYGKXH6TY4;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1899,7 +1907,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MYGKXH6TY4;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1924,7 +1932,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MYGKXH6TY4;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1951,7 +1959,7 @@
 				CODE_SIGN_ENTITLEMENTS = NiyaWidgets/NiyaWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MYGKXH6TY4;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NiyaWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -1980,7 +1988,7 @@
 				CODE_SIGN_ENTITLEMENTS = NiyaWidgets/NiyaWidgets.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = MYGKXH6TY4;
-				CURRENT_PROJECT_VERSION = 40;
+				CURRENT_PROJECT_VERSION = 41;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = NiyaWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

@@ -3,6 +3,7 @@ import UserNotifications
 
 enum PrayerNotificationScheduler {
     static let daysToSchedule = 12
+    private static let identifierPrefix = "prayer_"
 
     static func buildRequests(
         location: UserLocation,
@@ -53,7 +54,9 @@ enum PrayerNotificationScheduler {
         guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
             return
         }
-        center.removeAllPendingNotificationRequests()
+        let pending = await center.pendingNotificationRequests()
+        let identifiers = prayerIdentifiers(from: pending.map(\.identifier))
+        center.removePendingNotificationRequests(withIdentifiers: identifiers)
         let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
         for request in requests {
             do {
@@ -65,7 +68,14 @@ enum PrayerNotificationScheduler {
     }
 
     static func cancelAll() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+            let identifiers = prayerIdentifiers(from: requests.map(\.identifier))
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
+        }
+    }
+
+    static func prayerIdentifiers(from identifiers: [String]) -> [String] {
+        identifiers.filter { $0.hasPrefix(identifierPrefix) }
     }
 
     static func locationFromDefaults(userDefaults: UserDefaults = .standard) -> UserLocation? {

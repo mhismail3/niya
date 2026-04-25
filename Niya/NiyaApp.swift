@@ -55,7 +55,10 @@ struct NiyaApp: App {
         as_.configureSession()
         Self.resetTipsIfVersionChanged()
         try? Tips.configure([.displayFrequency(.immediate)])
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        UNUserNotificationCenter.current().delegate = NotificationResponseHandler.shared
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in
+            Task { await AppUpdateReminderScheduler.scheduleIfNeeded() }
+        }
 
         PrayerRefreshBackgroundTask.register()
         PrayerRefreshBackgroundTask.scheduleNextRefresh()

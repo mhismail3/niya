@@ -76,6 +76,18 @@ struct PrayerNotificationSchedulerTests {
         #expect(ids.count == requests.count)
     }
 
+    @Test func pendingIdentifiersFilterOnlyPrayerRequests() {
+        let identifiers = [
+            "prayer_fajr_2026_3_1",
+            AppUpdateReminderScheduler.identifier,
+            "some_other_notification"
+        ]
+
+        let prayerIdentifiers = PrayerNotificationScheduler.prayerIdentifiers(from: identifiers)
+
+        #expect(prayerIdentifiers == ["prayer_fajr_2026_3_1"])
+    }
+
     @Test func contentHasCorrectFields() {
         let tz = TimeZone(identifier: "America/New_York")!
         let now = fixedDate(2026, 3, 1, 0, 0, tz: tz)

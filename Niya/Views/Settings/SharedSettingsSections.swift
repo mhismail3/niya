@@ -331,6 +331,49 @@ struct DataSettingsSection: View {
     }
 }
 
+struct AppUpdateReminderSettingsSection: View {
+    @Binding var appUpdateReminders: Bool
+    @State private var showNotificationDeniedAlert = false
+
+    var body: some View {
+        Section("Updates") {
+            Toggle("App Update Reminders", isOn: $appUpdateReminders)
+                .tint(Color.niyaTeal)
+                .onChange(of: appUpdateReminders) { _, enabled in
+                    if enabled {
+                        Task {
+                            let center = UNUserNotificationCenter.current()
+                            let settings = await center.notificationSettings()
+                            if settings.authorizationStatus == .denied {
+                                appUpdateReminders = false
+                                showNotificationDeniedAlert = true
+                            } else if settings.authorizationStatus == .notDetermined {
+                                let granted = try? await center.requestAuthorization(options: [.alert, .sound])
+                                if granted != true {
+                                    appUpdateReminders = false
+                                    return
+                                }
+                                await AppUpdateReminderScheduler.scheduleIfNeeded(force: true)
+                            } else {
+                                await AppUpdateReminderScheduler.scheduleIfNeeded(force: true)
+                            }
+                        }
+                    } else {
+                        AppUpdateReminderScheduler.cancel()
+                    }
+                }
+                .alert("Notifications Disabled", isPresented: $showNotificationDeniedAlert) {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        Link("Open Settings", destination: url)
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Enable notifications in Settings to receive app update reminders.")
+                }
+        }
+    }
+}
+
 struct DedicationFooter: View {
     var body: some View {
         Section {

@@ -21,6 +21,7 @@ struct SettingsView: View {
     @AppStorage(StorageKey.selectedReciter) private var selectedReciter: Reciter = .alAfasy
     @AppStorage(StorageKey.showJuzProgress) private var showJuzProgress: Bool = true
     @AppStorage(StorageKey.prayerNotificationsEnabled) private var prayerNotifications: Bool = false
+    @AppStorage(StorageKey.appUpdateRemindersEnabled) private var appUpdateReminders: Bool = true
     @State private var showGuide = false
     @State private var showReportIssue = false
     @State private var showCredits = false
@@ -95,6 +96,7 @@ struct SettingsView: View {
                         }
                     }
                 }
+                AppUpdateReminderSettingsSection(appUpdateReminders: $appUpdateReminders)
                 DedicationFooter()
             }
             .navigationTitle("Settings")
