@@ -10,6 +10,7 @@ struct IslamicCalendarView: View {
     @State private var selectedDayTimes: DailyPrayerTimes?
     @State private var prayerTimesCache: [DateComponents: DailyPrayerTimes] = [:]
     @State private var selectedDetent: PresentationDetent = .medium
+    @State private var centerMonthRequest = 0
 
     private let hijriCal = Calendar(identifier: .islamicUmmAlQura)
     private let weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -52,6 +53,7 @@ struct IslamicCalendarView: View {
                             selectedDay = day
                             selectedMonth = currentMonth
                             computePrayerTimes(forDay: day, in: currentMonth)
+                            centerMonthRequest += 1
                         }
                     }
                     .font(.niyaCaption)
@@ -82,21 +84,45 @@ struct IslamicCalendarView: View {
     // MARK: - Scrolling Months (Large Detent)
 
     private var scrollingLayout: some View {
-        ScrollView {
-            LazyVStack(spacing: 32) {
-                ForEach(visibleMonths, id: \.self) { month in
-                    VStack(spacing: 16) {
-                        monthHeader(month, showArrows: false)
-                        weekdayHeader
-                        dayGrid(for: month)
-                        if let day = selectedDay, selectedMonth == month {
-                            prayerDetailCard(for: day, in: month)
-                                .transition(.opacity.combined(with: .move(edge: .bottom)))
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 32) {
+                    ForEach(visibleMonths, id: \.self) { month in
+                        VStack(spacing: 16) {
+                            monthHeader(month, showArrows: false)
+                            weekdayHeader
+                            dayGrid(for: month)
+                            if let day = selectedDay, selectedMonth == month {
+                                prayerDetailCard(for: day, in: month)
+                                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            }
                         }
+                        .id(month)
                     }
                 }
+                .padding()
             }
-            .padding()
+            .onAppear {
+                centerVisibleMonth(using: proxy, animated: false)
+            }
+            .onChange(of: currentMonth) {
+                centerVisibleMonth(using: proxy, animated: true)
+            }
+            .onChange(of: centerMonthRequest) {
+                centerVisibleMonth(using: proxy, animated: true)
+            }
+        }
+    }
+
+    private func centerVisibleMonth(using proxy: ScrollViewProxy, animated: Bool) {
+        DispatchQueue.main.async {
+            if animated {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    proxy.scrollTo(currentMonth, anchor: .center)
+                }
+            } else {
+                proxy.scrollTo(currentMonth, anchor: .center)
+            }
         }
     }
 
@@ -180,7 +206,6 @@ struct IslamicCalendarView: View {
                 }
             }
         }
-        .id(month)
     }
 
     private func dayCell(_ day: Int, in month: HijriMonth) -> some View {
