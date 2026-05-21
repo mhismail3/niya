@@ -58,6 +58,17 @@ struct DailyPrayerTimes: Sendable {
         times.first { $0.time > now }
     }
 
+    func currentDisplayTime(after now: Date) -> PrayerTime? {
+        let orderedTimes = times.sorted { $0.time < $1.time }
+        for (index, prayerTime) in orderedTimes.enumerated() {
+            let nextTime = index + 1 < orderedTimes.count ? orderedTimes[index + 1].time : nil
+            if prayerTime.time <= now && (nextTime == nil || now < nextTime!) {
+                return prayerTime.prayer.isActualPrayer ? prayerTime : nil
+            }
+        }
+        return nil
+    }
+
     func timeUntilNext(after now: Date) -> TimeInterval? {
         guard let next = nextPrayer(after: now) else { return nil }
         return next.time.timeIntervalSince(now)

@@ -46,6 +46,33 @@ struct PrayerTimeModelTests {
         #expect(next?.prayer == .dhuhr)
     }
 
+    @Test func currentDisplayTimeAfterSunriseIsNilBecauseSunriseIsMarker() {
+        let now = Date()
+        let times = [
+            PrayerTime(prayer: .fajr, time: now.addingTimeInterval(-7200)),
+            PrayerTime(prayer: .sunrise, time: now.addingTimeInterval(-3600)),
+            PrayerTime(prayer: .dhuhr, time: now.addingTimeInterval(1800)),
+            PrayerTime(prayer: .asr, time: now.addingTimeInterval(7200)),
+            PrayerTime(prayer: .maghrib, time: now.addingTimeInterval(14400)),
+            PrayerTime(prayer: .isha, time: now.addingTimeInterval(18000)),
+        ]
+        let daily = DailyPrayerTimes(date: now, times: times, location: .mecca, method: .isna)
+        let current = daily.currentDisplayTime(after: now)
+        #expect(current == nil)
+    }
+
+    @Test func currentDisplayTimeBeforeSunriseIsFajr() {
+        let now = Date()
+        let times = [
+            PrayerTime(prayer: .fajr, time: now.addingTimeInterval(-1800)),
+            PrayerTime(prayer: .sunrise, time: now.addingTimeInterval(1800)),
+            PrayerTime(prayer: .dhuhr, time: now.addingTimeInterval(7200)),
+        ]
+        let daily = DailyPrayerTimes(date: now, times: times, location: .mecca, method: .isna)
+        let current = daily.currentDisplayTime(after: now)
+        #expect(current?.prayer == .fajr)
+    }
+
     @Test func nextPrayerReturnsNilWhenAllPassed() {
         let now = Date()
         let times = PrayerName.allCases.enumerated().map { i, prayer in

@@ -29,7 +29,7 @@ struct AppGuideView: View {
                 }
 
                 Section("Search") {
-                    guideRow("magnifyingglass", "3-Scope Search", "Search across Quran verses, Hadith texts, and Duas from one place.")
+                    guideRow("magnifyingglass", "Content Search", "Search across Quran verses, Hadith texts, and Duas from one place.")
                 }
 
                 Section("Hadith") {

@@ -89,3 +89,150 @@ struct QuranDataServiceTests {
         #expect(service.selectedTranslations.map(\.id) == ["en_sahih", "en_clearquran"])
     }
 }
+
+@MainActor
+@Suite("SearchIndex", .serialized)
+struct SearchIndexTests {
+
+    @Test func normalizerFoldsEnglishPunctuationAndDiacritics() {
+        let normalized = SearchTextNormalizer.normalize("  Café—MERCY!  ")
+        #expect(normalized == "cafe mercy")
+    }
+
+    @Test func normalizerRemovesArabicMarksAndNormalizesAlef() {
+        let normalized = SearchTextNormalizer.normalize("ٱللّٰهُ")
+        #expect(normalized == "الله")
+    }
+
+    @Test func queryParsesSurahNumberAndAyahReference() {
+        let number = SearchQuery("2")
+        #expect(number.surahNumber == 2)
+        #expect(number.reference == nil)
+
+        let reference = SearchQuery("2:255")
+        #expect(reference.surahNumber == nil)
+        #expect(reference.reference == QuranReference(surahId: 2, ayahId: 255))
+    }
+
+    @Test func quranPhraseSearchFindsSelectedTranslationVerse() async {
+        let snapshot = await makeLoadedSnapshot()
+        let index = SearchIndex()
+        await index.configure(snapshot: snapshot)
+
+        let results = await index.search(query: "And rely upon")
+
+        #expect(results.quranVerses.contains { $0.surahId == 25 && $0.ayahId == 58 })
+        #expect(results.quranVerses.count <= SearchResultLimits.quranVerses)
+    }
+
+    @Test func quranReferenceSearchFindsExactAyah() async {
+        let snapshot = await makeLoadedSnapshot()
+        let index = SearchIndex()
+        await index.configure(snapshot: snapshot)
+
+        let results = await index.search(query: "2:255")
+
+        #expect(results.quranVerses.first?.surahId == 2)
+        #expect(results.quranVerses.first?.ayahId == 255)
+    }
+
+    @Test func arabicAyahSearchMatchesNormalizedText() async {
+        let snapshot = await makeLoadedSnapshot()
+        let index = SearchIndex()
+        await index.configure(snapshot: snapshot)
+
+        let results = await index.search(query: "الرحمن الرحيم")
+
+        #expect(results.quranVerses.contains { $0.surahId == 1 && $0.ayahId == 3 })
+    }
+
+    @Test func hadithSearchDoesNotDependOnLoadedCollectionState() async throws {
+        let hadithService = HadithDataService()
+        await hadithService.load()
+        #expect(hadithService.loadedCollectionCount == 0)
+
+        let snapshot = SearchContentSnapshot(
+            quran: QuranSearchSnapshot(surahs: [], verses: []),
+            hadithCollections: hadithService.searchCollectionsSnapshot(),
+            duas: []
+        )
+        let index = SearchIndex()
+        await index.configure(snapshot: snapshot)
+
+        var results = await index.search(query: "prayer")
+        for _ in 0..<100 where results.hadiths.isEmpty && results.isHadithIndexing {
+            try await Task.sleep(for: .milliseconds(100))
+            results = await index.search(query: "prayer")
+        }
+
+        #expect(!results.hadiths.isEmpty)
+        #expect(results.hadiths.count <= SearchResultLimits.hadiths)
+        #expect(hadithService.loadedCollectionCount == 0)
+    }
+
+    @Test func emptyQueryDoesNotStartHadithIndexing() async {
+        let hadithService = HadithDataService()
+        await hadithService.load()
+        let snapshot = SearchContentSnapshot(
+            quran: QuranSearchSnapshot(surahs: [], verses: []),
+            hadithCollections: hadithService.searchCollectionsSnapshot(),
+            duas: []
+        )
+        let index = SearchIndex()
+        await index.configure(snapshot: snapshot)
+
+        let results = await index.search(query: "   ")
+
+        #expect(results.isEmpty)
+        #expect(results.isHadithIndexing == false)
+        #expect(await index.hadithIndexStateForTesting() == "notStarted")
+    }
+
+    @Test func matcherRanksExactPhraseAboveTokenMatch() {
+        let query = SearchQuery("rely upon")
+        let phraseScore = SearchTextMatcher.score(
+            query: query,
+            fields: [SearchField(text: "And rely upon Allah", normalized: SearchTextNormalizer.normalize("And rely upon Allah"), weight: 10)]
+        )
+        let tokenScore = SearchTextMatcher.score(
+            query: query,
+            fields: [SearchField(text: "Rely on Allah upon hardship", normalized: SearchTextNormalizer.normalize("Rely on Allah upon hardship"), weight: 10)]
+        )
+
+        #expect(phraseScore != nil)
+        #expect(tokenScore != nil)
+        #expect((phraseScore ?? 0) > (tokenScore ?? 0))
+    }
+
+    @Test func resultCapsAreEnforcedAcrossSections() async throws {
+        let snapshot = await makeLoadedSnapshot()
+        let index = SearchIndex()
+        await index.configure(snapshot: snapshot)
+
+        var results = await index.search(query: "the")
+        for _ in 0..<60 where results.isHadithIndexing {
+            try await Task.sleep(for: .milliseconds(100))
+            results = await index.search(query: "the")
+        }
+
+        #expect(results.quranVerses.count <= SearchResultLimits.quranVerses)
+        #expect(results.surahs.count <= SearchResultLimits.surahs)
+        #expect(results.hadiths.count <= SearchResultLimits.hadiths)
+        #expect(results.duas.count <= SearchResultLimits.duas)
+    }
+
+    private func makeLoadedSnapshot() async -> SearchContentSnapshot {
+        let quranService = QuranDataService()
+        await quranService.load()
+        let hadithService = HadithDataService()
+        await hadithService.load()
+        let duaService = DuaDataService()
+        await duaService.load()
+
+        return SearchContentSnapshot(
+            quran: quranService.searchSnapshot(script: .hafs),
+            hadithCollections: hadithService.searchCollectionsSnapshot(),
+            duas: duaService.searchSnapshot()
+        )
+    }
+}

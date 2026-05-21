@@ -10,14 +10,7 @@ struct PrayerTimesListView: View {
     private var now: Date { Date() }
 
     private var currentPrayer: PrayerName? {
-        let actual = times.times.filter { $0.prayer.isActualPrayer }
-        for (i, pt) in actual.enumerated() {
-            let nextTime = i + 1 < actual.count ? actual[i + 1].time : nil
-            if pt.time <= now && (nextTime == nil || now < nextTime!) {
-                return pt.prayer
-            }
-        }
-        return nil
+        times.currentDisplayTime(after: now)?.prayer
     }
 
     var body: some View {
@@ -89,7 +82,7 @@ struct PrayerTimesListView: View {
 
             Spacer()
 
-            if hasPassed(pt) && pt.prayer.isActualPrayer {
+            if hasPassed(pt) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.caption)
                     .foregroundStyle(Color.niyaSecondary)

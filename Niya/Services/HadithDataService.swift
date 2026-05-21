@@ -6,6 +6,12 @@ struct HadithCollectionData: Sendable {
     let hadithsByChapter: [Int: [Hadith]]
 }
 
+struct HadithCollectionSearchSource: Sendable {
+    let id: String
+    let name: String
+    let hasGrades: Bool
+}
+
 @Observable
 @MainActor
 final class HadithDataService {
@@ -83,6 +89,12 @@ final class HadithDataService {
             }
         }
         return results
+    }
+
+    func searchCollectionsSnapshot() -> [HadithCollectionSearchSource] {
+        collections.map {
+            HadithCollectionSearchSource(id: $0.id, name: $0.name, hasGrades: $0.hasGrades)
+        }
     }
 
     var loadedCollectionCount: Int {

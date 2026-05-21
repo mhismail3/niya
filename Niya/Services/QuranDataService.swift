@@ -1,5 +1,44 @@
 import Foundation
 
+struct QuranSearchSnapshot: Sendable {
+    let surahs: [Surah]
+    let verses: [QuranVerseSearchSource]
+    let displayScript: QuranScript?
+
+    init(surahs: [Surah], verses: [QuranVerseSearchSource], displayScript: QuranScript? = nil) {
+        self.surahs = surahs
+        self.verses = verses
+        self.displayScript = displayScript
+    }
+}
+
+struct QuranVerseSearchSource: Identifiable, Sendable {
+    let id: String
+    let surah: Surah
+    let ayahId: Int
+    let displayArabic: String
+    let searchableArabic: [String]
+    let displayTranslation: String
+    let translationTexts: [TranslationText]
+
+    init(
+        surah: Surah,
+        ayahId: Int,
+        displayArabic: String,
+        searchableArabic: [String],
+        displayTranslation: String,
+        translationTexts: [TranslationText]
+    ) {
+        self.id = "\(surah.id):\(ayahId)"
+        self.surah = surah
+        self.ayahId = ayahId
+        self.displayArabic = displayArabic
+        self.searchableArabic = searchableArabic
+        self.displayTranslation = displayTranslation
+        self.translationTexts = translationTexts
+    }
+}
+
 @Observable
 @MainActor
 final class QuranDataService: QuranDataProviding {
@@ -131,6 +170,47 @@ final class QuranDataService: QuranDataProviding {
         }
     }
 
+    func searchSnapshot(script: QuranScript) -> QuranSearchSnapshot {
+        let displayDictionary = script == .hafs ? hafsDictionary : indoPakDictionary
+        guard let displayDictionary else {
+            return QuranSearchSnapshot(surahs: surahs, verses: [], displayScript: script)
+        }
+
+        var verseSources: [QuranVerseSearchSource] = []
+        let sortedSurahs = surahs.sorted { $0.id < $1.id }
+        for surah in sortedSurahs {
+            let key = String(surah.id)
+            guard let displayVerses = displayDictionary[key] else { continue }
+            let hafsByAyah = Dictionary(uniqueKeysWithValues: (hafsDictionary?[key] ?? []).map { ($0.id, $0) })
+            let indoPakByAyah = Dictionary(uniqueKeysWithValues: (indoPakDictionary?[key] ?? []).map { ($0.id, $0) })
+
+            for verse in displayVerses {
+                let overlayKey = "\(surah.id):\(verse.id)"
+                let translationTexts = searchTranslationTexts(for: verse, key: overlayKey)
+                let displayTranslation = translationTexts.first?.text ?? verse.translation
+                var arabicTexts: [String] = [verse.text]
+                if let hafs = hafsByAyah[verse.id]?.text {
+                    arabicTexts.append(hafs)
+                }
+                if let indoPak = indoPakByAyah[verse.id]?.text {
+                    arabicTexts.append(indoPak)
+                }
+
+                verseSources.append(
+                    QuranVerseSearchSource(
+                        surah: surah,
+                        ayahId: verse.id,
+                        displayArabic: verse.text,
+                        searchableArabic: Array(Set(arabicTexts)),
+                        displayTranslation: displayTranslation,
+                        translationTexts: translationTexts
+                    )
+                )
+            }
+        }
+        return QuranSearchSnapshot(surahs: sortedSurahs, verses: verseSources, displayScript: script)
+    }
+
     func addTranslation(_ edition: TranslationEdition) async throws {
         if selectedTranslations.contains(where: { $0.id == edition.id }) { return }
         let name = edition.filename.replacingOccurrences(of: ".json", with: "")
@@ -197,6 +277,17 @@ final class QuranDataService: QuranDataProviding {
 
     private func buildVerseCounts(from surahs: [Surah]) -> [Int] {
         surahs.sorted { $0.id < $1.id }.map(\.totalVerses)
+    }
+
+    private func searchTranslationTexts(for verse: Verse, key: String) -> [TranslationText] {
+        guard !translationOverlays.isEmpty else {
+            return [TranslationText(name: "Translation", text: verse.translation, isRTL: false)]
+        }
+        return translationOverlays.compactMap { entry in
+            let text = entry.overlay[key] ?? verse.translation
+            guard !text.isEmpty else { return nil }
+            return TranslationText(name: entry.edition.name, text: text, isRTL: entry.edition.isRTL)
+        }
     }
 }
 

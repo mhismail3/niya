@@ -366,7 +366,7 @@ private struct SalahPrayerCardGrid: View {
             Text("Next")
                 .font(.niyaBadge)
                 .foregroundStyle(Color.niyaTeal)
-        } else if hasPassed(prayerTime) && prayerTime.prayer.isActualPrayer {
+        } else if hasPassed(prayerTime) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.caption)
                 .foregroundStyle(Color.niyaSecondary)
@@ -374,14 +374,7 @@ private struct SalahPrayerCardGrid: View {
     }
 
     private func currentPrayer() -> PrayerName? {
-        let actual = times.times.filter { $0.prayer.isActualPrayer }
-        for (index, prayerTime) in actual.enumerated() {
-            let nextTime = index + 1 < actual.count ? actual[index + 1].time : nil
-            if prayerTime.time <= now && (nextTime == nil || now < nextTime!) {
-                return prayerTime.prayer
-            }
-        }
-        return nil
+        times.currentDisplayTime(after: now)?.prayer
     }
 
     private func isCurrent(_ prayerTime: PrayerTime) -> Bool {

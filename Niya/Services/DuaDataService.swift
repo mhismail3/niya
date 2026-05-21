@@ -1,5 +1,11 @@
 import Foundation
 
+struct DuaSearchSource: Sendable {
+    let categoryId: String
+    let categoryName: String
+    let dua: Dua
+}
+
 @Observable
 @MainActor
 final class DuaDataService {
@@ -69,6 +75,15 @@ final class DuaDataService {
             }
         }
         return results
+    }
+
+    func searchSnapshot() -> [DuaSearchSource] {
+        duasByCategory.keys.sorted().flatMap { categoryId in
+            let categoryName = categoryById[categoryId]?.name ?? "Dua"
+            return (duasByCategory[categoryId] ?? []).map {
+                DuaSearchSource(categoryId: categoryId, categoryName: categoryName, dua: $0)
+            }
+        }
     }
 }
 
