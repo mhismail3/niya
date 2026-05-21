@@ -102,20 +102,24 @@ struct SalahSheetView: View {
 
     private func loadedContent(location loc: UserLocation, times: DailyPrayerTimes) -> some View {
         VStack(spacing: 12) {
-            HStack(alignment: .top, spacing: 16) {
+            HStack(alignment: .center, spacing: 16) {
                 qiblahPanel
 
                 nextPrayerSummary(location: loc)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
+            .frame(height: 188, alignment: .center)
 
             SalahPrayerCardGrid(times: times, timeZone: loc.timeZone)
 
+            Spacer(minLength: 6)
+
             notificationToggle(location: loc)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(.horizontal, 18)
-        .padding(.top, 6)
-        .padding(.bottom, 12)
+        .padding(.top, 18)
+        .padding(.bottom, 16)
     }
 
     private var qiblahPanel: some View {
@@ -141,6 +145,7 @@ struct SalahSheetView: View {
                !prayerTimeService.formattedCountdown.isEmpty {
                 Text("\(next.prayer.displayName(on: Date())) in \(prayerTimeService.formattedCountdown)")
                     .font(.niyaEmphasis)
+                    .monospacedDigit()
                     .foregroundStyle(Color.niyaTeal)
                     .lineLimit(1)
                     .minimumScaleFactor(0.62)
@@ -218,7 +223,7 @@ struct SalahSheetView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
-            .font(.niyaHeadline)
+            .font(.niyaSubheadline)
             .tint(Color.niyaTeal)
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .center)
             .onChange(of: prayerNotifications) { _, enabled in
@@ -305,7 +310,7 @@ private struct SalahPrayerCardGrid: View {
     }
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 7) {
+        LazyVGrid(columns: columns, spacing: 6) {
             ForEach(times.times, id: \.prayer) { prayerTime in
                 prayerCard(prayerTime)
             }
@@ -313,10 +318,10 @@ private struct SalahPrayerCardGrid: View {
     }
 
     private func prayerCard(_ prayerTime: PrayerTime) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 3) {
             HStack(alignment: .center, spacing: 4) {
                 Image(systemName: prayerTime.prayer.icon)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(rowColor(prayerTime))
 
                 Spacer(minLength: 4)
@@ -339,8 +344,8 @@ private struct SalahPrayerCardGrid: View {
                 .allowsTightening(true)
         }
         .padding(.horizontal, 9)
-        .padding(.vertical, 7)
-        .frame(maxWidth: .infinity, minHeight: 68, alignment: .topLeading)
+        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity, minHeight: 60, alignment: .topLeading)
         .background(cardBackground(for: prayerTime))
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay {

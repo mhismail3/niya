@@ -149,14 +149,26 @@ struct NiyaApp: App {
 
     private static func configureNavigationBarTypography() {
         let textColor = UIColor(named: "niyaText") ?? .label
-        UINavigationBar.appearance().largeTitleTextAttributes = [
+        let largeTitleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.niyaSerifFont(textStyle: .largeTitle, weight: .bold),
             .foregroundColor: textColor
         ]
-        UINavigationBar.appearance().titleTextAttributes = [
+        let titleAttributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.niyaSerifFont(textStyle: .headline, weight: .semibold),
             .foregroundColor: textColor
         ]
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.largeTitleTextAttributes = largeTitleAttributes
+        appearance.titleTextAttributes = titleAttributes
+
+        let navigationBar = UINavigationBar.appearance()
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.compactScrollEdgeAppearance = appearance
+        navigationBar.largeTitleTextAttributes = largeTitleAttributes
+        navigationBar.titleTextAttributes = titleAttributes
     }
 
     private static func runStartupMigrations(container: ModelContainer) async {

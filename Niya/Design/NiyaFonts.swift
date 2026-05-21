@@ -16,7 +16,7 @@ extension Font {
     static let niyaNavigationTitle = Font.system(.title2, design: .serif, weight: .semibold)
     static let niyaControlLabel = Font.system(.caption, design: .serif, weight: .semibold)
     static let niyaEmphasis = Font.system(size: 25, weight: .semibold, design: .serif)
-    static let niyaCardTitle = Font.system(size: 15, weight: .semibold, design: .serif)
+    static let niyaCardTitle = Font.system(size: 14, weight: .semibold, design: .serif)
     static let niyaCardValue = Font.system(size: 16, weight: .semibold, design: .serif)
     static let niyaBadge = Font.system(.caption2, design: .serif, weight: .semibold)
     static let niyaVerseAction = Font.title3
