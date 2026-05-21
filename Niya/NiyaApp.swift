@@ -28,6 +28,8 @@ struct NiyaApp: App {
     private let container: ModelContainer
 
     init() {
+        Self.configureNavigationBarTypography()
+
         let ds = QuranDataService()
         let hds = HadithDataService()
         let dds = DuaDataService()
@@ -143,6 +145,18 @@ struct NiyaApp: App {
                     UIFont.clearQuranFontCache()
                 }
         }
+    }
+
+    private static func configureNavigationBarTypography() {
+        let textColor = UIColor(named: "niyaText") ?? .label
+        UINavigationBar.appearance().largeTitleTextAttributes = [
+            .font: UIFont.niyaSerifFont(textStyle: .largeTitle, weight: .bold),
+            .foregroundColor: textColor
+        ]
+        UINavigationBar.appearance().titleTextAttributes = [
+            .font: UIFont.niyaSerifFont(textStyle: .headline, weight: .semibold),
+            .foregroundColor: textColor
+        ]
     }
 
     private static func runStartupMigrations(container: ModelContainer) async {

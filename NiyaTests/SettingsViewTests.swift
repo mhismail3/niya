@@ -65,4 +65,11 @@ struct SettingsViewTests {
         #expect(view.readerVM != nil)
         #expect(view.readerVM?.surah.id == 2)
     }
+
+    @Test func asrJuristicSelectionNormalizesStoredValues() {
+        #expect(PrayerTimesSettingsSection.normalizedAsrJuristic(2) == 2)
+        #expect(PrayerTimesSettingsSection.normalizedAsrJuristic(1) == 1)
+        #expect(PrayerTimesSettingsSection.normalizedAsrJuristic(0) == 1)
+        #expect(PrayerTimesSettingsSection.normalizedAsrJuristic(99) == 1)
+    }
 }

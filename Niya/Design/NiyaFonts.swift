@@ -13,6 +13,12 @@ extension Font {
     static let niyaSubheadline = Font.system(.subheadline, design: .serif, weight: .medium)
     static let niyaCaption = Font.system(.caption, design: .serif, weight: .regular)
     static let niyaCaption2 = Font.system(.caption2, design: .serif, weight: .regular)
+    static let niyaNavigationTitle = Font.system(.title2, design: .serif, weight: .semibold)
+    static let niyaControlLabel = Font.system(.caption, design: .serif, weight: .semibold)
+    static let niyaEmphasis = Font.system(size: 25, weight: .semibold, design: .serif)
+    static let niyaCardTitle = Font.system(size: 15, weight: .semibold, design: .serif)
+    static let niyaCardValue = Font.system(size: 16, weight: .semibold, design: .serif)
+    static let niyaBadge = Font.system(.caption2, design: .serif, weight: .semibold)
     static let niyaVerseAction = Font.title3
 }
 
@@ -44,5 +50,12 @@ extension UIFont {
 
     static func clearQuranFontCache() {
         quranFontCache.removeAllObjects()
+    }
+
+    static func niyaSerifFont(textStyle: UIFont.TextStyle, weight: UIFont.Weight) -> UIFont {
+        let pointSize = UIFont.preferredFont(forTextStyle: textStyle).pointSize
+        let baseFont = UIFont.systemFont(ofSize: pointSize, weight: weight)
+        let descriptor = baseFont.fontDescriptor.withDesign(.serif) ?? baseFont.fontDescriptor
+        return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: UIFont(descriptor: descriptor, size: pointSize))
     }
 }

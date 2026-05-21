@@ -10,21 +10,24 @@ struct NiyaToolbar: ViewModifier {
         @Bindable var coord = coordinator
         content
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                if showSalahButton {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button { coordinator.showSalahSheet = true } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "location.circle")
+                                Text("Prayer Times")
+                                    .font(.niyaControlLabel)
+                            }
+                        }
+                        .accessibilityLabel("Prayer Times")
+                    }
+                }
+                ToolbarItemGroup(placement: .topBarTrailing) {
                     Button { showBookmarks = true } label: {
                         Image(systemName: "bookmark")
                     }
                     .accessibilityLabel("Bookmarks")
-                }
-                if showSalahButton {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button { coordinator.showSalahSheet = true } label: {
-                            Image(systemName: "location.circle")
-                        }
-                        .accessibilityLabel("Qibla and prayer times")
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
+
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape")
                     }

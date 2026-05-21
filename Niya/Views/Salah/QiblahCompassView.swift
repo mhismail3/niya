@@ -6,6 +6,8 @@ struct QiblahCompassView: View {
     let headingAvailable: Bool
     let headingAccuracy: Double
     var compassSize: CGFloat = 260
+    var showsAccuracyBanner = true
+    var showsBearingText = true
 
     @State private var continuousRotation: Double = 0
     @State private var lastHeading: Double?
@@ -41,11 +43,13 @@ struct QiblahCompassView: View {
                 compassDial
             }
 
-            if accuracyState != .good && headingAvailable {
+            if showsAccuracyBanner && accuracyState != .good && headingAvailable {
                 accuracyBanner
             }
 
-            bearingText
+            if showsBearingText {
+                bearingText
+            }
         }
         .onAppear {
             continuousRotation = heading
@@ -125,9 +129,11 @@ struct QiblahCompassView: View {
                 .rotationEffect(.degrees(bearing))
             }
 
-            Text("Compass not available on this device")
-                .font(.niyaCaption)
-                .foregroundStyle(Color.niyaSecondary)
+            if showsAccuracyBanner {
+                Text("Compass not available on this device")
+                    .font(.niyaCaption)
+                    .foregroundStyle(Color.niyaSecondary)
+            }
         }
     }
 

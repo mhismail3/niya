@@ -222,6 +222,11 @@ struct PrayerTimesSettingsSection: View {
     @Environment(LocationService.self) private var locationService
     @Environment(PrayerTimeService.self) private var prayerTimeService
     @State private var showNotificationDeniedAlert = false
+    @AppStorage(StorageKey.asrJuristic) private var asrJuristic = 1
+
+    static func normalizedAsrJuristic(_ value: Int) -> Int {
+        value == 2 ? 2 : 1
+    }
 
     var body: some View {
         Section("Prayer Times") {
@@ -242,9 +247,9 @@ struct PrayerTimesSettingsSection: View {
             .tint(Color.niyaTeal)
 
             Picker("Asr Juristic Method", selection: Binding(
-                get: { UserDefaults.standard.integer(forKey: StorageKey.asrJuristic) == 2 ? 2 : 1 },
+                get: { Self.normalizedAsrJuristic(asrJuristic) },
                 set: { newValue in
-                    UserDefaults.standard.set(newValue, forKey: StorageKey.asrJuristic)
+                    asrJuristic = Self.normalizedAsrJuristic(newValue)
                     if let loc = locationService.effectiveLocation {
                         prayerTimeService.recalculate(location: loc)
                     }

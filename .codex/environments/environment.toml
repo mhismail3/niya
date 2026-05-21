@@ -1,0 +1,17 @@
+version = 1
+name = "Niya local"
+
+[setup]
+script = ""
+
+[[actions]]
+name = "Rebuild + Install Niya on iPhone"
+icon = "debug"
+command = "env NIYA_IOS_DEVICE_NAME=iPhone scripts/niya-ios-device install"
+platform = "darwin"
+
+[[actions]]
+name = "Launch Installed Niya on iPhone"
+icon = "run"
+command = "env NIYA_IOS_DEVICE_NAME=iPhone scripts/niya-ios-device launch"
+platform = "darwin"

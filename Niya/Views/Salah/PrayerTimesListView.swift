@@ -76,15 +76,16 @@ struct PrayerTimesListView: View {
     }
 
     private func prayerRow(_ pt: PrayerTime) -> some View {
-        HStack {
+        HStack(spacing: compact ? 6 : 8) {
             Image(systemName: pt.prayer.icon)
-                .frame(width: 24)
+                .frame(width: compact ? 20 : 24)
                 .foregroundStyle(rowColor(pt))
 
             Text(pt.prayer.displayName(on: times.date))
                 .font(compact ? .niyaCaption : .niyaBody)
                 .fontWeight(isCurrent(pt) || isNext(pt) ? .semibold : .regular)
                 .foregroundStyle(rowColor(pt))
+                .lineLimit(1)
 
             Spacer()
 
@@ -94,7 +95,7 @@ struct PrayerTimesListView: View {
                     .foregroundStyle(Color.niyaSecondary)
             } else if isCurrent(pt) {
                 Text("Now")
-                    .font(.caption)
+                    .font(compact ? .caption2 : .caption)
                     .fontWeight(.medium)
                     .foregroundStyle(Color.niyaGold)
             }
@@ -103,20 +104,37 @@ struct PrayerTimesListView: View {
                 .font(compact ? .niyaCaption : .niyaBody)
                 .monospacedDigit()
                 .foregroundStyle(rowColor(pt))
+                .lineLimit(1)
         }
         .padding(.vertical, compact ? 2 : 4)
     }
 
+    @ViewBuilder
     private var dateLocationHeader: some View {
-        HStack {
-            Text(HijriFormatter.format(date: now))
-            if !locationName.isEmpty {
-                Spacer()
-                Text(locationName)
+        if compact {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(HijriFormatter.format(date: now))
+                if !locationName.isEmpty {
+                    Text(locationName)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.82)
+                }
             }
+            .font(.niyaCaption2)
+            .foregroundStyle(Color.niyaSecondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            HStack {
+                Text(HijriFormatter.format(date: now))
+                if !locationName.isEmpty {
+                    Spacer()
+                    Text(locationName)
+                        .lineLimit(1)
+                }
+            }
+            .font(.niyaCaption)
+            .foregroundStyle(Color.niyaSecondary)
         }
-        .font(.niyaCaption)
-        .foregroundStyle(Color.niyaSecondary)
     }
 
     private func formattedTime(_ date: Date) -> String {
