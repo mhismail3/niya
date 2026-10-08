@@ -137,6 +137,10 @@ struct NiyaApp: App {
                         navigationCoordinator.showSalahSheet = true
                     }
                 }
+                .onReceive(NotificationCenter.default.publisher(for: UIContentSizeCategory.didChangeNotification)) { _ in
+                    // Appearance proxies only affect bars created afterwards (new screens).
+                    Self.configureNavigationBarTypography()
+                }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in
                     dataService.clearCache()
                     hadithDataService.clearCache()

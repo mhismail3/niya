@@ -53,14 +53,12 @@ extension UIFont {
         quranFontCache.removeAllObjects()
     }
 
+    /// Serif variant of a text style at the user's current Dynamic Type size. The
+    /// preferred point size is already scaled, so no further UIFontMetrics scaling applies.
     static func niyaSerifFont(textStyle: UIFont.TextStyle, weight: UIFont.Weight) -> UIFont {
-        // Start from the default-size point size; `scaledFont` applies the user's text size once.
-        let pointSize = UIFont.preferredFont(
-            forTextStyle: textStyle,
-            compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
-        ).pointSize
+        let pointSize = UIFont.preferredFont(forTextStyle: textStyle).pointSize
         let baseFont = UIFont.systemFont(ofSize: pointSize, weight: weight)
         let descriptor = baseFont.fontDescriptor.withDesign(.serif) ?? baseFont.fontDescriptor
-        return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: UIFont(descriptor: descriptor, size: pointSize))
+        return UIFont(descriptor: descriptor, size: pointSize)
     }
 }

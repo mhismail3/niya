@@ -20,7 +20,9 @@ struct ContentView: View {
     /// Clearance above the bottom tab bar. On iPad (iOS 18+, regular width) the tab bar
     /// sits at the top, so the floating bars only need a margin.
     private var floatingBarBottomPadding: CGFloat {
-        if #available(iOS 18.0, *), horizontalSizeClass == .regular { return 16 }
+        if #available(iOS 18.0, *), UIDevice.current.userInterfaceIdiom == .pad, horizontalSizeClass == .regular {
+            return 16
+        }
         return 60
     }
 

@@ -181,9 +181,12 @@ struct ScrollReaderView: View {
                 // user's own drag always wins over auto-scroll.
                 guard let sv = uiScrollView, !sv.isDragging, !sv.isDecelerating else { continue }
 
-                let maxY = sv.contentSize.height - sv.bounds.height + sv.adjustedContentInset.bottom
+                guard sv.contentSize.height > 0 else { continue }
+                // Short content (fits on screen) ends at the top inset rather than scrolling into blank space.
+                let maxY = max(sv.contentSize.height - sv.bounds.height + sv.adjustedContentInset.bottom,
+                               -sv.adjustedContentInset.top)
                 let newY = sv.contentOffset.y + autoScrollVM.pointsPerSecond * elapsed
-                if maxY > 0 && newY >= maxY {
+                if newY >= maxY {
                     sv.contentOffset.y = maxY
                     autoScrollVM.isScrolling = false
                     return
