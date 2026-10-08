@@ -91,3 +91,28 @@ enum QiblahFormatting {
         return "\(rounded)° \(directions[index])"
     }
 }
+
+/// Whether the top of the device faces the Qiblah. Hysteresis (enter within 3°, leave
+/// beyond 5°) keeps the highlight and haptic from chattering at the edge, and alignment is
+/// only claimed while Core Location reports good accuracy.
+enum QiblahAlignment {
+    static let enterDegrees = 3.0
+    static let exitDegrees = 5.0
+
+    /// Degrees to turn to face the Qiblah; positive is clockwise (to the right).
+    static func turn(heading: Double, bearing: Double) -> Double {
+        CompassHeading.shortestDelta(from: heading, to: bearing)
+    }
+
+    static func isAligned(heading: Double, bearing: Double, accuracy: CompassAccuracy, wasAligned: Bool) -> Bool {
+        guard accuracy == .good else { return false }
+        return abs(turn(heading: heading, bearing: bearing)) <= (wasAligned ? exitDegrees : enterDegrees)
+    }
+
+    static func spokenGuidance(heading: Double, bearing: Double, aligned: Bool) -> String {
+        if aligned { return "Facing the Qiblah" }
+        let turn = turn(heading: heading, bearing: bearing)
+        let degrees = Int(abs(turn).rounded())
+        return turn > 0 ? "Turn right \(degrees) degrees" : "Turn left \(degrees) degrees"
+    }
+}

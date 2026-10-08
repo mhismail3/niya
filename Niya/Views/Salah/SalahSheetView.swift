@@ -9,6 +9,7 @@ struct SalahSheetView: View {
     @State private var showCalendar = false
     @State private var showNotificationDeniedAlert = false
     private let compactCompassSize: CGFloat = 168
+    @State private var facingQiblah = false
 
     private var location: UserLocation? {
         locationService.effectiveLocation
@@ -77,6 +78,9 @@ struct SalahSheetView: View {
             locationService.stopHeading()
             locationService.stopLocationUpdates()
         }
+        .onChange(of: locationService.compass) { updateQiblahAlignment() }
+        .onChange(of: bearing) { updateQiblahAlignment() }
+        .sensoryFeedback(.success, trigger: facingQiblah) { _, isFacing in isFacing }
         .onChange(of: locationService.effectiveLocation) { oldLoc, newLoc in
             if let loc = newLoc, LocationService.requiresPrayerRecalculation(from: oldLoc, to: loc) {
                 prayerTimeService.recalculate(location: loc)
@@ -138,12 +142,21 @@ struct SalahSheetView: View {
         .padding(.bottom, 16)
     }
 
+    private func updateQiblahAlignment() {
+        let aligned = location != nil && locationService.isHeadingAvailable && QiblahAlignment.isAligned(
+            heading: locationService.compass.heading, bearing: bearing,
+            accuracy: locationService.compass.quality, wasAligned: facingQiblah
+        )
+        if aligned != facingQiblah { facingQiblah = aligned }
+    }
+
     private var qiblahPanel: some View {
         QiblahCompassView(
             bearing: bearing,
             heading: locationService.compass.continuousHeading,
             headingAvailable: locationService.isHeadingAvailable,
             accuracy: locationService.compass.quality,
+            isAligned: facingQiblah,
             compassSize: compactCompassSize,
             showsAccuracyBanner: false,
             showsBearingText: false
@@ -199,12 +212,13 @@ struct SalahSheetView: View {
                 .padding(.top, 4)
             } else {
                 HStack(spacing: 6) {
-                    Image(systemName: "building.columns")
-                    Text(QiblahFormatting.bearingLabel(bearing))
+                    Image(systemName: facingQiblah ? "checkmark.circle.fill" : "building.columns")
+                    Text(facingQiblah ? "Facing the Qiblah" : QiblahFormatting.bearingLabel(bearing))
                 }
                 .font(.niyaCaption)
-                .foregroundStyle(Color.niyaTeal)
+                .foregroundStyle(facingQiblah ? Color.niyaGold : Color.niyaTeal)
                 .padding(.top, 4)
+                .animation(.easeInOut(duration: 0.2), value: facingQiblah)
             }
         }
         .frame(maxWidth: .infinity, alignment: .trailing)

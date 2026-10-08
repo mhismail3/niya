@@ -138,3 +138,33 @@ struct CompassHeadingTests {
         #expect(QiblahFormatting.bearingLabel(118.99) == "119° ESE")
     }
 }
+
+@Suite("Qiblah alignment")
+struct QiblahAlignmentTests {
+    private let bearing = 58.5  // New York
+
+    @Test func entersWithinThreeDegreesAndHoldsUntilBeyondFive() {
+        #expect(!QiblahAlignment.isAligned(heading: 54, bearing: bearing, accuracy: .good, wasAligned: false))
+        #expect(QiblahAlignment.isAligned(heading: 56, bearing: bearing, accuracy: .good, wasAligned: false))
+        // Wobbling 4° off keeps it aligned once entered, so the haptic does not repeat.
+        #expect(QiblahAlignment.isAligned(heading: 54.5, bearing: bearing, accuracy: .good, wasAligned: true))
+        #expect(!QiblahAlignment.isAligned(heading: 53, bearing: bearing, accuracy: .good, wasAligned: true))
+    }
+
+    @Test func alignsAcrossNorth() {
+        #expect(QiblahAlignment.isAligned(heading: 358, bearing: 1, accuracy: .good, wasAligned: false))
+    }
+
+    @Test func neverClaimsAlignmentWithoutGoodAccuracy() {
+        for accuracy in [CompassAccuracy.reduced, .poor, .calibrating] {
+            #expect(!QiblahAlignment.isAligned(heading: bearing, bearing: bearing, accuracy: accuracy, wasAligned: true))
+        }
+    }
+
+    @Test func spokenGuidanceGivesTheShorterTurn() {
+        #expect(QiblahAlignment.spokenGuidance(heading: 18.5, bearing: bearing, aligned: false) == "Turn right 40 degrees")
+        #expect(QiblahAlignment.spokenGuidance(heading: 100, bearing: bearing, aligned: false) == "Turn left 42 degrees")
+        #expect(QiblahAlignment.spokenGuidance(heading: 300, bearing: 10, aligned: false) == "Turn right 70 degrees")
+        #expect(QiblahAlignment.spokenGuidance(heading: bearing, bearing: bearing, aligned: true) == "Facing the Qiblah")
+    }
+}

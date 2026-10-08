@@ -6,6 +6,8 @@ struct QiblahCompassView: View {
     let heading: Double
     let headingAvailable: Bool
     let accuracy: CompassAccuracy
+    /// The device faces the Qiblah (`QiblahAlignment`); the needle and ring turn gold.
+    var isAligned = false
     var compassSize: CGFloat = 260
     var showsAccuracyBanner = true
     var showsBearingText = true
@@ -18,7 +20,10 @@ struct QiblahCompassView: View {
         compassSize * 0.09
     }
 
+    private var needleColor: Color { isAligned ? .niyaGold : .niyaTeal }
+
     private var ringColor: Color {
+        if isAligned { return Color.niyaGold.opacity(0.85) }
         switch accuracy {
         case .good: return Color.niyaSecondary.opacity(0.3)
         case .reduced: return Color.niyaGold.opacity(0.5)
@@ -47,7 +52,7 @@ struct QiblahCompassView: View {
     private var compassDial: some View {
         ZStack {
             Circle()
-                .stroke(ringColor, lineWidth: 2)
+                .stroke(ringColor, lineWidth: isAligned ? 3 : 2)
                 .frame(width: compassSize, height: compassSize)
 
             ForEach(0..<36, id: \.self) { i in
@@ -71,17 +76,23 @@ struct QiblahCompassView: View {
             VStack(spacing: 2) {
                 Image(systemName: "arrow.up")
                     .font(.system(size: arrowSize, weight: .bold))
-                    .foregroundStyle(Color.niyaTeal)
+                    .foregroundStyle(needleColor)
                 Image(systemName: "building.columns")
                     .font(.system(size: kaabaSize))
-                    .foregroundStyle(Color.niyaTeal)
+                    .foregroundStyle(needleColor)
             }
             .rotationEffect(.degrees(bearing))
+            .animation(.easeInOut(duration: 0.2), value: isAligned)
         }
         .rotationEffect(.degrees(-heading))
         // The heading is already smoothed; a short interactive spring only interpolates
         // between samples and retargets without restarting on each one.
         .animation(.interactiveSpring(response: 0.15, dampingFraction: 0.9), value: heading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Qiblah compass")
+        .accessibilityValue(accuracy == .calibrating
+            ? "Calibrating"
+            : QiblahAlignment.spokenGuidance(heading: heading, bearing: bearing, aligned: isAligned))
     }
 
     private var staticCompass: some View {
@@ -103,6 +114,9 @@ struct QiblahCompassView: View {
                 .offset(y: -compassSize / 2 + 30)
                 .rotationEffect(.degrees(bearing))
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Qiblah direction")
+            .accessibilityValue(QiblahFormatting.bearingLabel(bearing) + " from north")
 
             if showsAccuracyBanner {
                 Text("Compass not available on this device")
