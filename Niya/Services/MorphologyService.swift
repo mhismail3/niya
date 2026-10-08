@@ -8,16 +8,26 @@ final class MorphologyService {
     @ObservationIgnored private var hasAttemptedLoad = false
     @ObservationIgnored private var hasAttemptedMeaningsLoad = false
 
+    @ObservationIgnored private var preloadTask: Task<Void, Never>?
+
+    /// Decodes off the main thread. Concurrent callers (e.g. a sheet reopened mid-load)
+    /// await the same load instead of seeing "attempted" before data exists.
     func preload() async {
-        guard !hasAttemptedLoad else { return }
-        hasAttemptedLoad = true
-        data = try? await Task.detached {
-            try CompressedJSON.decode(MorphologyData.self, resource: "word_morphology")
-        }.value
-        hasAttemptedMeaningsLoad = true
-        meanings = try? await Task.detached {
-            try CompressedJSON.decode([String: [RootMeaning]].self, resource: "root_meanings")
-        }.value
+        if let preloadTask { return await preloadTask.value }
+        guard !hasAttemptedLoad || !hasAttemptedMeaningsLoad else { return }
+        let task = Task {
+            let decoded = try? await Task.detached {
+                try CompressedJSON.decode(MorphologyData.self, resource: "word_morphology")
+            }.value
+            let decodedMeanings = try? await Task.detached {
+                try CompressedJSON.decode([String: [RootMeaning]].self, resource: "root_meanings")
+            }.value
+            if !hasAttemptedLoad { data = decoded; hasAttemptedLoad = true }
+            if !hasAttemptedMeaningsLoad { meanings = decodedMeanings; hasAttemptedMeaningsLoad = true }
+        }
+        preloadTask = task
+        await task.value
+        preloadTask = nil
     }
 
     func morphology(surahId: Int, ayahId: Int, position: Int) -> WordMorphology? {

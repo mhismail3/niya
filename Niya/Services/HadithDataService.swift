@@ -25,8 +25,9 @@ final class HadithDataService {
     ]
 
     private var loadedCollections: [String: HadithCollectionData] = [:]
-    private var collectionAccess: [String: UInt64] = [:]
-    private var accessCounter: UInt64 = 0
+    // Bookkeeping read and written from view bodies; must not invalidate observers.
+    @ObservationIgnored private var collectionAccess: [String: UInt64] = [:]
+    @ObservationIgnored private var accessCounter: UInt64 = 0
     private var loadTask: Task<Void, Never>?
     private var collectionTasks: [String: Task<Void, Never>] = [:]
 
@@ -80,7 +81,6 @@ final class HadithDataService {
                 hadithsByChapter: chapterIndex
             )
             touchCollection(id)
-            evictCollections(excluding: id)
         } catch {
             loadError = "Failed to load \(id): \(error.localizedDescription)"
         }
@@ -140,14 +140,6 @@ final class HadithDataService {
         guard loadedCollections[id] != nil else { return }
         accessCounter &+= 1
         collectionAccess[id] = accessCounter
-    }
-
-    private func evictCollections(excluding current: String) {
-        while loadedCollections.count > 3 {
-            guard let oldest = collectionAccess.filter({ $0.key != current }).min(by: { $0.value < $1.value })?.key else { break }
-            loadedCollections.removeValue(forKey: oldest)
-            collectionAccess.removeValue(forKey: oldest)
-        }
     }
 }
 
