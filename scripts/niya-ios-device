@@ -4,7 +4,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-DERIVED_DATA="build/DerivedData"
+DERIVED_DATA="$ROOT_DIR/build/DerivedData"
 PROJECT_PATH="$ROOT_DIR/Niya.xcodeproj"
 SCHEME="${NIYA_IOS_SCHEME:-Niya Beta}"
 CONFIG="${NIYA_IOS_CONFIGURATION:-Debug}"
@@ -15,6 +15,10 @@ DEVICE_NAME="${NIYA_IOS_DEVICE_NAME:-}"
 DESTINATION="${NIYA_IOS_DESTINATION:-}"
 LAUNCH_AFTER_INSTALL=1
 LAUNCH_TIMEOUT_SECONDS="${NIYA_IOS_LAUNCH_TIMEOUT_SECONDS:-20}"
+# Shared with Tron's scripts/tron-ios-device: one flock per physical device, so two
+# repositories never build/install/launch on the same phone at once.
+DEVICE_LEASE_DIR="$HOME/.tron/internal/run"
+LEASE_BUSY_EXIT=73
 
 usage() {
     cat <<'USAGE'
@@ -35,6 +39,14 @@ Environment overrides:
   NIYA_IOS_CONFIGURATION   Xcode configuration, defaults to Debug
   NIYA_IOS_LAUNCH_TIMEOUT_SECONDS
                            devicectl process launch timeout, defaults to 20
+  DEVELOPER_DIR            Xcode to use. Without it, the selected Xcode is used when its
+                           iphoneos SDK is at least the device's iOS major version;
+                           otherwise the newest installed /Applications/Xcode*.app
+                           that satisfies the device is chosen.
+
+The install, launch, and stop commands hold the device's host-wide lease
+($HOME/.tron/internal/run/ios-device-<ID>.lease.lock, shared with Tron). A busy
+device exits 73 naming its holder; wait for that command instead of bypassing it.
 
 Without a device override, the script selects the only selectable physical iOS
 device. If multiple physical devices are selectable, set NIYA_IOS_DEVICE_ID or
@@ -49,10 +61,88 @@ die() {
 
 require_full_xcode() {
     local selected_xcode
-    selected_xcode="$(xcode-select -p)"
+    selected_xcode="${DEVELOPER_DIR:-$(xcode-select -p)}"
     if [[ "$selected_xcode" == "/Library/Developer/CommandLineTools"* ]]; then
-        die "xcode-select points to Command Line Tools, not full Xcode: $selected_xcode"
+        die "selected developer directory is Command Line Tools, not full Xcode: $selected_xcode"
     fi
+}
+
+sdk_major_for() {
+    DEVELOPER_DIR="$1" xcrun --sdk iphoneos --show-sdk-version 2>/dev/null | cut -d. -f1
+}
+
+device_os_major() {
+    local device_id="$1" json
+    json="$(mktemp -t niya-device-info)"
+    if ! xcrun devicectl device info details --device "$device_id" --quiet --json-output "$json" >/dev/null 2>&1; then
+        rm -f "$json"
+        return 0
+    fi
+    python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["result"]["deviceProperties"]["osVersionNumber"].split(".")[0])' "$json" 2>/dev/null || true
+    rm -f "$json"
+}
+
+# A device on a newer iOS than the selected SDK cannot be built for or debugged, so
+# pick a toolchain whose iphoneos SDK major is at least the device's iOS major.
+select_toolchain() {
+    local device_id="$1" device_major current
+    device_major="$(device_os_major "$device_id")"
+    current="${DEVELOPER_DIR:-$(xcode-select -p)}"
+    if [ -z "$device_major" ]; then
+        echo "warning: could not read the device's iOS version; using $current" >&2
+        return 0
+    fi
+    if [ "$(sdk_major_for "$current")" -ge "$device_major" ] 2>/dev/null; then
+        export DEVELOPER_DIR="$current"
+        return 0
+    fi
+    [ -z "${DEVELOPER_DIR:-}" ] || die "DEVELOPER_DIR=$DEVELOPER_DIR has iphoneos SDK $(sdk_major_for "$current"); device runs iOS $device_major"
+    local app dev best="" best_major=0 major
+    for app in /Applications/Xcode*.app; do
+        dev="$app/Contents/Developer"
+        [ -d "$dev" ] || continue
+        major="$(sdk_major_for "$dev")"
+        [ -n "$major" ] || continue
+        if [ "$major" -ge "$device_major" ] && [ "$major" -gt "$best_major" ]; then
+            best="$dev"
+            best_major="$major"
+        fi
+    done
+    [ -n "$best" ] || die "device runs iOS $device_major but no installed Xcode provides an iphoneos $device_major SDK"
+    echo "Device runs iOS $device_major; using $best (iphoneos SDK $best_major)."
+    export DEVELOPER_DIR="$best"
+}
+
+# Re-run this command while holding the device's lease (non-blocking flock). The
+# re-run names the resolved device so it cannot pick a different one.
+hold_device_lease() {
+    local device_id="$1"
+    shift
+    [ -z "${NIYA_IOS_DEVICE_LEASE_HELD:-}" ] || return 0
+    [[ "$device_id" =~ ^[A-Za-z0-9-]+$ ]] || die "invalid device identifier: $device_id"
+    mkdir -p "$DEVICE_LEASE_DIR"
+    exec python3 -c '
+import fcntl, json, os, subprocess, sys, time
+lock, busy, root, argv = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4:]
+with open(lock, "a+") as handle:
+    try:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        handle.seek(0)
+        print(f"error: physical iOS device is already leased: {handle.read().strip() or lock}", file=sys.stderr)
+        sys.exit(busy)
+    handle.seek(0); handle.truncate()
+    json.dump({"schema": "tron.ios-test-lock.v1", "pid": os.getpid(), "command": "scripts/niya-ios-device " + argv[1],
+               "started_at_epoch_seconds": int(time.time()), "lock_path": lock, "uid": os.getuid(), "worktree": root}, handle)
+    handle.flush()
+    env = dict(os.environ, NIYA_IOS_DEVICE_LEASE_HELD="1")
+    try:
+        code = subprocess.call(argv, env=env)
+    except KeyboardInterrupt:
+        code = 130
+    handle.seek(0); handle.truncate()
+sys.exit(code)
+' "$DEVICE_LEASE_DIR/ios-device-$device_id.lease.lock" "$LEASE_BUSY_EXIT" "$ROOT_DIR" "$0" "$@" --device-id "$device_id"
 }
 
 parse_common_args() {
@@ -183,6 +273,8 @@ build_install_launch() {
     device_id="$(resolve_device_id)"
     [ -n "$device_id" ] || die "could not resolve a physical iOS device"
 
+    select_toolchain "$device_id"
+
     local bundle_id
     bundle_id="$(bundle_id_for_project)"
 
@@ -194,6 +286,7 @@ build_install_launch() {
     fi
 
     xcodebuild -version
+    printf 'iPhoneOS SDK %s\n' "$(xcrun --sdk iphoneos --show-sdk-version)"
     cd "$ROOT_DIR"
 
     local ts log xcresult
@@ -330,19 +423,25 @@ status_app() {
 }
 
 main() {
-    local cmd="${1:-help}"
+    local cmd="${1:-help}" device_id
     shift || true
     case "$cmd" in
         install|start)
             parse_common_args "$@"
+            device_id="$(resolve_device_id)"
+            hold_device_lease "$device_id" "$cmd" "$@"
             build_install_launch
             ;;
         launch)
             parse_common_args "$@"
+            device_id="$(resolve_device_id)"
+            hold_device_lease "$device_id" "$cmd" "$@"
             launch_app
             ;;
         stop)
             parse_common_args "$@"
+            device_id="$(resolve_device_id)"
+            hold_device_lease "$device_id" "$cmd" "$@"
             stop_app
             ;;
         status)

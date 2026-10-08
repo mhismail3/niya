@@ -16,7 +16,6 @@ Manage the full TestFlight lifecycle for Niya: build, upload, version management
 - **Team ID**: `MYGKXH6TY4`
 - **Scheme**: `Niya`
 - **Project**: `Niya.xcodeproj`
-- **ExportOptions**: `ExportOptions.plist` (project root)
 - **Build output**: `build/` (gitignored)
 - **pbxproj**: `Niya.xcodeproj/project.pbxproj`
 
@@ -42,7 +41,7 @@ Store in `NIYA_APP_ID` env var for the session.
 3. The script will:
    - Clean the `build/` directory
    - Archive the Niya scheme for iOS (Release config)
-   - Export the IPA using `ExportOptions.plist`
+   - Package the IPA manually to `build/Niya.ipa` (bypasses an Xcode 26 `exportArchive` bug)
    - Upload the IPA via `asc builds upload`
    - List recent builds to confirm
 
@@ -53,7 +52,7 @@ Store in `NIYA_APP_ID` env var for the session.
 
 **If upload fails**:
 - Check `asc auth login` is configured (see Phase 2 in the plan)
-- Verify the IPA exists at `build/export/Niya.ipa`
+- Verify the IPA exists at `build/Niya.ipa`
 - Try `asc builds upload` manually with `--verbose`
 
 ### `/publish status` — Check Build Processing
@@ -108,7 +107,7 @@ grep -E 'CURRENT_PROJECT_VERSION|MARKETING_VERSION' Niya.xcodeproj/project.pbxpr
 - Replace with the new version
 - Also update `gen_project.py` if it hardcodes the version
 
-Always bump both the app target (Debug + Release) AND the test target (Debug + Release) — there are 4 occurrences of each.
+Always bump every target (app, widget extension, and tests; Debug + Release) — there are 6 occurrences of each. Keep `DataPrep/gen_project.py` in sync, since it hardcodes `CURRENT_PROJECT_VERSION`.
 
 ### `/publish submit` — Submit for External Testing or App Store Review
 
