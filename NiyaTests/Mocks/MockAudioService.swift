@@ -13,6 +13,9 @@ final class MockAudioService: AudioPlaying {
     var playbackRate: Float = 1.0
     var onVerseDidFinish: ((VerseID) -> Void)?
     var onVerseDidChange: ((VerseID) -> Void)?
+    var onPlaybackEnded: (() -> Void)?
+    var lastError: String?
+    func clearError() { lastError = nil }
 
     var playCallCount = 0
     var lastPlayedURL: URL?

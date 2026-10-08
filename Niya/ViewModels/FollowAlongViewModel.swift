@@ -5,7 +5,7 @@ import MediaPlayer
 @Observable
 @MainActor
 final class FollowAlongViewModel {
-    var isPlaying = false
+    var isPlaying: Bool { audioService.isPlaying }
     var currentWordIndex: Int?
     var currentSurahId: Int?
     var currentVerseId: Int?
@@ -76,8 +76,6 @@ final class FollowAlongViewModel {
         currentWordIndex = 0
         currentLoop = 0
         seekingToStart = false
-        isPlaying = true
-
         guard let url = URL(string: verseData.au) else { return }
         audioService.playWithSeek(url: url, seekMs: verseData.vs)
 
@@ -87,7 +85,6 @@ final class FollowAlongViewModel {
 
     func stopTracking() {
         removeCurrentTimeObserver()
-        isPlaying = false
         currentWordIndex = nil
         currentSurahId = nil
         currentVerseId = nil
@@ -104,7 +101,6 @@ final class FollowAlongViewModel {
     }
 
     func pauseTracking() {
-        removeCurrentTimeObserver()
         tappedWordPosition = nil
         tappedVerseId = nil
         if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
@@ -117,14 +113,12 @@ final class FollowAlongViewModel {
         guard audioService.isPlaying || audioService.isFollowAlongActive,
               currentSurahId != nil, currentVerseId != nil else { return }
         currentWordIndex = nil
-        isPlaying = audioService.isPlaying
         startWordTracking()
     }
 
     func togglePlayPause() {
         guard isPlaying || currentVerseId != nil else { return }
         audioService.togglePause()
-        isPlaying = audioService.isPlaying
         updateNowPlaying()
     }
 
@@ -268,7 +262,6 @@ final class FollowAlongViewModel {
             if autoAdvance {
                 advanceToNextVerse()
             } else {
-                isPlaying = false
                 currentWordIndex = nil
                 audioService.stop()
                 clearNowPlaying()
@@ -292,7 +285,6 @@ final class FollowAlongViewModel {
                 playVerse(surahId: surahId, ayahId: nextAyah)
             }
         } else {
-            isPlaying = false
             currentWordIndex = nil
             audioService.stop()
             clearNowPlaying()

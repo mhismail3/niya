@@ -4,7 +4,22 @@ import Testing
 
 @MainActor
 @Suite("DownloadManager")
-struct DownloadManagerTests {
+final class DownloadManagerTests {
+    /// Each test instance gets its own directory; tests never touch real downloads.
+    private let directory = FileManager.default.temporaryDirectory
+        .appendingPathComponent("niya-downloads-\(UUID().uuidString)", isDirectory: true)
+
+    init() throws {
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    }
+
+    deinit {
+        try? FileManager.default.removeItem(at: directory)
+    }
+
+    private func makeManager() -> DownloadManager {
+        DownloadManager(downloadStore: nil, downloadsDirectory: directory)
+    }
 
     // MARK: - DownloadProgress model
 
@@ -51,14 +66,14 @@ struct DownloadManagerTests {
     // MARK: - isDownloaded (file-system based)
 
     @Test func isDownloadedReturnsFalseWhenNoFile() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         #expect(dm.isDownloaded(999, reciter: .alAfasy) == false)
     }
 
     @Test func isDownloadedReturnsTrueWhenFileExists() throws {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let filename = Reciter.alAfasy.localFilename(for: 999)
-        let url = DownloadManager.documentsDirectory.appendingPathComponent(filename)
+        let url = directory.appendingPathComponent(filename)
         try Data("test".utf8).write(to: url)
         defer { try? FileManager.default.removeItem(at: url) }
 
@@ -68,21 +83,21 @@ struct DownloadManagerTests {
     // MARK: - isDownloading
 
     @Test func isDownloadingReturnsFalseInitially() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         #expect(dm.isDownloading(1, reciter: .alAfasy) == false)
     }
 
     // MARK: - Active downloads tracking
 
     @Test func activeDownloadsEmptyInitially() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         #expect(dm.activeDownloads.isEmpty)
     }
 
     // MARK: - Dismiss error
 
     @Test func dismissErrorClearsProgress() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let key = DownloadManager.downloadKey(surahId: 1, reciter: .alAfasy)
         dm.activeDownloads[key] = DownloadProgress(id: key, surahId: 1, reciterId: "alAfasy", progress: 0.3, error: "Failed")
         dm.dismissError(1, reciter: .alAfasy)
@@ -90,7 +105,7 @@ struct DownloadManagerTests {
     }
 
     @Test func dismissErrorNoOpWhenNoEntry() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         dm.dismissError(1, reciter: .alAfasy)
         #expect(dm.activeDownloads.isEmpty)
     }
@@ -98,9 +113,9 @@ struct DownloadManagerTests {
     // MARK: - Delete
 
     @Test func deleteSurahRemovesFile() throws {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let filename = Reciter.alAfasy.localFilename(for: 998)
-        let url = DownloadManager.documentsDirectory.appendingPathComponent(filename)
+        let url = directory.appendingPathComponent(filename)
         try Data("test".utf8).write(to: url)
 
         try dm.deleteSurah(998, reciter: .alAfasy)
@@ -108,16 +123,16 @@ struct DownloadManagerTests {
     }
 
     @Test func deleteSurahNoErrorWhenFileDoesNotExist() throws {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         try dm.deleteSurah(997, reciter: .alAfasy)
     }
 
     // MARK: - Storage
 
     @Test func storageUsedCountsFiles() throws {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let filename = Reciter.alAfasy.localFilename(for: 114)
-        let url = DownloadManager.documentsDirectory.appendingPathComponent(filename)
+        let url = directory.appendingPathComponent(filename)
         let data = Data(repeating: 0x42, count: 1024)
         try data.write(to: url)
         defer { try? FileManager.default.removeItem(at: url) }
@@ -127,18 +142,18 @@ struct DownloadManagerTests {
     }
 
     @Test func storageUsedZeroWhenNoFiles() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let used = dm.storageUsed(for: .noreenSiddiq)
         // May not be exactly zero if prior tests left files, but should work for a clean state
         #expect(used >= 0)
     }
 
     @Test func totalStorageUsedSumsBothReciters() throws {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let f1 = Reciter.alAfasy.localFilename(for: 113)
         let f2 = Reciter.noreenSiddiq.localFilename(for: 113)
-        let u1 = DownloadManager.documentsDirectory.appendingPathComponent(f1)
-        let u2 = DownloadManager.documentsDirectory.appendingPathComponent(f2)
+        let u1 = directory.appendingPathComponent(f1)
+        let u2 = directory.appendingPathComponent(f2)
         let data = Data(repeating: 0x42, count: 512)
         try data.write(to: u1)
         try data.write(to: u2)
@@ -154,7 +169,7 @@ struct DownloadManagerTests {
     // MARK: - Duplicate prevention
 
     @Test func downloadSurahGuardsDuplicate() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let key = DownloadManager.downloadKey(surahId: 1, reciter: .alAfasy)
         dm.activeDownloads[key] = DownloadProgress(id: key, surahId: 1, reciterId: "alAfasy", progress: 0.5, error: nil)
 
@@ -167,7 +182,7 @@ struct DownloadManagerTests {
     // MARK: - Cancel
 
     @Test func cancelDownloadRemovesFromActive() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let key = DownloadManager.downloadKey(surahId: 1, reciter: .alAfasy)
         dm.activeDownloads[key] = DownloadProgress(id: key, surahId: 1, reciterId: "alAfasy", progress: 0.5, error: nil)
 
@@ -178,12 +193,12 @@ struct DownloadManagerTests {
     // MARK: - Progress query
 
     @Test func progressReturnsNilWhenNotDownloading() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         #expect(dm.progress(for: 1, reciter: .alAfasy) == nil)
     }
 
     @Test func progressReturnsEntryWhenActive() {
-        let dm = DownloadManager(downloadStore: nil)
+        let dm = makeManager()
         let key = DownloadManager.downloadKey(surahId: 1, reciter: .alAfasy)
         dm.activeDownloads[key] = DownloadProgress(id: key, surahId: 1, reciterId: "alAfasy", progress: 0.75, error: nil)
 

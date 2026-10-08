@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 struct DownloadProgress: Identifiable {
     let id: String
@@ -17,11 +18,14 @@ final class DownloadManager {
     /// Identifies the current attempt per key so a cancelled attempt that finishes late
     /// cannot overwrite or remove the state of a newer attempt for the same surah.
     @ObservationIgnored private var attemptIDs: [String: UUID] = [:]
+    @ObservationIgnored private var backgroundTasks: [UUID: UIBackgroundTaskIdentifier] = [:]
     private let downloadStore: DownloadStore?
+    let downloadsDirectory: URL
     @ObservationIgnored private var storageCache: [String: Int64] = [:]
 
-    init(downloadStore: DownloadStore?) {
+    init(downloadStore: DownloadStore?, downloadsDirectory: URL = DownloadManager.documentsDirectory) {
         self.downloadStore = downloadStore
+        self.downloadsDirectory = downloadsDirectory
     }
 
     static func downloadKey(surahId: Int, reciter: Reciter) -> String {
@@ -42,37 +46,59 @@ final class DownloadManager {
         activeDownloads[key] = DownloadProgress(id: key, surahId: surahId, reciterId: reciter.rawValue, progress: 0, error: nil)
         let attempt = UUID()
         attemptIDs[key] = attempt
+        let downloadsDirectory = self.downloadsDirectory
+        beginBackgroundWork(attempt)
 
         let task = Task { [weak self] in
+            defer { self?.endBackgroundWork(attempt) }
             let url = reciter.surahStreamURL(surahId: surahId)
-            let localURL = Self.documentsDirectory.appendingPathComponent(reciter.localFilename(for: surahId))
+            let localURL = downloadsDirectory.appendingPathComponent(reciter.localFilename(for: surahId))
 
+            var tempURL: URL?
             do {
                 try Task.checkCancellation()
-                let tempURL = try await NetworkClient.shared.download(from: url) { [weak self] fraction in
+                tempURL = try await NetworkClient.shared.download(from: url) { [weak self] fraction in
                     Task { @MainActor [weak self] in
-                        guard self?.attemptIDs[key] == attempt else { return }
-                        self?.activeDownloads[key]?.progress = fraction
+                        guard let self, self.attemptIDs[key] == attempt,
+                              fraction - (self.activeDownloads[key]?.progress ?? 0) >= 0.01 else { return }
+                        self.activeDownloads[key]?.progress = fraction
                     }
                 }
                 try Task.checkCancellation()
 
+                guard let downloadedURL = tempURL else { throw URLError(.cannotCreateFile) }
                 if FileManager.default.fileExists(atPath: localURL.path) {
                     try FileManager.default.removeItem(at: localURL)
                 }
-                try FileManager.default.moveItem(at: tempURL, to: localURL)
+                try FileManager.default.moveItem(at: downloadedURL, to: localURL)
+                tempURL = nil
                 Self.excludeFromBackup(localURL)
 
                 try self?.downloadStore?.save(surahId: surahId, filename: localURL.lastPathComponent, reciterId: reciter.rawValue)
                 self?.storageCache.removeValue(forKey: reciter.rawValue)
                 self?.finish(key, attempt: attempt, error: nil)
             } catch where Self.isCancellation(error) {
+                if let tempURL { try? FileManager.default.removeItem(at: tempURL) }
                 self?.finish(key, attempt: attempt, error: nil)
             } catch {
+                if let tempURL { try? FileManager.default.removeItem(at: tempURL) }
                 self?.finish(key, attempt: attempt, error: error.localizedDescription)
             }
         }
         downloadTasks[key] = task
+    }
+
+    /// Lets a download the user started finish after they leave the app. iOS terminates
+    /// apps that still hold the task when it expires, so expiration ends it too.
+    private func beginBackgroundWork(_ attempt: UUID) {
+        backgroundTasks[attempt] = UIApplication.shared.beginBackgroundTask(withName: "Surah download") { [weak self] in
+            MainActor.assumeIsolated { self?.endBackgroundWork(attempt) }
+        }
+    }
+
+    private func endBackgroundWork(_ attempt: UUID) {
+        guard let identifier = backgroundTasks.removeValue(forKey: attempt), identifier != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(identifier)
     }
 
     private func finish(_ key: String, attempt: UUID, error: String?) {
@@ -118,7 +144,7 @@ final class DownloadManager {
 
     func deleteSurah(_ surahId: Int, reciter: Reciter) throws {
         let filename = reciter.localFilename(for: surahId)
-        let url = Self.documentsDirectory.appendingPathComponent(filename)
+        let url = downloadsDirectory.appendingPathComponent(filename)
         if FileManager.default.fileExists(atPath: url.path) {
             try FileManager.default.removeItem(at: url)
         }
@@ -130,7 +156,7 @@ final class DownloadManager {
     func deleteAllForReciter(_ reciter: Reciter) {
         for surahId in 1...114 {
             let filename = reciter.localFilename(for: surahId)
-            let url = Self.documentsDirectory.appendingPathComponent(filename)
+            let url = downloadsDirectory.appendingPathComponent(filename)
             if FileManager.default.fileExists(atPath: url.path) {
                 do { try FileManager.default.removeItem(at: url) } catch { AppLogger.store.error("deleteAll removeItem: \(error)") }
             }
@@ -149,7 +175,7 @@ final class DownloadManager {
     func isDownloaded(_ surahId: Int, reciter: Reciter) -> Bool {
         _ = changeRevision
         let filename = reciter.localFilename(for: surahId)
-        let url = Self.documentsDirectory.appendingPathComponent(filename)
+        let url = downloadsDirectory.appendingPathComponent(filename)
         return FileManager.default.fileExists(atPath: url.path)
     }
 
@@ -195,7 +221,7 @@ final class DownloadManager {
         storageCache.removeAll()
         // Remove records where file is missing
         for record in allRecords {
-            let url = Self.documentsDirectory.appendingPathComponent(record.localFileName)
+            let url = downloadsDirectory.appendingPathComponent(record.localFileName)
             if !fm.fileExists(atPath: url.path) {
                 try? downloadStore?.delete(surahId: record.surahId, reciterId: record.reciterId)
             } else {
@@ -207,7 +233,7 @@ final class DownloadManager {
         for reciter in Reciter.allCases {
             for surahId in 1...114 {
                 let filename = reciter.localFilename(for: surahId)
-                let url = Self.documentsDirectory.appendingPathComponent(filename)
+                let url = downloadsDirectory.appendingPathComponent(filename)
                 if fm.fileExists(atPath: url.path) {
                     let hasRecord = allRecords.contains { $0.surahId == surahId && $0.reciterId == reciter.rawValue }
                     if !hasRecord {
@@ -220,7 +246,7 @@ final class DownloadManager {
 
     func fileSizeForSurah(_ surahId: Int, reciter: Reciter) -> Int64 {
         let filename = reciter.localFilename(for: surahId)
-        let url = Self.documentsDirectory.appendingPathComponent(filename)
+        let url = downloadsDirectory.appendingPathComponent(filename)
         if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
            let size = attrs[.size] as? UInt64 {
             return Int64(size)

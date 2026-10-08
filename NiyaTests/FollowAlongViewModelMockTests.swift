@@ -182,13 +182,30 @@ struct FollowAlongViewModelMockTests {
         #expect(vm.highlightState(for: w3, verseId: 1) == .upcoming)
     }
 
+    @Test func pauseTrackingKeepsAudioObserverActive() {
+        let (audio, words, data) = makeMocks()
+        let vm = makeVM(audio: audio, words: words, data: data)
+        audio.isPlaying = true
+        audio.isFollowAlongActive = true
+        vm.currentSurahId = 1
+        vm.currentVerseId = 1
+
+        vm.resumeTracking()
+        let observersBeforePause = audio.addTimeObserverCallCount
+        let removalsBeforePause = audio.removeTimeObserverCallCount
+        vm.pauseTracking()
+
+        #expect(observersBeforePause == 1)
+        #expect(audio.removeTimeObserverCallCount == removalsBeforePause)
+    }
+
     // MARK: - stopTracking clears state
 
     @Test func stopTracking_clearsAllState() {
         let (audio, words, data) = makeMocks()
         let vm = makeVM(audio: audio, words: words, data: data)
 
-        vm.isPlaying = true
+        audio.isPlaying = true
         vm.currentSurahId = 1
         vm.currentVerseId = 3
         vm.currentWordIndex = 2
@@ -205,7 +222,7 @@ struct FollowAlongViewModelMockTests {
         let (audio, words, data) = makeMocks()
         let vm = makeVM(audio: audio, words: words, data: data)
 
-        vm.isPlaying = true
+        audio.isPlaying = true
         vm.currentSurahId = 1
         vm.currentVerseId = 1
 
@@ -345,7 +362,7 @@ struct FollowAlongViewModelMockTests {
     @Test func togglePlayPause_whilePlaying_togglesMockState() {
         let (audio, words, data) = makeMocks()
         let vm = makeVM(audio: audio, words: words, data: data)
-        vm.isPlaying = true
+        audio.isPlaying = true
         vm.currentVerseId = 1
         audio.isPlaying = true
 

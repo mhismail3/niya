@@ -505,4 +505,34 @@ struct AudioPlayerViewModelMockTests {
         #expect(audio.seekToVerseCallCount == 1)
         #expect(audio.currentVerseID == VerseID(surahId: 1, ayahId: 2))
     }
+
+    // MARK: - Remote commands
+
+    @Test func remoteNextGoesToWordByWordWhileItOwnsPlayback() {
+        let (audio, data, words) = makeMocks()
+        let vm = makeVM(audio: audio, data: data, words: words)
+        let followAlong = FollowAlongViewModel(audioService: audio, wordDataService: words, dataService: data)
+        vm.followAlong = followAlong
+        let word = QuranWord(p: 1, t: "ٱللَّهِ", tr: "allāhi", en: "Allah", a: "wbw/001_003_001.mp3", s: 0, e: 500)
+        words.wordsResult["1:2"] = VerseWordData(au: "https://example.com/1.mp3", vs: 0, ve: 500, w: [word])
+        words.wordsResult["1:3"] = VerseWordData(au: "https://example.com/1.mp3", vs: 500, ve: 1000, w: [word])
+        followAlong.playVerse(surahId: 1, ayahId: 2)
+
+        vm.handleRemoteCommand(.nextVerse)
+
+        #expect(followAlong.currentVerseId == 3)
+        #expect(audio.playWithSeekCallCount == 2)
+    }
+
+    @Test func remoteNextGoesToVersePlaybackOtherwise() {
+        let (audio, data, words) = makeMocks()
+        let vm = makeVM(audio: audio, data: data, words: words)
+        vm.followAlong = FollowAlongViewModel(audioService: audio, wordDataService: words, dataService: data)
+        vm.playVerse(surahId: 1, ayahId: 2)
+
+        vm.handleRemoteCommand(.nextVerse)
+
+        #expect(audio.lastPlayedURL?.absoluteString == "https://example.com/audio/3.mp3")
+        #expect(audio.playWithSeekCallCount == 0)
+    }
 }

@@ -13,6 +13,9 @@ final class AudioPlayerViewModel {
     private let dataService: any QuranDataProviding
     private let wordDataService: any WordDataProviding
     private var _verseRevision = 0
+    /// Word-by-word playback shares the audio service; lock-screen and headphone
+    /// commands that depend on verse position are routed to it while it is active.
+    weak var followAlong: FollowAlongViewModel?
 
     init(audioService: any AudioPlaying, dataService: any QuranDataProviding, wordDataService: any WordDataProviding, reciter: Reciter = .alAfasy) {
         self.audioService = audioService
@@ -44,6 +47,8 @@ final class AudioPlayerViewModel {
             }
         }
 
+        audioService.onPlaybackEnded = { [weak self] in self?.clearNowPlaying() }
+
         audioService.onVerseDidChange = { [weak self] vid in
             guard let self else { return }
             self._verseRevision += 1
@@ -73,19 +78,19 @@ final class AudioPlayerViewModel {
         }
         center.togglePlayPauseCommand.addTarget { [weak self] _ in
             Task { @MainActor in
-                self?.togglePause()
+                self?.handleRemoteCommand(.togglePlayPause)
             }
             return .success
         }
         center.nextTrackCommand.addTarget { [weak self] _ in
             Task { @MainActor in
-                self?.nextVerse()
+                self?.handleRemoteCommand(.nextVerse)
             }
             return .success
         }
         center.previousTrackCommand.addTarget { [weak self] _ in
             Task { @MainActor in
-                self?.previousVerse()
+                self?.handleRemoteCommand(.previousVerse)
             }
             return .success
         }
@@ -126,6 +131,28 @@ final class AudioPlayerViewModel {
     var isPlaying: Bool { audioService.isPlaying }
     var playbackSpeed: Float { audioService.playbackRate }
     var isLoading: Bool { audioService.isLoading }
+    var lastError: String? { audioService.lastError }
+    func dismissPlaybackError() { audioService.clearError() }
+
+    enum RemoteCommand { case togglePlayPause, nextVerse, previousVerse }
+
+    /// Lock screen, Control Center, headphones and CarPlay. Position-dependent commands go
+    /// to word-by-word playback while it owns the audio session.
+    func handleRemoteCommand(_ command: RemoteCommand) {
+        if audioService.isFollowAlongActive, let followAlong {
+            switch command {
+            case .togglePlayPause: followAlong.togglePlayPause()
+            case .nextVerse: followAlong.nextVerse()
+            case .previousVerse: followAlong.previousVerse()
+            }
+        } else {
+            switch command {
+            case .togglePlayPause: togglePause()
+            case .nextVerse: nextVerse()
+            case .previousVerse: previousVerse()
+            }
+        }
+    }
     var currentVerseID: VerseID? {
         _ = _verseRevision
         return audioService.currentVerseID

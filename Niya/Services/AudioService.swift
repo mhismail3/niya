@@ -37,6 +37,8 @@ final class AudioService: AudioPlaying {
     var isFollowAlongActive = false
     var onVerseDidFinish: ((VerseID) -> Void)?
     var onVerseDidChange: ((VerseID) -> Void)?
+    var onPlaybackEnded: (() -> Void)?
+    private(set) var lastError: String?
     private(set) var isContinuousMode = false
     /// The single source of truth for reciter speed. Every player this service creates
     /// adopts it as `defaultRate`, so `play()` (resume, interruption recovery, new items)
@@ -49,6 +51,9 @@ final class AudioService: AudioPlaying {
     private var boundaryObserver: Any?
     private var verseTrackingObserver: Any?
     private var fadeTask: Task<Void, Never>?
+    private var playerObservation: NSKeyValueObservation?
+    private var itemObservation: NSKeyValueObservation?
+    private var playerGeneration = 0
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -66,7 +71,41 @@ final class AudioService: AudioPlaying {
         item.audioTimePitchAlgorithm = .spectral
         let player = AVPlayer(playerItem: item)
         player.defaultRate = playbackRate
+        playerObservation = player.observe(\.timeControlStatus, options: [.initial, .new]) { [weak self, weak player] observed, _ in
+            let status = observed.timeControlStatus
+            Task { @MainActor in
+                guard let self, let player, self.player === player else { return }
+                // "Playing" is the user's intent (playing or buffering toward it), so pause
+                // and the play/pause control keep working while a stream loads.
+                self.isPlaying = status != .paused
+                self.isLoading = status == .waitingToPlayAtSpecifiedRate
+            }
+        }
         return player
+    }
+
+    @objc nonisolated private func itemFailedNotification(_ notification: Notification) {
+        let message = (notification.userInfo?[AVPlayerItemFailedToPlayToEndTimeErrorKey] as? Error)?.localizedDescription
+        let item = (notification.object as AnyObject?).map(ObjectIdentifier.init)
+        Task { @MainActor in self.failCurrentItem(item: item, message: message) }
+    }
+
+    func clearError() { lastError = nil }
+
+    private func failCurrentItem(item: ObjectIdentifier?, message: String?) {
+        guard let currentItem, item == ObjectIdentifier(currentItem) else { return }
+        lastError = message ?? currentItem.error?.localizedDescription ?? "Audio could not be played. Check your connection and try again."
+        stop()
+    }
+
+    private func observeFailure(of item: AVPlayerItem) {
+        NotificationCenter.default.addObserver(self, selector: #selector(itemFailedNotification(_:)), name: .AVPlayerItemFailedToPlayToEndTime, object: item)
+        itemObservation = item.observe(\.status, options: [.new]) { [weak self, weak item] observed, _ in
+            guard observed.status == .failed else { return }
+            let message = observed.error?.localizedDescription
+            let identity = item.map(ObjectIdentifier.init)
+            Task { @MainActor in self?.failCurrentItem(item: identity, message: message) }
+        }
     }
 
     var currentTimeMs: Int {
@@ -163,17 +202,18 @@ final class AudioService: AudioPlaying {
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
+        observeFailure(of: item)
 
         player?.play()
-        isPlaying = true
-        isLoading = false
     }
 
     /// Transition to a new verse without tearing down the player (keeps audio session alive in background).
     func transitionToVerse(url: URL, verseID: VerseID, surahId: Int) {
         if let currentItem {
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemFailedToPlayToEndTime, object: currentItem)
         }
+        itemObservation = nil
         if let obs = boundaryObserver, let player {
             player.removeTimeObserver(obs)
         }
@@ -191,6 +231,7 @@ final class AudioService: AudioPlaying {
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
+        observeFailure(of: item)
 
         activateSession()
         if let player {
@@ -201,8 +242,7 @@ final class AudioService: AudioPlaying {
             player?.play()
         }
 
-        isPlaying = true
-        isLoading = false
+        isLoading = true
     }
 
     /// Play a single verse segment from a surah file, with fade-out at end.
@@ -224,12 +264,16 @@ final class AudioService: AudioPlaying {
             object: item
         )
 
+        observeFailure(of: item)
         let seekTime = CMTime(value: Int64(startMs), timescale: 1000)
         let endTime = CMTime(value: Int64(endMs), timescale: 1000)
+        let generation = playerGeneration
+        let expectedPlayer = player
 
-        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
+        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
-                guard let self, let player = self.player else { return }
+                guard finished, let self, self.playerGeneration == generation,
+                      let player = self.player, player === expectedPlayer else { return }
                 self.boundaryObserver = player.addBoundaryTimeObserver(
                     forTimes: [NSValue(time: endTime)],
                     queue: .main
@@ -273,12 +317,16 @@ final class AudioService: AudioPlaying {
             object: item
         )
 
+        observeFailure(of: item)
         let seekTime = CMTime(value: Int64(first.startMs), timescale: 1000)
         let lastEndMs = boundaries.last?.endMs ?? first.endMs
+        let generation = playerGeneration
+        let expectedPlayer = player
 
-        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
+        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
-                guard let self, let player = self.player else { return }
+                guard finished, let self, self.playerGeneration == generation,
+                      let player = self.player, player === expectedPlayer else { return }
 
                 let interval = CMTime(value: 200, timescale: 1000)
                 self.verseTrackingObserver = player.addPeriodicTimeObserver(
@@ -299,6 +347,7 @@ final class AudioService: AudioPlaying {
                         }
 
                         if ms >= lastEndMs {
+                            self.onPlaybackEnded?()
                             self.stop()
                         }
                     }
@@ -337,13 +386,15 @@ final class AudioService: AudioPlaying {
             object: item
         )
 
+        observeFailure(of: item)
         let seekTime = CMTime(value: Int64(seekMs), timescale: 1000)
-        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
+        let generation = playerGeneration
+        let expectedPlayer = player
+        player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
-                guard let self else { return }
-                self.player?.play()
-                self.isPlaying = true
-                self.isLoading = false
+                guard finished, let self, self.playerGeneration == generation,
+                      let player = self.player, player === expectedPlayer else { return }
+                player.play()
             }
         }
     }
@@ -397,6 +448,9 @@ final class AudioService: AudioPlaying {
 
     /// Tears down the current player without releasing the session (used between items).
     private func resetPlayer() {
+        playerGeneration += 1
+        playerObservation = nil
+        itemObservation = nil
         fadeTask?.cancel()
         fadeTask = nil
         if let obs = boundaryObserver, let player {
@@ -409,6 +463,7 @@ final class AudioService: AudioPlaying {
         verseTrackingObserver = nil
         if let currentItem {
             NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: currentItem)
+            NotificationCenter.default.removeObserver(self, name: .AVPlayerItemFailedToPlayToEndTime, object: currentItem)
         }
         currentItem = nil
         player?.volume = 1.0
@@ -481,6 +536,7 @@ final class AudioService: AudioPlaying {
         // Ignore a late notification for an item that has since been replaced.
         guard let currentItem, item == ObjectIdentifier(currentItem) else { return }
         if isFollowAlongActive || isContinuousMode {
+            onPlaybackEnded?()
             stop()
         } else {
             let itemBefore = player?.currentItem
@@ -489,9 +545,11 @@ final class AudioService: AudioPlaying {
             }
             if player?.currentItem === itemBefore || player == nil {
                 isPlaying = false
+                isLoading = false
                 currentVerseID = nil
                 currentSurahId = nil
                 deactivateSession()
+                onPlaybackEnded?()
             }
         }
     }

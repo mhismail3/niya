@@ -139,6 +139,14 @@ struct AudioPlayerBar: View {
         .padding(.vertical, 8)
         .contentShape(Rectangle())
         .modifier(StableGlassModifier())
+        .alert("Playback Error", isPresented: Binding(
+            get: { vm.lastError != nil },
+            set: { if !$0 { vm.dismissPlaybackError() } }
+        )) {
+            Button("OK", role: .cancel) { vm.dismissPlaybackError() }
+        } message: {
+            Text(vm.lastError ?? "Audio could not be played.")
+        }
         .onChange(of: vm.currentVerseID) { _, vid in
             guard let vid else {
                 if !isFollowAlong { isBookmarked = false; bookmarkColor = nil }

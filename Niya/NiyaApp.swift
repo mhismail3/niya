@@ -39,6 +39,7 @@ struct NiyaApp: App {
         let storedReciter = Reciter(rawValue: UserDefaults.standard.string(forKey: StorageKey.selectedReciter) ?? "") ?? .alAfasy
         let avm = AudioPlayerViewModel(audioService: as_, dataService: ds, wordDataService: wds, reciter: storedReciter)
         let favm = FollowAlongViewModel(audioService: as_, wordDataService: wds, dataService: ds)
+        avm.followAlong = favm
         _dataService = State(wrappedValue: ds)
         _hadithDataService = State(wrappedValue: hds)
         _duaDataService = State(wrappedValue: dds)

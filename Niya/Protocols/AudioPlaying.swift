@@ -11,6 +11,10 @@ import Foundation
     var playbackRate: Float { get }
     var onVerseDidFinish: ((VerseID) -> Void)? { get set }
     var onVerseDidChange: ((VerseID) -> Void)? { get set }
+    var onPlaybackEnded: (() -> Void)? { get set }
+    /// User-presentable reason the last item failed to play; cleared by `clearError()`.
+    var lastError: String? { get }
+    func clearError()
     func play(url: URL, verseID: VerseID?, surahId: Int?)
     func transitionToVerse(url: URL, verseID: VerseID, surahId: Int)
     func playVerseInSurah(url: URL, startMs: Int, endMs: Int, verseID: VerseID, surahId: Int)

@@ -11,8 +11,8 @@ struct AudioPlayerViewModelTests {
         translation: "The Opener", type: "Meccan", totalVerses: 7, startPage: 1
     )
 
-    private func makeVM() -> (vm: AudioPlayerViewModel, audio: AudioService) {
-        let audio = AudioService.isolated()
+    private func makeVM() -> (vm: AudioPlayerViewModel, audio: MockAudioService) {
+        let audio = MockAudioService()
         let data = QuranDataService()
         data.surahs = [Self.testSurah]
         let vm = AudioPlayerViewModel(
@@ -24,10 +24,9 @@ struct AudioPlayerViewModelTests {
     }
 
     /// Simulate a verse being actively played by the audio service.
-    private func simulatePlaying(_ vid: VerseID, on audio: AudioService) {
+    private func simulatePlaying(_ vid: VerseID, on audio: MockAudioService) {
         audio.currentVerseID = vid
         audio.currentSurahId = vid.surahId
-        // play() sets isPlaying = true internally; mirror that state
         audio.isPlaying = true
     }
 

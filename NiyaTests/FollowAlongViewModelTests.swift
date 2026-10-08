@@ -90,7 +90,6 @@ struct FollowAlongViewModelTests {
         vm.currentSurahId = 1
         vm.currentVerseId = 1
         vm.currentWordIndex = 2
-        vm.isPlaying = true
         vm.stopTracking()
         #expect(vm.isPlaying == false)
         #expect(vm.currentWordIndex == nil)
