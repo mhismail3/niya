@@ -7,8 +7,8 @@ import SwiftUI
 @MainActor
 final class LocationService: NSObject {
     var currentLocation: UserLocation?
-    var heading: Double = 0
-    var headingAccuracy: Double = -1
+    /// True-north heading for the Qiblah dial, corrected and smoothed from raw samples.
+    private(set) var compass = CompassHeading()
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
     var searchCompletions: [MKLocalSearchCompletion] = []
     var isSearching = false
@@ -38,23 +38,21 @@ final class LocationService: NSObject {
         CLLocationManager.headingAvailable()
     }
 
-    var needsCalibration: Bool {
-        headingAccuracy < 0
-    }
-
     @ObservationIgnored private let manager = CLLocationManager()
     @ObservationIgnored private let completer = MKLocalSearchCompleter()
     @ObservationIgnored private var isUpdatingHeading = false
     @ObservationIgnored private var lastGeocodeDate: Date?
-    @ObservationIgnored private var smoothedHeading: Double = 0
-    @ObservationIgnored private var hasInitialHeading = false
+    @ObservationIgnored private var declinationCache: (latitude: Double, longitude: Double, value: Double)?
 
     override init() {
         super.init()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
         manager.distanceFilter = 500
-        manager.headingFilter = 1
+        // Every sample: CompassHeading's time-based smoothing needs a steady stream, and a
+        // 1° filter stops delivery while the device is still, freezing the dial short of
+        // where it is actually pointing.
+        manager.headingFilter = kCLHeadingFilterNone
         authorizationStatus = manager.authorizationStatus
         completer.delegate = self
         completer.resultTypes = .address
@@ -87,20 +85,46 @@ final class LocationService: NSObject {
     func stopHeading() {
         guard isUpdatingHeading else { return }
         isUpdatingHeading = false
-        hasInitialHeading = false
+        compass.suspend()
         manager.stopUpdatingHeading()
     }
 
-    func updateHeadingOrientation() {
-        let orientation = UIApplication.shared.connectedScenes
-            .compactMap { ($0 as? UIWindowScene)?.interfaceOrientation }
-            .first
-        switch orientation {
-        case .landscapeLeft: manager.headingOrientation = .landscapeLeft
-        case .landscapeRight: manager.headingOrientation = .landscapeRight
-        case .portraitUpsideDown: manager.headingOrientation = .portraitUpsideDown
-        default: manager.headingOrientation = .portrait
+    /// Headings are measured from the top of the interface, which follows its rotation.
+    private func updateHeadingOrientation() {
+        let scenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        guard let scene = scenes.first(where: { $0.activationState == .foregroundActive }) ?? scenes.first
+        else { return }
+        let orientation = Self.headingOrientation(for: scene.interfaceOrientation)
+        if manager.headingOrientation != orientation {
+            manager.headingOrientation = orientation
         }
+    }
+
+    /// `CLDeviceOrientation` names the device's physical orientation, and an interface in
+    /// landscape-left has the device in landscape-right (UIOrientation.h), so the landscape
+    /// cases swap. Mapping them name-for-name points the dial 180° the wrong way.
+    nonisolated static func headingOrientation(for interface: UIInterfaceOrientation) -> CLDeviceOrientation {
+        switch interface {
+        case .portraitUpsideDown: .portraitUpsideDown
+        case .landscapeLeft: .landscapeRight
+        case .landscapeRight: .landscapeLeft
+        default: .portrait
+        }
+    }
+
+    /// Declination at the location the Qiblah bearing is computed for (manual or GPS),
+    /// recomputed only when that location changes.
+    private func declination() -> Double {
+        guard let location = effectiveLocation else { return 0 }
+        if let cache = declinationCache,
+           cache.latitude == location.latitude, cache.longitude == location.longitude {
+            return cache.value
+        }
+        let value = WorldMagneticModel.declination(
+            latitude: location.latitude, longitude: location.longitude, date: Date()
+        )
+        declinationCache = (location.latitude, location.longitude, value)
+        return value
     }
 
     /// Fresh and good enough for prayer times, which shift by well under a minute per
@@ -237,24 +261,25 @@ extension LocationService: CLLocationManagerDelegate {
     }
 
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        // Delegate callbacks arrive on the thread that created the manager (main, in init).
+        // Handling them synchronously keeps samples in order with no extra hop of latency.
+        // `trueHeading` is ignored: Core Location only provides it while location updates
+        // run, which stop after the first fix and never run for a manual location, so the
+        // dial used to jump by the local declination (e.g. 13° in California) mid-use.
+        let magnetic = newHeading.magneticHeading
         let accuracy = newHeading.headingAccuracy
-        let raw = newHeading.trueHeading >= 0 ? newHeading.trueHeading : newHeading.magneticHeading
-        Task { @MainActor in
-            self.headingAccuracy = accuracy
-            if !self.hasInitialHeading {
-                self.smoothedHeading = raw
-                self.hasInitialHeading = true
-            } else {
-                var delta = raw - self.smoothedHeading
-                if delta > 180 { delta -= 360 }
-                if delta < -180 { delta += 360 }
-                let alpha: Double = 0.25
-                self.smoothedHeading += alpha * delta
-                self.smoothedHeading = self.smoothedHeading.truncatingRemainder(dividingBy: 360)
-                if self.smoothedHeading < 0 { self.smoothedHeading += 360 }
-            }
-            self.heading = self.smoothedHeading
+        let timestamp = newHeading.timestamp
+        guard Thread.isMainThread else {
+            Task { @MainActor in self.ingestHeading(magnetic: magnetic, accuracy: accuracy, at: timestamp) }
+            return
         }
+        MainActor.assumeIsolated { self.ingestHeading(magnetic: magnetic, accuracy: accuracy, at: timestamp) }
+    }
+
+    private func ingestHeading(magnetic: Double, accuracy: Double, at timestamp: Date) {
+        guard isUpdatingHeading else { return }
+        updateHeadingOrientation()
+        compass.ingest(magneticHeading: magnetic, accuracy: accuracy, declination: declination(), at: timestamp)
     }
 
     nonisolated func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {

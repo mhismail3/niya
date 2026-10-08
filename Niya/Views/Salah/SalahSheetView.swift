@@ -66,9 +66,6 @@ struct SalahSheetView: View {
         } message: {
             Text("Enable notifications in Settings to receive prayer time alerts.")
         }
-        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-            locationService.updateHeadingOrientation()
-        }
         .onAppear {
             locationService.startHeading()
             locationService.startLocationUpdates()
@@ -144,9 +141,9 @@ struct SalahSheetView: View {
     private var qiblahPanel: some View {
         QiblahCompassView(
             bearing: bearing,
-            heading: locationService.heading,
+            heading: locationService.compass.continuousHeading,
             headingAvailable: locationService.isHeadingAvailable,
-            headingAccuracy: locationService.headingAccuracy,
+            accuracy: locationService.compass.quality,
             compassSize: compactCompassSize,
             showsAccuracyBanner: false,
             showsBearingText: false
@@ -203,7 +200,7 @@ struct SalahSheetView: View {
             } else {
                 HStack(spacing: 6) {
                     Image(systemName: "building.columns")
-                    Text("\(Int(bearing))° \(cardinalDirection(for: bearing))")
+                    Text(QiblahFormatting.bearingLabel(bearing))
                 }
                 .font(.niyaCaption)
                 .foregroundStyle(Color.niyaTeal)
@@ -217,23 +214,12 @@ struct SalahSheetView: View {
         guard locationService.isHeadingAvailable else {
             return ("location.slash", "Compass is unavailable", .niyaSecondary)
         }
-        if locationService.headingAccuracy < 0 {
-            return ("figure.wave", "Move device to calibrate", .niyaGold)
+        switch locationService.compass.quality {
+        case .calibrating: return ("figure.wave", "Move device to calibrate", .niyaGold)
+        case .poor: return ("figure.wave", "Low compass accuracy", .red)
+        case .reduced: return ("exclamationmark.triangle", "Compass accuracy is reduced", .niyaGold)
+        case .good: return nil
         }
-        if locationService.headingAccuracy > 25 {
-            return ("figure.wave", "Low compass accuracy", .red)
-        }
-        if locationService.headingAccuracy > 15 {
-            return ("exclamationmark.triangle", "Compass accuracy is reduced", .niyaGold)
-        }
-        return nil
-    }
-
-    private func cardinalDirection(for degrees: Double) -> String {
-        let directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-                          "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
-        let index = Int((degrees + 11.25) / 22.5) % 16
-        return directions[index]
     }
 
     private func notificationToggle(location loc: UserLocation) -> some View {
