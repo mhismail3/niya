@@ -18,6 +18,7 @@ Output: Niya/Resources/Data/dua_all.json (overwritten)
 """
 
 import json
+import bundled_json
 import os
 import sys
 
@@ -30,8 +31,7 @@ FITRA_REFS_PATH = os.path.join(SCRIPT_DIR, "source", "dua", "fitrahive_reference
 
 def main():
     # Load all data
-    with open(DUA_PATH, encoding="utf-8") as f:
-        data = json.load(f)
+    data = bundled_json.load(DUA_PATH)
 
     with open(HISN_REFS_PATH, encoding="utf-8") as f:
         hisn_refs = json.load(f)

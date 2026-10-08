@@ -4,6 +4,7 @@
 import csv
 import io
 import json
+import bundled_json
 import os
 import urllib.request
 
@@ -81,8 +82,7 @@ CHAPTER_TITLES = {
 
 
 def merge(translations):
-    with open(JSON_PATH, encoding="utf-8") as f:
-        data = json.load(f)
+    data = bundled_json.load(JSON_PATH)
 
     for ch in data["chapters"]:
         title = CHAPTER_TITLES.get(ch["id"])

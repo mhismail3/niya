@@ -41,6 +41,9 @@ def main():
             count += 1
             print(f"  {rel}: {raw_size/1024/1024:.1f}MB -> {comp_size/1024/1024:.1f}MB ({ratio:.0f}%)")
 
+    if count == 0:
+        print("No .json files to compress")
+        return
     print(f"\nCompressed {count} files")
     print(f"Total: {total_raw/1024/1024:.1f}MB -> {total_compressed/1024/1024:.1f}MB "
           f"({total_compressed/total_raw*100:.0f}%)")

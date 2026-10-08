@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate translation data files."""
 import json
+import bundled_json
 import os
 import re
 import unittest
@@ -47,10 +48,9 @@ class TestTranslations(unittest.TestCase):
 
     def setUp(self):
         index_path = os.path.join(DATA_DIR, "translations_index.json")
-        if not os.path.exists(index_path):
+        if not bundled_json.exists(index_path):
             self.skipTest("translations_index.json not found — run fetch + build first")
-        with open(index_path, "r", encoding="utf-8") as f:
-            self.index = json.load(f)
+        self.index = bundled_json.load(index_path)
 
     def test_index_has_entries(self):
         self.assertGreaterEqual(len(self.index), 19)
@@ -63,25 +63,23 @@ class TestTranslations(unittest.TestCase):
     def test_each_translation_file_exists(self):
         for entry in self.index:
             path = os.path.join(DATA_DIR, entry["filename"])
-            self.assertTrue(os.path.exists(path), f"Missing: {entry['filename']}")
+            self.assertTrue(bundled_json.exists(path), f"Missing: {entry['filename']}")
 
     def test_each_translation_has_6236_verses(self):
         for entry in self.index:
             path = os.path.join(DATA_DIR, entry["filename"])
-            if not os.path.exists(path):
+            if not bundled_json.exists(path):
                 continue
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = bundled_json.load(path)
             self.assertEqual(len(data), EXPECTED_VERSES,
                              f"{entry['id']}: expected {EXPECTED_VERSES}, got {len(data)}")
 
     def test_no_empty_translations(self):
         for entry in self.index:
             path = os.path.join(DATA_DIR, entry["filename"])
-            if not os.path.exists(path):
+            if not bundled_json.exists(path):
                 continue
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = bundled_json.load(path)
             empty = [k for k, v in data.items() if not v.strip()]
             self.assertEqual(len(empty), 0,
                              f"{entry['id']}: {len(empty)} empty translations")
@@ -89,18 +87,17 @@ class TestTranslations(unittest.TestCase):
     def test_valid_json(self):
         for entry in self.index:
             path = os.path.join(DATA_DIR, entry["filename"])
-            if not os.path.exists(path):
+            if not bundled_json.exists(path):
                 continue
-            with open(path, "r", encoding="utf-8") as f:
-                try:
-                    json.load(f)
-                except json.JSONDecodeError as e:
-                    self.fail(f"{entry['id']}: invalid JSON — {e}")
+            try:
+                bundled_json.load(path)
+            except json.JSONDecodeError as e:
+                self.fail(f"{entry['id']}: invalid JSON — {e}")
 
     def test_index_matches_files(self):
         index_filenames = {e["filename"] for e in self.index}
-        actual_files = {f for f in os.listdir(DATA_DIR)
-                        if f.startswith("translation_") and f.endswith(".json")}
+        actual_files = {f.removesuffix(".zlib") for f in os.listdir(DATA_DIR)
+                        if f.startswith("translation_") and f.endswith((".json", ".json.zlib"))}
         self.assertEqual(index_filenames, actual_files,
                          f"Index/files mismatch. Extra: {actual_files - index_filenames}, "
                          f"Missing: {index_filenames - actual_files}")
@@ -128,10 +125,9 @@ class TestTranslations(unittest.TestCase):
             script = EDITION_SCRIPT[tid]
             lo, hi = SCRIPT_RANGES[script]
             path = os.path.join(DATA_DIR, entry["filename"])
-            if not os.path.exists(path):
+            if not bundled_json.exists(path):
                 continue
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = bundled_json.load(path)
             sample = data.get("1:2") or data.get("1:1") or ""
             hits = sum(1 for ch in sample if _in_range(ch, lo, hi))
             self.assertGreater(
@@ -144,10 +140,9 @@ class TestTranslations(unittest.TestCase):
         # fetch_translations.py normalises on fetch; this is the regression guard.
         for entry in self.index:
             path = os.path.join(DATA_DIR, entry["filename"])
-            if not os.path.exists(path):
+            if not bundled_json.exists(path):
                 continue
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            data = bundled_json.load(path)
             tag_offenders = [k for k, v in data.items() if HTML_TAG_RE.search(v)]
             ent_offenders = [k for k, v in data.items() if HTML_ENTITY_RE.search(v)]
             self.assertFalse(

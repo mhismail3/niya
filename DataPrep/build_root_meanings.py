@@ -15,6 +15,7 @@ Usage:
 
 import csv
 import json
+import bundled_json
 import os
 import re
 import subprocess
@@ -125,9 +126,8 @@ def main():
     print(f"    Roots with meanings: {len(meanings)}")
 
     # Check coverage against our morphology roots
-    if os.path.exists(MORPH_PATH):
-        with open(MORPH_PATH, "r", encoding="utf-8") as f:
-            morph = json.load(f)
+    if bundled_json.exists(MORPH_PATH):
+        morph = bundled_json.load(MORPH_PATH)
         our_roots = set(morph["roots"].keys())
         covered = our_roots & set(meanings.keys())
         missing = our_roots - set(meanings.keys())

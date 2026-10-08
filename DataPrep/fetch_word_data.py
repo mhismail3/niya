@@ -13,6 +13,7 @@ Usage:
 """
 import argparse
 import json
+import bundled_json
 import math
 import os
 import sys
@@ -50,8 +51,7 @@ EXPECTED_TOTAL_VERSES = 6236
 
 
 def load_surahs():
-    with open(SURAHS_PATH, "r", encoding="utf-8") as f:
-        surahs = json.load(f)
+    surahs = bundled_json.load(SURAHS_PATH)
     return {s["id"]: s for s in surahs}
 
 

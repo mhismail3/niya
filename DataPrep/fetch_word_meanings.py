@@ -9,6 +9,7 @@ Usage:
     python3 DataPrep/fetch_word_meanings.py
 """
 import json
+import bundled_json
 import os
 import sys
 import time
@@ -32,8 +33,7 @@ EXPECTED_TOTAL_WORDS = 77429
 
 
 def load_surahs():
-    with open(SURAHS_PATH, "r", encoding="utf-8") as f:
-        surahs = json.load(f)
+    surahs = bundled_json.load(SURAHS_PATH)
     return {s["id"]: s for s in surahs}
 
 

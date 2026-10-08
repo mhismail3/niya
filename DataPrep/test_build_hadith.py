@@ -15,6 +15,8 @@ class TestBuildHadith(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         index_path = os.path.join(OUTPUT_DIR, "hadith_collections.json")
+        if not os.path.exists(index_path):
+            raise unittest.SkipTest("DataPrep/output/hadith not built — run build_hadith.py first")
         with open(index_path, encoding="utf-8") as f:
             cls.collections = json.load(f)
         cls.collection_map = {c["id"]: c for c in cls.collections}
@@ -146,6 +148,8 @@ class TestTextNormalizationIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         index_path = os.path.join(OUTPUT_DIR, "hadith_collections.json")
+        if not os.path.exists(index_path):
+            raise unittest.SkipTest("DataPrep/output/hadith not built — run build_hadith.py first")
         with open(index_path, encoding="utf-8") as f:
             cls.collections = json.load(f)
         cls.loaded = {}

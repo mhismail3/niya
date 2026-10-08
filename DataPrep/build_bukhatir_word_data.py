@@ -24,6 +24,7 @@ Output:
 """
 
 import json
+import bundled_json
 import os
 import re
 import sys
@@ -217,13 +218,11 @@ def align_characters(known_words_flat, char_timeline):
 # ---------------------------------------------------------------------------
 
 def load_surahs():
-    with open(SURAHS_PATH, 'r', encoding='utf-8') as f:
-        return {s['id']: s for s in json.load(f)}
+    return {s['id']: s for s in bundled_json.load(SURAHS_PATH)}
 
 
 def load_word_data():
-    with open(WORD_DATA_PATH, 'r', encoding='utf-8') as f:
-        return json.load(f)
+    return bundled_json.load(WORD_DATA_PATH)
 
 
 def get_known_words_flat(word_data, surah_id):
