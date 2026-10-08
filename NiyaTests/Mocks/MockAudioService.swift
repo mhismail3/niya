@@ -15,6 +15,11 @@ final class MockAudioService: AudioPlaying {
     var onVerseDidChange: ((VerseID) -> Void)?
     var onPlaybackEnded: (() -> Void)?
     var lastError: String?
+    var onPlaybackStateChange: (() -> Void)?
+    var playClipCallCount = 0
+    var stopClipCallCount = 0
+    func playClip(url: URL, onFinish: @escaping @MainActor () -> Void) { playClipCallCount += 1 }
+    func stopClip() { stopClipCallCount += 1 }
     func clearError() { lastError = nil }
 
     var playCallCount = 0

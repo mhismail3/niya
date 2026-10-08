@@ -28,10 +28,18 @@ struct AudioServiceTests {
         #expect(AudioService(defaults: defaults).playbackRate == 1.75)
     }
 
-    @Test func setRateNeverStartsPlayback() {
+    /// Word-by-word keeps its time observer while the reader is off screen; if verse
+    /// playback replaced the player meanwhile, removing the old observer must target the
+    /// player that registered it (AVPlayer raises otherwise and crashes the app).
+    @Test func removingAnObserverAfterThePlayerChangedIsSafe() throws {
         let service = AudioService.isolated()
-        service.setRate(1.5)
-        #expect(service.isPlaying == false)
+        service.play(url: URL(fileURLWithPath: "/nonexistent/a.mp3"), verseID: nil, surahId: 1)
+        let observer = try #require(service.addPeriodicTimeObserver(intervalMs: 50) { _ in })
+        service.play(url: URL(fileURLWithPath: "/nonexistent/b.mp3"), verseID: nil, surahId: 2)
+
+        service.removeTimeObserver(observer)
+        service.removeTimeObserver(observer)
+        service.stop()
     }
 
     @Test func everyOfferedSpeedIsWithinRangeAndIncludesNormal() {

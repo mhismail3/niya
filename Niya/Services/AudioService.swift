@@ -38,6 +38,8 @@ final class AudioService: AudioPlaying {
     var onVerseDidFinish: ((VerseID) -> Void)?
     var onVerseDidChange: ((VerseID) -> Void)?
     var onPlaybackEnded: (() -> Void)?
+    /// Fires when the player's actual playing/buffering state changes (e.g. to refresh Now Playing).
+    var onPlaybackStateChange: (() -> Void)?
     private(set) var lastError: String?
     private(set) var isContinuousMode = false
     /// The single source of truth for reciter speed. Every player this service creates
@@ -54,6 +56,10 @@ final class AudioService: AudioPlaying {
     private var playerObservation: NSKeyValueObservation?
     private var itemObservation: NSKeyValueObservation?
     private var playerGeneration = 0
+    private var isSeekingToStart = false
+    /// Short word-pronunciation clips play beside (never instead of) recitation.
+    private var clipPlayer: AVPlayer?
+    private var clipObserver: NSObjectProtocol?
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -71,14 +77,16 @@ final class AudioService: AudioPlaying {
         item.audioTimePitchAlgorithm = .spectral
         let player = AVPlayer(playerItem: item)
         player.defaultRate = playbackRate
-        playerObservation = player.observe(\.timeControlStatus, options: [.initial, .new]) { [weak self, weak player] observed, _ in
+        playerObservation = player.observe(\.timeControlStatus, options: [.new]) { [weak self, weak player] observed, _ in
             let status = observed.timeControlStatus
             Task { @MainActor in
                 guard let self, let player, self.player === player else { return }
                 // "Playing" is the user's intent (playing or buffering toward it), so pause
-                // and the play/pause control keep working while a stream loads.
+                // and the play/pause control keep working while a stream loads. Until the
+                // initial seek lands the player is paused but still loading.
                 self.isPlaying = status != .paused
-                self.isLoading = status == .waitingToPlayAtSpecifiedRate
+                self.isLoading = status == .waitingToPlayAtSpecifiedRate || (status == .paused && self.isSeekingToStart)
+                self.onPlaybackStateChange?()
             }
         }
         return player
@@ -270,10 +278,12 @@ final class AudioService: AudioPlaying {
         let generation = playerGeneration
         let expectedPlayer = player
 
+        isSeekingToStart = true
         player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
                 guard finished, let self, self.playerGeneration == generation,
                       let player = self.player, player === expectedPlayer else { return }
+                self.isSeekingToStart = false
                 self.boundaryObserver = player.addBoundaryTimeObserver(
                     forTimes: [NSValue(time: endTime)],
                     queue: .main
@@ -323,10 +333,12 @@ final class AudioService: AudioPlaying {
         let generation = playerGeneration
         let expectedPlayer = player
 
+        isSeekingToStart = true
         player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
                 guard finished, let self, self.playerGeneration == generation,
                       let player = self.player, player === expectedPlayer else { return }
+                self.isSeekingToStart = false
 
                 let interval = CMTime(value: 200, timescale: 1000)
                 self.verseTrackingObserver = player.addPeriodicTimeObserver(
@@ -390,10 +402,12 @@ final class AudioService: AudioPlaying {
         let seekTime = CMTime(value: Int64(seekMs), timescale: 1000)
         let generation = playerGeneration
         let expectedPlayer = player
+        isSeekingToStart = true
         player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] finished in
             Task { @MainActor in
                 guard finished, let self, self.playerGeneration == generation,
                       let player = self.player, player === expectedPlayer else { return }
+                self.isSeekingToStart = false
                 player.play()
             }
         }
@@ -443,12 +457,40 @@ final class AudioService: AudioPlaying {
     func stop() {
         let hadPlayer = player != nil
         resetPlayer()
-        if hadPlayer { deactivateSession() }
+        if hadPlayer && clipPlayer == nil { deactivateSession() }
+    }
+
+    /// Plays a short word clip without disturbing recitation state.
+    func playClip(url: URL, onFinish: @escaping @MainActor () -> Void) {
+        stopClip()
+        activateSession()
+        let item = AVPlayerItem(url: url)
+        let player = AVPlayer(playerItem: item)
+        clipPlayer = player
+        clipObserver = NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime, object: item, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.stopClip()
+                onFinish()
+            }
+        }
+        player.play()
+    }
+
+    func stopClip() {
+        if let clipObserver { NotificationCenter.default.removeObserver(clipObserver) }
+        clipObserver = nil
+        guard let clipPlayer else { return }
+        clipPlayer.pause()
+        self.clipPlayer = nil
+        if player == nil { deactivateSession() }
     }
 
     /// Tears down the current player without releasing the session (used between items).
     private func resetPlayer() {
         playerGeneration += 1
+        isSeekingToStart = false
         playerObservation = nil
         itemObservation = nil
         fadeTask?.cancel()
@@ -513,18 +555,22 @@ final class AudioService: AudioPlaying {
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 
+    /// The returned token remembers its player: AVPlayer raises if asked to remove an
+    /// observer that a different (since replaced) player registered.
     func addPeriodicTimeObserver(intervalMs: Int, callback: @escaping @Sendable (Int) -> Void) -> Any? {
         guard let player else { return nil }
         let interval = CMTime(value: Int64(intervalMs), timescale: 1000)
-        return player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { time in
+        let token = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { time in
             let ms = Int(CMTimeGetSeconds(time) * 1000)
             guard ms >= 0 else { return }
             callback(ms)
         }
+        return PlayerTimeObserver(player: player, token: token)
     }
 
     func removeTimeObserver(_ observer: Any) {
-        player?.removeTimeObserver(observer)
+        guard let observer = observer as? PlayerTimeObserver else { return }
+        observer.remove()
     }
 
     @objc nonisolated private func playerItemDidFinish(_ notification: Notification) {
@@ -552,5 +598,20 @@ final class AudioService: AudioPlaying {
                 onPlaybackEnded?()
             }
         }
+    }
+}
+
+private final class PlayerTimeObserver {
+    private weak var player: AVPlayer?
+    private var token: Any?
+
+    init(player: AVPlayer, token: Any) {
+        self.player = player
+        self.token = token
+    }
+
+    func remove() {
+        if let token { player?.removeTimeObserver(token) }
+        token = nil
     }
 }

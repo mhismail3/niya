@@ -43,7 +43,7 @@ build work) and `.agents/skills/publish` (TestFlight/App Store, user-invoked).
   (cascade to Noto Naskh). Word text must match `verses_hafs` exactly;
   `WordDataIntegrityTests` enforces it.
 - `AudioService` is the single owner of playback, the audio session and the
-  persisted reciter speed; view models never create players for recitation.
+  persisted reciter speed (including word-clip playback); view models never create players.
 - SwiftData: synced models go in the CloudKit configuration (defaults or
   optionals, no unique constraints); `AudioDownload` stays local-only.
   Stores deduplicate on read because CloudKit can create duplicates.

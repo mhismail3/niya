@@ -48,6 +48,14 @@ final class AudioPlayerViewModel {
         }
 
         audioService.onPlaybackEnded = { [weak self] in self?.clearNowPlaying() }
+        audioService.onPlaybackStateChange = { [weak self] in
+            guard let self else { return }
+            if self.audioService.isFollowAlongActive, let followAlong = self.followAlong {
+                followAlong.refreshNowPlaying()
+            } else if self.hasActiveSession {
+                self.updateNowPlaying()
+            }
+        }
 
         audioService.onVerseDidChange = { [weak self] vid in
             guard let self else { return }

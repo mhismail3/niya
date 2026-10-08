@@ -1,5 +1,4 @@
 import Foundation
-import AVFoundation
 import MediaPlayer
 
 @Observable
@@ -17,8 +16,6 @@ final class FollowAlongViewModel {
     private var currentLoop = 0
     private var seekingToStart = false
     private var timeObserver: Any?
-    private var wordPlayer: AVPlayer?
-    private var tapObserver: NSObjectProtocol?
     private let audioService: any AudioPlaying
     private let wordDataService: any WordDataProviding
     private let dataService: any QuranDataProviding
@@ -30,6 +27,8 @@ final class FollowAlongViewModel {
         self.wordDataService = wordDataService
         self.dataService = dataService
     }
+
+    func refreshNowPlaying() { updateNowPlaying() }
 
     private func updateNowPlaying() {
         var info = [String: Any]()
@@ -92,10 +91,7 @@ final class FollowAlongViewModel {
         seekingToStart = false
         tappedWordPosition = nil
         tappedVerseId = nil
-        if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
-        tapObserver = nil
-        wordPlayer?.pause()
-        wordPlayer = nil
+        audioService.stopClip()
         audioService.stop()
         clearNowPlaying()
     }
@@ -103,10 +99,7 @@ final class FollowAlongViewModel {
     func pauseTracking() {
         tappedWordPosition = nil
         tappedVerseId = nil
-        if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
-        tapObserver = nil
-        wordPlayer?.pause()
-        wordPlayer = nil
+        audioService.stopClip()
     }
 
     func resumeTracking() {
@@ -133,30 +126,14 @@ final class FollowAlongViewModel {
     }
 
     func tapWord(_ word: QuranWord, verseId: Int) {
-        if let obs = tapObserver { NotificationCenter.default.removeObserver(obs) }
-        wordPlayer?.pause()
-        wordPlayer = nil
-
         tappedWordPosition = word.p
         tappedVerseId = verseId
-
         guard let audioURL = word.audioURL else { return }
-        let item = AVPlayerItem(url: audioURL)
-        let player = AVPlayer(playerItem: item)
-        wordPlayer = player
-
-        tapObserver = NotificationCenter.default.addObserver(
-            forName: .AVPlayerItemDidPlayToEndTime,
-            object: item,
-            queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in
-                self?.tappedWordPosition = nil
-                self?.tappedVerseId = nil
-            }
+        audioService.playClip(url: audioURL) { [weak self] in
+            guard self?.tappedWordPosition == word.p, self?.tappedVerseId == verseId else { return }
+            self?.tappedWordPosition = nil
+            self?.tappedVerseId = nil
         }
-
-        player.play()
     }
 
     func highlightState(for word: QuranWord, verseId: Int) -> WordHighlightState {
