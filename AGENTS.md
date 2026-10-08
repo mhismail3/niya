@@ -50,6 +50,9 @@ build work) and `.agents/skills/publish` (TestFlight/App Store, user-invoked).
 - Release builds enable CloudKit and rely on `scripts/publish.sh`, which refuses
   to ship without the `iCloud.com.niya.mobile` entitlement.
 - Prayer times are computed in the location's time zone, never the device's.
+- The Qiblah dial uses `CLHeading.magneticHeading` plus on-device WMM declination
+  (`WorldMagneticModel`), never `trueHeading`, which needs live location updates.
+  The WMM2025 coefficients are valid through 2029; replace them with WMM2030.
 
 ## Working rules
 

@@ -2,14 +2,15 @@ import SwiftUI
 
 struct QiblahCompassView: View {
     let bearing: Double
+    /// Unwrapped true heading (`CompassHeading.continuousHeading`), already smoothed.
     let heading: Double
     let headingAvailable: Bool
-    let headingAccuracy: Double
+    let accuracy: CompassAccuracy
+    /// The device faces the Qiblah (`QiblahAlignment`); the needle and ring turn gold.
+    var isAligned = false
     var compassSize: CGFloat = 260
     var showsAccuracyBanner = true
     var showsBearingText = true
-
-    @State private var continuousRotation: Double = 0
 
     private var arrowSize: CGFloat {
         compassSize * 0.108
@@ -19,17 +20,13 @@ struct QiblahCompassView: View {
         compassSize * 0.09
     }
 
-    private var accuracyState: AccuracyState {
-        if headingAccuracy < 0 { return .calibrating }
-        if headingAccuracy > 25 { return .poor }
-        if headingAccuracy > 15 { return .fair }
-        return .good
-    }
+    private var needleColor: Color { isAligned ? .niyaGold : .niyaTeal }
 
     private var ringColor: Color {
-        switch accuracyState {
+        if isAligned { return Color.niyaGold.opacity(0.85) }
+        switch accuracy {
         case .good: return Color.niyaSecondary.opacity(0.3)
-        case .fair: return Color.niyaGold.opacity(0.5)
+        case .reduced: return Color.niyaGold.opacity(0.5)
         case .poor, .calibrating: return Color.red.opacity(0.4)
         }
     }
@@ -42,7 +39,7 @@ struct QiblahCompassView: View {
                 compassDial
             }
 
-            if showsAccuracyBanner && accuracyState != .good && headingAvailable {
+            if showsAccuracyBanner && accuracy != .good && headingAvailable {
                 accuracyBanner
             }
 
@@ -50,29 +47,12 @@ struct QiblahCompassView: View {
                 bearingText
             }
         }
-        .onAppear {
-            continuousRotation = heading
-        }
-        .onChange(of: heading) { _, newVal in
-            // Measure from the dial's displayed angle so a step clamped during poor accuracy
-            // is caught up on later updates instead of leaving a permanent offset.
-            var delta = (newVal - continuousRotation).truncatingRemainder(dividingBy: 360)
-            if delta > 180 { delta -= 360 }
-            if delta < -180 { delta += 360 }
-
-            if accuracyState == .poor || accuracyState == .calibrating {
-                let maxStep = 5.0
-                delta = max(-maxStep, min(maxStep, delta))
-            }
-
-            continuousRotation += delta
-        }
     }
 
     private var compassDial: some View {
         ZStack {
             Circle()
-                .stroke(ringColor, lineWidth: 2)
+                .stroke(ringColor, lineWidth: isAligned ? 3 : 2)
                 .frame(width: compassSize, height: compassSize)
 
             ForEach(0..<36, id: \.self) { i in
@@ -96,15 +76,23 @@ struct QiblahCompassView: View {
             VStack(spacing: 2) {
                 Image(systemName: "arrow.up")
                     .font(.system(size: arrowSize, weight: .bold))
-                    .foregroundStyle(Color.niyaTeal)
+                    .foregroundStyle(needleColor)
                 Image(systemName: "building.columns")
                     .font(.system(size: kaabaSize))
-                    .foregroundStyle(Color.niyaTeal)
+                    .foregroundStyle(needleColor)
             }
             .rotationEffect(.degrees(bearing))
+            .animation(.easeInOut(duration: 0.2), value: isAligned)
         }
-        .rotationEffect(.degrees(-continuousRotation))
-        .animation(.smooth(duration: 0.3), value: continuousRotation)
+        .rotationEffect(.degrees(-heading))
+        // The heading is already smoothed; a short interactive spring only interpolates
+        // between samples and retargets without restarting on each one.
+        .animation(.interactiveSpring(response: 0.15, dampingFraction: 0.9), value: heading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Qiblah compass")
+        .accessibilityValue(accuracy == .calibrating
+            ? "Calibrating"
+            : QiblahAlignment.spokenGuidance(heading: heading, bearing: bearing, aligned: isAligned))
     }
 
     private var staticCompass: some View {
@@ -126,6 +114,9 @@ struct QiblahCompassView: View {
                 .offset(y: -compassSize / 2 + 30)
                 .rotationEffect(.degrees(bearing))
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Qiblah direction")
+            .accessibilityValue(QiblahFormatting.bearingLabel(bearing) + " from north")
 
             if showsAccuracyBanner {
                 Text("Compass not available on this device")
@@ -136,11 +127,11 @@ struct QiblahCompassView: View {
     }
 
     private var accuracyBanner: some View {
-        let color: Color = accuracyState == .fair ? .niyaGold : .red
+        let color: Color = accuracy == .reduced ? .niyaGold : .red
         return HStack(spacing: 6) {
-            Image(systemName: accuracyState == .fair ? "exclamationmark.triangle" : "figure.wave")
+            Image(systemName: accuracy == .reduced ? "exclamationmark.triangle" : "figure.wave")
                 .font(.niyaCaption)
-            Text(accuracyState.message)
+            Text(accuracy.message)
                 .font(.niyaCaption2)
         }
         .foregroundStyle(color)
@@ -150,17 +141,10 @@ struct QiblahCompassView: View {
         HStack(spacing: 4) {
             Image(systemName: "building.columns")
                 .foregroundStyle(Color.niyaTeal)
-            Text("\(Int(bearing))° \(cardinalDirection(for: bearing))")
+            Text(QiblahFormatting.bearingLabel(bearing))
                 .font(.niyaBody)
                 .foregroundStyle(Color.niyaText)
         }
-    }
-
-    private func cardinalDirection(for degrees: Double) -> String {
-        let directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
-                          "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
-        let index = Int((degrees + 11.25) / 22.5) % 16
-        return directions[index]
     }
 
     private var cardinalDirections: [(label: String, angle: Double)] {
@@ -168,16 +152,11 @@ struct QiblahCompassView: View {
     }
 }
 
-private enum AccuracyState {
-    case good
-    case fair
-    case poor
-    case calibrating
-
+private extension CompassAccuracy {
     var message: String {
         switch self {
         case .good: return ""
-        case .fair: return "Compass accuracy is reduced"
+        case .reduced: return "Compass accuracy is reduced"
         case .poor: return "Low accuracy — move away from metal objects"
         case .calibrating: return "Move your device in a figure-8 to calibrate"
         }
