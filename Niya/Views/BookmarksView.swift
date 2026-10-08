@@ -263,6 +263,7 @@ struct BookmarksView: View {
                 }
                 .listRowBackground(rowBackground(for: bookmark.bookmarkColor))
                 .contentShape(Rectangle())
+                .accessibilityAddTraits(.isButton)
                 .onTapGesture {
                     coordinator.navigateToAyah(surahId: bookmark.surahId, ayahId: bookmark.ayahId)
                     dismiss()
@@ -316,6 +317,7 @@ struct BookmarksView: View {
                         }
                         .listRowBackground(rowBackground(for: bookmark.bookmarkColor))
                         .contentShape(Rectangle())
+                        .accessibilityAddTraits(.isButton)
                         .onTapGesture {
                             coordinator.navigateToHadith(
                                 collectionId: bookmark.collectionId,
@@ -401,6 +403,7 @@ struct BookmarksView: View {
                     }
                     .listRowBackground(rowBackground(for: bookmark.bookmarkColor))
                     .contentShape(Rectangle())
+                    .accessibilityAddTraits(.isButton)
                     .onTapGesture {
                         coordinator.navigateToDua(categoryId: bookmark.categorySlug, duaId: bookmark.duaStringId)
                         dismiss()

@@ -57,7 +57,7 @@ struct HadithRowView: View {
     private var gradeLabel: some View {
         if hasGrades, let grade = HadithGrade.from(hadith.grade) {
             Text(grade.displayName)
-                .font(.system(size: 9, weight: .medium, design: .serif))
+                .font(.system(.caption2, design: .serif, weight: .medium))
                 .foregroundStyle(grade.color)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
@@ -67,7 +67,7 @@ struct HadithRowView: View {
                 .fixedSize()
         } else if hasGrades, let gradeText = hadith.grade {
             Text(gradeText)
-                .font(.system(size: 9, weight: .medium, design: .serif))
+                .font(.system(.caption2, design: .serif, weight: .medium))
                 .foregroundStyle(Color.niyaSecondary)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)

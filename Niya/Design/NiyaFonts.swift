@@ -15,9 +15,10 @@ extension Font {
     static let niyaCaption2 = Font.system(.caption2, design: .serif, weight: .regular)
     static let niyaNavigationTitle = Font.system(.title2, design: .serif, weight: .semibold)
     static let niyaControlLabel = Font.system(.caption, design: .serif, weight: .semibold)
-    static let niyaEmphasis = Font.system(size: 25, weight: .semibold, design: .serif)
-    static let niyaCardTitle = Font.system(size: 14, weight: .semibold, design: .serif)
-    static let niyaCardValue = Font.system(size: 16, weight: .semibold, design: .serif)
+    // Text styles (not fixed point sizes) so these follow Dynamic Type.
+    static let niyaEmphasis = Font.system(.title2, design: .serif, weight: .semibold)
+    static let niyaCardTitle = Font.system(.subheadline, design: .serif, weight: .semibold)
+    static let niyaCardValue = Font.system(.callout, design: .serif, weight: .semibold)
     static let niyaBadge = Font.system(.caption2, design: .serif, weight: .semibold)
     static let niyaVerseAction = Font.title3
 }

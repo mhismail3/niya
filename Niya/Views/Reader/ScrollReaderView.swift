@@ -169,24 +169,26 @@ struct ScrollReaderView: View {
     // MARK: - Auto Scroll (direct UIScrollView access)
 
     private func startAutoScroll() {
-        guard let sv = uiScrollView else { return }
         scrollTask?.cancel()
         scrollTask = Task { @MainActor in
+            var last = ContinuousClock.now
             while !Task.isCancelled && autoScrollVM.isScrolling && autoScrollVM.isEnabled {
-                let speed = autoScrollVM.pointsPerSecond
-                let currentY = sv.contentOffset.y
-                let newY = currentY + speed / 30.0
-                let maxY = sv.contentSize.height - sv.bounds.height
+                try? await Task.sleep(for: .milliseconds(16))
+                let now = ContinuousClock.now
+                let elapsed = (now - last) / .seconds(1)
+                last = now
+                // The finder resolves the scroll view after the first layout pass, and the
+                // user's own drag always wins over auto-scroll.
+                guard let sv = uiScrollView, !sv.isDragging, !sv.isDecelerating else { continue }
 
+                let maxY = sv.contentSize.height - sv.bounds.height + sv.adjustedContentInset.bottom
+                let newY = sv.contentOffset.y + autoScrollVM.pointsPerSecond * elapsed
                 if maxY > 0 && newY >= maxY {
                     sv.contentOffset.y = maxY
                     autoScrollVM.isScrolling = false
                     return
                 }
-
                 sv.contentOffset.y = newY
-
-                try? await Task.sleep(for: .milliseconds(33))
             }
         }
     }

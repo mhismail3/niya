@@ -8,12 +8,13 @@ import BackgroundTasks
 
 @main
 struct NiyaApp: App {
-    @State private var dataService = QuranDataService()
-    @State private var hadithDataService = HadithDataService()
-    @State private var duaDataService = DuaDataService()
-    @State private var audioService = AudioService()
+    // Services shared between view models are created once in init() and injected.
+    @State private var dataService: QuranDataService
+    @State private var hadithDataService: HadithDataService
+    @State private var duaDataService: DuaDataService
+    @State private var audioService: AudioService
     @State private var audioPlayerVM: AudioPlayerViewModel
-    @State private var wordDataService = WordDataService()
+    @State private var wordDataService: WordDataService
     @State private var followAlongVM: FollowAlongViewModel
     @State private var tajweedService = TajweedService()
     @State private var tafsirService = TafsirService()
@@ -157,16 +158,32 @@ struct NiyaApp: App {
             .font: UIFont.niyaSerifFont(textStyle: .headline, weight: .semibold),
             .foregroundColor: textColor
         ]
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.largeTitleTextAttributes = largeTitleAttributes
-        appearance.titleTextAttributes = titleAttributes
+        func makeAppearance(transparent: Bool) -> UINavigationBarAppearance {
+            let appearance = UINavigationBarAppearance()
+            if transparent {
+                appearance.configureWithTransparentBackground()
+            } else {
+                appearance.configureWithDefaultBackground()
+            }
+            appearance.largeTitleTextAttributes = largeTitleAttributes
+            appearance.titleTextAttributes = titleAttributes
+            return appearance
+        }
+        // iOS 26 draws its own scroll-edge blur behind a transparent bar. Earlier
+        // versions need the standard material once content scrolls under the bar.
+        let edge = makeAppearance(transparent: true)
+        let scrolled: UINavigationBarAppearance
+        if #available(iOS 26.0, *) {
+            scrolled = edge
+        } else {
+            scrolled = makeAppearance(transparent: false)
+        }
 
         let navigationBar = UINavigationBar.appearance()
-        navigationBar.standardAppearance = appearance
-        navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.compactAppearance = appearance
-        navigationBar.compactScrollEdgeAppearance = appearance
+        navigationBar.standardAppearance = scrolled
+        navigationBar.compactAppearance = scrolled
+        navigationBar.scrollEdgeAppearance = edge
+        navigationBar.compactScrollEdgeAppearance = edge
         navigationBar.largeTitleTextAttributes = largeTitleAttributes
         navigationBar.titleTextAttributes = titleAttributes
     }

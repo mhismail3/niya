@@ -61,6 +61,7 @@ struct ReaderContainerView: View {
                 Button { showBookmarks = true } label: {
                     Image(systemName: "bookmark")
                 }
+                .accessibilityLabel("Bookmarks")
                 .popoverTip(bookmarkToolbarTip)
             }
             ToolbarItemGroup(placement: .topBarTrailing) {
@@ -88,21 +89,24 @@ struct ReaderContainerView: View {
                     } label: {
                         Label("Go to Ayah", systemImage: "arrow.forward.to.line")
                     }
-                    Button {
-                        if autoScrollVM.isEnabled {
-                            autoScrollVM.stop()
-                        } else {
-                            followAlongVM.stopTracking()
-                            followAlong = false
-                            audioPlayerVM.stop()
-                            autoScrollVM.isEnabled = true
-                            autoScrollVM.isScrolling = true
+                    // Auto-scroll drives the continuous scroll view; Page mode has none.
+                    if vm.mode == .scroll {
+                        Button {
+                            if autoScrollVM.isEnabled {
+                                autoScrollVM.stop()
+                            } else {
+                                followAlongVM.stopTracking()
+                                followAlong = false
+                                audioPlayerVM.stop()
+                                autoScrollVM.isEnabled = true
+                                autoScrollVM.isScrolling = true
+                            }
+                        } label: {
+                            Label(
+                                autoScrollVM.isEnabled ? "Disable Auto-Scroll" : "Auto-Scroll",
+                                systemImage: "scroll"
+                            )
                         }
-                    } label: {
-                        Label(
-                            autoScrollVM.isEnabled ? "Disable Auto-Scroll" : "Auto-Scroll",
-                            systemImage: "scroll"
-                        )
                     }
                     if showTajweed && storedScript == .hafs {
                         Button { showTajweedGuide = true } label: {
@@ -112,14 +116,19 @@ struct ReaderContainerView: View {
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
+                .accessibilityLabel("Reader Options")
                 .popoverTip(optionsMenuTip)
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
                 }
+                .accessibilityLabel("Reader Settings")
                 .popoverTip(settingsToolbarTip)
             }
         }
         .hiddenAllToolbarBackgrounds()
+        .onChange(of: vm.mode) { _, mode in
+            if mode == .page { autoScrollVM.stop() }
+        }
         .sheet(isPresented: $showBookmarks) {
             BookmarksView()
                 .presentationDetents([.large])

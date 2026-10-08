@@ -7,6 +7,16 @@ struct ContentView: View {
     @Environment(AudioPlayerViewModel.self) private var audioPlayerVM
     @Environment(AutoScrollViewModel.self) private var autoScrollVM
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+
+    private var showsFloatingBar: Bool { autoScrollVM.isEnabled || audioPlayerVM.hasActiveSession }
+
+    /// Clearance above the bottom tab bar. On iPad (iOS 18+, regular width) the tab bar
+    /// sits at the top, so the floating bars only need a margin.
+    private var floatingBarBottomPadding: CGFloat {
+        if #available(iOS 18.0, *), horizontalSizeClass == .regular { return 16 }
+        return 60
+    }
 
     var body: some View {
         @Bindable var coordinator = coordinator
@@ -15,11 +25,11 @@ struct ContentView: View {
             .overlay(alignment: .bottom) {
                 if autoScrollVM.isEnabled {
                     AutoScrollBar()
-                        .padding(.bottom, 60)
+                        .padding(.bottom, floatingBarBottomPadding)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 } else if audioPlayerVM.hasActiveSession {
                     AudioPlayerBar()
-                        .padding(.bottom, 60)
+                        .padding(.bottom, floatingBarBottomPadding)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -54,7 +64,9 @@ struct ContentView: View {
                 }
             }
             if #available(iOS 26.0, *) {
-                tv.tabBarMinimizeBehavior(.onScrollDown)
+                // Our floating audio/auto-scroll bars sit at a fixed height above the tab
+                // bar, so keep it full size while one is showing.
+                tv.tabBarMinimizeBehavior(showsFloatingBar ? .never : .onScrollDown)
             } else {
                 tv
             }
