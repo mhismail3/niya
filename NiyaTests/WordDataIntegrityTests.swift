@@ -111,6 +111,31 @@ struct WordDataIntegrityTests {
         }
     }
 
+    /// Word text must use the same KFGQPC Hafs encoding as `verses_hafs` and the bundled
+    /// font. Quran.com's Tanzil-style `text_uthmani` encodes open tanween as tanween plus a
+    /// small meem (U+06E2/U+06ED), which this font draws as a visible stray meem.
+    @Test(arguments: Reciter.allCases)
+    func wordTextMatchesVerseEncoding(reciter: Reciter) throws {
+        struct Verse: Decodable { let id: Int; let text: String }
+        let verses = try CompressedJSON.decode([String: [Verse]].self, resource: "verses_hafs")
+        let words = try CompressedJSON.decode([String: [String: VerseWordData]].self, resource: reciter.wordDataFilename)
+        // The two upstream sources spell one word differently in these verses.
+        let knownSpellingDifferences: Set<String> = ["2:72", "11:41"]
+        func normalized(_ text: String) -> String {
+            String(text.unicodeScalars.filter { !$0.properties.isWhitespace && $0.value != 0x0640 }.map(Character.init))
+        }
+        var mismatches: [String] = []
+        for (surah, list) in verses {
+            for verse in list {
+                let key = "\(surah):\(verse.id)"
+                guard !knownSpellingDifferences.contains(key) else { continue }
+                let joined = words[surah]?[String(verse.id)]?.w.map(\.t).joined() ?? ""
+                if normalized(joined) != normalized(verse.text) { mismatches.append(key) }
+            }
+        }
+        #expect(mismatches.isEmpty, "\(reciter.rawValue): \(mismatches.count) verses differ, e.g. \(mismatches.prefix(5))")
+    }
+
     @Test func audioURLsMatchSequentialPattern() {
         for (surahId, ayahId, vd) in allVerseData {
             for word in vd.w {

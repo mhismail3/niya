@@ -36,7 +36,9 @@ RECITERS = {
     "shuraym":     {"quran_com_id": 10, "output": "word_data_shuraym.json"},
 }
 
-WORDS_API = "https://api.quran.com/api/v4/verses/by_chapter/{ch}?language=en&words=true&word_fields=text_uthmani&per_page=300&page={page}"
+# text_qpc_hafs matches verses_hafs and the bundled KFGQPC font. Do not use text_uthmani:
+# its Tanzil-style open tanween (tanween + U+06E2/U+06ED) renders as a stray small meem.
+WORDS_API = "https://api.quran.com/api/v4/verses/by_chapter/{ch}?language=en&words=true&word_fields=text_qpc_hafs&per_page=300&page={page}"
 TIMING_API = "https://api.quran.com/api/v4/chapter_recitations/{reciter_id}/{ch}?segments=true"
 
 RATE_LIMIT = 0.5
@@ -108,7 +110,7 @@ def extract_words(verse_data, chapter, verse):
         audio_url = f"wbw/{chapter:03d}_{verse:03d}_{word_seq:03d}.mp3"
         words.append({
             "p": word_seq,
-            "t": w.get("text_uthmani", ""),
+            "t": w.get("text_qpc_hafs", ""),
             "tr": transliteration.get("text", ""),
             "en": translation.get("text", ""),
             "a": audio_url,

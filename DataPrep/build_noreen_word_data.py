@@ -55,7 +55,7 @@ CDN_BASE = "https://download.quranicaudio.com/quran/noreen_siddiq"
 
 def normalize_arabic(text):
     """Strip diacritics, normalize letter variants for alignment."""
-    text = re.sub(r'[\u064B-\u0652\u0670\u06D6-\u06ED\u0610-\u061A]', '', text)
+    text = re.sub(r'[\u064B-\u065F\u0670\u06D6-\u06ED\u0610-\u061A]', '', text)  # incl. QPC open-tanween marks
     text = re.sub(r'[\u0622\u0623\u0625\u0671]', '\u0627', text)  # alef variants
     text = text.replace('\u0629', '\u0647')  # teh marbuta → heh
     text = text.replace('\u0640', '')          # tatweel
