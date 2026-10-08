@@ -216,47 +216,16 @@ struct AudioPlayerViewModelMockTests {
         #expect(audio.stopCallCount == 1)
     }
 
-    // MARK: - setSpeed clamps
+    // MARK: - Speed
 
-    @Test func setSpeed_tooLow_clampsToMin() {
+    @Test func setSpeed_forwardsToSharedAudioService() {
         let (audio, data, words) = makeMocks()
         let vm = makeVM(audio: audio, data: data, words: words)
 
-        vm.setSpeed(0.1)
+        vm.setSpeed(1.75)
 
-        #expect(vm.playbackSpeed == 0.5)
-        #expect(audio.lastRate == 0.5)
-    }
-
-    @Test func setSpeed_tooHigh_clampsToMax() {
-        let (audio, data, words) = makeMocks()
-        let vm = makeVM(audio: audio, data: data, words: words)
-
-        vm.setSpeed(2.0)
-
-        #expect(vm.playbackSpeed == 1.25)
-        #expect(audio.lastRate == 1.25)
-    }
-
-    @Test func setSpeed_withinRange_setsExactly() {
-        let (audio, data, words) = makeMocks()
-        let vm = makeVM(audio: audio, data: data, words: words)
-
-        vm.setSpeed(1.0)
-
-        #expect(vm.playbackSpeed == 1.0)
-        #expect(audio.lastRate == 1.0)
-    }
-
-    @Test func setSpeed_atBoundaries() {
-        let (audio, data, words) = makeMocks()
-        let vm = makeVM(audio: audio, data: data, words: words)
-
-        vm.setSpeed(0.5)
-        #expect(vm.playbackSpeed == 0.5)
-
-        vm.setSpeed(1.25)
-        #expect(vm.playbackSpeed == 1.25)
+        #expect(audio.lastRate == 1.75)
+        #expect(vm.playbackSpeed == 1.75)
     }
 
     // MARK: - setLoopCount resets currentLoop
@@ -535,21 +504,5 @@ struct AudioPlayerViewModelMockTests {
 
         #expect(audio.seekToVerseCallCount == 1)
         #expect(audio.currentVerseID == VerseID(surahId: 1, ayahId: 2))
-    }
-
-    // MARK: - Speed applied after navigation
-
-    @Test func nextVerse_appliesPlaybackSpeed() {
-        let (audio, data, words) = makeMocks()
-        let vm = makeVM(audio: audio, data: data, words: words)
-
-        vm.setSpeed(0.75)
-        vm.playVerse(surahId: 1, ayahId: 3)
-        audio.setRateCallCount = 0
-
-        vm.nextVerse()
-
-        #expect(audio.setRateCallCount >= 1)
-        #expect(audio.lastRate == 0.75)
     }
 }

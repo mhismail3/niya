@@ -9,7 +9,6 @@ final class FollowAlongViewModel {
     var currentWordIndex: Int?
     var currentSurahId: Int?
     var currentVerseId: Int?
-    var playbackSpeed: Float = 1.0
     var loopCount: Int = 1
     var autoAdvance = true
     private(set) var tappedWordPosition: Int?
@@ -23,6 +22,8 @@ final class FollowAlongViewModel {
     private let audioService: any AudioPlaying
     private let wordDataService: any WordDataProviding
     private let dataService: any QuranDataProviding
+
+    var playbackSpeed: Float { audioService.playbackRate }
 
     init(audioService: any AudioPlaying, wordDataService: any WordDataProviding, dataService: any QuranDataProviding) {
         self.audioService = audioService
@@ -40,6 +41,7 @@ final class FollowAlongViewModel {
         let reciterName = wordDataService.currentReciter?.displayName ?? "Reciter"
         info[MPMediaItemPropertyArtist] = reciterName
         info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(playbackSpeed) : 0.0
+        info[MPNowPlayingInfoPropertyDefaultPlaybackRate] = Double(playbackSpeed)
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
     }
 
@@ -77,7 +79,7 @@ final class FollowAlongViewModel {
         isPlaying = true
 
         guard let url = URL(string: verseData.au) else { return }
-        audioService.playWithSeek(url: url, seekMs: verseData.vs, rate: playbackSpeed)
+        audioService.playWithSeek(url: url, seekMs: verseData.vs)
 
         updateNowPlaying()
         startWordTracking()
@@ -132,11 +134,8 @@ final class FollowAlongViewModel {
     }
 
     func setSpeed(_ speed: Float) {
-        let clamped = min(max(speed, 0.5), 1.25)
-        playbackSpeed = clamped
-        if isPlaying {
-            audioService.setRate(clamped)
-        }
+        audioService.setRate(speed)
+        updateNowPlaying()
     }
 
     func tapWord(_ word: QuranWord, verseId: Int) {
@@ -204,7 +203,7 @@ final class FollowAlongViewModel {
         currentLoop = 0
         seekingToStart = true
         audioService.seekTo(ms: verseData.vs, completion: nil)
-        audioService.setRate(playbackSpeed)
+        audioService.resume()
         updateNowPlaying()
         startWordTracking()
         return true
@@ -259,7 +258,7 @@ final class FollowAlongViewModel {
             currentWordIndex = 0
             seekingToStart = true
             audioService.seekTo(ms: verseData.vs, completion: nil)
-            audioService.setRate(playbackSpeed)
+            audioService.resume()
             startWordTracking()
         } else {
             if loopCount > 1 {

@@ -228,65 +228,27 @@ struct FollowAlongViewModelMockTests {
         #expect(vm.tappedVerseId == nil)
     }
 
-    // MARK: - setSpeed clamps
+    // MARK: - Speed
 
-    @Test func setSpeed_tooLow_clampsToMin() {
-        let (audio, words, data) = makeMocks()
-        let vm = makeVM(audio: audio, words: words, data: data)
-
-        vm.setSpeed(0.1)
-
-        #expect(vm.playbackSpeed == 0.5)
-    }
-
-    @Test func setSpeed_tooHigh_clampsToMax() {
-        let (audio, words, data) = makeMocks()
-        let vm = makeVM(audio: audio, words: words, data: data)
-
-        vm.setSpeed(2.0)
-
-        #expect(vm.playbackSpeed == 1.25)
-    }
-
-    @Test func setSpeed_withinRange_setsExactly() {
+    @Test func setSpeed_forwardsToSharedAudioService() {
         let (audio, words, data) = makeMocks()
         let vm = makeVM(audio: audio, words: words, data: data)
 
         vm.setSpeed(0.75)
 
+        #expect(audio.lastRate == 0.75)
         #expect(vm.playbackSpeed == 0.75)
     }
 
-    @Test func setSpeed_atBoundaries() {
+    @Test func setSpeed_whilePaused_doesNotResume() {
         let (audio, words, data) = makeMocks()
         let vm = makeVM(audio: audio, words: words, data: data)
+        audio.isPlaying = false
 
-        vm.setSpeed(0.5)
-        #expect(vm.playbackSpeed == 0.5)
+        vm.setSpeed(1.5)
 
-        vm.setSpeed(1.25)
-        #expect(vm.playbackSpeed == 1.25)
-    }
-
-    @Test func setSpeed_whilePlaying_setsRateOnAudioService() {
-        let (audio, words, data) = makeMocks()
-        let vm = makeVM(audio: audio, words: words, data: data)
-        vm.isPlaying = true
-
-        vm.setSpeed(0.75)
-
-        #expect(audio.setRateCallCount == 1)
-        #expect(audio.lastRate == 0.75)
-    }
-
-    @Test func setSpeed_whileNotPlaying_doesNotSetRate() {
-        let (audio, words, data) = makeMocks()
-        let vm = makeVM(audio: audio, words: words, data: data)
-        vm.isPlaying = false
-
-        vm.setSpeed(0.75)
-
-        #expect(audio.setRateCallCount == 0)
+        #expect(audio.isPlaying == false)
+        #expect(audio.resumeCallCount == 0)
     }
 
     // MARK: - setLoopCount

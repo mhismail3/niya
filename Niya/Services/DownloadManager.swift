@@ -14,6 +14,9 @@ final class DownloadManager {
     var activeDownloads: [String: DownloadProgress] = [:]
     private(set) var changeRevision = 0
     private var downloadTasks: [String: Task<Void, Never>] = [:]
+    /// Identifies the current attempt per key so a cancelled attempt that finishes late
+    /// cannot overwrite or remove the state of a newer attempt for the same surah.
+    @ObservationIgnored private var attemptIDs: [String: UUID] = [:]
     private let downloadStore: DownloadStore?
     @ObservationIgnored private var storageCache: [String: Int64] = [:]
 
@@ -37,6 +40,8 @@ final class DownloadManager {
         guard !isDownloaded(surahId, reciter: reciter) else { return }
 
         activeDownloads[key] = DownloadProgress(id: key, surahId: surahId, reciterId: reciter.rawValue, progress: 0, error: nil)
+        let attempt = UUID()
+        attemptIDs[key] = attempt
 
         let task = Task { [weak self] in
             let url = reciter.surahStreamURL(surahId: surahId)
@@ -46,6 +51,7 @@ final class DownloadManager {
                 try Task.checkCancellation()
                 let tempURL = try await NetworkClient.shared.download(from: url) { [weak self] fraction in
                     Task { @MainActor [weak self] in
+                        guard self?.attemptIDs[key] == attempt else { return }
                         self?.activeDownloads[key]?.progress = fraction
                     }
                 }
@@ -55,20 +61,44 @@ final class DownloadManager {
                     try FileManager.default.removeItem(at: localURL)
                 }
                 try FileManager.default.moveItem(at: tempURL, to: localURL)
+                Self.excludeFromBackup(localURL)
 
                 try self?.downloadStore?.save(surahId: surahId, filename: localURL.lastPathComponent, reciterId: reciter.rawValue)
                 self?.storageCache.removeValue(forKey: reciter.rawValue)
-                self?.activeDownloads.removeValue(forKey: key)
-            } catch is CancellationError {
-                self?.activeDownloads.removeValue(forKey: key)
-            } catch let error as URLError where error.code == .cancelled {
-                self?.activeDownloads.removeValue(forKey: key)
+                self?.finish(key, attempt: attempt, error: nil)
+            } catch where Self.isCancellation(error) {
+                self?.finish(key, attempt: attempt, error: nil)
             } catch {
-                self?.activeDownloads[key]?.error = error.localizedDescription
+                self?.finish(key, attempt: attempt, error: error.localizedDescription)
             }
-            self?.downloadTasks.removeValue(forKey: key)
         }
         downloadTasks[key] = task
+    }
+
+    private func finish(_ key: String, attempt: UUID, error: String?) {
+        guard attemptIDs[key] == attempt else { return }
+        if let error {
+            activeDownloads[key]?.error = error
+        } else {
+            activeDownloads.removeValue(forKey: key)
+        }
+        downloadTasks.removeValue(forKey: key)
+        attemptIDs.removeValue(forKey: key)
+    }
+
+    nonisolated static func isCancellation(_ error: any Error) -> Bool {
+        if error is CancellationError { return true }
+        if let urlError = error as? URLError { return urlError.code == .cancelled }
+        if case NetworkError.requestFailed(let underlying) = error { return isCancellation(underlying) }
+        return false
+    }
+
+    /// Recitation files can be re-downloaded, so they must not consume the user's iCloud backup.
+    nonisolated static func excludeFromBackup(_ url: URL) {
+        var url = url
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try? url.setResourceValues(values)
     }
 
     func cancelDownload(_ surahId: Int, reciter: Reciter) {
@@ -76,6 +106,7 @@ final class DownloadManager {
         downloadTasks[key]?.cancel()
         downloadTasks.removeValue(forKey: key)
         activeDownloads.removeValue(forKey: key)
+        attemptIDs.removeValue(forKey: key)
     }
 
     func dismissError(_ surahId: Int, reciter: Reciter) {
@@ -167,6 +198,8 @@ final class DownloadManager {
             let url = Self.documentsDirectory.appendingPathComponent(record.localFileName)
             if !fm.fileExists(atPath: url.path) {
                 try? downloadStore?.delete(surahId: record.surahId, reciterId: record.reciterId)
+            } else {
+                Self.excludeFromBackup(url)
             }
         }
 

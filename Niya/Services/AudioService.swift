@@ -12,6 +12,21 @@ struct VerseBoundary: Sendable {
     let endMs: Int
 }
 
+/// Reciter playback speeds offered in the UI. Finer steps below 1x support memorization.
+enum PlaybackSpeed {
+    static let options: [Float] = [0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0, 1.1, 1.25, 1.5, 1.75, 2.0]
+    static let range: ClosedRange<Float> = 0.5...2.0
+
+    static func clamped(_ rate: Float) -> Float {
+        guard rate.isFinite else { return 1.0 }
+        return min(max(rate, range.lowerBound), range.upperBound)
+    }
+
+    static func label(_ rate: Float) -> String {
+        rate.formatted(.number.precision(.fractionLength(0...2))) + "x"
+    }
+}
+
 @Observable
 @MainActor
 final class AudioService: AudioPlaying {
@@ -23,15 +38,35 @@ final class AudioService: AudioPlaying {
     var onVerseDidFinish: ((VerseID) -> Void)?
     var onVerseDidChange: ((VerseID) -> Void)?
     private(set) var isContinuousMode = false
+    /// The single source of truth for reciter speed. Every player this service creates
+    /// adopts it as `defaultRate`, so `play()` (resume, interruption recovery, new items)
+    /// never silently falls back to 1x.
+    private(set) var playbackRate: Float
 
+    private let defaults: UserDefaults
     private var player: AVPlayer?
     private var currentItem: AVPlayerItem?
     private var boundaryObserver: Any?
     private var verseTrackingObserver: Any?
     private var fadeTask: Task<Void, Never>?
 
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        let stored = defaults.object(forKey: StorageKey.playbackSpeed) as? Float
+        self.playbackRate = PlaybackSpeed.clamped(stored ?? 1.0)
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    /// Creates the player for a new item with the current speed and a pitch-preserving
+    /// algorithm suited to recitation at non-1x rates.
+    private func makePlayer(item: AVPlayerItem) -> AVPlayer {
+        item.audioTimePitchAlgorithm = .spectral
+        let player = AVPlayer(playerItem: item)
+        player.defaultRate = playbackRate
+        return player
     }
 
     var currentTimeMs: Int {
@@ -41,52 +76,90 @@ final class AudioService: AudioPlaying {
         return Int(seconds * 1000)
     }
 
+    /// Sets the category only. The session is activated when recitation starts, so merely
+    /// opening Niya (e.g. to check prayer times) never interrupts another app's audio.
     func configureSession() {
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
         } catch {
             AppLogger.audio.error("Session config error: \(error)")
         }
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleInterruption),
-            name: AVAudioSession.interruptionNotification,
-            object: nil
-        )
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(interruptionNotification),
+                           name: AVAudioSession.interruptionNotification, object: nil)
+        center.addObserver(self, selector: #selector(routeChangeNotification),
+                           name: AVAudioSession.routeChangeNotification, object: nil)
     }
 
-    @objc private func handleInterruption(_ notification: Notification) {
+    private var wasPlayingBeforeInterruption = false
+
+    private func activateSession() {
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            AppLogger.audio.error("Session activation error: \(error)")
+        }
+    }
+
+    private func deactivateSession() {
+        // Lets the app the user was listening to before (podcast, music) resume.
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    // AVFoundation may post these off the main thread; hop explicitly rather than relying
+    // on main-actor @objc entry points, which trap when invoked from another thread.
+    @objc nonisolated private func interruptionNotification(_ notification: Notification) {
         guard let info = notification.userInfo,
               let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
               let type = AVAudioSession.InterruptionType(rawValue: typeValue) else { return }
+        let options = AVAudioSession.InterruptionOptions(
+            rawValue: info[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+        )
+        Task { @MainActor in self.handleInterruption(type, options: options) }
+    }
 
-        if type == .began {
+    private func handleInterruption(_ type: AVAudioSession.InterruptionType, options: AVAudioSession.InterruptionOptions) {
+        switch type {
+        case .began:
+            wasPlayingBeforeInterruption = isPlaying
             isPlaying = false
-        } else if type == .ended,
-                  let optionsValue = info[AVAudioSessionInterruptionOptionKey] as? UInt {
-            let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
-            if options.contains(.shouldResume) {
-                player?.play()
-                isPlaying = true
-            }
+        case .ended:
+            // Never resume audio the user had paused before the call/alarm.
+            guard wasPlayingBeforeInterruption, options.contains(.shouldResume), let player else { return }
+            wasPlayingBeforeInterruption = false
+            activateSession()
+            player.play()
+            isPlaying = true
+        @unknown default:
+            break
+        }
+    }
+
+    @objc nonisolated private func routeChangeNotification(_ notification: Notification) {
+        guard let raw = notification.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              AVAudioSession.RouteChangeReason(rawValue: raw) == .oldDeviceUnavailable else { return }
+        // Headphones unplugged / Bluetooth lost: AVPlayer pauses itself; mirror that state.
+        Task { @MainActor in
+            guard self.isPlaying, let player = self.player, player.timeControlStatus == .paused else { return }
+            self.isPlaying = false
         }
     }
 
     func play(url: URL, verseID: VerseID? = nil, surahId: Int? = nil) {
-        stop()
+        resetPlayer()
+        activateSession()
         isLoading = true
         currentVerseID = verseID
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
         currentItem = item
-        player = AVPlayer(playerItem: item)
+        player = makePlayer(item: item)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerDidFinish),
+            selector: #selector(playerItemDidFinish(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
@@ -110,19 +183,21 @@ final class AudioService: AudioPlaying {
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
+        item.audioTimePitchAlgorithm = .spectral
         currentItem = item
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerDidFinish),
+            selector: #selector(playerItemDidFinish(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
 
+        activateSession()
         if let player {
             player.replaceCurrentItem(with: item)
             player.play()
         } else {
-            player = AVPlayer(playerItem: item)
+            player = makePlayer(item: item)
             player?.play()
         }
 
@@ -132,18 +207,19 @@ final class AudioService: AudioPlaying {
 
     /// Play a single verse segment from a surah file, with fade-out at end.
     func playVerseInSurah(url: URL, startMs: Int, endMs: Int, verseID: VerseID, surahId: Int) {
-        stop()
+        resetPlayer()
+        activateSession()
         isLoading = true
         currentVerseID = verseID
         currentSurahId = surahId
 
         let item = AVPlayerItem(url: url)
         currentItem = item
-        player = AVPlayer(playerItem: item)
+        player = makePlayer(item: item)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerDidFinish),
+            selector: #selector(playerItemDidFinish(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
@@ -178,7 +254,8 @@ final class AudioService: AudioPlaying {
 
     /// Play surah audio continuously, tracking verse position as it progresses.
     func playSurahContinuous(url: URL, boundaries: [VerseBoundary], surahId: Int) {
-        stop()
+        resetPlayer()
+        activateSession()
         guard let first = boundaries.first else { return }
         isContinuousMode = true
         isLoading = true
@@ -187,11 +264,11 @@ final class AudioService: AudioPlaying {
 
         let item = AVPlayerItem(url: url)
         currentItem = item
-        player = AVPlayer(playerItem: item)
+        player = makePlayer(item: item)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerDidFinish),
+            selector: #selector(playerItemDidFinish(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
@@ -243,18 +320,19 @@ final class AudioService: AudioPlaying {
         player.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 
-    func playWithSeek(url: URL, seekMs: Int, rate: Float) {
-        stop()
+    func playWithSeek(url: URL, seekMs: Int) {
+        resetPlayer()
+        activateSession()
         isFollowAlongActive = true
         isLoading = true
 
         let item = AVPlayerItem(url: url)
         currentItem = item
-        player = AVPlayer(playerItem: item)
+        player = makePlayer(item: item)
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(playerDidFinish),
+            selector: #selector(playerItemDidFinish(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
             object: item
         )
@@ -263,7 +341,7 @@ final class AudioService: AudioPlaying {
         player?.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
-                self.player?.rate = rate
+                self.player?.play()
                 self.isPlaying = true
                 self.isLoading = false
             }
@@ -281,9 +359,14 @@ final class AudioService: AudioPlaying {
         }
     }
 
+    /// Changes speed only; it never starts or resumes playback.
     func setRate(_ rate: Float) {
-        player?.rate = rate
-        if rate > 0 { isPlaying = true }
+        let clamped = PlaybackSpeed.clamped(rate)
+        playbackRate = clamped
+        defaults.set(clamped, forKey: StorageKey.playbackSpeed)
+        guard let player else { return }
+        player.defaultRate = clamped
+        if isPlaying { player.rate = clamped }
     }
 
     private func fadeOutAndStop(duration: TimeInterval = 0.5, steps: Int = 15) {
@@ -305,7 +388,15 @@ final class AudioService: AudioPlaying {
         }
     }
 
+    /// Ends playback and releases the audio session so other apps can resume.
     func stop() {
+        let hadPlayer = player != nil
+        resetPlayer()
+        if hadPlayer { deactivateSession() }
+    }
+
+    /// Tears down the current player without releasing the session (used between items).
+    private func resetPlayer() {
         fadeTask?.cancel()
         fadeTask = nil
         if let obs = boundaryObserver, let player {
@@ -338,6 +429,7 @@ final class AudioService: AudioPlaying {
 
     func resume() {
         guard let player, !isPlaying else { return }
+        activateSession()
         player.play()
         isPlaying = true
     }
@@ -380,11 +472,14 @@ final class AudioService: AudioPlaying {
         player?.removeTimeObserver(observer)
     }
 
-    @objc private func playerDidFinish() {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { [weak self] in self?.playerDidFinish() }
-            return
-        }
+    @objc nonisolated private func playerItemDidFinish(_ notification: Notification) {
+        let finished = (notification.object as AnyObject?).map(ObjectIdentifier.init)
+        Task { @MainActor in self.playerDidFinish(item: finished) }
+    }
+
+    private func playerDidFinish(item: ObjectIdentifier?) {
+        // Ignore a late notification for an item that has since been replaced.
+        guard let currentItem, item == ObjectIdentifier(currentItem) else { return }
         if isFollowAlongActive || isContinuousMode {
             stop()
         } else {
@@ -396,6 +491,7 @@ final class AudioService: AudioPlaying {
                 isPlaying = false
                 currentVerseID = nil
                 currentSurahId = nil
+                deactivateSession()
             }
         }
     }

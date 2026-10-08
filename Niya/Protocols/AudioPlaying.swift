@@ -8,13 +8,14 @@ import Foundation
     var isFollowAlongActive: Bool { get }
     var isContinuousMode: Bool { get }
     var currentTimeMs: Int { get }
+    var playbackRate: Float { get }
     var onVerseDidFinish: ((VerseID) -> Void)? { get set }
     var onVerseDidChange: ((VerseID) -> Void)? { get set }
     func play(url: URL, verseID: VerseID?, surahId: Int?)
     func transitionToVerse(url: URL, verseID: VerseID, surahId: Int)
     func playVerseInSurah(url: URL, startMs: Int, endMs: Int, verseID: VerseID, surahId: Int)
     func playSurahContinuous(url: URL, boundaries: [VerseBoundary], surahId: Int)
-    func playWithSeek(url: URL, seekMs: Int, rate: Float)
+    func playWithSeek(url: URL, seekMs: Int)
     func seekToVerse(_ verseID: VerseID, startMs: Int)
     func seekTo(ms: Int, completion: (@Sendable () -> Void)?)
     func setRate(_ rate: Float)

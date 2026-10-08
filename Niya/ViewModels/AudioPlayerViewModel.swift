@@ -5,7 +5,6 @@ import MediaPlayer
 @MainActor
 final class AudioPlayerViewModel {
     var selectedReciter: Reciter
-    var playbackSpeed: Float = 1.0
     var autoAdvance = true
     var loopCount: Int = 1
     private(set) var currentLoop = 0
@@ -90,6 +89,15 @@ final class AudioPlayerViewModel {
             }
             return .success
         }
+        center.changePlaybackRateCommand.supportedPlaybackRates = PlaybackSpeed.options.map { NSNumber(value: $0) }
+        center.changePlaybackRateCommand.addTarget { [weak self] event in
+            guard let rate = (event as? MPChangePlaybackRateCommandEvent)?.playbackRate else { return .commandFailed }
+            Task { @MainActor in
+                self?.audioService.setRate(rate)
+                self?.updateNowPlaying()
+            }
+            return .success
+        }
     }
 
     func updateNowPlaying() {
@@ -105,6 +113,7 @@ final class AudioPlayerViewModel {
         }
         info[MPMediaItemPropertyArtist] = selectedReciter.displayName
         info[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? Double(playbackSpeed) : 0.0
+        info[MPNowPlayingInfoPropertyDefaultPlaybackRate] = Double(playbackSpeed)
         nowPlayingCenter.nowPlayingInfo = info
         nowPlayingCenter.playbackState = isPlaying ? .playing : .paused
     }
@@ -115,6 +124,7 @@ final class AudioPlayerViewModel {
     }
 
     var isPlaying: Bool { audioService.isPlaying }
+    var playbackSpeed: Float { audioService.playbackRate }
     var isLoading: Bool { audioService.isLoading }
     var currentVerseID: VerseID? {
         _ = _verseRevision
@@ -139,9 +149,6 @@ final class AudioPlayerViewModel {
                   let wordDataAudioURL = URL(string: allVerses[0].data.au) else { return }
             let url = continuousAudioURL(surahId: surahId, wordDataURL: wordDataAudioURL)
             audioService.playSurahContinuous(url: url, boundaries: boundaries, surahId: surahId)
-            if playbackSpeed != 1.0 {
-                audioService.setRate(playbackSpeed)
-            }
         } else if selectedReciter.hasPerVerseAudio {
             let absNum = dataService.absoluteVerseNumber(surah: surahId, ayah: ayahId)
             guard let url = audioService.streamURL(absoluteVerseNumber: absNum, reciter: selectedReciter) else { return }
@@ -209,8 +216,7 @@ final class AudioPlayerViewModel {
     }
 
     func setSpeed(_ speed: Float) {
-        playbackSpeed = min(max(speed, 0.5), 1.25)
-        audioService.setRate(playbackSpeed)
+        audioService.setRate(speed)
         updateNowPlaying()
     }
 
@@ -223,9 +229,6 @@ final class AudioPlayerViewModel {
             audioService.seekToVerse(VerseID(surahId: vid.surahId, ayahId: prevAyah), startMs: verseData.vs)
         } else {
             playVerse(surahId: vid.surahId, ayahId: prevAyah)
-        }
-        if playbackSpeed != 1.0 {
-            audioService.setRate(playbackSpeed)
         }
         updateNowPlaying()
     }
@@ -240,9 +243,6 @@ final class AudioPlayerViewModel {
             audioService.seekToVerse(VerseID(surahId: vid.surahId, ayahId: nextAyah), startMs: verseData.vs)
         } else {
             playVerse(surahId: vid.surahId, ayahId: nextAyah)
-        }
-        if playbackSpeed != 1.0 {
-            audioService.setRate(playbackSpeed)
         }
         updateNowPlaying()
     }
@@ -270,9 +270,6 @@ final class AudioPlayerViewModel {
             let url = audioService.localSurahURL(surahId: surahId, reciter: selectedReciter)
                 ?? selectedReciter.surahStreamURL(surahId: surahId)
             audioService.playVerseInSurah(url: url, startMs: verseData.vs, endMs: verseData.ve, verseID: verseID, surahId: surahId)
-        }
-        if playbackSpeed != 1.0 {
-            audioService.setRate(playbackSpeed)
         }
         updateNowPlaying()
     }

@@ -17,6 +17,7 @@ enum StorageKey {
     static let translationIsRTL = "translationIsRTL"
     static let appearanceMode = "appearanceMode"
     static let selectedReciter = "selectedReciter"
+    static let playbackSpeed = "playbackSpeed"
     static let selectedTranslations = "selectedTranslations"
     static let selectedTafsir = "selectedTafsir"
     static let calculationMethod = "calculationMethod"

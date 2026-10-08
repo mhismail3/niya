@@ -10,6 +10,7 @@ final class MockAudioService: AudioPlaying {
     var isFollowAlongActive = false
     var isContinuousMode = false
     var currentTimeMs: Int = 0
+    var playbackRate: Float = 1.0
     var onVerseDidFinish: ((VerseID) -> Void)?
     var onVerseDidChange: ((VerseID) -> Void)?
 
@@ -62,7 +63,7 @@ final class MockAudioService: AudioPlaying {
         isPlaying = true
     }
 
-    func playWithSeek(url: URL, seekMs: Int, rate: Float) {
+    func playWithSeek(url: URL, seekMs: Int) {
         playWithSeekCallCount += 1
         isFollowAlongActive = true
         isPlaying = true
@@ -80,7 +81,7 @@ final class MockAudioService: AudioPlaying {
     func setRate(_ rate: Float) {
         setRateCallCount += 1
         lastRate = rate
-        if rate > 0 { isPlaying = true }
+        playbackRate = PlaybackSpeed.clamped(rate)
     }
 
     func stop() {
@@ -135,5 +136,12 @@ final class MockAudioService: AudioPlaying {
 
     func removeTimeObserver(_ observer: Any) {
         removeTimeObserverCallCount += 1
+    }
+}
+
+extension AudioService {
+    /// A real service whose persisted speed cannot leak between tests or into the host app.
+    static func isolated() -> AudioService {
+        AudioService(defaults: UserDefaults(suiteName: "niya-tests-\(UUID().uuidString)")!)
     }
 }

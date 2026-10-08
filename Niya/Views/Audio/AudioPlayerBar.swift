@@ -191,20 +191,16 @@ struct AudioPlayerBar: View {
 
     private var speedMenu: some View {
         Menu {
-            ForEach([Float(0.5), 0.75, 1.0, 1.25], id: \.self) { speed in
-                Button {
-                    isFollowAlong ? followAlongVM.setSpeed(speed) : vm.setSpeed(speed)
-                } label: {
-                    HStack {
-                        Text(speedLabel(speed))
-                        if currentSpeed == speed {
-                            Image(systemName: "checkmark")
-                        }
-                    }
+            Picker("Playback Speed", selection: Binding(
+                get: { currentSpeed },
+                set: { isFollowAlong ? followAlongVM.setSpeed($0) : vm.setSpeed($0) }
+            )) {
+                ForEach(PlaybackSpeed.options, id: \.self) { speed in
+                    Text(PlaybackSpeed.label(speed)).tag(speed)
                 }
             }
         } label: {
-            Text(speedLabel(currentSpeed))
+            Text(PlaybackSpeed.label(currentSpeed))
                 .font(.caption.weight(.semibold))
                 .fixedSize()
                 .padding(.horizontal, 8)
@@ -212,14 +208,7 @@ struct AudioPlayerBar: View {
                 .background(Color.niyaSecondary.opacity(0.15), in: .capsule)
                 .foregroundStyle(Color.niyaText)
         }
-        .accessibilityLabel("Playback speed, \(speedLabel(currentSpeed))")
-    }
-
-    private func speedLabel(_ speed: Float) -> String {
-        if speed == 1.0 { return "1x" }
-        if speed == 0.5 { return "0.5x" }
-        if speed == 0.75 { return "0.75x" }
-        return "1.25x"
+        .accessibilityLabel("Playback speed, \(PlaybackSpeed.label(currentSpeed))")
     }
 
     private func updateBookmarkState(surahId: Int, ayahId: Int) {

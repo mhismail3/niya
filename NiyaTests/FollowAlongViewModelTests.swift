@@ -85,14 +85,6 @@ struct FollowAlongViewModelTests {
         #expect(vm.playbackSpeed == 0.75)
     }
 
-    @Test func speedClamp_withinRange() {
-        let vm = makeVM()
-        vm.setSpeed(0.1)
-        #expect(vm.playbackSpeed == 0.5)
-        vm.setSpeed(2.0)
-        #expect(vm.playbackSpeed == 1.25)
-    }
-
     @Test func stopTracking_clearsAllState() {
         let vm = makeVM()
         vm.currentSurahId = 1
@@ -183,7 +175,7 @@ struct FollowAlongViewModelTests {
 
     private func makeVM() -> FollowAlongViewModel {
         FollowAlongViewModel(
-            audioService: AudioService(),
+            audioService: AudioService.isolated(),
             wordDataService: WordDataService(),
             dataService: QuranDataService()
         )

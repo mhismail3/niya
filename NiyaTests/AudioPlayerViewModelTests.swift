@@ -12,7 +12,7 @@ struct AudioPlayerViewModelTests {
     )
 
     private func makeVM() -> (vm: AudioPlayerViewModel, audio: AudioService) {
-        let audio = AudioService()
+        let audio = AudioService.isolated()
         let data = QuranDataService()
         data.surahs = [Self.testSurah]
         let vm = AudioPlayerViewModel(
