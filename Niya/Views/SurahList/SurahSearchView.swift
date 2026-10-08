@@ -338,7 +338,7 @@ struct SurahSearchView: View {
             isSearchPending = false
 
             guard latest.isHadithIndexing else { return }
-            try? await Task.sleep(for: .milliseconds(250))
+            await searchIndex.waitForHadithIndexProgress()
             latest = await searchIndex.search(query: query)
         }
     }
@@ -637,6 +637,7 @@ actor SearchIndex {
     private var hadithState = HadithIndexState.notStarted
     private var pendingHadithBuilds = 0
     private var hadithError: String?
+    private var hadithProgressWaiters: [CheckedContinuation<Void, Never>] = []
 
     func configure(snapshot: SearchContentSnapshot) {
         if snapshot.quranFingerprint != quranFingerprint {
@@ -667,7 +668,21 @@ actor SearchIndex {
             hadithError = nil
             hadithState = .notStarted
             pendingHadithBuilds = 0
+            resumeHadithProgressWaiters()
         }
+    }
+
+    /// Suspends until hadith indexing makes progress (a collection is indexed, indexing
+    /// finishes, or the index is reset). Returns immediately when not indexing.
+    func waitForHadithIndexProgress() async {
+        guard hadithState == .indexing else { return }
+        await withCheckedContinuation { hadithProgressWaiters.append($0) }
+    }
+
+    private func resumeHadithProgressWaiters() {
+        let waiters = hadithProgressWaiters
+        hadithProgressWaiters.removeAll()
+        waiters.forEach { $0.resume() }
     }
 
     func search(query rawQuery: String) -> SearchResults {
@@ -688,9 +703,7 @@ actor SearchIndex {
         )
     }
 
-    func hadithIndexStateForTesting() -> String {
-        hadithState.rawValue
-    }
+    var isHadithIndexIdle: Bool { hadithState == .notStarted }
 
     private func startHadithIndexingIfNeeded() {
         guard hadithState == .notStarted, !hadithCollectionSources.isEmpty else { return }
@@ -722,6 +735,7 @@ actor SearchIndex {
             pendingHadithBuilds = 0
             hadithState = .ready
         }
+        resumeHadithProgressWaiters()
     }
 
     private func searchSurahs(query: SearchQuery) -> [Surah] {

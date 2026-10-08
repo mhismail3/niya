@@ -146,7 +146,7 @@ struct SearchIndexTests {
         #expect(results.quranVerses.contains { $0.surahId == 1 && $0.ayahId == 3 })
     }
 
-    @Test func hadithSearchDoesNotDependOnLoadedCollectionState() async throws {
+    @Test(.timeLimit(.minutes(1))) func hadithSearchDoesNotDependOnLoadedCollectionState() async throws {
         let hadithService = HadithDataService()
         await hadithService.load()
         #expect(hadithService.loadedCollectionCount == 0)
@@ -160,8 +160,8 @@ struct SearchIndexTests {
         await index.configure(snapshot: snapshot)
 
         var results = await index.search(query: "prayer")
-        for _ in 0..<100 where results.hadiths.isEmpty && results.isHadithIndexing {
-            try await Task.sleep(for: .milliseconds(100))
+        while results.isHadithIndexing {
+            await index.waitForHadithIndexProgress()
             results = await index.search(query: "prayer")
         }
 
@@ -185,7 +185,7 @@ struct SearchIndexTests {
 
         #expect(results.isEmpty)
         #expect(results.isHadithIndexing == false)
-        #expect(await index.hadithIndexStateForTesting() == "notStarted")
+        #expect(await index.isHadithIndexIdle)
     }
 
     @Test func matcherRanksExactPhraseAboveTokenMatch() {
@@ -204,14 +204,14 @@ struct SearchIndexTests {
         #expect((phraseScore ?? 0) > (tokenScore ?? 0))
     }
 
-    @Test func resultCapsAreEnforcedAcrossSections() async throws {
+    @Test(.timeLimit(.minutes(1))) func resultCapsAreEnforcedAcrossSections() async throws {
         let snapshot = await makeLoadedSnapshot()
         let index = SearchIndex()
         await index.configure(snapshot: snapshot)
 
         var results = await index.search(query: "the")
-        for _ in 0..<60 where results.isHadithIndexing {
-            try await Task.sleep(for: .milliseconds(100))
+        while results.isHadithIndexing {
+            await index.waitForHadithIndexProgress()
             results = await index.search(query: "the")
         }
 

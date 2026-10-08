@@ -65,44 +65,26 @@ struct CloudSyncModelTests {
         #expect(rs.createdAt <= .now)
     }
 
-    @Test func dualConfigContainerCreatesSuccessfully() throws {
-        let cloudConfig = ModelConfiguration(
-            "CloudSync",
-            schema: Schema([
-                QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                RecentSearch.self,
-            ]),
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        let localConfig = ModelConfiguration(
-            "LocalOnly",
-            schema: Schema([AudioDownload.self]),
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        let container = try ModelContainer(
-            for: QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                 ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                 RecentSearch.self, AudioDownload.self,
-            configurations: cloudConfig, localConfig
-        )
-        let stores = StoreContainer(modelContext: container.mainContext)
-        #expect(type(of: stores) == StoreContainer.self)
+    /// Re-downloadable audio must never sync to iCloud; user data must.
+    @Test func onlyUserDataSyncsToCloudKit() {
+        let synced = Set(ModelContainerFactory.syncedModels.map { ObjectIdentifier($0) })
+        let local = Set(ModelContainerFactory.localModels.map { ObjectIdentifier($0) })
+        #expect(local == [ObjectIdentifier(AudioDownload.self)])
+        #expect(synced.isDisjoint(with: local))
+        let expected: [any PersistentModel.Type] = [
+            QuranBookmark.self, HadithBookmark.self, DuaBookmark.self, ReadingPosition.self,
+            RecentHadith.self, RecentDua.self, RecentSearch.self,
+        ]
+        #expect(synced == Set(expected.map { ObjectIdentifier($0) }))
     }
 
-    @Test func cloudConfigIncludesAllSyncedModels() {
-        let schema = Schema([
-            QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-            ReadingPosition.self, RecentHadith.self, RecentDua.self,
-            RecentSearch.self,
-        ])
-        #expect(schema.entities.count == 7)
-    }
-
-    @Test func localConfigIncludesOnlyAudioDownload() {
-        let schema = Schema([AudioDownload.self])
-        #expect(schema.entities.count == 1)
+    @Test func factoryContainerRoundTripsBothStores() throws {
+        let container = try ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
+        let context = ModelContext(container)
+        context.insert(QuranBookmark(surahId: 1, ayahId: 1))
+        context.insert(AudioDownload(surahId: 1, localFileName: "a.mp3", reciterId: "alafasy"))
+        try context.save()
+        #expect(try context.fetchCount(FetchDescriptor<QuranBookmark>()) == 1)
+        #expect(try context.fetchCount(FetchDescriptor<AudioDownload>()) == 1)
     }
 }
