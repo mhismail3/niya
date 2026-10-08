@@ -21,7 +21,7 @@ final class RecentDuaStore {
         } else {
             modelContext.insert(RecentDua(categoryId: categoryId, duaId: duaId))
         }
-        trimToNewestFifty()
+        trimToRetainedCount()
         do { try modelContext.save() } catch { AppLogger.store.error("RecentDuaStore save failed: \(error)") }
     }
 
@@ -37,7 +37,8 @@ final class RecentDuaStore {
         var descriptor = FetchDescriptor<RecentDua>(
             sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]
         )
-        descriptor.fetchLimit = max(limit, 1)
+        // Read the whole retained window: synced duplicates are collapsed below.
+        descriptor.fetchLimit = Self.retainedCount
         let all = (try? modelContext.fetch(descriptor)) ?? []
         var seen = Set<String>()
         var result: [RecentDua] = []
@@ -56,9 +57,11 @@ final class RecentDuaStore {
         return Array(result.prefix(limit))
     }
 
-    private func trimToNewestFifty() {
+    static let retainedCount = 50
+
+    private func trimToRetainedCount() {
         let descriptor = FetchDescriptor<RecentDua>(sortBy: [SortDescriptor(\.visitedAt, order: .reverse)])
         let all = (try? modelContext.fetch(descriptor)) ?? []
-        for item in all.dropFirst(50) { modelContext.delete(item) }
+        for item in all.dropFirst(Self.retainedCount) { modelContext.delete(item) }
     }
 }

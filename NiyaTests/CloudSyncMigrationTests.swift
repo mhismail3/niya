@@ -76,4 +76,23 @@ final class CloudSyncMigrationTests {
 
         #expect(defaults.bool(forKey: key))
     }
+
+    /// Legacy "category:dua" numeric keys can arrive from older devices after this
+    /// device's first launch, so the migration runs every launch and must be idempotent.
+    @Test func duaMigrationConvertsLegacyKeysAndIsIdempotent() throws {
+        let store = try makeStore("CloudSync.store")
+        store.mainContext.insert(DuaBookmark(categoryId: "27", duaId: "75"))
+        store.mainContext.insert(RecentDua(categoryId: "27", duaId: "76"))
+        store.mainContext.insert(DuaBookmark(categoryId: "999", duaId: "1"))
+        try store.mainContext.save()
+
+        DuaDataMigration.migrateIfNeeded(container: store)
+        DuaDataMigration.migrateIfNeeded(container: store)
+
+        let context = ModelContext(store)
+        let bookmarkKeys = try context.fetch(FetchDescriptor<DuaBookmark>()).map(\.duaKey)
+        #expect(bookmarkKeys == ["words-of-remembrance-for-morning-and-evening:hisn-75"])
+        let recentKeys = try context.fetch(FetchDescriptor<RecentDua>()).map(\.duaKey)
+        #expect(recentKeys == ["words-of-remembrance-for-morning-and-evening:hisn-76"])
+    }
 }

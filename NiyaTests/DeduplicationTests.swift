@@ -3,195 +3,65 @@ import SwiftData
 import Testing
 @testable import Niya
 
+/// CloudKit can deliver the same record from several devices; stores must behave as if
+/// each key exists once, and bounded tables must stay bounded.
 @MainActor
-@Suite("Deduplication")
+@Suite("Deduplication and bounds")
 struct DeduplicationTests {
+    private let container: ModelContainer
+    private var context: ModelContext { container.mainContext }
 
-    // MARK: - QuranBookmark dedup
-
-    @Test func quranDedupKeepsEarliestCreatedAt() {
-        let older = QuranBookmark(surahId: 2, ayahId: 255, createdAt: Date(timeIntervalSince1970: 1000))
-        let newer = QuranBookmark(surahId: 2, ayahId: 255, createdAt: Date(timeIntervalSince1970: 2000))
-        let matches = [newer, older]
-        let keeper = matches.min(by: { $0.createdAt < $1.createdAt })
-        #expect(keeper === older)
+    init() throws {
+        container = try ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
     }
 
-    @Test func quranDedupOnUniqueKeysIsNoOp() {
-        let a = QuranBookmark(surahId: 1, ayahId: 1)
-        let b = QuranBookmark(surahId: 2, ayahId: 255)
-        let all = [a, b]
-        var seen = Set<String>()
-        var result: [QuranBookmark] = []
-        for item in all {
-            if seen.insert(item.verseKey).inserted {
-                result.append(item)
-            }
+    @Test func togglingOffRemovesEverySyncedDuplicate() throws {
+        for offset in 0..<3 {
+            context.insert(QuranBookmark(surahId: 2, ayahId: 255, createdAt: Date(timeIntervalSince1970: Double(offset))))
         }
-        #expect(result.count == 2)
+        try context.save()
+        let store = QuranBookmarkStore(modelContext: context)
+
+        store.toggle(surahId: 2, ayahId: 255)
+
+        #expect(!store.isBookmarked(surahId: 2, ayahId: 255))
+        #expect(try context.fetchCount(FetchDescriptor<QuranBookmark>()) == 0)
     }
 
-    // MARK: - HadithBookmark dedup
-
-    @Test func hadithDedupKeepsEarliestCreatedAt() {
-        let older = HadithBookmark(collectionId: "bukhari", hadithId: 1, createdAt: Date(timeIntervalSince1970: 1000))
-        let newer = HadithBookmark(collectionId: "bukhari", hadithId: 1, createdAt: Date(timeIntervalSince1970: 2000))
-        let matches = [newer, older]
-        let keeper = matches.min(by: { $0.createdAt < $1.createdAt })
-        #expect(keeper === older)
-    }
-
-    @Test func hadithDedupOnUniqueKeysIsNoOp() {
-        let a = HadithBookmark(collectionId: "bukhari", hadithId: 1)
-        let b = HadithBookmark(collectionId: "muslim", hadithId: 42)
-        let all = [a, b]
-        var seen = Set<String>()
-        var result: [HadithBookmark] = []
-        for item in all {
-            if seen.insert(item.hadithKey).inserted {
-                result.append(item)
-            }
+    @Test func readingPositionUsesNewestOfManyDuplicates() throws {
+        for (ayah, time) in [(10, 100.0), (40, 300.0), (20, 200.0)] {
+            context.insert(ReadingPosition(surahId: 18, lastAyahId: ayah, lastReadAt: Date(timeIntervalSince1970: time)))
         }
-        #expect(result.count == 2)
+        try context.save()
+
+        #expect(ReadingPositionStore(modelContext: context).position(for: 18)?.lastAyahId == 40)
     }
 
-    // MARK: - DuaBookmark dedup
-
-    @Test func duaDedupKeepsEarliestCreatedAt() {
-        let older = DuaBookmark(categoryId: "cat-1", duaId: "dua-1", createdAt: Date(timeIntervalSince1970: 1000))
-        let newer = DuaBookmark(categoryId: "cat-1", duaId: "dua-1", createdAt: Date(timeIntervalSince1970: 2000))
-        let matches = [newer, older]
-        let keeper = matches.min(by: { $0.createdAt < $1.createdAt })
-        #expect(keeper === older)
-    }
-
-    @Test func duaDedupOnUniqueKeysIsNoOp() {
-        let a = DuaBookmark(categoryId: "cat-1", duaId: "dua-1")
-        let b = DuaBookmark(categoryId: "cat-5", duaId: "dua-3")
-        let all = [a, b]
-        var seen = Set<String>()
-        var result: [DuaBookmark] = []
-        for item in all {
-            if seen.insert(item.duaKey).inserted {
-                result.append(item)
-            }
+    @Test func recentHadithsStayBoundedAndNewestFirst() {
+        let store = RecentHadithStore(modelContext: context)
+        for id in 1...(RecentHadithStore.retainedCount + 10) {
+            store.record(collectionId: "bukhari", hadithId: id, hasGrades: false)
         }
-        #expect(result.count == 2)
+
+        #expect((try? context.fetchCount(FetchDescriptor<RecentHadith>())) == RecentHadithStore.retainedCount)
+        #expect(store.recentHadiths(limit: 1).first?.hadithId == RecentHadithStore.retainedCount + 10)
     }
 
-    // MARK: - ReadingPosition dedup
-
-    @Test func positionDedupKeepsMostRecentReadAt() {
-        let older = ReadingPosition(surahId: 36, lastAyahId: 5, lastReadAt: Date(timeIntervalSince1970: 1000))
-        let newer = ReadingPosition(surahId: 36, lastAyahId: 12, lastReadAt: Date(timeIntervalSince1970: 2000))
-        let matches = [older, newer]
-        let keeper = matches.max(by: { $0.lastReadAt < $1.lastReadAt })
-        #expect(keeper === newer)
-        #expect(keeper?.lastAyahId == 12)
-    }
-
-    @Test func positionDedupOnUniqueSurahsIsNoOp() {
-        let a = ReadingPosition(surahId: 1, lastAyahId: 1)
-        let b = ReadingPosition(surahId: 36, lastAyahId: 5)
-        let all = [a, b]
-        var seen = Set<Int>()
-        var result: [ReadingPosition] = []
-        for item in all {
-            if seen.insert(item.surahId).inserted {
-                result.append(item)
-            }
+    @Test func recentDuasStayBounded() {
+        let store = RecentDuaStore(modelContext: context)
+        for id in 1...(RecentDuaStore.retainedCount + 5) {
+            store.record(categoryId: "morning", duaId: "dua-\(id)")
         }
-        #expect(result.count == 2)
+
+        #expect((try? context.fetchCount(FetchDescriptor<RecentDua>())) == RecentDuaStore.retainedCount)
     }
 
-    // MARK: - RecentHadith dedup
+    @Test func redownloadUpdatesTheExistingRecord() throws {
+        let store = DownloadStore(modelContext: context)
+        try store.save(surahId: 36, filename: "old.mp3", reciterId: "alafasy")
+        try store.save(surahId: 36, filename: "new.mp3", reciterId: "alafasy")
 
-    @Test func recentHadithDedupKeepsMostRecentVisitedAt() {
-        let older = RecentHadith(collectionId: "bukhari", hadithId: 1, hasGrades: true, visitedAt: Date(timeIntervalSince1970: 1000))
-        let newer = RecentHadith(collectionId: "bukhari", hadithId: 1, hasGrades: true, visitedAt: Date(timeIntervalSince1970: 2000))
-        let matches = [older, newer]
-        let keeper = matches.max(by: { $0.visitedAt < $1.visitedAt })
-        #expect(keeper === newer)
-    }
-
-    @Test func recentHadithDedupOnUniqueKeysIsNoOp() {
-        let a = RecentHadith(collectionId: "bukhari", hadithId: 1, hasGrades: true)
-        let b = RecentHadith(collectionId: "muslim", hadithId: 42, hasGrades: true)
-        let all = [a, b]
-        var seen = Set<String>()
-        var result: [RecentHadith] = []
-        for item in all {
-            if seen.insert(item.hadithKey).inserted {
-                result.append(item)
-            }
-        }
-        #expect(result.count == 2)
-    }
-
-    // MARK: - RecentDua dedup
-
-    @Test func recentDuaDedupKeepsMostRecentVisitedAt() {
-        let older = RecentDua(categoryId: "cat-1", duaId: "dua-1", visitedAt: Date(timeIntervalSince1970: 1000))
-        let newer = RecentDua(categoryId: "cat-1", duaId: "dua-1", visitedAt: Date(timeIntervalSince1970: 2000))
-        let matches = [older, newer]
-        let keeper = matches.max(by: { $0.visitedAt < $1.visitedAt })
-        #expect(keeper === newer)
-    }
-
-    @Test func recentDuaDedupOnUniqueKeysIsNoOp() {
-        let a = RecentDua(categoryId: "cat-1", duaId: "dua-1")
-        let b = RecentDua(categoryId: "cat-5", duaId: "dua-3")
-        let all = [a, b]
-        var seen = Set<String>()
-        var result: [RecentDua] = []
-        for item in all {
-            if seen.insert(item.duaKey).inserted {
-                result.append(item)
-            }
-        }
-        #expect(result.count == 2)
-    }
-
-    // MARK: - Edge cases
-
-    @Test func dedupOnEmptyArrayIsNoOp() {
-        let items: [QuranBookmark] = []
-        var seen = Set<String>()
-        var result: [QuranBookmark] = []
-        for item in items {
-            if seen.insert(item.verseKey).inserted {
-                result.append(item)
-            }
-        }
-        #expect(result.isEmpty)
-    }
-
-    @Test func dedupOnSingleItemIsNoOp() {
-        let bm = QuranBookmark(surahId: 1, ayahId: 1)
-        let items = [bm]
-        var seen = Set<String>()
-        var result: [QuranBookmark] = []
-        for item in items {
-            if seen.insert(item.verseKey).inserted {
-                result.append(item)
-            }
-        }
-        #expect(result.count == 1)
-    }
-
-    @Test func dedupOnThreeDuplicatesKeepsOne() {
-        let a = QuranBookmark(surahId: 2, ayahId: 255, createdAt: Date(timeIntervalSince1970: 3000))
-        let b = QuranBookmark(surahId: 2, ayahId: 255, createdAt: Date(timeIntervalSince1970: 1000))
-        let c = QuranBookmark(surahId: 2, ayahId: 255, createdAt: Date(timeIntervalSince1970: 2000))
-        let items = [a, b, c].sorted { $0.createdAt < $1.createdAt }
-        var seen = Set<String>()
-        var result: [QuranBookmark] = []
-        for item in items {
-            if seen.insert(item.verseKey).inserted {
-                result.append(item)
-            }
-        }
-        #expect(result.count == 1)
-        #expect(result.first === b)
+        let records = try store.allDownloads()
+        #expect(records.map(\.localFileName) == ["new.mp3"])
     }
 }

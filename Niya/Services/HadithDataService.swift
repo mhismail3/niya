@@ -128,9 +128,12 @@ final class HadithDataService {
         loadedCollections.count
     }
 
+    /// Memory-warning relief: drop every collection except the one used most recently,
+    /// which is the one on screen, so the visible list never empties underneath the user.
     func clearCache() {
-        loadedCollections.removeAll()
-        collectionAccess.removeAll()
+        let current = collectionAccess.max { $0.value < $1.value }?.key
+        loadedCollections = loadedCollections.filter { $0.key == current }
+        collectionAccess = collectionAccess.filter { $0.key == current }
     }
 
     private func touchCollection(_ id: String) {
