@@ -33,6 +33,11 @@ final class ReaderViewModel {
     }
 
     func load() {
+        // On re-appearance (tab switch, navigation pop, script change) resume where the
+        // reader is now, not where it was originally opened.
+        if !verses.isEmpty, hasUserScrolled {
+            initialAyahId = visibleAyahId
+        }
         verses = dataService.verses(for: surah.id, script: script)
         pages = dataService.pages(for: surah.id, script: script)
 

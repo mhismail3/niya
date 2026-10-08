@@ -17,7 +17,6 @@ struct WordView: View {
         VStack(spacing: 4) {
             GlyphBoundsText(
                 text: word.t,
-                fontName: QuranScript.hafs.fontName,
                 fontSize: arabicFontSize,
                 color: UIColor(arabicColor),
                 isBold: highlightState == .current
@@ -84,7 +83,6 @@ struct WordView: View {
 
 private struct GlyphBoundsText: UIViewRepresentable {
     let text: String
-    let fontName: String
     let fontSize: Double
     let color: UIColor
     let isBold: Bool
@@ -99,20 +97,27 @@ private struct GlyphBoundsText: UIViewRepresentable {
     }
 
     func updateUIView(_ label: GlyphBoundsLabel, context: Context) {
-        label.textColor = color
-        label.fontName = fontName
-        label.fontSize = CGFloat(fontSize)
-        label.isBold = isBold
-        label.text = text
+        label.configure(text: text, fontSize: CGFloat(fontSize), color: color, isBold: isBold)
     }
 }
 
 private class GlyphBoundsLabel: UIView {
-    var text: String = "" { didSet { rebuildLine() } }
-    var fontName: String = "" { didSet { rebuildLine() } }
-    var fontSize: CGFloat = 28 { didSet { rebuildLine() } }
-    var textColor: UIColor = .label { didSet { setNeedsDisplay() } }
-    var isBold: Bool = false { didSet { rebuildLine() } }
+    private var text = ""
+    private var fontSize: CGFloat = 28
+    private var textColor: UIColor = .label
+    private var isBold = false
+
+    /// Rebuilds the CoreText line once, and only when an input changed. The color is part
+    /// of the attributed string, so a color-only change must rebuild too.
+    func configure(text: String, fontSize: CGFloat, color: UIColor, isBold: Bool) {
+        guard line == nil || text != self.text || fontSize != self.fontSize
+                || isBold != self.isBold || !color.isEqual(textColor) else { return }
+        self.text = text
+        self.fontSize = fontSize
+        self.textColor = color
+        self.isBold = isBold
+        rebuildLine()
+    }
 
     private var line: CTLine?
     private var cachedGlyphBounds: CGRect = .zero
@@ -138,6 +143,9 @@ private class GlyphBoundsLabel: UIView {
             font = bold
         }
         let cleaned = TajweedService.cleanArabicText(text)
+        isAccessibilityElement = true
+        accessibilityLabel = cleaned
+        accessibilityLanguage = "ar"
         let attrs: [NSAttributedString.Key: Any] = [
             .font: font,
             .foregroundColor: textColor

@@ -53,7 +53,11 @@ extension UIFont {
     }
 
     static func niyaSerifFont(textStyle: UIFont.TextStyle, weight: UIFont.Weight) -> UIFont {
-        let pointSize = UIFont.preferredFont(forTextStyle: textStyle).pointSize
+        // Start from the default-size point size; `scaledFont` applies the user's text size once.
+        let pointSize = UIFont.preferredFont(
+            forTextStyle: textStyle,
+            compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
+        ).pointSize
         let baseFont = UIFont.systemFont(ofSize: pointSize, weight: weight)
         let descriptor = baseFont.fontDescriptor.withDesign(.serif) ?? baseFont.fontDescriptor
         return UIFontMetrics(forTextStyle: textStyle).scaledFont(for: UIFont(descriptor: descriptor, size: pointSize))

@@ -246,6 +246,10 @@ final class TajweedRenderView: UIView {
 
     var effectiveParagraphStyle: NSParagraphStyle { paragraphStyle }
 
+    /// Width used before layout assigns one: the hosting window (correct for iPad split
+    /// view and resizable windows), else a typical phone width.
+    var fallbackMeasureWidth: CGFloat { window?.bounds.width ?? 390 }
+
     func configure(
         preparedContent: TajweedPreparedContent,
         onTap: @escaping (TajweedTap?) -> Void
@@ -260,6 +264,10 @@ final class TajweedRenderView: UIView {
 
         text = preparedContent.text
         resolvedSegments = preparedContent.resolvedSegments
+        // Custom-drawn text is invisible to VoiceOver unless exposed explicitly.
+        isAccessibilityElement = true
+        accessibilityLabel = TajweedService.cleanArabicText(text)
+        accessibilityLanguage = "ar"
 
         baseLayout.apply(
             attributedString: preparedContent.baseAttributedString,
@@ -291,13 +299,13 @@ final class TajweedRenderView: UIView {
     }
 
     override var intrinsicContentSize: CGSize {
-        let width = bounds.width > 0 ? bounds.width : UIScreen.main.bounds.width
+        let width = bounds.width > 0 ? bounds.width : fallbackMeasureWidth
         let fitted = sizeThatFits(CGSize(width: width, height: tajweedMeasurementHeight))
         return CGSize(width: UIView.noIntrinsicMetric, height: fitted.height)
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        let width = size.width > 0 ? size.width : UIScreen.main.bounds.width
+        let width = size.width > 0 ? size.width : fallbackMeasureWidth
         updateContainerWidths(to: width)
         let usedRect = baseLayout.usedRect()
         return CGSize(width: width, height: max(ceil(usedRect.height), baseLayout.drawingHeight()))
@@ -531,7 +539,7 @@ struct TajweedTextView: UIViewRepresentable {
         uiView: TajweedRenderView,
         context: Context
     ) -> CGSize? {
-        let width = proposal.width ?? uiView.window?.screen.bounds.width ?? UIScreen.main.bounds.width
+        let width = proposal.width ?? uiView.fallbackMeasureWidth
         return uiView.sizeThatFits(CGSize(width: width, height: tajweedMeasurementHeight))
     }
 }

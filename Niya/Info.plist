@@ -59,7 +59,7 @@
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
-		<string>LaunchScreenBackground</string>
+		<string>niyaBackground</string>
 	</dict>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>

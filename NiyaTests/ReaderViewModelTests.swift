@@ -37,6 +37,21 @@ struct ReaderViewModelTests {
         #expect(vm.initialAyahId == 50)
     }
 
+    @Test func reappearingResumesCurrentPositionNotOpeningAyah() async {
+        let dataService = QuranDataService()
+        await dataService.load()
+        let vm = ReaderViewModel(surah: testSurah, dataService: dataService, script: .hafs, initialAyahId: 50)
+        vm.load()
+        #expect(vm.visibleAyahId == 50)
+
+        vm.isSettled = true
+        vm.updateVisibleAyah(120)
+        vm.load()
+
+        #expect(vm.visibleAyahId == 120)
+        #expect(vm.initialAyahId == 120)
+    }
+
     @Test func updateVisibleAyah() {
         let vm = makeVM()
         vm.isSettled = true

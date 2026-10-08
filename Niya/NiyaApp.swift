@@ -90,7 +90,7 @@ struct NiyaApp: App {
                 .environment(downloadManager)
                 .environment(\.stores, storeContainer)
                 .modelContainer(container)
-                .accentColor(Color.niyaTeal)
+                .tint(Color.niyaTeal)
                 .preferredColorScheme(appearanceMode == 0 ? nil : appearanceMode == 1 ? .light : .dark)
                 .task {
                     async let migrations: () = Self.runStartupMigrations(container: container)

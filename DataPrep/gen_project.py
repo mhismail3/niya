@@ -888,6 +888,7 @@ def section_pbx_group():
         (swift_file_ids["Niya/Services/PrayerTimeCalculator.swift"], "PrayerTimeCalculator.swift"),
         (swift_file_ids["Niya/Services/LocationService.swift"], "LocationService.swift"),
         (swift_file_ids["Niya/Services/PrayerNotificationScheduler.swift"], "PrayerNotificationScheduler.swift"),
+        (swift_file_ids["Niya/Services/AppUpdateReminderScheduler.swift"], "AppUpdateReminderScheduler.swift"),
         (swift_file_ids["Niya/Services/PrayerTimeService.swift"], "PrayerTimeService.swift"),
         (swift_file_ids["Niya/Services/WidgetDataWriter.swift"], "WidgetDataWriter.swift"),
         (swift_file_ids["Niya/Services/NetworkClient.swift"], "NetworkClient.swift"),
@@ -1427,7 +1428,6 @@ def section_embed_extensions_build_phase():
 def build_settings_widget_target(config):
     lines = [
         f"\t\t\t\tASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;",
-        f"\t\t\t\tASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;",
         f"\t\t\t\tCODE_SIGN_ENTITLEMENTS = NiyaWidgets/NiyaWidgets.entitlements;",
         "\t\t\t\tCODE_SIGN_STYLE = Automatic;",
         "\t\t\t\tDEVELOPMENT_TEAM = MYGKXH6TY4;",

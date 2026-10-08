@@ -10,7 +10,6 @@ struct QiblahCompassView: View {
     var showsBearingText = true
 
     @State private var continuousRotation: Double = 0
-    @State private var lastHeading: Double?
 
     private var arrowSize: CGFloat {
         compassSize * 0.108
@@ -53,11 +52,11 @@ struct QiblahCompassView: View {
         }
         .onAppear {
             continuousRotation = heading
-            lastHeading = nil
         }
-        .onChange(of: heading) { oldVal, newVal in
-            let prev = lastHeading ?? oldVal
-            var delta = newVal - prev
+        .onChange(of: heading) { _, newVal in
+            // Measure from the dial's displayed angle so a step clamped during poor accuracy
+            // is caught up on later updates instead of leaving a permanent offset.
+            var delta = (newVal - continuousRotation).truncatingRemainder(dividingBy: 360)
             if delta > 180 { delta -= 360 }
             if delta < -180 { delta += 360 }
 
@@ -67,7 +66,6 @@ struct QiblahCompassView: View {
             }
 
             continuousRotation += delta
-            lastHeading = newVal
         }
     }
 
