@@ -122,7 +122,7 @@ hold_device_lease() {
     [[ "$device_id" =~ ^[A-Za-z0-9-]+$ ]] || die "invalid device identifier: $device_id"
     mkdir -p "$DEVICE_LEASE_DIR"
     exec python3 -c '
-import fcntl, json, os, subprocess, sys, time
+import fcntl, json, os, signal, subprocess, sys, time
 lock, busy, root, argv = sys.argv[1], int(sys.argv[2]), sys.argv[3], sys.argv[4:]
 with open(lock, "a+") as handle:
     try:
@@ -136,10 +136,15 @@ with open(lock, "a+") as handle:
                "started_at_epoch_seconds": int(time.time()), "lock_path": lock, "uid": os.getuid(), "worktree": root}, handle)
     handle.flush()
     env = dict(os.environ, NIYA_IOS_DEVICE_LEASE_HELD="1")
-    try:
-        code = subprocess.call(argv, env=env)
-    except KeyboardInterrupt:
-        code = 130
+    child = subprocess.Popen(argv, env=env, start_new_session=True)
+    def forward(signum, _frame):
+        # Stop the whole command tree (xcodebuild/devicectl) before releasing the lease.
+        try: os.killpg(child.pid, signum)
+        except ProcessLookupError: pass
+    for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+        signal.signal(signum, forward)
+    code = child.wait()
+    if code < 0: code = 128 - code  # killed by a signal: shell convention 128+N
     handle.seek(0); handle.truncate()
 sys.exit(code)
 ' "$DEVICE_LEASE_DIR/ios-device-$device_id.lease.lock" "$LEASE_BUSY_EXIT" "$ROOT_DIR" "$0" "$@" --device-id "$device_id"
