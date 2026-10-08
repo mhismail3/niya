@@ -1,13 +1,34 @@
 import SwiftUI
 
 extension View {
-    /// Inherited by descendant scroll views, including presented sheets.
+    /// Sets the policy for descendant scroll views within this presentation.
     @ViewBuilder
     func softScrollEdges() -> some View {
         if #available(iOS 26.0, *) {
             self.scrollEdgeEffectStyle(.soft, for: .all)
         } else {
             self
+        }
+    }
+
+    /// Each sheet has its own presentation root; set the policy inside it.
+    func niyaSheet<SheetContent: View>(
+        isPresented: Binding<Bool>,
+        onDismiss: (() -> Void)? = nil,
+        @ViewBuilder content: @escaping () -> SheetContent
+    ) -> some View {
+        sheet(isPresented: isPresented, onDismiss: onDismiss) {
+            content().softScrollEdges()
+        }
+    }
+
+    func niyaSheet<Item: Identifiable, SheetContent: View>(
+        item: Binding<Item?>,
+        onDismiss: (() -> Void)? = nil,
+        @ViewBuilder content: @escaping (Item) -> SheetContent
+    ) -> some View {
+        sheet(item: item, onDismiss: onDismiss) { item in
+            content(item).softScrollEdges()
         }
     }
 

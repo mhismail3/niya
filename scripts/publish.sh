@@ -104,7 +104,8 @@ for filename, bundle in [("app-profile.plist", "com.niya.mobile"),
             "incorrect distribution bundle ID: " + bundle)
     require(not entitlements.get("get-task-allow") and "ProvisionedDevices" not in profile
             and not profile.get("ProvisionsAllDevices"), "not an App Store profile: " + bundle)
-    require(profile["ExpirationDate"] > datetime.datetime.utcnow(), "expired profile: " + bundle)
+    require(profile["ExpirationDate"].replace(tzinfo=datetime.timezone.utc)
+            > datetime.datetime.now(datetime.timezone.utc), "expired profile: " + bundle)
 
 entitlements = load("app-entitlements.plist")
 require("iCloud.com.niya.mobile" in entitlements.get("com.apple.developer.icloud-container-identifiers", []),

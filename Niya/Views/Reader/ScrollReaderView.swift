@@ -91,12 +91,12 @@ struct ScrollReaderView: View {
             }
         }
         .background(Color.niyaBackground)
-        .sheet(item: $tafsirAyahId) { item in
+        .niyaSheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: vm.surah.id, ayahId: item.value, surahName: vm.surah.transliteration)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(item: $etymologyWord) { item in
+        .niyaSheet(item: $etymologyWord) { item in
             WordEtymologySheet(surahId: item.surahId, ayahId: item.ayahId, word: item.word)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)

@@ -129,17 +129,17 @@ struct ReaderContainerView: View {
         .onChange(of: vm.mode) { _, mode in
             if mode == .page { autoScrollVM.stop() }
         }
-        .sheet(isPresented: $showBookmarks) {
+        .niyaSheet(isPresented: $showBookmarks) {
             BookmarksView()
                 .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(isPresented: $showSettings) {
+        .niyaSheet(isPresented: $showSettings) {
             SettingsView(readerVM: vm)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(isPresented: $showTajweedGuide) {
+        .niyaSheet(isPresented: $showTajweedGuide) {
             TajweedGuideView()
                 .presentationDetents([.large])
                 .presentationDragIndicator(.hidden)

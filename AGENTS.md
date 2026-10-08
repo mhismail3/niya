@@ -37,6 +37,8 @@ build work) and `.agents/skills/publish` (TestFlight/App Store, user-invoked).
 
 - Deployment target stays iOS 17; build against the newest SDK (iOS 26 and 27
   must both compile warning-free). Gate newer APIs with `#available`.
+- All app-owned scroll edges use `.soft` on iOS 26+. Present sheets with
+  `niyaSheet` so each presentation (including nested sheets) applies the policy.
 - Swift 6 language mode, complete concurrency checking. UI and services are
   `@MainActor`; heavy decoding runs off-main via `Task.detached`.
 - Quran Arabic is QPC Hafs encoded and drawn with the bundled KFGQPC font

@@ -34,17 +34,17 @@ struct NiyaToolbar: ViewModifier {
                     .accessibilityLabel("Settings")
                 }
             }
-            .sheet(isPresented: $showBookmarks) {
+            .niyaSheet(isPresented: $showBookmarks) {
                 BookmarksView()
                     .presentationDetents([.large])
                     .presentationDragIndicator(.hidden)
             }
-            .sheet(isPresented: $showSettings) {
+            .niyaSheet(isPresented: $showSettings) {
                 SettingsView()
                     .presentationDetents([.large])
                     .presentationDragIndicator(.hidden)
             }
-            .sheet(isPresented: $coord.showSalahSheet) {
+            .niyaSheet(isPresented: $coord.showSalahSheet) {
                 SalahSheetView()
             }
     }

@@ -85,12 +85,12 @@ struct MushaPageView: View {
         .environment(\.layoutDirection, .leftToRight)
         .onAppear { refreshBookmarkState() }
         .onChange(of: bookmarkSignature) { _, _ in refreshBookmarkState() }
-        .sheet(item: $tafsirAyahId) { item in
+        .niyaSheet(item: $tafsirAyahId) { item in
             TafsirSheetView(surahId: surahId, ayahId: item.value, surahName: surahName)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)
         }
-        .sheet(item: $etymologyWord) { item in
+        .niyaSheet(item: $etymologyWord) { item in
             WordEtymologySheet(surahId: item.surahId, ayahId: item.ayahId, word: item.word)
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)

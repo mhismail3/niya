@@ -50,10 +50,10 @@ struct SalahSheetView: View {
                         .accessibilityLabel("Set Location")
                     }
                 }
-                .sheet(isPresented: $showCalendar) {
+                .niyaSheet(isPresented: $showCalendar) {
                     IslamicCalendarView()
                 }
-                .sheet(isPresented: $showLocationPicker) {
+                .niyaSheet(isPresented: $showLocationPicker) {
                     LocationPickerView()
                         .presentationDetents([.medium, .large])
                         .presentationDragIndicator(.hidden)

@@ -102,13 +102,13 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .hiddenNavBarBackground()
-            .sheet(isPresented: $showGuide) {
+            .niyaSheet(isPresented: $showGuide) {
                 AppGuideView()
             }
-            .sheet(isPresented: $showReportIssue) {
+            .niyaSheet(isPresented: $showReportIssue) {
                 MailComposeView(isPresented: $showReportIssue)
             }
-            .sheet(isPresented: $showCredits) {
+            .niyaSheet(isPresented: $showCredits) {
                 CreditsView()
             }
         }
