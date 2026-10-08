@@ -6,7 +6,19 @@ SCHEME="Niya"
 PROJECT="$PROJECT_DIR/Niya.xcodeproj"
 ARCHIVE_PATH="$PROJECT_DIR/build/Niya.xcarchive"
 IPA_PATH="$PROJECT_DIR/build/Niya.ipa"
-APP_ID="${NIYA_APP_ID:?Set NIYA_APP_ID environment variable}"
+PREPARE_ONLY=0
+case "${1:-}" in
+  --prepare-only) PREPARE_ONLY=1 ;;
+  "") ;;
+  *) echo "Usage: scripts/publish.sh [--prepare-only]" >&2; exit 64 ;;
+esac
+if [ "$#" -gt 1 ]; then
+  echo "Usage: scripts/publish.sh [--prepare-only]" >&2
+  exit 64
+fi
+if [ "$PREPARE_ONLY" = "0" ]; then
+  APP_ID="${NIYA_APP_ID:?Set NIYA_APP_ID environment variable}"
+fi
 
 TEAM_ID="MYGKXH6TY4"
 DIST_IDENTITY="Apple Distribution: MOHSIN H ISMAIL ($TEAM_ID)"
@@ -147,6 +159,11 @@ if [ ! -f "$IPA_PATH" ]; then
   exit 1
 fi
 echo "    IPA: $IPA_PATH ($(du -h "$IPA_PATH" | cut -f1))"
+
+if [ "$PREPARE_ONLY" = "1" ]; then
+  echo "==> Prepared locally: $IPA_PATH (not uploaded)."
+  exit 0
+fi
 
 echo "==> Uploading to App Store Connect..."
 asc builds upload --app "$APP_ID" --ipa "$IPA_PATH"

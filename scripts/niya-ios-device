@@ -179,7 +179,8 @@ parse_common_args() {
 }
 
 device_uuid_from_line() {
-    sed -nE 's/.*([0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}).*/\1/p' | head -1
+    # Xcode 27 reports physical UDIDs; older versions report CoreDevice UUIDs.
+    sed -nE 's/.*([0-9A-F]{8}-[0-9A-F]{16}|[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}).*/\1/p' | head -1
 }
 
 available_physical_devices() {

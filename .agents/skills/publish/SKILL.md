@@ -33,6 +33,11 @@ Store in `NIYA_APP_ID` env var for the session.
 
 ### `/publish build` — Archive, Export, Upload
 
+To prepare a distribution archive and IPA locally **without uploading**, run
+`bash scripts/publish.sh --prepare-only`. This does not require `NIYA_APP_ID`
+or the `asc` CLI, but still requires distribution signing and App Store
+provisioning profiles. Never install this Release build on a device.
+
 1. Get the app ID (see above) and export as `NIYA_APP_ID`
 2. Run the publish script:
    ```bash

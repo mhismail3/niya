@@ -1,6 +1,16 @@
 import SwiftUI
 
 extension View {
+    /// Inherited by descendant scroll views, including presented sheets.
+    @ViewBuilder
+    func softScrollEdges() -> some View {
+        if #available(iOS 26.0, *) {
+            self.scrollEdgeEffectStyle(.soft, for: .all)
+        } else {
+            self
+        }
+    }
+
     @ViewBuilder
     func niyaGlass() -> some View {
         if #available(iOS 26.0, *) {

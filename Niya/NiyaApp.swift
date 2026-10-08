@@ -75,6 +75,7 @@ struct NiyaApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(storeIsPersistent: container.isPersistent)
+                .softScrollEdges()
                 .environment(dataService)
                 .environment(hadithDataService)
                 .environment(duaDataService)
