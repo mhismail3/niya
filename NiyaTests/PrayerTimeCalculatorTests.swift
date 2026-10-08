@@ -52,6 +52,20 @@ struct PrayerTimeCalculatorTests {
         }
     }
 
+    // MARK: - DST change day
+
+    /// 2024-03-10 is the US spring-forward day. Times must not depend on whether the
+    /// input instant is before (EST) or after (EDT) the 02:00 switch.
+    @Test func dstChangeDayIsIndependentOfInputInstant() {
+        let tz = TimeZone(identifier: "America/New_York")!
+        let loc = UserLocation(latitude: 40.7128, longitude: -74.0060, name: "New York", timezoneIdentifier: "America/New_York")
+        let midnight = PrayerTimeCalculator.calculate(date: makeDate(year: 2024, month: 3, day: 10, hour: 0, tz: tz), location: loc, method: .isna)
+        let noon = PrayerTimeCalculator.calculate(date: makeDate(year: 2024, month: 3, day: 10, hour: 12, tz: tz), location: loc, method: .isna)
+        #expect(midnight.times.map(\.time) == noon.times.map(\.time))
+        let maghrib = noon.times.first { $0.prayer == .maghrib }!.time
+        #expect(minutesDiff(maghrib, targetHour: 19, targetMinute: 0, tz: tz) <= 5, "Maghrib on DST day: \(hourMinute(from: maghrib, tz: tz))")
+    }
+
     // MARK: - New York, 2024-03-15, ISNA (verified against Aladhan API)
 
     @Test func newYorkISNA() {

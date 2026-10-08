@@ -22,7 +22,12 @@ struct PrayerTimeCalculator: Sendable {
         let jd = julianDay(year: year, month: month, day: day)
         let lat = location.latitude
         let lng = location.longitude
-        let tzOffset = Double(tz.secondsFromGMT(for: date)) / 3600.0
+        // Use the offset in effect at local noon of the target day, not at `date` itself:
+        // on DST-change days an instant before 02:00 carries the previous offset.
+        var tzCal = cal
+        tzCal.timeZone = tz
+        let noon = tzCal.date(from: DateComponents(year: year, month: month, day: day, hour: 12)) ?? date
+        let tzOffset = Double(tz.secondsFromGMT(for: noon)) / 3600.0
 
         var estimates: [Double] = [5, 6, 12, 13, 18, 18, 18]
 

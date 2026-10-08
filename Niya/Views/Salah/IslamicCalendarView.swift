@@ -336,9 +336,9 @@ struct IslamicCalendarView: View {
 
     private func gregorianRangeString(start: Date, end: Date) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
         let startStr = formatter.string(from: start)
-        formatter.dateFormat = "MMM d, yyyy"
+        formatter.setLocalizedDateFormatFromTemplate("yMMMd")
         let endStr = formatter.string(from: end)
         return "\(startStr) – \(endStr)"
     }
@@ -350,9 +350,7 @@ struct IslamicCalendarView: View {
     }
 
     private func formattedTime(_ date: Date, timeZone: TimeZone) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        formatter.timeZone = timeZone
+        let formatter = DateFormatter.prayerTime(timeZone: timeZone)
         return formatter.string(from: date)
     }
 }

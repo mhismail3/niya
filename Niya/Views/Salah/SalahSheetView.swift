@@ -410,9 +410,7 @@ private struct SalahPrayerCardGrid: View {
     }
 
     private func formattedTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        formatter.timeZone = timeZone
+        let formatter = DateFormatter.prayerTime(timeZone: timeZone)
         return formatter.string(from: date)
     }
 }

@@ -44,6 +44,25 @@ struct PrayerNotificationSchedulerTests {
         #expect(requests.count > 50)
     }
 
+    /// A manual location in another time zone must fire at the prayer instant, not at the
+    /// same wall-clock time in the device's zone.
+    @Test func triggersCarryLocationTimeZone() throws {
+        let tz = TimeZone(identifier: "America/New_York")!
+        let now = fixedDate(2026, 3, 1, 0, 0, tz: tz)
+        let request = try #require(PrayerNotificationScheduler.buildRequests(
+            location: nyc, method: .isna, asrFactor: 1, now: now
+        ).first)
+        let trigger = try #require(request.trigger as? UNCalendarNotificationTrigger)
+        #expect(trigger.dateComponents.timeZone == tz)
+        // A calendar in some other zone must still resolve the components to the prayer instant.
+        var deviceCalendar = Calendar(identifier: .gregorian)
+        deviceCalendar.timeZone = TimeZone(identifier: "Asia/Tokyo")!
+        let fire = try #require(deviceCalendar.date(from: trigger.dateComponents))
+        let expected = PrayerTimeCalculator.calculate(date: now, location: nyc, method: .isna)
+            .times.first { $0.prayer == .fajr }!.time
+        #expect(abs(fire.timeIntervalSince(expected)) < 60)
+    }
+
     @Test func allTriggersAreCalendarBased() {
         let tz = TimeZone(identifier: "America/New_York")!
         let now = fixedDate(2026, 3, 1, 0, 0, tz: tz)

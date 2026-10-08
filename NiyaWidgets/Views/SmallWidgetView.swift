@@ -71,9 +71,7 @@ struct SmallWidgetView: View {
     }
 
     private func formattedTime(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.dateFormat = "h:mm"
-        f.timeZone = TimeZone(identifier: entry.data.timezoneIdentifier) ?? .current
-        return f.string(from: date)
+        let timeZone = TimeZone(identifier: entry.data.timezoneIdentifier) ?? .current
+        return DateFormatter.prayerTime(timeZone: timeZone, includePeriod: false).string(from: date)
     }
 }

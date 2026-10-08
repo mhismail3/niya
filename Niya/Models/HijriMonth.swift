@@ -27,6 +27,8 @@ struct HijriMonth: Hashable, Sendable {
         comps.year = year
         comps.month = month
         comps.day = day
+        // Midday, so the same calendar day is selected in any location's time zone.
+        comps.hour = 12
         return Self.hijriCal.date(from: comps) ?? Date()
     }
 

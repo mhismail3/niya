@@ -76,9 +76,23 @@ struct DailyPrayerTimes: Sendable {
 
     func formattedTime(for prayer: PrayerName, timeZone: TimeZone) -> String? {
         guard let pt = times.first(where: { $0.prayer == prayer }) else { return nil }
+        return DateFormatter.prayerTime(timeZone: timeZone).string(from: pt.time)
+    }
+}
+
+extension DateFormatter {
+    /// A clock-time formatter that honors the user's 12/24-hour preference and locale.
+    /// `includePeriod: false` drops AM/PM for compact widget layouts.
+    static func prayerTime(timeZone: TimeZone, includePeriod: Bool = true, locale: Locale = .current) -> DateFormatter {
         let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
+        formatter.locale = locale
         formatter.timeZone = timeZone
-        return formatter.string(from: pt.time)
+        formatter.setLocalizedDateFormatFromTemplate("jmm")
+        if !includePeriod {
+            formatter.dateFormat = formatter.dateFormat
+                .replacingOccurrences(of: "a", with: "")
+                .trimmingCharacters(in: .whitespaces)
+        }
+        return formatter
     }
 }

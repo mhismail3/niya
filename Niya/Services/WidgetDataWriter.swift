@@ -21,9 +21,16 @@ struct WidgetDataWriter {
         return try? JSONDecoder().decode(WidgetPrayerData.self, from: data)
     }
 
+    /// Stale when too old, or when the stored "today" is no longer today at the stored
+    /// location (e.g. computed at 23:00 and read the next day).
     static func isStale(_ data: WidgetPrayerData, now: Date = Date()) -> Bool {
         let hours = now.timeIntervalSince(data.computedAt) / 3600
-        return hours > WidgetConstants.stalenessThresholdHours
+        if hours > WidgetConstants.stalenessThresholdHours { return true }
+        guard let first = data.prayers.first,
+              let timeZone = TimeZone(identifier: data.timezoneIdentifier) else { return false }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return !calendar.isDate(first.time, inSameDayAs: now)
     }
 
     func reloadTimelines() {

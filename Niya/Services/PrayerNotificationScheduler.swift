@@ -17,9 +17,7 @@ enum PrayerNotificationScheduler {
         var requests: [UNNotificationRequest] = []
         var cal = Calendar.current
         cal.timeZone = location.timeZone
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        formatter.timeZone = location.timeZone
+        let formatter = DateFormatter.prayerTime(timeZone: location.timeZone)
 
         for dayOffset in 0..<daysToSchedule {
             guard let date = cal.date(byAdding: .day, value: dayOffset, to: now) else { continue }
@@ -37,7 +35,9 @@ enum PrayerNotificationScheduler {
                 content.interruptionLevel = .timeSensitive
                 content.categoryIdentifier = "prayerTime"
 
-                let components = cal.dateComponents([.year, .month, .day, .hour, .minute], from: pt.time)
+                // Include the location's time zone so the trigger fires at the prayer instant even
+                // when the device is in a different time zone than a manually chosen location.
+                let components = cal.dateComponents([.timeZone, .year, .month, .day, .hour, .minute], from: pt.time)
                 let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
                 let dayTag = cal.dateComponents([.year, .month, .day], from: pt.time)
