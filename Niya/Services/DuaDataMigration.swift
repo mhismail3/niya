@@ -4,25 +4,21 @@ import SwiftData
 enum DuaDataMigration {
     private static let migrationKey = "duaV2MigrationCompleted"
 
-    static func migrateIfNeeded(container: ModelContainer) {
-        guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
-        defer { UserDefaults.standard.set(true, forKey: migrationKey) }
-
-        guard let map = loadMigrationMap() else { return }
-
-        let context = ModelContext(container)
-        migrateBookmarks(modelContext: context, map: map)
-        migrateRecents(modelContext: context, map: map)
+    /// Marks completion only after the map loads and the save succeeds, and never for the
+    /// in-memory fallback container; otherwise old-format keys would be stranded forever.
+    static func migrateIfNeeded(container: ModelContainer, defaults: UserDefaults = .standard) {
+        guard !defaults.bool(forKey: migrationKey), container.isPersistent else { return }
 
         do {
+            let map = try CompressedJSON.decode([String: String].self, resource: "dua_id_migration")
+            let context = ModelContext(container)
+            migrateBookmarks(modelContext: context, map: map)
+            migrateRecents(modelContext: context, map: map)
             try context.save()
+            defaults.set(true, forKey: migrationKey)
         } catch {
-            AppLogger.store.error("DuaDataMigration save failed: \(error)")
+            AppLogger.store.error("DuaDataMigration failed (will retry next launch): \(error)")
         }
-    }
-
-    private static func loadMigrationMap() -> [String: String]? {
-        try? CompressedJSON.decode([String: String].self, resource: "dua_id_migration")
     }
 
     private static func migrateBookmarks(modelContext: ModelContext, map: [String: String]) {

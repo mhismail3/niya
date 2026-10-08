@@ -5,14 +5,24 @@ import os
 enum CloudSyncMigration {
     private static let migrationKey = StorageKey.cloudSyncMigrationCompleted
 
-    static func migrateIfNeeded(container: ModelContainer) {
-        guard !UserDefaults.standard.bool(forKey: migrationKey) else { return }
+    static var defaultOldStoreURL: URL {
+        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("default.store")
+    }
 
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let oldStore = appSupport.appendingPathComponent("default.store")
+    /// Copies the pre-CloudKit local store into `container` once. The completion flag is
+    /// set only after a successful save, and never when `container` is the in-memory
+    /// fallback, so a failed or ephemeral attempt is retried on a later launch instead of
+    /// permanently hiding the user's bookmarks. Retrying is safe: stores deduplicate on read.
+    static func migrateIfNeeded(
+        container: ModelContainer,
+        oldStore: URL = defaultOldStoreURL,
+        defaults: UserDefaults = .standard
+    ) {
+        guard !defaults.bool(forKey: migrationKey), container.isPersistent else { return }
 
         guard FileManager.default.fileExists(atPath: oldStore.path) else {
-            UserDefaults.standard.set(true, forKey: migrationKey)
+            defaults.set(true, forKey: migrationKey)
             return
         }
 
@@ -78,16 +88,17 @@ enum CloudSyncMigration {
             counts["RecentSearch"] = rs.count
 
             try newContext.save()
-            UserDefaults.standard.set(true, forKey: migrationKey)
+            defaults.set(true, forKey: migrationKey)
             AppLogger.sync.info("Migration completed: \(counts)")
         } catch {
-            // Set the flag even on failure — retrying every launch would
-            // resurrect cleared data into the in-memory context each time.
-            // Users who upgrade from local-only lose nothing: the old
-            // default.store is still on disk and the new CloudSync store
-            // works independently.
-            UserDefaults.standard.set(true, forKey: migrationKey)
-            AppLogger.sync.error("Migration failed (will not retry): \(error)")
+            AppLogger.sync.error("Migration failed (will retry next launch): \(error)")
         }
+    }
+}
+
+extension ModelContainer {
+    /// False for the in-memory fallback `ModelContainerFactory` uses when no on-disk store opens.
+    var isPersistent: Bool {
+        configurations.allSatisfy { !$0.isStoredInMemoryOnly }
     }
 }
