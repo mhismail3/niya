@@ -103,6 +103,14 @@ final class LocationService: NSObject {
         }
     }
 
+    /// Fresh and good enough for prayer times, which shift by well under a minute per
+    /// 10 km (approximate-location users report 3–9 km accuracy).
+    nonisolated static func isUsableFix(_ location: CLLocation, now: Date) -> Bool {
+        location.horizontalAccuracy >= 0
+            && location.horizontalAccuracy <= 10_000
+            && abs(location.timestamp.timeIntervalSince(now)) <= 120
+    }
+
     nonisolated static func requiresPrayerRecalculation(from old: UserLocation?, to new: UserLocation) -> Bool {
         guard let old else { return true }
         guard old.timezoneIdentifier == new.timezoneIdentifier else { return true }
@@ -186,7 +194,9 @@ extension LocationService: @preconcurrency MKLocalSearchCompleterDelegate {
 
 extension LocationService: CLLocationManagerDelegate {
     nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let loc = locations.last else { return }
+        // Updates stop after the first accepted fix, so skip the cached/stale fix CoreLocation
+        // often delivers first and keep listening for a current one.
+        guard let loc = locations.last(where: { Self.isUsableFix($0, now: Date()) }) else { return }
         let coord = loc.coordinate
         Task { @MainActor in
             let shouldGeocode: Bool

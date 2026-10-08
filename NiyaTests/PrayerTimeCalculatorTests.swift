@@ -137,6 +137,16 @@ struct PrayerTimeCalculatorTests {
         #expect(minutesDiff(center.3, targetHour: 22, targetMinute: 25, tz: tz) <= 5)
     }
 
+    /// Mid-latitude summer keeps the angle times (no high-latitude limit below 48°).
+    @Test func newYorkSummerUsesAngleTimes() {
+        let tz = TimeZone(identifier: "America/New_York")!
+        let loc = UserLocation(latitude: 40.7128, longitude: -74.0060, name: "New York", timezoneIdentifier: "America/New_York")
+        let result = PrayerTimeCalculator.calculate(date: makeDate(year: 2024, month: 6, day: 21, tz: tz), location: loc, method: .isna)
+        // AlAdhan, 21 June 2024, method=2 (ISNA), angle based: Fajr 03:45, Isha 22:11.
+        #expect(minutesDiff(result.times.first { $0.prayer == .fajr }!.time, targetHour: 3, targetMinute: 45, tz: tz) <= 3)
+        #expect(minutesDiff(result.times.first { $0.prayer == .isha }!.time, targetHour: 22, targetMinute: 11, tz: tz) <= 3)
+    }
+
     @Test func tehranMaghribUsesItsAngle() {
         let tz = TimeZone(identifier: "Asia/Tehran")!
         let date = makeDate(year: 2024, month: 3, day: 15, tz: tz)

@@ -54,11 +54,15 @@ struct PrayerTimeCalculator: Sendable {
                 maghrib = sunset
             }
             let night = sunrise + 24 - sunset
+            // Above 48° the twilight angles drift toward midnight in summer, so cap Fajr and
+            // Isha at one seventh of the night (AlAdhan latitudeAdjustmentMethod=2, adhan's
+            // recommended rule). Below it the published angle times are used unchanged.
+            let limitsTwilight = abs(lat) > 48
 
             let fajrHA = hourAngleSafe(latitude: lat, declination: fajrPos.declination, angle: method.fajrAngle)
             let fajr: Double
             let angleFajr = fajrHA.map { transit - $0 / 15.0 } ?? sunrise - night / 7.0
-            fajr = max(angleFajr, sunrise - night / 7.0)
+            fajr = limitsTwilight ? max(angleFajr, sunrise - night / 7.0) : angleFajr
 
             let asrAngle = asrElevation(factor: Double(asrFactor), declination: asrPos.declination, latitude: lat)
             let asrHA = hourAngle(latitude: lat, declination: asrPos.declination, angle: -asrAngle)
@@ -70,7 +74,7 @@ struct PrayerTimeCalculator: Sendable {
             } else if let ishaAngleDeg = method.ishaAngle {
                 let ishaHA = hourAngleSafe(latitude: lat, declination: ishaPos.declination, angle: ishaAngleDeg)
                 let angleIsha = ishaHA.map { transit + $0 / 15.0 } ?? sunset + night / 7.0
-                isha = min(angleIsha, sunset + night / 7.0)
+                isha = limitsTwilight ? min(angleIsha, sunset + night / 7.0) : angleIsha
             } else {
                 isha = sunset + 1.5
             }

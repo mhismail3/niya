@@ -25,7 +25,12 @@ actor PrayerNotificationOwner {
             await operation()
         }
         current = task
-        await task.value
+        // Forward the caller's cancellation (e.g. background-task expiration) to the work.
+        await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
     }
 
     private static func replace(location: UserLocation, method: CalculationMethod, asrFactor: Int) async {

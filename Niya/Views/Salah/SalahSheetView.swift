@@ -19,6 +19,12 @@ struct SalahSheetView: View {
         return PrayerTimeCalculator.qiblahBearing(from: loc)
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    /// At large text sizes the compact medium-height layout cannot fit; let the sheet
+    /// grow to full height and scroll instead of clipping the notification toggle.
+    private var usesExpandedLayout: Bool { dynamicTypeSize >= .xxLarge }
+
     var body: some View {
         NavigationStack {
             sheetContent
@@ -79,7 +85,7 @@ struct SalahSheetView: View {
                 prayerTimeService.recalculate(location: loc)
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents(usesExpandedLayout ? [.large] : [.medium])
         .presentationDragIndicator(.hidden)
     }
 
@@ -104,7 +110,16 @@ struct SalahSheetView: View {
         }
     }
 
+    @ViewBuilder
     private func loadedContent(location loc: UserLocation, times: DailyPrayerTimes) -> some View {
+        if usesExpandedLayout {
+            ScrollView { prayerContent(location: loc, times: times) }
+        } else {
+            prayerContent(location: loc, times: times)
+        }
+    }
+
+    private func prayerContent(location loc: UserLocation, times: DailyPrayerTimes) -> some View {
         VStack(spacing: 12) {
             HStack(alignment: .center, spacing: 16) {
                 qiblahPanel
@@ -112,7 +127,7 @@ struct SalahSheetView: View {
                 nextPrayerSummary(location: loc)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
-            .frame(height: 188, alignment: .center)
+            .frame(minHeight: 188, maxHeight: usesExpandedLayout ? nil : 188, alignment: .center)
 
             SalahPrayerCardGrid(times: times, timeZone: loc.timeZone)
 
