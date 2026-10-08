@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct ContentView: View {
+    let storeIsPersistent: Bool
+    @State private var showingStoreWarning = false
+
+    init(storeIsPersistent: Bool = true) {
+        self.storeIsPersistent = storeIsPersistent
+    }
     @Environment(QuranDataService.self) private var dataService
     @Environment(HadithDataService.self) private var hadithDataService
     @Environment(DuaDataService.self) private var duaDataService
@@ -36,10 +42,16 @@ struct ContentView: View {
             .animation(.spring(duration: 0.35), value: autoScrollVM.isEnabled)
             .animation(.spring(duration: 0.35), value: audioPlayerVM.hasActiveSession)
             .task {
+                showingStoreWarning = !storeIsPersistent
                 async let d: () = dataService.load()
                 async let h: () = hadithDataService.load()
                 async let du: () = duaDataService.load()
                 _ = await (d, h, du)
+            }
+            .alert("Bookmarks Not Saved", isPresented: $showingStoreWarning) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("A storage problem prevented your bookmarks from being saved. They cannot be saved during this session.")
             }
     }
 

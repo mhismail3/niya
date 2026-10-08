@@ -73,7 +73,7 @@ struct NiyaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(storeIsPersistent: container.isPersistent)
                 .environment(dataService)
                 .environment(hadithDataService)
                 .environment(duaDataService)
@@ -138,6 +138,7 @@ struct NiyaApp: App {
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didReceiveMemoryWarningNotification)) { _ in
                     dataService.clearCache()
+                    hadithDataService.clearCache()
                     tafsirService.clearCache()
                     tajweedService.clearCache()
                     morphologyService.clearCache()

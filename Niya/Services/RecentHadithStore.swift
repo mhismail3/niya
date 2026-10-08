@@ -21,6 +21,7 @@ final class RecentHadithStore {
         } else {
             modelContext.insert(RecentHadith(collectionId: collectionId, hadithId: hadithId, hasGrades: hasGrades))
         }
+        trimToNewestFifty()
         do { try modelContext.save() } catch { AppLogger.store.error("RecentHadithStore save failed: \(error)") }
     }
 
@@ -33,9 +34,10 @@ final class RecentHadithStore {
     }
 
     func recentHadiths(limit: Int = 20) -> [RecentHadith] {
-        let descriptor = FetchDescriptor<RecentHadith>(
+        var descriptor = FetchDescriptor<RecentHadith>(
             sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]
         )
+        descriptor.fetchLimit = max(limit, 1)
         let all = (try? modelContext.fetch(descriptor)) ?? []
         var seen = Set<String>()
         var result: [RecentHadith] = []
@@ -52,5 +54,11 @@ final class RecentHadithStore {
             try? modelContext.save()
         }
         return Array(result.prefix(limit))
+    }
+
+    private func trimToNewestFifty() {
+        let descriptor = FetchDescriptor<RecentHadith>(sortBy: [SortDescriptor(\.visitedAt, order: .reverse)])
+        let all = (try? modelContext.fetch(descriptor)) ?? []
+        for item in all.dropFirst(50) { modelContext.delete(item) }
     }
 }

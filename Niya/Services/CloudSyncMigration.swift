@@ -95,10 +95,3 @@ enum CloudSyncMigration {
         }
     }
 }
-
-extension ModelContainer {
-    /// False for the in-memory fallback `ModelContainerFactory` uses when no on-disk store opens.
-    var isPersistent: Bool {
-        configurations.allSatisfy { !$0.isStoredInMemoryOnly }
-    }
-}

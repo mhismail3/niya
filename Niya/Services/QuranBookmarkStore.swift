@@ -54,10 +54,9 @@ final class QuranBookmarkStore {
 
     private func fetch(surahId: Int, ayahId: Int) -> QuranBookmark? {
         let targetKey = "\(surahId):\(ayahId)"
-        var descriptor = FetchDescriptor<QuranBookmark>(
+        let descriptor = FetchDescriptor<QuranBookmark>(
             predicate: #Predicate { $0.verseKey == targetKey }
         )
-        descriptor.fetchLimit = 2
         let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
         if matches.count > 1 {

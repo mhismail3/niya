@@ -8,6 +8,7 @@ struct WordEtymologySheet: View {
     @Environment(QuranDataService.self) private var dataService
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(\.dismiss) private var dismiss
+    @State private var isReady = false
 
     var body: some View {
         NavigationStack {
@@ -20,10 +21,17 @@ struct WordEtymologySheet: View {
                     }
                 }
         }
+        .task {
+            await morphologyService.preload()
+            isReady = true
+        }
     }
 
     @ViewBuilder
     private var content: some View {
+        if !isReady {
+            ProgressView()
+        } else {
         let morph = morphologyService.morphology(surahId: surahId, ayahId: ayahId, position: word.p)
         if let morph {
             ScrollView {
@@ -43,6 +51,7 @@ struct WordEtymologySheet: View {
             } description: {
                 Text("Morphology data is not available for this word.")
             }
+        }
         }
     }
 

@@ -17,6 +17,8 @@ final class RecentSearchStore {
             modelContext.delete(existing)
         }
         modelContext.insert(RecentSearch(query: trimmed))
+        let searches = fetchAll().filter { $0.surahId == nil }.sorted { $0.createdAt > $1.createdAt }
+        for old in searches.dropFirst(50) { modelContext.delete(old) }
         do { try modelContext.save() } catch { AppLogger.store.error("RecentSearchStore save failed: \(error)") }
     }
 

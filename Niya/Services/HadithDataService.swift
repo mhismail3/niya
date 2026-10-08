@@ -25,8 +25,21 @@ final class HadithDataService {
     ]
 
     private var loadedCollections: [String: HadithCollectionData] = [:]
+    private var collectionAccess: [String: UInt64] = [:]
+    private var accessCounter: UInt64 = 0
+    private var loadTask: Task<Void, Never>?
+    private var collectionTasks: [String: Task<Void, Never>] = [:]
 
     func load() async {
+        guard !isLoaded else { return }
+        if let loadTask { await loadTask.value; return }
+        let task = Task { await self.performLoad() }
+        loadTask = task
+        await task.value
+        loadTask = nil
+    }
+
+    private func performLoad() async {
         guard !isLoaded else { return }
         loadError = nil
         do {
@@ -45,6 +58,15 @@ final class HadithDataService {
     }
 
     func loadCollection(_ id: String) async {
+        guard loadedCollections[id] == nil else { touchCollection(id); return }
+        if let task = collectionTasks[id] { await task.value; return }
+        let task = Task { await self.performLoadCollection(id) }
+        collectionTasks[id] = task
+        await task.value
+        collectionTasks[id] = nil
+    }
+
+    private func performLoadCollection(_ id: String) async {
         guard loadedCollections[id] == nil else { return }
         loadError = nil
         do {
@@ -57,21 +79,26 @@ final class HadithDataService {
                 hadiths: decoded.hadiths,
                 hadithsByChapter: chapterIndex
             )
+            touchCollection(id)
+            evictCollections(excluding: id)
         } catch {
             loadError = "Failed to load \(id): \(error.localizedDescription)"
         }
     }
 
     func chapters(for collectionId: String) -> [HadithChapter] {
-        loadedCollections[collectionId]?.chapters ?? []
+        touchCollection(collectionId)
+        return loadedCollections[collectionId]?.chapters ?? []
     }
 
     func hadiths(for collectionId: String) -> [Hadith] {
-        loadedCollections[collectionId]?.hadiths ?? []
+        touchCollection(collectionId)
+        return loadedCollections[collectionId]?.hadiths ?? []
     }
 
     func hadiths(for collectionId: String, chapterId: Int) -> [Hadith] {
-        loadedCollections[collectionId]?.hadithsByChapter[chapterId] ?? []
+        touchCollection(collectionId)
+        return loadedCollections[collectionId]?.hadithsByChapter[chapterId] ?? []
     }
 
     func searchHadiths(query: String) -> [(collectionId: String, hadith: Hadith)] {
@@ -99,6 +126,25 @@ final class HadithDataService {
 
     var loadedCollectionCount: Int {
         loadedCollections.count
+    }
+
+    func clearCache() {
+        loadedCollections.removeAll()
+        collectionAccess.removeAll()
+    }
+
+    private func touchCollection(_ id: String) {
+        guard loadedCollections[id] != nil else { return }
+        accessCounter &+= 1
+        collectionAccess[id] = accessCounter
+    }
+
+    private func evictCollections(excluding current: String) {
+        while loadedCollections.count > 3 {
+            guard let oldest = collectionAccess.filter({ $0.key != current }).min(by: { $0.value < $1.value })?.key else { break }
+            loadedCollections.removeValue(forKey: oldest)
+            collectionAccess.removeValue(forKey: oldest)
+        }
     }
 }
 

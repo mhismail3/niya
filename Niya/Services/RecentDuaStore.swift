@@ -21,6 +21,7 @@ final class RecentDuaStore {
         } else {
             modelContext.insert(RecentDua(categoryId: categoryId, duaId: duaId))
         }
+        trimToNewestFifty()
         do { try modelContext.save() } catch { AppLogger.store.error("RecentDuaStore save failed: \(error)") }
     }
 
@@ -33,9 +34,10 @@ final class RecentDuaStore {
     }
 
     func recentDuas(limit: Int = 20) -> [RecentDua] {
-        let descriptor = FetchDescriptor<RecentDua>(
+        var descriptor = FetchDescriptor<RecentDua>(
             sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]
         )
+        descriptor.fetchLimit = max(limit, 1)
         let all = (try? modelContext.fetch(descriptor)) ?? []
         var seen = Set<String>()
         var result: [RecentDua] = []
@@ -52,5 +54,11 @@ final class RecentDuaStore {
             try? modelContext.save()
         }
         return Array(result.prefix(limit))
+    }
+
+    private func trimToNewestFifty() {
+        let descriptor = FetchDescriptor<RecentDua>(sortBy: [SortDescriptor(\.visitedAt, order: .reverse)])
+        let all = (try? modelContext.fetch(descriptor)) ?? []
+        for item in all.dropFirst(50) { modelContext.delete(item) }
     }
 }

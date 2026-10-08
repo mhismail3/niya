@@ -59,8 +59,23 @@ final class QuranDataService: QuranDataProviding {
     @ObservationIgnored private var cacheAccessCounter: UInt64 = 0
     @ObservationIgnored private var cacheAccessTimes: [String: UInt64] = [:]
     private let maxCacheEntries = 20
+    private var loadTask: Task<Void, Never>?
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
 
     func load() async {
+        guard !isLoaded else { return }
+        if let loadTask { await loadTask.value; return }
+        let task = Task { await self.performLoad() }
+        loadTask = task
+        await task.value
+        loadTask = nil
+    }
+
+    private func performLoad() async {
         guard !isLoaded else { return }
         do {
             async let surahsTask = loadSurahs()
@@ -77,11 +92,11 @@ final class QuranDataService: QuranDataProviding {
 
             // Migrate from old single-translation key
             let savedRaw: String
-            if let multi = UserDefaults.standard.string(forKey: StorageKey.selectedTranslations), !multi.isEmpty {
+            if let multi = defaults.string(forKey: StorageKey.selectedTranslations), !multi.isEmpty {
                 savedRaw = multi
-            } else if let single = UserDefaults.standard.string(forKey: StorageKey.selectedTranslationLegacy), !single.isEmpty {
+            } else if let single = defaults.string(forKey: StorageKey.selectedTranslationLegacy), !single.isEmpty {
                 savedRaw = single
-                UserDefaults.standard.removeObject(forKey: StorageKey.selectedTranslationLegacy)
+                defaults.removeObject(forKey: StorageKey.selectedTranslationLegacy)
             } else {
                 savedRaw = "en_sahih"
             }
@@ -92,7 +107,11 @@ final class QuranDataService: QuranDataProviding {
                 .filter { seenIds.insert($0).inserted }
             for id in savedIds {
                 if let edition = translations.first(where: { $0.id == id }) {
-                    try await addTranslation(edition)
+                    do {
+                        try await addTranslation(edition)
+                    } catch {
+                        AppLogger.data.error("Skipping unavailable translation \(edition.id): \(error)")
+                    }
                 }
             }
 
@@ -252,9 +271,9 @@ final class QuranDataService: QuranDataProviding {
             .map(\.id)
             .filter { seen.insert($0).inserted }
             .joined(separator: ",")
-        UserDefaults.standard.set(ids, forKey: StorageKey.selectedTranslations)
+        defaults.set(ids, forKey: StorageKey.selectedTranslations)
         let hasRTL = selectedTranslations.contains { $0.isRTL }
-        UserDefaults.standard.set(hasRTL, forKey: StorageKey.translationIsRTL)
+        defaults.set(hasRTL, forKey: StorageKey.translationIsRTL)
     }
 
     private func loadTranslationIndex() async throws -> [TranslationEdition] {

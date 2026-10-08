@@ -6,10 +6,15 @@ import Testing
 @Suite("QuranDataService", .serialized)
 struct QuranDataServiceTests {
 
-    private func makeLoadedService() async -> QuranDataService {
-        let service = QuranDataService()
+    private func makeLoadedService(defaults: UserDefaults = makeDefaults()) async -> QuranDataService {
+        let service = QuranDataService(defaults: defaults)
         await service.load()
         return service
+    }
+
+    private static func makeDefaults() -> UserDefaults {
+        let defaults = UserDefaults(suiteName: "NiyaTests.QuranDataService.\(UUID().uuidString)")!
+        return defaults
     }
 
     @Test func absoluteVerseNumber_alFatiha1() async {
@@ -82,9 +87,9 @@ struct QuranDataServiceTests {
     }
 
     @Test func load_deduplicatesSavedIds() async {
-        UserDefaults.standard.set("en_sahih,en_sahih,en_clearquran", forKey: StorageKey.selectedTranslations)
-        defer { UserDefaults.standard.removeObject(forKey: StorageKey.selectedTranslations) }
-        let service = await makeLoadedService()
+        let defaults = Self.makeDefaults()
+        defaults.set("en_sahih,en_sahih,en_clearquran", forKey: StorageKey.selectedTranslations)
+        let service = await makeLoadedService(defaults: defaults)
         #expect(service.selectedTranslations.count == 2)
         #expect(service.selectedTranslations.map(\.id) == ["en_sahih", "en_clearquran"])
     }

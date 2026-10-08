@@ -17,8 +17,18 @@ final class DuaDataService {
     private var duasByCategory: [String: [Dua]] = [:]
     private var categoryById: [String: DuaCategory] = [:]
     private var sectionById: [String: DuaSection] = [:]
+    private var loadTask: Task<Void, Never>?
 
     func load() async {
+        guard !isLoaded else { return }
+        if let loadTask { await loadTask.value; return }
+        let task = Task { await self.performLoad() }
+        loadTask = task
+        await task.value
+        loadTask = nil
+    }
+
+    private func performLoad() async {
         guard !isLoaded else { return }
         loadError = nil
         do {

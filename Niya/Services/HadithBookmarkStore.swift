@@ -54,10 +54,9 @@ final class HadithBookmarkStore {
 
     private func fetchByKey(collectionId: String, hadithId: Int) -> HadithBookmark? {
         let targetKey = "\(collectionId):\(hadithId)"
-        var descriptor = FetchDescriptor<HadithBookmark>(
+        let descriptor = FetchDescriptor<HadithBookmark>(
             predicate: #Predicate { $0.hadithKey == targetKey }
         )
-        descriptor.fetchLimit = 2
         let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
         if matches.count > 1 {

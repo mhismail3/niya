@@ -7,6 +7,14 @@ struct TafsirSheetView: View {
     @Environment(TafsirService.self) private var tafsirService
     @AppStorage(StorageKey.selectedTafsir) private var selectedEdition: TafsirEdition = .ibnKathir
     @Environment(\.dismiss) private var dismiss
+    @State private var isReady = false
+
+    init(surahId: Int, ayahId: Int, surahName: String, defaults: UserDefaults = .standard) {
+        self.surahId = surahId
+        self.ayahId = ayahId
+        self.surahName = surahName
+        _selectedEdition = AppStorage(wrappedValue: .ibnKathir, StorageKey.selectedTafsir, store: defaults)
+    }
 
     var body: some View {
         NavigationStack {
@@ -25,6 +33,11 @@ struct TafsirSheetView: View {
                     Button("Done") { dismiss() }
                 }
             }
+        }
+        .task(id: selectedEdition) {
+            isReady = false
+            await tafsirService.preload(edition: selectedEdition, surahId: surahId)
+            isReady = true
         }
     }
 
@@ -60,6 +73,9 @@ struct TafsirSheetView: View {
 
     @ViewBuilder
     private var contentArea: some View {
+        if !isReady {
+            ProgressView()
+        } else {
         let tafsirText = tafsirService.text(edition: selectedEdition, surahId: surahId, ayahId: ayahId)
         if let tafsirText, !tafsirText.isEmpty {
             let blocks = TafsirBlockParser.parse(tafsirText)
@@ -85,6 +101,7 @@ struct TafsirSheetView: View {
             } description: {
                 Text("No commentary available for this verse.")
             }
+        }
         }
     }
 

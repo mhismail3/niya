@@ -62,8 +62,10 @@ struct ModelContainerResilienceTests {
         #expect(downloads.count == 1)
     }
 
-    @Test func createReturnsWorkingContainer() {
-        let container = ModelContainerFactory.create()
+    @Test func createReturnsWorkingContainer() throws {
+        let container = try ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
         #expect(container.configurations.count == 2)
+        #expect(!container.isPersistent)
+        #expect(try container.mainContext.fetch(FetchDescriptor<QuranBookmark>()).isEmpty)
     }
 }

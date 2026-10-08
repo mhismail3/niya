@@ -1,6 +1,13 @@
 import SwiftData
 import Foundation
 
+extension ModelContainer {
+    /// False for the in-memory fallback used when no on-disk store opens.
+    var isPersistent: Bool {
+        configurations.allSatisfy { !$0.isStoredInMemoryOnly }
+    }
+}
+
 enum ModelContainerFactory {
     static let syncedModels: [any PersistentModel.Type] = [
         QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
@@ -10,11 +17,14 @@ enum ModelContainerFactory {
     static let localModels: [any PersistentModel.Type] = [AudioDownload.self]
 
     private static var cloudKitEnabled: Bool {
-        // CloudKit requires: (1) iCloud account signed in, (2) CloudKit entitlement
-        // in provisioning profile. CKContainer crashes asynchronously (SIGTRAP) if
-        // either is missing.
         guard FileManager.default.ubiquityIdentityToken != nil else { return false }
+        #if DEBUG
+        // Development signing can omit the capability; inspect its profile before CKContainer initialization.
         return hasCloudKitEntitlement()
+        #else
+        // Distribution profiles are stripped from store builds; the signed app entitlement is authoritative.
+        return true
+        #endif
     }
 
     private static func hasCloudKitEntitlement() -> Bool {
@@ -47,6 +57,7 @@ enum ModelContainerFactory {
         if let container = try? makeContainer(cloudKit: .none) {
             return container
         }
+        AppLogger.store.error("Persistent ModelContainer unavailable; using an in-memory store. Bookmarks cannot be saved this session.")
         do {
             return try makeContainer(cloudKit: .none, inMemory: true)
         } catch {

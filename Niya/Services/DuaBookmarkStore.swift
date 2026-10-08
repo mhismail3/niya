@@ -50,10 +50,9 @@ final class DuaBookmarkStore {
 
     private func fetchByKey(categoryId: String, duaId: String) -> DuaBookmark? {
         let targetKey = "\(categoryId):\(duaId)"
-        var descriptor = FetchDescriptor<DuaBookmark>(
+        let descriptor = FetchDescriptor<DuaBookmark>(
             predicate: #Predicate { $0.duaKey == targetKey }
         )
-        descriptor.fetchLimit = 2
         let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.min(by: { $0.createdAt < $1.createdAt }) else { return nil }
         if matches.count > 1 {

@@ -1,4 +1,3 @@
-import Foundation
 import SwiftData
 import Testing
 @testable import Niya
@@ -6,112 +5,27 @@ import Testing
 @MainActor
 @Suite("ResetDashboard")
 struct ResetDashboardTests {
+    @Test func clearDashboardRemovesPositionsAndRecentsButKeepsBookmarks() throws {
+        let container = try ModelContainerFactory.makeContainer(cloudKit: .none, inMemory: true)
+        let context = container.mainContext
+        let quranBookmark = QuranBookmark(surahId: 1, ayahId: 2)
+        let hadithBookmark = HadithBookmark(collectionId: "bukhari", hadithId: 1)
+        let duaBookmark = DuaBookmark(categoryId: "morning", duaId: "1")
+        context.insert(quranBookmark)
+        context.insert(hadithBookmark)
+        context.insert(duaBookmark)
+        context.insert(ReadingPosition(surahId: 1, lastAyahId: 2))
+        context.insert(RecentHadith(collectionId: "bukhari", hadithId: 1, hasGrades: true))
+        context.insert(RecentDua(categoryId: "morning", duaId: "1"))
+        try context.save()
 
-    // MARK: - ReadingPositionStore.clearAll()
+        StoreContainer(modelContext: context).clearDashboard()
 
-    @Test func clearAllRemovesAllPositions() {
-        let p1 = ReadingPosition(surahId: 1, lastAyahId: 5)
-        let p2 = ReadingPosition(surahId: 2, lastAyahId: 10)
-        let p3 = ReadingPosition(surahId: 3, lastAyahId: 15)
-        #expect(p1.surahId == 1)
-        #expect(p2.surahId == 2)
-        #expect(p3.surahId == 3)
-        // Verify clearAll can be called (signature compiles)
-        let descriptor = FetchDescriptor<ReadingPosition>()
-        #expect(type(of: descriptor) == FetchDescriptor<ReadingPosition>.self)
-    }
-
-    @Test func clearAllOnEmptyStoreIsNoOp() {
-        let positions: [ReadingPosition] = []
-        for item in positions {
-            _ = item // iteration over empty is safe
-        }
-        #expect(positions.isEmpty)
-    }
-
-    // MARK: - RecentHadithStore.clearAll()
-
-    @Test func clearAllRemovesAllRecentHadiths() {
-        let h1 = RecentHadith(collectionId: "bukhari", hadithId: 1, hasGrades: true)
-        let h2 = RecentHadith(collectionId: "muslim", hadithId: 42, hasGrades: true)
-        #expect(h1.hadithKey == "bukhari:1")
-        #expect(h2.hadithKey == "muslim:42")
-        let descriptor = FetchDescriptor<RecentHadith>()
-        #expect(type(of: descriptor) == FetchDescriptor<RecentHadith>.self)
-    }
-
-    @Test func clearAllHadithOnEmptyIsNoOp() {
-        let hadiths: [RecentHadith] = []
-        for item in hadiths {
-            _ = item
-        }
-        #expect(hadiths.isEmpty)
-    }
-
-    // MARK: - RecentDuaStore.clearAll()
-
-    @Test func clearAllRemovesAllRecentDuas() {
-        let d1 = RecentDua(categoryId: "cat-1", duaId: "dua-1")
-        let d2 = RecentDua(categoryId: "cat-5", duaId: "dua-3")
-        #expect(d1.duaKey == "cat-1:dua-1")
-        #expect(d2.duaKey == "cat-5:dua-3")
-        let descriptor = FetchDescriptor<RecentDua>()
-        #expect(type(of: descriptor) == FetchDescriptor<RecentDua>.self)
-    }
-
-    @Test func clearAllDuaOnEmptyIsNoOp() {
-        let duas: [RecentDua] = []
-        for item in duas {
-            _ = item
-        }
-        #expect(duas.isEmpty)
-    }
-
-    // MARK: - StoreContainer.clearDashboard()
-
-    @Test func clearDashboardCallsAllThreeStores() throws {
-        let cloudConfig = ModelConfiguration(
-            "CloudSync",
-            schema: Schema([
-                QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                RecentSearch.self,
-            ]),
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        let localConfig = ModelConfiguration(
-            "LocalOnly",
-            schema: Schema([AudioDownload.self]),
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        let container = try ModelContainer(
-            for: QuranBookmark.self, HadithBookmark.self, DuaBookmark.self,
-                 ReadingPosition.self, RecentHadith.self, RecentDua.self,
-                 RecentSearch.self, AudioDownload.self,
-            configurations: cloudConfig, localConfig
-        )
-        let stores = StoreContainer(modelContext: container.mainContext)
-        // Verify clearDashboard() compiles and is callable
-        stores.clearDashboard()
-    }
-
-    // MARK: - Edge: consistency after single-item delete
-
-    @Test func clearAllAfterSingleItemDeleteIsConsistent() {
-        // Simulates: delete one, then iterate remaining — no crash on empty
-        var positions = [
-            ReadingPosition(surahId: 1, lastAyahId: 1),
-            ReadingPosition(surahId: 2, lastAyahId: 2),
-        ]
-        positions.removeFirst()
-        #expect(positions.count == 1)
-        // clearAll-style iteration on remaining
-        for item in positions {
-            #expect(item.surahId == 2)
-        }
-        positions.removeAll()
-        #expect(positions.isEmpty)
+        #expect(try context.fetch(FetchDescriptor<ReadingPosition>()).isEmpty)
+        #expect(try context.fetch(FetchDescriptor<RecentHadith>()).isEmpty)
+        #expect(try context.fetch(FetchDescriptor<RecentDua>()).isEmpty)
+        #expect(try context.fetch(FetchDescriptor<QuranBookmark>()).count == 1)
+        #expect(try context.fetch(FetchDescriptor<HadithBookmark>()).count == 1)
+        #expect(try context.fetch(FetchDescriptor<DuaBookmark>()).count == 1)
     }
 }

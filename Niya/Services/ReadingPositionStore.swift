@@ -47,10 +47,9 @@ final class ReadingPositionStore {
 
     func position(for surahId: Int) -> ReadingPosition? {
         let targetSurah = surahId
-        var descriptor = FetchDescriptor<ReadingPosition>(
+        let descriptor = FetchDescriptor<ReadingPosition>(
             predicate: #Predicate { $0.surahId == targetSurah }
         )
-        descriptor.fetchLimit = 2
         let matches = (try? modelContext.fetch(descriptor)) ?? []
         guard let keeper = matches.max(by: { $0.lastReadAt < $1.lastReadAt }) else { return nil }
         if matches.count > 1 {

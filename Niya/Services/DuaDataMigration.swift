@@ -2,12 +2,9 @@ import Foundation
 import SwiftData
 
 enum DuaDataMigration {
-    private static let migrationKey = "duaV2MigrationCompleted"
-
-    /// Marks completion only after the map loads and the save succeeds, and never for the
-    /// in-memory fallback container; otherwise old-format keys would be stranded forever.
-    static func migrateIfNeeded(container: ModelContainer, defaults: UserDefaults = .standard) {
-        guard !defaults.bool(forKey: migrationKey), container.isPersistent else { return }
+    /// Re-run on every launch: older devices may sync legacy keys after this device's first import.
+    static func migrateIfNeeded(container: ModelContainer) {
+        guard container.isPersistent else { return }
 
         do {
             let map = try CompressedJSON.decode([String: String].self, resource: "dua_id_migration")
@@ -15,7 +12,6 @@ enum DuaDataMigration {
             migrateBookmarks(modelContext: context, map: map)
             migrateRecents(modelContext: context, map: map)
             try context.save()
-            defaults.set(true, forKey: migrationKey)
         } catch {
             AppLogger.store.error("DuaDataMigration failed (will retry next launch): \(error)")
         }

@@ -20,8 +20,18 @@ final class DownloadStore {
     }
 
     func save(surahId: Int, filename: String, reciterId: String = "alAfasy") throws {
-        let download = AudioDownload(surahId: surahId, localFileName: filename, reciterId: reciterId)
-        modelContext.insert(download)
+        let targetSurah = surahId
+        let targetReciter = reciterId
+        let descriptor = FetchDescriptor<AudioDownload>(
+            predicate: #Predicate { $0.surahId == targetSurah && $0.reciterId == targetReciter }
+        )
+        let matches = try modelContext.fetch(descriptor)
+        if let keeper = matches.first {
+            keeper.localFileName = filename
+            for duplicate in matches.dropFirst() { modelContext.delete(duplicate) }
+        } else {
+            modelContext.insert(AudioDownload(surahId: surahId, localFileName: filename, reciterId: reciterId))
+        }
         try modelContext.save()
     }
 
