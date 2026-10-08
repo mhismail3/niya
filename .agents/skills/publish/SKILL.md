@@ -35,8 +35,11 @@ Store in `NIYA_APP_ID` env var for the session.
 
 To prepare a distribution archive and IPA locally **without uploading**, run
 `bash scripts/publish.sh --prepare-only`. This does not require `NIYA_APP_ID`
-or the `asc` CLI, but still requires distribution signing and App Store
-provisioning profiles. Never install this Release build on a device.
+or the `asc` CLI. It uses Xcode's standard App Store Connect export with
+automatic signing and `destination=export`; Xcode may create or update
+distribution profiles, so obtain permission for provisioning changes first.
+It verifies App Store profiles for both targets and production CloudKit
+entitlements before upload. Never install this Release build on a device.
 
 1. Get the app ID (see above) and export as `NIYA_APP_ID`
 2. Run the publish script:
@@ -44,11 +47,12 @@ provisioning profiles. Never install this Release build on a device.
    NIYA_APP_ID=<id> bash scripts/publish.sh
    ```
 3. The script will:
-   - Clean the `build/` directory
+   - Retain prior artifacts and device DerivedData; create `build/publish-<run>/`
    - Archive the Niya scheme for iOS (Release config)
-   - Package the IPA manually to `build/Niya.ipa` (bypasses an Xcode 26 `exportArchive` bug)
-   - Upload the IPA via `asc builds upload`
-   - List recent builds to confirm
+   - Export locally using Xcode's App Store Connect distribution signing
+   - Verify app/widget App Store profiles and production CloudKit entitlements
+   - Keep the IPA in the run's `export/` directory and copy it to `build/Niya.ipa`
+   - Upload the IPA via `asc builds upload` unless `--prepare-only` is set
 
 **If archiving fails** with a signing error:
 - Verify the team ID and automatic signing in Xcode
