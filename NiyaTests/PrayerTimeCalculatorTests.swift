@@ -109,6 +109,44 @@ struct PrayerTimeCalculatorTests {
         }
     }
 
+    @Test func londonJuneHighLatitudeTimesAreBoundedAndContinuous() {
+        let tz = TimeZone(identifier: "Europe/London")!
+        let loc = UserLocation(latitude: 51.5074, longitude: -0.1278, name: "London", timezoneIdentifier: "Europe/London")
+        let dates = (20...22).map { makeDate(year: 2024, month: 6, day: $0, tz: tz) }
+        let days = dates.map { PrayerTimeCalculator.calculate(date: $0, location: loc, method: .mwl) }
+        let times = days.map { day in
+            (day.times.first { $0.prayer == .fajr }!.time, day.times.first { $0.prayer == .sunrise }!.time,
+             day.times.first { $0.prayer == .maghrib }!.time, day.times.first { $0.prayer == .isha }!.time)
+        }
+        for (fajr, sunrise, maghrib, isha) in times {
+            #expect(fajr < sunrise)
+            #expect(maghrib < isha)
+            #expect(sunrise.timeIntervalSince(fajr) < 2 * 3600)
+            #expect(isha.timeIntervalSince(maghrib) < 2 * 3600)
+        }
+        for index in 1..<times.count {
+            #expect(abs(times[index].0.timeIntervalSince(times[index - 1].0) - 24 * 3600) < 45 * 60)
+            #expect(abs(times[index].3.timeIntervalSince(times[index - 1].3) - 24 * 3600) < 45 * 60)
+        }
+        // AlAdhan, 21 June 2024, London, method=3 (MWL), latitudeAdjustmentMethod=2 (one
+        // seventh of the night): Fajr 03:40, Sunrise 04:43, Maghrib 21:22, Isha 22:25.
+        let center = times[1]
+        #expect(minutesDiff(center.0, targetHour: 3, targetMinute: 40, tz: tz) <= 5)
+        #expect(minutesDiff(center.1, targetHour: 4, targetMinute: 43, tz: tz) <= 5)
+        #expect(minutesDiff(center.2, targetHour: 21, targetMinute: 22, tz: tz) <= 5)
+        #expect(minutesDiff(center.3, targetHour: 22, targetMinute: 25, tz: tz) <= 5)
+    }
+
+    @Test func tehranMaghribUsesItsAngle() {
+        let tz = TimeZone(identifier: "Asia/Tehran")!
+        let date = makeDate(year: 2024, month: 3, day: 15, tz: tz)
+        let loc = UserLocation(latitude: 35.6892, longitude: 51.3890, name: "Tehran", timezoneIdentifier: "Asia/Tehran")
+        let result = PrayerTimeCalculator.calculate(date: date, location: loc, method: .tehran)
+        let maghrib = result.times.first { $0.prayer == .maghrib }!.time
+        // AlAdhan API method 7 for Tehran, 15 March 2024: sunset 18:12, Maghrib 18:30.
+        #expect(minutesDiff(maghrib, targetHour: 18, targetMinute: 30, tz: tz) <= 4)
+    }
+
     // MARK: - Sydney, southern hemisphere summer (verified against Aladhan API)
 
     @Test func sydneySouthernSummer() {

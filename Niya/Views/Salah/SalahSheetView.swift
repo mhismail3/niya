@@ -60,6 +60,9 @@ struct SalahSheetView: View {
         } message: {
             Text("Enable notifications in Settings to receive prayer time alerts.")
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+            locationService.updateHeadingOrientation()
+        }
         .onAppear {
             locationService.startHeading()
             locationService.startLocationUpdates()
@@ -69,9 +72,10 @@ struct SalahSheetView: View {
         }
         .onDisappear {
             locationService.stopHeading()
+            locationService.stopLocationUpdates()
         }
-        .onChange(of: locationService.effectiveLocation) { _, newLoc in
-            if let loc = newLoc {
+        .onChange(of: locationService.effectiveLocation) { oldLoc, newLoc in
+            if let loc = newLoc, LocationService.requiresPrayerRecalculation(from: oldLoc, to: loc) {
                 prayerTimeService.recalculate(location: loc)
             }
         }
@@ -246,7 +250,7 @@ struct SalahSheetView: View {
                         }
                     }
                 } else {
-                    PrayerNotificationScheduler.cancelAll()
+                    Task { await PrayerNotificationScheduler.cancelAll() }
                 }
             }
     }

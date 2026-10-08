@@ -64,6 +64,10 @@ final class LocationService: NSObject {
         manager.requestWhenInUseAuthorization()
     }
 
+    func stopLocationUpdates() {
+        manager.stopUpdatingLocation()
+    }
+
     func startLocationUpdates() {
         let status = manager.authorizationStatus
         if status == .authorizedWhenInUse || status == .authorizedAlways {
@@ -74,6 +78,7 @@ final class LocationService: NSObject {
     }
 
     func startHeading() {
+        updateHeadingOrientation()
         guard CLLocationManager.headingAvailable(), !isUpdatingHeading else { return }
         isUpdatingHeading = true
         manager.startUpdatingHeading()
@@ -84,6 +89,26 @@ final class LocationService: NSObject {
         isUpdatingHeading = false
         hasInitialHeading = false
         manager.stopUpdatingHeading()
+    }
+
+    func updateHeadingOrientation() {
+        let orientation = UIApplication.shared.connectedScenes
+            .compactMap { ($0 as? UIWindowScene)?.interfaceOrientation }
+            .first
+        switch orientation {
+        case .landscapeLeft: manager.headingOrientation = .landscapeLeft
+        case .landscapeRight: manager.headingOrientation = .landscapeRight
+        case .portraitUpsideDown: manager.headingOrientation = .portraitUpsideDown
+        default: manager.headingOrientation = .portrait
+        }
+    }
+
+    nonisolated static func requiresPrayerRecalculation(from old: UserLocation?, to new: UserLocation) -> Bool {
+        guard let old else { return true }
+        guard old.timezoneIdentifier == new.timezoneIdentifier else { return true }
+        let a = CLLocation(latitude: old.latitude, longitude: old.longitude)
+        let b = CLLocation(latitude: new.latitude, longitude: new.longitude)
+        return a.distance(from: b) > 1_000
     }
 
     // MARK: - Location Search
@@ -190,12 +215,14 @@ extension LocationService: CLLocationManagerDelegate {
             }
 
             let tzId = TimeZone.current.identifier
-            self.currentLocation = UserLocation(
+            let updated = UserLocation(
                 latitude: coord.latitude,
                 longitude: coord.longitude,
                 name: name,
                 timezoneIdentifier: tzId
             )
+            self.currentLocation = updated
+            self.manager.stopUpdatingLocation()
         }
     }
 

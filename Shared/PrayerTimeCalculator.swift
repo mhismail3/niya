@@ -46,15 +46,19 @@ struct PrayerTimeCalculator: Sendable {
             let sunrise = transit - sunriseHA / 15.0
             let sunsetHA = hourAngle(latitude: lat, declination: sunsetPos.declination, angle: 0.8333)
             let sunset = transit + sunsetHA / 15.0
+            let maghrib: Double
+            if let angle = method.maghribAngle {
+                let maghribHA = hourAngle(latitude: lat, declination: sunsetPos.declination, angle: angle)
+                maghrib = transit + maghribHA / 15.0
+            } else {
+                maghrib = sunset
+            }
+            let night = sunrise + 24 - sunset
 
             let fajrHA = hourAngleSafe(latitude: lat, declination: fajrPos.declination, angle: method.fajrAngle)
             let fajr: Double
-            if let ha = fajrHA {
-                fajr = transit - ha / 15.0
-            } else {
-                let night = sunrise + 24 - sunset
-                fajr = sunrise - night / 7.0
-            }
+            let angleFajr = fajrHA.map { transit - $0 / 15.0 } ?? sunrise - night / 7.0
+            fajr = max(angleFajr, sunrise - night / 7.0)
 
             let asrAngle = asrElevation(factor: Double(asrFactor), declination: asrPos.declination, latitude: lat)
             let asrHA = hourAngle(latitude: lat, declination: asrPos.declination, angle: -asrAngle)
@@ -65,17 +69,13 @@ struct PrayerTimeCalculator: Sendable {
                 isha = sunset + ishaMinutes / 60.0
             } else if let ishaAngleDeg = method.ishaAngle {
                 let ishaHA = hourAngleSafe(latitude: lat, declination: ishaPos.declination, angle: ishaAngleDeg)
-                if let ha = ishaHA {
-                    isha = transit + ha / 15.0
-                } else {
-                    let night = sunrise + 24 - sunset
-                    isha = sunset + night / 7.0
-                }
+                let angleIsha = ishaHA.map { transit + $0 / 15.0 } ?? sunset + night / 7.0
+                isha = min(angleIsha, sunset + night / 7.0)
             } else {
                 isha = sunset + 1.5
             }
 
-            estimates = [fajr, sunrise, transit, asr, sunset, sunset, isha]
+            estimates = [fajr, sunrise, transit, asr, sunset, maghrib, isha]
         }
 
         func makeDate(hours: Double) -> Date {
@@ -99,7 +99,7 @@ struct PrayerTimeCalculator: Sendable {
             PrayerTime(prayer: .sunrise, time: makeDate(hours: estimates[1])),
             PrayerTime(prayer: .dhuhr, time: makeDate(hours: estimates[2])),
             PrayerTime(prayer: .asr, time: makeDate(hours: estimates[3])),
-            PrayerTime(prayer: .maghrib, time: makeDate(hours: estimates[4])),
+            PrayerTime(prayer: .maghrib, time: makeDate(hours: estimates[5])),
             PrayerTime(prayer: .isha, time: makeDate(hours: estimates[6])),
         ]
 

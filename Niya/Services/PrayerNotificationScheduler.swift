@@ -49,29 +49,18 @@ enum PrayerNotificationScheduler {
     }
 
     static func scheduleAll(location: UserLocation, method: CalculationMethod, asrFactor: Int) async {
-        let center = UNUserNotificationCenter.current()
-        let settings = await center.notificationSettings()
-        guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
-            return
-        }
-        let pending = await center.pendingNotificationRequests()
-        let identifiers = prayerIdentifiers(from: pending.map(\.identifier))
-        center.removePendingNotificationRequests(withIdentifiers: identifiers)
-        let requests = buildRequests(location: location, method: method, asrFactor: asrFactor)
-        for request in requests {
-            do {
-                try await center.add(request)
-            } catch {
-                AppLogger.notification.error("Failed to schedule \(request.identifier): \(error.localizedDescription)")
-            }
-        }
+        await PrayerNotificationOwner.shared.schedule(location: location, method: method, asrFactor: asrFactor)
     }
 
-    static func cancelAll() {
-        UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-            let identifiers = prayerIdentifiers(from: requests.map(\.identifier))
-            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: identifiers)
-        }
+    static func cancelAll() async {
+        await PrayerNotificationOwner.shared.cancel()
+    }
+
+    /// Pending prayer requests that the new schedule no longer contains (other apps' and
+    /// non-prayer identifiers are never touched).
+    static func staleIdentifiers(pending: [String], desired: [String]) -> [String] {
+        let desiredSet = Set(desired)
+        return prayerIdentifiers(from: pending).filter { !desiredSet.contains($0) }
     }
 
     static func prayerIdentifiers(from identifiers: [String]) -> [String] {

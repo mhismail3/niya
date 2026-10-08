@@ -253,9 +253,9 @@ private extension CreditsView {
 
         CreditSection(
             "Prayer Times",
-            footer: "Prayer times are computed by the Aladhan API using the calculation method selected in Settings.",
+            footer: "Prayer times are calculated on your device using the method selected in Settings; no location leaves your phone. The calculation is verified against the Aladhan reference implementation.",
             [
-                CreditEntry("Aladhan Prayer Times API", "Islamic Network — prayer time service", url: "https://aladhan.com/prayer-times-api"),
+                CreditEntry("Aladhan Prayer Times API", "Islamic Network — reference prayer times used to verify calculations", url: "https://aladhan.com/prayer-times-api"),
             ]
         ),
 

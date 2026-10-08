@@ -33,6 +33,27 @@ struct UserLocationTests {
         #expect(loc.timeZone.identifier == "Asia/Tokyo")
     }
 
+    @Test func prayerRecalculationIgnoresRenamesAndSmallMoves() {
+        let original = UserLocation(latitude: 40.7128, longitude: -74.0060, name: "New York", timezoneIdentifier: "America/New_York")
+        let renamed = UserLocation(latitude: 40.7128, longitude: -74.0060, name: "Manhattan, NY", timezoneIdentifier: "America/New_York")
+        let nearby = UserLocation(latitude: 40.7180, longitude: -74.0060, name: "Nearby", timezoneIdentifier: "America/New_York")
+        let moved = UserLocation(latitude: 40.73, longitude: -74.0060, name: "Moved", timezoneIdentifier: "America/New_York")
+        let otherZone = UserLocation(latitude: 40.7128, longitude: -74.0060, name: "Same", timezoneIdentifier: "Asia/Tokyo")
+
+        #expect(!LocationService.requiresPrayerRecalculation(from: original, to: renamed))
+        #expect(!LocationService.requiresPrayerRecalculation(from: original, to: nearby))
+        #expect(LocationService.requiresPrayerRecalculation(from: original, to: moved))
+        #expect(LocationService.requiresPrayerRecalculation(from: original, to: otherZone))
+    }
+
+    @Test func prayerDayChangeUsesLocationTimeZone() {
+        let formatter = ISO8601DateFormatter()
+        let previous = formatter.date(from: "2024-01-01T07:30:00Z")!
+        let now = formatter.date(from: "2024-01-01T08:30:00Z")!
+        #expect(!PrayerTimeService.isDifferentLocalDay(previous, now: now, timeZone: TimeZone(identifier: "Asia/Tokyo")!))
+        #expect(PrayerTimeService.isDifferentLocalDay(previous, now: now, timeZone: TimeZone(identifier: "America/Los_Angeles")!))
+    }
+
     @Test func invalidTimezoneFallsBackToCurrent() {
         let loc = UserLocation(latitude: 0, longitude: 0, name: "Nowhere", timezoneIdentifier: "Invalid/Zone")
         #expect(loc.timeZone == .current)

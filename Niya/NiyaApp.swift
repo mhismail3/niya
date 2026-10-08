@@ -290,6 +290,7 @@ enum PrayerRefreshBackgroundTask {
         let completion = PrayerRefreshTaskCompletion(task: task)
         task.expirationHandler = {
             AppLogger.notification.warning("Prayer refresh background task expired before completion")
+            completion.cancelWork()
             completion.finish(success: false)
         }
 
@@ -300,14 +301,15 @@ enum PrayerRefreshBackgroundTask {
             return
         }
 
-        Task {
+        let work = Task {
             await PrayerNotificationScheduler.scheduleAll(
                 location: configuration.location,
                 method: configuration.method,
                 asrFactor: configuration.asrFactor
             )
-            completion.finish(success: true)
+            completion.finish(success: !Task.isCancelled)
         }
+        completion.setWork(work)
     }
 }
 
@@ -315,9 +317,22 @@ private final class PrayerRefreshTaskCompletion: @unchecked Sendable {
     private let lock = NSLock()
     private let task: BGTask
     private var hasCompleted = false
+    private var work: Task<Void, Never>?
 
     init(task: BGTask) {
         self.task = task
+    }
+
+    func setWork(_ work: Task<Void, Never>) {
+        lock.lock()
+        defer { lock.unlock() }
+        if hasCompleted { work.cancel() } else { self.work = work }
+    }
+
+    func cancelWork() {
+        lock.lock()
+        defer { lock.unlock() }
+        work?.cancel()
     }
 
     func finish(success: Bool) {

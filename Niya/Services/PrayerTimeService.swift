@@ -64,22 +64,26 @@ final class PrayerTimeService {
         WidgetDataWriter.shared.write(today: result, tomorrow: tomorrowTimes, location: location, asrFactor: asrJuristic)
         WidgetDataWriter.shared.reloadTimelines()
 
-        if notificationsEnabled {
-            Task {
-                await PrayerNotificationScheduler.scheduleAll(location: location, method: calculationMethod, asrFactor: asrJuristic)
-            }
-        }
-
         Task {
-            await validateAgainstAPI(location: location, localTimes: result)
+            if notificationsEnabled {
+                await PrayerNotificationScheduler.scheduleAll(location: location, method: calculationMethod, asrFactor: asrJuristic)
+            } else {
+                await PrayerNotificationScheduler.cancelAll()
+            }
         }
     }
 
     func checkDayChange(location: UserLocation?) {
         guard let loc = location else { return }
-        if todayTimes == nil || !Calendar.current.isDateInToday(lastCalculationDate ?? .distantPast) {
+        if todayTimes == nil || Self.isDifferentLocalDay(lastCalculationDate ?? .distantPast, now: Date(), timeZone: loc.timeZone) {
             recalculate(location: loc)
         }
+    }
+
+    nonisolated static func isDifferentLocalDay(_ previous: Date, now: Date, timeZone: TimeZone) -> Bool {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return !calendar.isDate(previous, inSameDayAs: now)
     }
 
     func startCountdown() {
@@ -102,47 +106,6 @@ final class PrayerTimeService {
     func stopCountdown() {
         countdownTimer?.invalidate()
         countdownTimer = nil
-    }
-
-    // MARK: - API Validation
-
-    private func validateAgainstAPI(location: UserLocation, localTimes: DailyPrayerTimes) async {
-        guard let methodId = localTimes.method.aladhanMethodId else { return }
-        let ts = Int(localTimes.date.timeIntervalSince1970)
-        let urlString = "https://api.aladhan.com/v1/timings/\(ts)?latitude=\(location.latitude)&longitude=\(location.longitude)&method=\(methodId)"
-        guard let url = URL(string: urlString) else { return }
-
-        do {
-            let (data, _) = try await NetworkClient.shared.fetchRaw(from: url)
-            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-            guard let dataObj = json?["data"] as? [String: Any],
-                  let timings = dataObj["timings"] as? [String: String] else { return }
-
-            let formatter = DateFormatter()
-            formatter.dateFormat = "HH:mm"
-            formatter.timeZone = location.timeZone
-
-            let mapping: [(PrayerName, String)] = [
-                (.fajr, "Fajr"), (.sunrise, "Sunrise"), (.dhuhr, "Dhuhr"),
-                (.asr, "Asr"), (.maghrib, "Maghrib"), (.isha, "Isha")
-            ]
-
-            for (prayer, key) in mapping {
-                guard let apiStr = timings[key],
-                      let localPT = localTimes.times.first(where: { $0.prayer == prayer }) else { continue }
-
-                let localStr = formatter.string(from: localPT.time)
-                if let apiDate = formatter.date(from: String(apiStr.prefix(5))),
-                   let localDate = formatter.date(from: localStr) {
-                    let diff = abs(apiDate.timeIntervalSince(localDate)) / 60
-                    if diff > 2 {
-                        AppLogger.network.warning("Prayer time discrepancy for \(prayer.displayName): local=\(localStr) api=\(apiStr) diff=\(Int(diff))min")
-                    }
-                }
-            }
-        } catch {
-            // Network/parsing errors are expected — validation is best-effort
-        }
     }
 
     var formattedCountdown: String {

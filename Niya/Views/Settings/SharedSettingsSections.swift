@@ -294,7 +294,7 @@ struct PrayerTimesSettingsSection: View {
                             }
                         }
                     } else {
-                        PrayerNotificationScheduler.cancelAll()
+                        Task { await PrayerNotificationScheduler.cancelAll() }
                     }
                 }
                 .alert("Notifications Disabled", isPresented: $showNotificationDeniedAlert) {

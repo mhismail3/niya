@@ -74,6 +74,14 @@ enum CalculationMethod: String, CaseIterable, Codable, Identifiable, Sendable {
         }
     }
 
+    var maghribAngle: Double? {
+        switch self {
+        case .tehran: return 4.5
+        case .jafari: return 4.0
+        default: return nil
+        }
+    }
+
     var ishaAngle: Double? {
         switch self {
         case .mwl: return 17.0
@@ -108,24 +116,4 @@ enum CalculationMethod: String, CaseIterable, Codable, Identifiable, Sendable {
         }
     }
 
-    var aladhanMethodId: Int? {
-        switch self {
-        case .mwl: return 3
-        case .isna: return 2
-        case .egypt: return 5
-        case .makkah: return 4
-        case .karachi: return 1
-        case .tehran: return 7
-        case .jafari: return 0
-        case .gulf: return 8
-        case .kuwait: return 9
-        case .qatar: return 10
-        case .singapore: return 11
-        case .france: return 12
-        case .turkey: return 13
-        case .russia: return 14
-        case .moonsighting: return 15
-        default: return nil
-        }
-    }
 }

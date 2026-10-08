@@ -95,6 +95,14 @@ struct PrayerNotificationSchedulerTests {
         #expect(ids.count == requests.count)
     }
 
+    @Test func onlyStalePrayerRequestsAreRemoved() {
+        let stale = PrayerNotificationScheduler.staleIdentifiers(
+            pending: ["prayer_fajr_2026_3_1", "prayer_isha_2026_3_2", "app_update_reminder"],
+            desired: ["prayer_isha_2026_3_2", "prayer_fajr_2026_3_3"]
+        )
+        #expect(stale == ["prayer_fajr_2026_3_1"])
+    }
+
     @Test func pendingIdentifiersFilterOnlyPrayerRequests() {
         let identifiers = [
             "prayer_fajr_2026_3_1",
