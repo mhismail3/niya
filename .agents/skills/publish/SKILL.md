@@ -17,7 +17,7 @@ Manage the full TestFlight lifecycle for Niya: build, upload, version management
 - **Scheme**: `Niya`
 - **Project**: `Niya.xcodeproj`
 - **Build output**: `build/` (gitignored)
-- **pbxproj**: `Niya.xcodeproj/project.pbxproj`
+- **Project spec**: `project.yml` (the `.xcodeproj` is generated)
 
 ## Getting the App ID
 
@@ -90,24 +90,16 @@ Ask the user for tester email addresses if not provided.
 
 ### `/publish bump` — Increment Version Numbers
 
-Read the current versions from the pbxproj:
+Versions live only in `project.yml` (`settings.base`), inherited by every target:
 
 ```bash
-grep -E 'CURRENT_PROJECT_VERSION|MARKETING_VERSION' Niya.xcodeproj/project.pbxproj
+grep -E 'CURRENT_PROJECT_VERSION|MARKETING_VERSION' project.yml
 ```
 
-**Bump build number** (most common — do this before each upload):
-- Find all `CURRENT_PROJECT_VERSION = N;` lines in the pbxproj
-- Increment N by 1
-- Use the Edit tool to replace all occurrences
+- **Build number** (before each upload): increment `CURRENT_PROJECT_VERSION`.
+- **Marketing version** (e.g. 1.0 → 1.1): ask the user, then set `MARKETING_VERSION`.
 
-**Bump marketing version** (for new releases like 1.0 → 1.1):
-- Ask the user for the new version string
-- Find all `MARKETING_VERSION = X.Y;` lines in the pbxproj
-- Replace with the new version
-- Also update `gen_project.py` if it hardcodes the version
-
-Always bump every target (app, widget extension, and tests; Debug + Release) — there are 6 occurrences of each. Keep `DataPrep/gen_project.py` in sync, since it hardcodes `CURRENT_PROJECT_VERSION`.
+`scripts/publish.sh` regenerates the project, so no other file needs editing.
 
 ### `/publish submit` — Submit for External Testing or App Store Review
 

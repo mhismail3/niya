@@ -3,9 +3,12 @@ name: niya-ios
 description: Build, test, install, launch, or stop Niya on the iOS simulator or a physical iPhone/iPad. Use for local device builds, simulator test runs, toolchain (Xcode/iOS SDK) selection, and device install troubleshooting. Not for TestFlight/App Store delivery (use the publish skill).
 ---
 
-Run from the repository root. `Niya.xcodeproj` is checked in and maintained by
-`DataPrep/gen_project.py`; register new source/test files there and regenerate
-rather than hand-editing the project.
+Run from the repository root. `project.yml` is the source of truth;
+`Niya.xcodeproj` is generated, disposable, and gitignored. Run
+`scripts/generate-project` after cloning and after editing `project.yml` (the
+device helper and publish script do this themselves). Target membership follows
+directories, so new files need no registration: `Niya/` app, `NiyaWidgets/`
+widget, `Shared/` both, `NiyaTests/` tests.
 
 ## Routing
 
@@ -54,6 +57,7 @@ The deployment target is iOS 17; build against the newest SDK (iOS 27 via
 `Xcode-beta.app` while it is installed) and keep the iOS 26 SDK build green too.
 
 ```bash
+scripts/generate-project
 DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
 xcodebuild test -project Niya.xcodeproj -scheme Niya \
   -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' \

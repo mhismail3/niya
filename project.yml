@@ -1,0 +1,148 @@
+# Source of truth for Niya.xcodeproj. Regenerate with scripts/generate-project;
+# never hand-edit the generated project (it is gitignored).
+#
+# Target membership follows directories:
+#   Niya/        app only          NiyaWidgets/  widget extension only
+#   Shared/      app AND widget    NiyaTests/    unit tests (hosted by the app)
+name: Niya
+options:
+  bundleIdPrefix: com.niya
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "2660"
+  developmentLanguage: en
+  createIntermediateGroups: true
+  generateEmptyDirectories: false
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0.1"
+    CURRENT_PROJECT_VERSION: "41"
+    DEVELOPMENT_TEAM: MYGKXH6TY4
+    CODE_SIGN_STYLE: Automatic
+    TARGETED_DEVICE_FAMILY: "1,2"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+    STRING_CATALOG_GENERATE_SYMBOLS: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+  configs:
+    Release:
+      SWIFT_COMPILATION_MODE: wholemodule
+
+targets:
+  Niya:
+    type: application
+    platform: iOS
+    sources:
+      - path: Niya
+        excludes:
+          # Copied as folder references below so tafsir files keep their subdirectory.
+          - "Resources/Data/tafsir_*"
+      - path: Shared
+      - path: Niya/Resources/Data/tafsir_ibn_abbas
+        type: folder
+        buildPhase: resources
+      - path: Niya/Resources/Data/tafsir_ibn_kathir
+        type: folder
+        buildPhase: resources
+      - path: Niya/Resources/Data/tafsir_maarif_ul_quran
+        type: folder
+        buildPhase: resources
+      - path: Niya/Resources/Data/tafsir_tafheem_ul_quran
+        type: folder
+        buildPhase: resources
+      - path: Niya/Resources/Data/tafsir_tazkirul_quran
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - target: NiyaWidgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.niya.mobile
+        INFOPLIST_FILE: Niya/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Niya/Niya.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  NiyaWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: NiyaWidgets
+      - path: Shared
+      # Widgets use the app's named colors.
+      - path: Niya/Resources/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.niya.mobile.widgets
+        INFOPLIST_FILE: NiyaWidgets/Info.plist
+        CODE_SIGN_ENTITLEMENTS: NiyaWidgets/NiyaWidgets.entitlements
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+
+  NiyaTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: NiyaTests
+    dependencies:
+      - target: Niya
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.niya.mobile.tests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  # Production: Release run/profile/archive; tests run in Debug for @testable import.
+  Niya:
+    build:
+      targets:
+        Niya: all
+        NiyaTests: [test]
+    run:
+      config: Release
+    test:
+      config: Debug
+      gatherCoverageData: true
+      coverageTargets: [Niya]
+      targets:
+        - name: NiyaTests
+          parallelizable: false
+    profile:
+      config: Release
+    analyze:
+      config: Release
+    archive:
+      config: Release
+
+  # Local development and physical-device installs (scripts/niya-ios-device).
+  Niya Beta:
+    build:
+      targets:
+        Niya: all
+        NiyaTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - name: NiyaTests
+          parallelizable: false
+    profile:
+      config: Debug
+    analyze:
+      config: Debug
+
+  NiyaWidgets:
+    build:
+      targets:
+        NiyaWidgets: all
+        Niya: all
+    run:
+      config: Debug
+      askForAppToLaunch: true
+    profile:
+      config: Release
+      askForAppToLaunch: true

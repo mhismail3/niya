@@ -1,4 +1,5 @@
 import CoreGraphics
+import CoreText
 import Foundation
 import Testing
 import UIKit
@@ -80,8 +81,9 @@ struct TajweedTextRendererTests {
         #expect(TajweedTextResolver.substring(of: text, segment: segments[0]) == "bcde")
     }
 
-    @Test func yunusRegressionSegmentsProduceGlyphRangesAndColoredBasePixels() throws {
+    @Test func yunusRegressionSegmentsProduceGlyphRangesAndColoredBasePixels() async throws {
         let service = TajweedService()
+        await service.ensureLoaded()
         let expectedColor = UIColor.raTafkheem.resolvedColor(
             with: UITraitCollection(userInterfaceStyle: .light)
         )
@@ -125,8 +127,9 @@ struct TajweedTextRendererTests {
         }
     }
 
-    @Test func yunusRegressionDoesNotColorPrecedingGraphemes() throws {
+    @Test func yunusRegressionDoesNotColorPrecedingGraphemes() async throws {
         let service = TajweedService()
+        await service.ensureLoaded()
         let expectedColor = UIColor.raTafkheem.resolvedColor(
             with: UITraitCollection(userInterfaceStyle: .light)
         )
@@ -204,14 +207,35 @@ struct TajweedTextRendererTests {
         }
     }
 
+    /// Renders through the production path (`TajweedService.preparedContent`). A non-nil
+    /// `baseColor` builds a single-color reference rendering of the same text instead.
     private func makeRenderView(verse: TajweedVerse, baseColor: UIColor?) -> TajweedRenderView {
         let view = TajweedRenderView(frame: CGRect(x: 0, y: 0, width: 420, height: 10))
-        view.configure(
-            verse: verse,
-            fontSize: 56,
-            showSupplementalRules: false,
-            baseTextColor: baseColor ?? (UIColor(named: "niyaText") ?? .label)
-        ) { _ in }
+        let content: TajweedPreparedContent
+        if let baseColor {
+            let attributed = NSAttributedString(string: verse.text, attributes: [
+                .font: UIFont.quranFont(script: .hafs, size: 56),
+                .foregroundColor: baseColor,
+                .paragraphStyle: view.effectiveParagraphStyle,
+            ])
+            content = TajweedPreparedContent(
+                text: verse.text,
+                baseAttributedString: attributed,
+                baseFramesetter: CTFramesetterCreateWithAttributedString(attributed),
+                overlayAttributedStrings: [:],
+                overlayFramesetters: [:],
+                resolvedSegments: []
+            )
+        } else {
+            content = TajweedService().preparedContent(
+                verse: verse,
+                surahId: 10,
+                fontSize: 56,
+                showSupplementalRules: false,
+                paragraphStyle: view.effectiveParagraphStyle
+            )
+        }
+        view.configure(preparedContent: content) { _ in }
 
         let fitted = view.sizeThatFits(CGSize(width: 420, height: tajweedMeasurementHeight))
         view.frame = CGRect(origin: .zero, size: fitted)

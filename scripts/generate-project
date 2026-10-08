@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Generate Niya.xcodeproj from project.yml with the checksum-pinned XcodeGen.
+# The .xcodeproj is disposable output (gitignored); edit project.yml instead.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck disable=SC1091
+source "$ROOT/config/toolchain.env"
+TOOLS="${NIYA_TOOLS_DIR:-$ROOT/.tools}"
+STAGE="$TOOLS/xcodegen-$NIYA_XCODEGEN_VERSION"
+XCODEGEN="$STAGE/xcodegen/bin/xcodegen"
+
+install_xcodegen() {
+    local archive="$TOOLS/downloads/xcodegen-$NIYA_XCODEGEN_VERSION.zip" tmp
+    mkdir -p "$TOOLS/downloads"
+    if [ ! -f "$archive" ] || [ "$(shasum -a 256 "$archive" | awk '{print $1}')" != "$NIYA_XCODEGEN_SHA256" ]; then
+        tmp="$(mktemp "$TOOLS/downloads/xcodegen.XXXXXX")"
+        curl -fsSL --retry 3 "$NIYA_XCODEGEN_URL" -o "$tmp"
+        mv "$tmp" "$archive"
+    fi
+    [ "$(shasum -a 256 "$archive" | awk '{print $1}')" = "$NIYA_XCODEGEN_SHA256" ] \
+        || { echo "error: XcodeGen checksum mismatch: $archive" >&2; rm -f "$archive"; exit 1; }
+    rm -rf "$STAGE"
+    mkdir -p "$STAGE"
+    ditto -x -k "$archive" "$STAGE"
+    [ -x "$XCODEGEN" ] || { echo "error: xcodegen executable missing in $archive" >&2; exit 1; }
+}
+
+[ -x "$XCODEGEN" ] || install_xcodegen
+cd "$ROOT"
+"$XCODEGEN" generate --spec project.yml --quiet "$@"
+echo "Generated Niya.xcodeproj (XcodeGen $NIYA_XCODEGEN_VERSION)"

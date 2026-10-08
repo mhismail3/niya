@@ -11,3 +11,5 @@ DataPrep/venv/
 __pycache__/
 *.pyc
 .DS_Store
+Niya.xcodeproj/
+.tools/

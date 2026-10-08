@@ -239,6 +239,7 @@ resolve_device_id() {
 
 bundle_id_for_project() {
     cd "$ROOT_DIR"
+    [ -d "$PROJECT_PATH" ] || "$ROOT_DIR/scripts/generate-project" >/dev/null
     xcodebuild -showBuildSettings \
         -project "$PROJECT_PATH" \
         -scheme "$SCHEME" \
@@ -274,6 +275,7 @@ build_install_launch() {
     [ -n "$device_id" ] || die "could not resolve a physical iOS device"
 
     select_toolchain "$device_id"
+    "$ROOT_DIR/scripts/generate-project"
 
     local bundle_id
     bundle_id="$(bundle_id_for_project)"

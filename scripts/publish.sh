@@ -16,16 +16,24 @@ WIDGET_BUNDLE_ID="com.niya.mobile.widgets"
 echo "==> Cleaning build directory..."
 rm -rf "$PROJECT_DIR/build"
 
+echo "==> Generating Xcode project..."
+"$PROJECT_DIR/scripts/generate-project"
+
 echo "==> Archiving $SCHEME..."
-xcodebuild archive \
+mkdir -p "$PROJECT_DIR/build"
+ARCHIVE_LOG="$PROJECT_DIR/build/archive.log"
+if ! xcodebuild archive \
   -project "$PROJECT" \
   -scheme "$SCHEME" \
   -configuration Release \
   -archivePath "$ARCHIVE_PATH" \
   -destination "generic/platform=iOS" \
   -allowProvisioningUpdates \
-  CODE_SIGN_STYLE=Automatic \
-  | tail -1
+  CODE_SIGN_STYLE=Automatic >"$ARCHIVE_LOG" 2>&1; then
+  grep -E "error:|BUILD FAILED|ARCHIVE FAILED" "$ARCHIVE_LOG" | head -20
+  echo "ERROR: archive failed; full log: $ARCHIVE_LOG"
+  exit 1
+fi
 
 ARCHIVE_APP="$ARCHIVE_PATH/Products/Applications/Niya.app"
 if [ ! -d "$ARCHIVE_APP" ]; then
@@ -36,19 +44,23 @@ fi
 # --- Find provisioning profiles ---
 PROFILE_DIR="$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
 
+# Newest unexpired App Store profile for a bundle ID (an expired profile left beside its
+# renewal must never be embedded).
 find_store_profile() {
-  local bid="$1"
-  local tmpfile
-  tmpfile=$(mktemp)
+  local bid="$1" decoded best="" best_expiry=0 expiry now
+  decoded=$(mktemp)
+  now=$(date +%s)
   for p in "$PROFILE_DIR"/*.mobileprovision; do
-    security cms -D -i "$p" -o "$tmpfile" 2>/dev/null
-    if grep -q "Store Provisioning Profile: ${bid}<" "$tmpfile" 2>/dev/null; then
-      rm -f "$tmpfile"
-      echo "$p"
-      return
+    security cms -D -i "$p" -o "$decoded" 2>/dev/null || continue
+    grep -q "Store Provisioning Profile: ${bid}<" "$decoded" 2>/dev/null || continue
+    expiry=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$(plutil -extract ExpirationDate raw "$decoded")" +%s 2>/dev/null || echo 0)
+    if [ "$expiry" -gt "$now" ] && [ "$expiry" -gt "$best_expiry" ]; then
+      best="$p"
+      best_expiry="$expiry"
     fi
   done
-  rm -f "$tmpfile"
+  rm -f "$decoded"
+  echo "$best"
 }
 
 echo "==> Finding distribution provisioning profiles..."
@@ -98,6 +110,14 @@ plutil -extract Entitlements xml1 -o "$APP_ENTITLEMENTS" "$DECODED_PROFILE"
 /usr/libexec/PlistBuddy -c "Add :com.apple.developer.icloud-services:0 string CloudKit" "$APP_ENTITLEMENTS"
 /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.icloud-container-environment" "$APP_ENTITLEMENTS" 2>/dev/null || true
 /usr/libexec/PlistBuddy -c "Add :com.apple.developer.icloud-container-environment string Production" "$APP_ENTITLEMENTS"
+
+# The app enables CloudKit in release builds on the strength of this entitlement; a
+# build without it would crash when CloudKit starts, so refuse to ship one.
+if ! plutil -extract com.apple.developer.icloud-container-identifiers xml1 -o - "$APP_ENTITLEMENTS" 2>/dev/null \
+    | grep -q "<string>iCloud.com.niya.mobile</string>"; then
+  echo "ERROR: app entitlements lack iCloud.com.niya.mobile; fix the provisioning profile before shipping"
+  exit 1
+fi
 
 echo "    App entitlements:"
 plutil -p "$APP_ENTITLEMENTS" | sed 's/^/        /'
