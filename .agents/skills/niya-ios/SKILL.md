@@ -17,7 +17,7 @@ widget, `Shared/` both, `NiyaTests/` tests.
 | Physical device build + install + launch | Niya Beta | Debug | `scripts/niya-ios-device install` |
 | Relaunch the installed build | Niya Beta | — | `scripts/niya-ios-device launch` |
 | Stop / inspect the running app | — | — | `scripts/niya-ios-device stop` / `status` |
-| Unit tests | Niya | Debug (test action) | `xcodebuild test` (below) |
+| Unit tests | Niya | Debug (test action) | `scripts/niya-ios-test` (below) |
 | TestFlight / App Store | Niya | Release | publish skill only (`/publish`) |
 
 ## Physical device
@@ -57,17 +57,27 @@ The deployment target is iOS 17; build against the newest SDK (iOS 27 via
 `Xcode-beta.app` while it is installed) and keep the iOS 26 SDK build green too.
 
 ```bash
-scripts/generate-project
-DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
-xcodebuild test -project Niya.xcodeproj -scheme Niya \
-  -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' \
-  -derivedDataPath /tmp/niya-dd \
-  -only-testing:NiyaTests/<Suite>      # omit for the full suite
+scripts/niya-ios-test                              # full suite (~2 min)
+scripts/niya-ios-test --only PrayerTimeCalculatorTests
+scripts/niya-ios-test --only 'AudioServiceTests/stopResetsState()'   # single test needs ()
 ```
 
-Check the reported test count (a filter matching nothing is not a pass). Shut
-down any simulator you booted when finished (`xcrun simctl shutdown <udid>`);
-never touch simulators owned by other projects (e.g. `Tron iOS Tests*`).
+Always run tests through this script, never raw `xcodebuild test`. xcodebuild
+and the simulator daemons it wakes can hold inherited output pipes open after
+the run, and xcodebuild itself sometimes stalls after a failing run, so a raw
+call can block an agent's shell indefinitely. The script owns the process
+group, uses stdin from `/dev/null`, enforces overall and no-output deadlines,
+kills xcodebuild 60 s after Swift Testing's final line if it has not exited, and
+prints one `PASSED`/`FAILED` line with counts, failures and compiler warnings.
+Full logs and the `.xcresult` go to `$TMPDIR/niya-ios-test/<timestamp>/`.
+Exits: 0 pass, 65 test failure, 66 destination, 70 build failure or zero tests,
+75 deadline. Never background it and poll with `sleep`; just run it with a tool
+timeout above `--overall-seconds` (default 1800).
+
+It uses the newest `/Applications/Xcode*.app` (override with `DEVELOPER_DIR`)
+and its own `Niya Tests` simulator on the newest iOS runtime, created on first
+use and reused. Never touch simulators owned by other projects (e.g.
+`Tron iOS Tests*`).
 
 ## Stop rules
 

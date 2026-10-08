@@ -1,0 +1,310 @@
+#!/usr/bin/env python3
+"""Run Niya's unit tests on a simulator as one bounded, self-terminating command.
+
+xcodebuild and the simulator daemons it wakes can keep inherited stdout/stderr
+pipes open long after the test run ends, so a caller that waits for pipe EOF
+(an agent shell tool, `$(...)`, CI log capture) hangs although the tests finished.
+This runner (ported from Tron's scripts/ios-test-process.py) therefore:
+
+  * runs xcodebuild in its own session with stdin from /dev/null, reading its
+    output through a pipe it owns and writing the complete log to disk;
+  * enforces an overall deadline and a no-output deadline, and stops reading
+    shortly after xcodebuild exits even if a daemon still holds the pipe;
+  * kills the whole process group on exit, timeout, or SIGINT/SIGTERM/SIGHUP;
+  * decides pass/fail from the result bundle's summary. xcodebuild can also stall
+    after the run itself has ended (seen after failing Swift Testing runs, with
+    the bundle never finalized): once Swift Testing prints its final
+    "Test run with N tests ... passed|failed" line, xcodebuild gets
+    POST_RUN_GRACE_SECONDS to exit, after which it is killed and that line is
+    the verdict.
+
+Usage:
+  scripts/niya-ios-test [--only <Suite>|<Suite/test()>]... [options]
+
+Options:
+  --only ID              Forwarded as -only-testing:NiyaTests/ID (repeatable).
+                         Swift Testing single tests need a trailing (), e.g.
+                         --only 'AudioServiceTests/stopResetsState()'.
+  --destination DEST     Full xcodebuild destination. Default: the dedicated
+                         "Niya Tests" iPhone 17 simulator on the newest iOS
+                         runtime, created on first use.
+  --overall-seconds N    Hard deadline for the whole xcodebuild run (1800).
+  --no-output-seconds N  Deadline for silence from xcodebuild (300).
+  --verbose              Stream the full xcodebuild output (always in the log).
+  --no-generate          Skip scripts/generate-project.
+
+Environment:
+  DEVELOPER_DIR          Xcode to use. Default: the newest /Applications/Xcode*.app.
+
+Exits: 0 passed, 65 test failure, 66 destination, 70 build failure or no
+tests ran, 75 deadline exceeded, 128+N interrupted by signal N.
+Artifacts (log, xcresult) go to $TMPDIR/niya-ios-test/<timestamp>/, outside the repo.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import plistlib
+import re
+import selectors
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+EXIT_TEST_FAILURE, EXIT_DESTINATION, EXIT_BUILD, EXIT_TIMEOUT = 65, 66, 70, 75
+SIMULATOR_NAME = "Niya Tests"
+SIMULATOR_TYPE = "com.apple.CoreSimulator.SimDeviceType.iPhone-17"
+EXIT_DRAIN_SECONDS = 3.0  # read leftovers after xcodebuild exits, then stop
+POST_RUN_GRACE_SECONDS = 60.0
+RUN_END = re.compile(r"Test run with (\d+) tests? .*?\b(passed|failed) after")
+FAILED_TEST = re.compile(r"✘ Test (?!run with )(.+?) failed after")
+STREAMED = re.compile(r"error:|warning:|✘|Test run with|\*\* (TEST|BUILD) |Testing started|Failing tests")
+
+
+def fail(code: int, message: str) -> "NoReturn":  # noqa: F821
+    print(f"error: {message}", file=sys.stderr)
+    raise SystemExit(code)
+
+
+def quick(argv: list[str], env: dict[str, str], timeout: float = 60) -> tuple[int, str]:
+    """Run a short helper with output in a file, so a lingering pipe holder cannot block us."""
+    with tempfile.TemporaryFile() as out:
+        process = subprocess.Popen(argv, env=env, stdin=subprocess.DEVNULL, stdout=out,
+                                   stderr=subprocess.STDOUT, start_new_session=True)
+        try:
+            process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            kill_group(process, grace=2)
+            return 124, f"timed out after {timeout:.0f}s: {' '.join(argv)}"
+        out.seek(0)
+        return process.returncode, out.read().decode(errors="replace")
+
+
+def newest_xcode() -> str:
+    best: tuple[tuple[int, ...], str] | None = None
+    for app in Path("/Applications").glob("Xcode*.app"):
+        try:
+            with (app / "Contents/version.plist").open("rb") as handle:
+                version = plistlib.load(handle)["CFBundleShortVersionString"]
+        except (OSError, KeyError, plistlib.InvalidFileException):
+            continue
+        key = tuple(int(part) for part in re.findall(r"\d+", version))
+        if best is None or key > best[0]:
+            best = (key, str(app / "Contents/Developer"))
+    if best is None:
+        fail(EXIT_DESTINATION, "no Xcode found in /Applications; set DEVELOPER_DIR")
+    return best[1]
+
+
+def default_destination(env: dict[str, str]) -> str:
+    code, output = quick(["xcrun", "simctl", "list", "-j", "runtimes", "devices"], env)
+    if code != 0:
+        fail(EXIT_DESTINATION, f"simctl list failed: {output.strip()}")
+    listing = json.loads(output)
+    runtimes = [r for r in listing["runtimes"] if r.get("isAvailable") and r.get("platform") == "iOS"]
+    if not runtimes:
+        fail(EXIT_DESTINATION, "no available iOS simulator runtime in this Xcode")
+    runtime = max(runtimes, key=lambda r: tuple(int(p) for p in re.findall(r"\d+", r["version"])))
+    for device in listing["devices"].get(runtime["identifier"], []):
+        if device["name"] == SIMULATOR_NAME and device.get("isAvailable"):
+            return f"platform=iOS Simulator,id={device['udid']}"
+    code, output = quick(["xcrun", "simctl", "create", SIMULATOR_NAME, SIMULATOR_TYPE, runtime["identifier"]], env)
+    if code != 0:
+        fail(EXIT_DESTINATION, f"cannot create the {SIMULATOR_NAME} simulator: {output.strip()}")
+    print(f"Created simulator {SIMULATOR_NAME} ({runtime['name']}): {output.strip()}")
+    return f"platform=iOS Simulator,id={output.strip()}"
+
+
+def group_alive(pgid: int) -> bool:
+    try:
+        os.killpg(pgid, 0)
+        return True
+    except (ProcessLookupError, PermissionError):
+        return False
+
+
+def kill_group(process: subprocess.Popen, grace: float = 10) -> None:
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except (ProcessLookupError, PermissionError):
+        return
+    deadline = time.monotonic() + grace
+    while group_alive(process.pid) and time.monotonic() < deadline:
+        time.sleep(0.05)
+    if group_alive(process.pid):
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            pass
+    try:
+        process.wait(timeout=max(grace, 1))
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def run_bounded(argv: list[str], env: dict[str, str], log_path: Path, overall: float,
+                silence: float, verbose: bool) -> tuple[int | None, str | None, int | None]:
+    """Returns (exit code, timeout reason, interrupting signal)."""
+    started = last_output = time.monotonic()
+    interrupted: list[int] = []
+    pending = b""
+    run_ended_at: float | None = None
+    with log_path.open("wb") as log:
+        process = subprocess.Popen(argv, env=env, cwd=ROOT, stdin=subprocess.DEVNULL,
+                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                   start_new_session=True, bufsize=0)
+        assert process.stdout is not None
+
+        def forward(signum: int, _frame: object) -> None:
+            interrupted.append(signum)
+            try:
+                os.killpg(process.pid, signum)
+            except (ProcessLookupError, PermissionError):
+                pass
+
+        previous = {s: signal.signal(s, forward) for s in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP)}
+        selector = selectors.DefaultSelector()
+        selector.register(process.stdout, selectors.EVENT_READ)
+        exited_at: float | None = None
+        try:
+            while True:
+                now = time.monotonic()
+                if interrupted:
+                    return None, None, interrupted[0]
+                if now - started >= overall:
+                    return None, "overall", None
+                if exited_at is None and now - last_output >= silence:
+                    return None, "no-output", None
+                if exited_at is None and run_ended_at is not None and now - run_ended_at >= POST_RUN_GRACE_SECONDS:
+                    return None, "post-run", None
+                if exited_at is None and process.poll() is not None:
+                    exited_at = now
+                # A daemon may hold the pipe open forever; xcodebuild's exit is what counts.
+                if exited_at is not None and (not selector.get_map() or now - exited_at >= EXIT_DRAIN_SECONDS):
+                    return process.returncode, None, None
+                for key, _ in selector.select(timeout=0.1):
+                    chunk = os.read(key.fd, 64 * 1024)
+                    if not chunk:
+                        selector.unregister(key.fileobj)
+                        continue
+                    last_output = time.monotonic()
+                    if run_ended_at is None and RUN_END.search(chunk.decode(errors="replace")):
+                        run_ended_at = last_output
+                    log.write(chunk)
+                    if verbose:
+                        sys.stdout.buffer.write(chunk)
+                        sys.stdout.flush()
+                    else:
+                        pending += chunk
+                        *lines, pending = pending.split(b"\n")
+                        for line in lines:
+                            text = line.decode(errors="replace")
+                            if STREAMED.search(text) and "CoreData:" not in text:
+                                print(text[:400], flush=True)
+        finally:
+            kill_group(process)
+            selector.close()
+            for signum, handler in previous.items():
+                signal.signal(signum, handler)
+
+
+def summarize(bundle: Path, env: dict[str, str]) -> dict | None:
+    if not bundle.exists():
+        return None
+    code, output = quick(["xcrun", "xcresulttool", "get", "test-results", "summary",
+                          "--path", str(bundle), "--compact"], env)
+    if code != 0:
+        print(f"warning: cannot read the result summary: {output.strip()[:400]}", file=sys.stderr)
+        return None
+    try:
+        return json.loads(output)
+    except json.JSONDecodeError:
+        return None
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("-h", "--help", action="store_true")
+    parser.add_argument("--only", action="append", default=[])
+    parser.add_argument("--destination")
+    parser.add_argument("--overall-seconds", type=float, default=1800)
+    parser.add_argument("--no-output-seconds", type=float, default=300)
+    parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--no-generate", action="store_true")
+    args = parser.parse_args()
+    if args.help:
+        print(__doc__)
+        return 0
+
+    env = dict(os.environ)
+    env.setdefault("DEVELOPER_DIR", newest_xcode())
+    env["NSUnbufferedIO"] = "YES"
+    run_dir = Path(tempfile.gettempdir()) / "niya-ios-test" / time.strftime("%Y%m%d-%H%M%S")
+    run_dir.mkdir(parents=True, exist_ok=True)
+    log_path, bundle = run_dir / "xcodebuild.log", run_dir / "TestResults.xcresult"
+
+    if not args.no_generate:
+        code, output = quick([str(ROOT / "scripts/generate-project")], env, timeout=300)
+        if code != 0:
+            fail(EXIT_BUILD, f"generate-project failed:\n{output.strip()}")
+    destination = args.destination or default_destination(env)
+    print(f"Xcode: {env['DEVELOPER_DIR']}\nDestination: {destination}\nLog: {log_path}", flush=True)
+
+    argv = ["xcodebuild", "test", "-project", str(ROOT / "Niya.xcodeproj"), "-scheme", "Niya",
+            "-destination", destination, "-derivedDataPath", str(Path(tempfile.gettempdir()) / "niya-dd"),
+            "-resultBundlePath", str(bundle), "-parallel-testing-enabled", "NO"]
+    argv += [f"-only-testing:NiyaTests/{selector}" for selector in args.only]
+
+    started = time.monotonic()
+    code, timeout_reason, signum = run_bounded(argv, env, log_path, args.overall_seconds,
+                                               args.no_output_seconds, args.verbose)
+    elapsed = time.monotonic() - started
+    if signum is not None:
+        print(f"interrupted by signal {signum}; log: {log_path}", file=sys.stderr)
+        return 128 + signum
+    log_text = log_path.read_text(errors="replace")
+    if timeout_reason == "post-run":
+        # The run finished but xcodebuild did not; Swift Testing's final line is the verdict.
+        match = RUN_END.findall(log_text)[-1]
+        failed = sorted(set(FAILED_TEST.findall(log_text)))
+        verdict = "PASSED" if match[1] == "passed" else "FAILED"
+        print(f"{verdict}: {match[0]} tests, {len(failed)} failed (from the test log: xcodebuild "
+              f"did not exit within {POST_RUN_GRACE_SECONDS:.0f}s of the run ending and was killed; "
+              f"{elapsed:.0f}s)")
+        for name in failed[:20]:
+            print(f"  ✘ {name}")
+        print(f"Log: {log_path}")
+        return 0 if verdict == "PASSED" else EXIT_TEST_FAILURE
+    if timeout_reason is not None:
+        print(f"error: xcodebuild exceeded its {timeout_reason} deadline after {elapsed:.0f}s; "
+              f"process group killed; log: {log_path}", file=sys.stderr)
+        return EXIT_TIMEOUT
+
+    warnings = sorted({line.strip() for line in log_text.splitlines()
+                       if re.search(r"\.swift:\d+:\d+: warning:", line)})
+    summary = summarize(bundle, env)
+    counts = {k: (summary or {}).get(k) for k in ("passedTests", "failedTests", "skippedTests", "totalTestCount")}
+    if summary is None or not isinstance(counts["totalTestCount"], int) or counts["totalTestCount"] <= 0:
+        print(f"FAILED: no tests ran (xcodebuild exit {code}, {elapsed:.0f}s); log: {log_path}")
+        return EXIT_BUILD
+    verdict = "PASSED" if counts["failedTests"] == 0 and code == 0 else "FAILED"
+    print(f"{verdict}: {counts['passedTests']} passed, {counts['failedTests']} failed, "
+          f"{counts['skippedTests']} skipped of {counts['totalTestCount']} "
+          f"(xcodebuild exit {code}, {elapsed:.0f}s, {len(warnings)} compiler warnings)")
+    for warning in warnings[:20]:
+        print(f"  {warning}")
+    for failure in (summary.get("testFailures") or [])[:20]:
+        print(f"  ✘ {failure.get('testIdentifierString', failure.get('testName'))}: "
+              f"{str(failure.get('failureText', '')).strip()[:300]}")
+    print(f"Log: {log_path}\nResult bundle: {bundle}")
+    return 0 if verdict == "PASSED" else EXIT_TEST_FAILURE
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

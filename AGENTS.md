@@ -26,10 +26,7 @@ Membership follows directories; adding a file needs no project edit, only
 
 ```bash
 scripts/generate-project                       # after clone / project.yml edits
-DEVELOPER_DIR=/Applications/Xcode-beta.app/Contents/Developer \
-  xcodebuild test -project Niya.xcodeproj -scheme Niya \
-  -destination 'platform=iOS Simulator,name=iPhone 17,OS=27.0' \
-  -derivedDataPath /tmp/niya-dd [-only-testing:NiyaTests/<Suite>]
+scripts/niya-ios-test [--only <Suite>]          # bounded unit-test run; never raw xcodebuild test
 scripts/niya-ios-device install                # build + install on a connected device
 ```
 
