@@ -1,0 +1,29 @@
+name: Task
+description: One scoped unit of work, done and closed by a commit on main.
+title: "[Task]: "
+labels: ["needs-triage"]
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What this changes and what it deliberately leaves alone.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable conditions that make this done.
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Checks
+      description: Tests (`scripts/niya-ios-test --only …`), builds, or manual steps that prove it.
+  - type: textarea
+    id: user-action
+    attributes:
+      label: Maintainer-only validation
+      description: Anything only the maintainer can do (device install, CloudKit console, TestFlight) and the check after it.

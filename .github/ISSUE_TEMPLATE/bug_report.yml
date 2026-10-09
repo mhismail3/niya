@@ -1,0 +1,67 @@
+name: Bug report
+description: Something in Niya is broken or behaving unexpectedly.
+title: "[Bug]: "
+labels: ["kind:bug", "needs-triage"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Niya version
+      description: Settings → About, or TestFlight's version and build.
+      placeholder: "e.g. 1.0.2 (43)"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      multiple: true
+      options:
+        - Quran reader (scripts, tajweed, word-by-word, tafsir)
+        - Recitation audio and downloads
+        - Hadith
+        - Dua
+        - Prayer times, notifications or Qiblah
+        - Widgets
+        - Bookmarks, reading position or iCloud sync
+        - Other / not sure
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and iOS version
+      placeholder: "e.g. iPhone 17 Pro, iOS 27.0"
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what you saw instead. For Quran text, name the surah and ayah.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Al-Baqarah in word-by-word mode
+        2. Scroll to 2:255
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, reading settings (script, reciter, translation), suspected cause.
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues for this bug.
+          required: true
+        - label: This issue contains no personal data (this repository is public; for prayer times, give a city, not an address).
+          required: true

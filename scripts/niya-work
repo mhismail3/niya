@@ -1,0 +1,307 @@
+#!/usr/bin/env python3
+"""Typed GitHub work commands for Niya: issues, labels and the private "Niya" Project.
+
+Every write goes through here so that labels follow the declared scheme, Project
+fields are set by name (no GraphQL IDs by hand), and public text is privacy-checked
+first: github.com/mhismail3/niya is a public repository.
+
+Usage:
+  scripts/niya-work board [--all]                 open issues by Status and Priority
+  scripts/niya-work show <n>                      issue, labels, fields and comments
+  scripts/niya-work search <words>                open and closed issues matching words
+  scripts/niya-work create --title T --body-file F --kind K --visibility V --area A [--area A ...]
+                          [--status Proposed] [--priority P2]
+  scripts/niya-work labels <n> --kind K --visibility V --area A [--area A ...]
+                          sets the classification and removes needs-triage
+  scripts/niya-work set <n> [--status S] [--priority P]
+  scripts/niya-work decision <n> --body-file F    ask the maintainer: comment, needs-decision, Needs you
+  scripts/niya-work decision <n> --resolved       remove needs-decision once answered
+  scripts/niya-work comment <n> --body-file F
+  scripts/niya-work close <n> --reason completed|not_planned --comment-file F
+  scripts/niya-work check <file>                  privacy-check text without posting
+
+Kinds: bug, improvement, maintenance, idea. Visibility: user-facing, internal.
+Areas: quran, audio, hadith, dua, prayer, widgets, sync, data, tooling.
+Status: Proposed, Ready, In progress, Needs you, Blocked, Done. Priority: P0-P3.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+OWNER, REPO, PROJECT = "mhismail3", "mhismail3/niya", 2
+KINDS = ("bug", "improvement", "maintenance", "idea")
+VISIBILITIES = ("user-facing", "internal")
+AREAS = ("quran", "audio", "hadith", "dua", "prayer", "widgets", "sync", "data", "tooling")
+STATUSES = ("Proposed", "Ready", "In progress", "Needs you", "Blocked", "Done")
+PRIORITIES = ("P0", "P1", "P2", "P3")
+CLASSIFYING = ("kind:", "visibility:", "area:")
+
+# Public-text guard: what must never reach the public repository.
+PRIVATE_PATTERNS = [
+    (r"/(?:Users|home)/[^/\s]+", "a local home-directory path"),
+    (r"/(?:private/)?var/folders/", "a local temporary path"),
+    (r"[\w.+-]+@[\w-]+\.[\w.-]+", "an email address"),
+    (r"\b[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\b", "a device or simulator identifier"),
+    (r"\b[0-9A-F]{8}-[0-9A-F]{16}\b", "a device identifier"),
+    (r"\b(?:gh[opsu]_|github_pat_|sk-)[A-Za-z0-9_]{16,}", "a token"),
+    (r"-?\d{1,2}\.\d{3,}\s*,\s*-?\d{1,3}\.\d{3,}", "precise coordinates (use a city name)"),
+]
+
+
+class WorkError(RuntimeError):
+    pass
+
+
+def gh_path() -> str:
+    for candidate in (shutil.which("gh"), "/opt/homebrew/bin/gh", "/usr/local/bin/gh"):
+        if candidate and Path(candidate).exists():
+            return candidate
+    raise WorkError("gh is not installed (brew install gh, then gh auth login)")
+
+
+def gh(*args: str, timeout: float = 60) -> str:
+    """Run gh with stdin closed and a deadline, so a prompt or a stall cannot hang the caller."""
+    with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
+        process = subprocess.Popen([gh_path(), *args], stdin=subprocess.DEVNULL, stdout=out, stderr=err,
+                                   env={**os.environ, "GH_PROMPT_DISABLED": "1"},
+                                   start_new_session=True)
+        try:
+            process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            raise WorkError(f"gh {' '.join(args[:3])} timed out after {timeout:.0f}s")
+        out.seek(0); err.seek(0)
+        stdout, stderr = out.read().decode(), err.read().decode()
+    if process.returncode != 0:
+        raise WorkError(f"gh {' '.join(args[:3])} failed: {stderr.strip() or stdout.strip()}")
+    return stdout
+
+
+def privacy_problems(text: str) -> list[str]:
+    return [f"{label}: {match.group(0)[:60]!r}"
+            for pattern, label in PRIVATE_PATTERNS for match in re.finditer(pattern, text)]
+
+
+def checked_text(path: str) -> str:
+    text = Path(path).read_text()
+    if not text.strip():
+        raise WorkError(f"{path} is empty")
+    problems = privacy_problems(text)
+    if problems:
+        raise WorkError("refusing to post to the public repository; remove:\n  " + "\n  ".join(problems))
+    return text
+
+
+def classification(kind: str, visibility: str, areas: list[str]) -> list[str]:
+    if kind not in KINDS:
+        raise WorkError(f"--kind must be one of {', '.join(KINDS)}")
+    if visibility not in VISIBILITIES:
+        raise WorkError(f"--visibility must be one of {', '.join(VISIBILITIES)}")
+    if not areas or any(area not in AREAS for area in areas):
+        raise WorkError(f"--area (one or more) must be from {', '.join(AREAS)}")
+    return [f"kind:{kind}", f"visibility:{visibility}", *(f"area:{a}" for a in dict.fromkeys(areas))]
+
+
+# ---------------------------------------------------------------- Project fields
+
+def project_fields() -> tuple[str, dict[str, tuple[str, dict[str, str]]]]:
+    """Project node ID and {field name: (field ID, {option name: option ID})}."""
+    project_id = json.loads(gh("project", "view", str(PROJECT), "--owner", OWNER, "--format", "json"))["id"]
+    fields = json.loads(gh("project", "field-list", str(PROJECT), "--owner", OWNER, "--format", "json"))["fields"]
+    return project_id, {f["name"]: (f["id"], {o["name"]: o["id"] for o in f.get("options", [])})
+                        for f in fields if f["name"] in ("Status", "Priority")}
+
+
+def project_item(number: int) -> str:
+    url = f"https://github.com/{REPO}/issues/{number}"
+    # item-add is idempotent: it returns the existing item for an issue already on the board.
+    return json.loads(gh("project", "item-add", str(PROJECT), "--owner", OWNER, "--url", url, "--format", "json"))["id"]
+
+
+def set_fields(number: int, status: str | None, priority: str | None) -> None:
+    if status and status not in STATUSES:
+        raise WorkError(f"--status must be one of {', '.join(STATUSES)}")
+    if priority and priority not in PRIORITIES:
+        raise WorkError(f"--priority must be one of {', '.join(PRIORITIES)}")
+    item = project_item(number)
+    project_id, fields = project_fields()
+    for name, value in (("Status", status), ("Priority", priority)):
+        if value:
+            field_id, options = fields[name]
+            gh("project", "item-edit", "--id", item, "--project-id", project_id,
+               "--field-id", field_id, "--single-select-option-id", options[value])
+
+
+def board_items() -> dict[int, dict[str, str]]:
+    items = json.loads(gh("project", "item-list", str(PROJECT), "--owner", OWNER,
+                          "--limit", "500", "--format", "json"))["items"]
+    return {i["content"]["number"]: {"status": i.get("status") or "", "priority": i.get("priority") or ""}
+            for i in items if i.get("content", {}).get("number")}
+
+
+# ---------------------------------------------------------------- commands
+
+def cmd_board(args: argparse.Namespace) -> None:
+    state = "all" if args.all else "open"
+    issues = json.loads(gh("issue", "list", "-R", REPO, "--state", state, "--limit", "500",
+                           "--json", "number,title,labels,state"))
+    fields = board_items()
+    order = {s: i for i, s in enumerate(("Needs you", "In progress", "Blocked", "Ready", "Proposed", "Done"))}
+    rows = []
+    for issue in issues:
+        f = fields.get(issue["number"], {"status": "", "priority": ""})
+        labels = [l["name"] for l in issue["labels"]]
+        problems = []
+        if issue["number"] not in fields:
+            problems.append("not on the Project")
+        if "needs-triage" not in labels:
+            for prefix in ("kind:", "visibility:"):
+                if sum(l.startswith(prefix) for l in labels) != 1:
+                    problems.append(f"needs exactly one {prefix}*")
+            if not any(l.startswith("area:") for l in labels):
+                problems.append("needs an area:*")
+        rows.append((order.get(f["status"], 99), f["priority"] or "P9", issue, f, labels, problems))
+    rows.sort(key=lambda r: (r[0], r[1], r[2]["number"]))
+    for _, _, issue, f, labels, problems in rows:
+        status = f["status"] or "—"
+        print(f"#{issue['number']:<4} {status:<12} {f['priority'] or '—':<3} {issue['title']}")
+        print(f"       {' '.join(labels) or '(no labels)'}" + (f"  ⚠ {'; '.join(problems)}" if problems else ""))
+    if not rows:
+        print("No issues.")
+
+
+def cmd_show(args: argparse.Namespace) -> None:
+    issue = json.loads(gh("issue", "view", str(args.number), "-R", REPO,
+                          "--json", "number,title,state,labels,body,comments,url"))
+    f = board_items().get(args.number, {})
+    print(f"#{issue['number']} [{issue['state']}] {issue['title']}\n{issue['url']}")
+    print(f"Status: {f.get('status') or '—'}  Priority: {f.get('priority') or '—'}  "
+          f"Labels: {' '.join(l['name'] for l in issue['labels'])}\n")
+    print(issue["body"].strip())
+    for c in issue["comments"]:
+        print(f"\n--- {c['author']['login']} {c['createdAt']}\n{c['body'].strip()}")
+
+
+def cmd_search(args: argparse.Namespace) -> None:
+    query = " ".join(args.words)
+    issues = json.loads(gh("issue", "list", "-R", REPO, "--state", "all", "--search", query,
+                           "--limit", "30", "--json", "number,title,state"))
+    for i in issues:
+        print(f"#{i['number']:<4} {i['state']:<6} {i['title']}")
+    if not issues:
+        print(f"No issues match {query!r}.")
+
+
+def cmd_create(args: argparse.Namespace) -> None:
+    labels = classification(args.kind, args.visibility, args.area)
+    body = checked_text(args.body_file)
+    if privacy_problems(args.title):
+        raise WorkError("the title contains private data")
+    with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as handle:
+        handle.write(body)
+    url = gh("issue", "create", "-R", REPO, "--title", args.title, "--body-file", handle.name,
+             *sum((["--label", l] for l in labels), [])).strip()
+    Path(handle.name).unlink()
+    number = int(url.rstrip("/").rsplit("/", 1)[1])
+    set_fields(number, args.status, args.priority)
+    print(f"#{number} {url} ({args.status}, {args.priority})")
+
+
+def cmd_labels(args: argparse.Namespace) -> None:
+    labels = classification(args.kind, args.visibility, args.area)
+    current = [l["name"] for l in json.loads(gh("issue", "view", str(args.number), "-R", REPO,
+                                                "--json", "labels"))["labels"]]
+    remove = [l for l in current if (l.startswith(CLASSIFYING) and l not in labels) or l == "needs-triage"]
+    command = ["issue", "edit", str(args.number), "-R", REPO, "--add-label", ",".join(labels)]
+    if remove:
+        command += ["--remove-label", ",".join(remove)]
+    gh(*command)
+    print(f"#{args.number}: {' '.join(labels)}" + (f" (removed {' '.join(remove)})" if remove else ""))
+
+
+def cmd_set(args: argparse.Namespace) -> None:
+    if not args.status and not args.priority:
+        raise WorkError("pass --status and/or --priority")
+    set_fields(args.number, args.status, args.priority)
+    print(f"#{args.number}: " + ", ".join(v for v in (args.status, args.priority) if v))
+
+
+def cmd_decision(args: argparse.Namespace) -> None:
+    if args.resolved == bool(args.body_file):
+        raise WorkError("pass either --body-file (ask) or --resolved")
+    if args.resolved:
+        gh("issue", "edit", str(args.number), "-R", REPO, "--remove-label", "needs-decision")
+        print(f"#{args.number}: needs-decision removed; set the next Status with `set`")
+        return
+    checked_text(args.body_file)
+    gh("issue", "comment", str(args.number), "-R", REPO, "--body-file", args.body_file)
+    gh("issue", "edit", str(args.number), "-R", REPO, "--add-label", "needs-decision")
+    set_fields(args.number, "Needs you", None)
+    print(f"#{args.number}: question posted, needs-decision, Needs you")
+
+
+def cmd_comment(args: argparse.Namespace) -> None:
+    checked_text(args.body_file)
+    print(gh("issue", "comment", str(args.number), "-R", REPO, "--body-file", args.body_file).strip())
+
+
+def cmd_close(args: argparse.Namespace) -> None:
+    checked_text(args.comment_file)
+    gh("issue", "comment", str(args.number), "-R", REPO, "--body-file", args.comment_file)
+    gh("issue", "close", str(args.number), "-R", REPO, "--reason",
+       "completed" if args.reason == "completed" else "not planned")
+    set_fields(args.number, "Done", None)
+    print(f"#{args.number} closed ({args.reason}) and set to Done")
+
+
+def cmd_check(args: argparse.Namespace) -> None:
+    checked_text(args.file)
+    print("ok: no private data found")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="command", required=True)
+    p = sub.add_parser("board"); p.add_argument("--all", action="store_true"); p.set_defaults(run=cmd_board)
+    p = sub.add_parser("show"); p.add_argument("number", type=int); p.set_defaults(run=cmd_show)
+    p = sub.add_parser("search"); p.add_argument("words", nargs="+"); p.set_defaults(run=cmd_search)
+    p = sub.add_parser("create")
+    for flag in ("--title", "--body-file", "--kind", "--visibility"):
+        p.add_argument(flag, required=True)
+    p.add_argument("--area", action="append", default=[])
+    p.add_argument("--status", default="Proposed"); p.add_argument("--priority", default="P2")
+    p.set_defaults(run=cmd_create)
+    p = sub.add_parser("labels"); p.add_argument("number", type=int)
+    p.add_argument("--kind", required=True); p.add_argument("--visibility", required=True)
+    p.add_argument("--area", action="append", default=[]); p.set_defaults(run=cmd_labels)
+    p = sub.add_parser("set"); p.add_argument("number", type=int)
+    p.add_argument("--status"); p.add_argument("--priority"); p.set_defaults(run=cmd_set)
+    p = sub.add_parser("decision"); p.add_argument("number", type=int)
+    p.add_argument("--body-file"); p.add_argument("--resolved", action="store_true")
+    p.set_defaults(run=cmd_decision)
+    p = sub.add_parser("comment"); p.add_argument("number", type=int)
+    p.add_argument("--body-file", required=True); p.set_defaults(run=cmd_comment)
+    p = sub.add_parser("close"); p.add_argument("number", type=int)
+    p.add_argument("--reason", required=True, choices=("completed", "not_planned"))
+    p.add_argument("--comment-file", required=True); p.set_defaults(run=cmd_close)
+    p = sub.add_parser("check"); p.add_argument("file"); p.set_defaults(run=cmd_check)
+    args = parser.parse_args()
+    try:
+        args.run(args)
+    except WorkError as error:
+        print(f"work: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

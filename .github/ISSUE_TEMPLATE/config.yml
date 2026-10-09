@@ -1,0 +1,2 @@
+# Every issue comes in through a form; no blank issues.
+blank_issues_enabled: false
